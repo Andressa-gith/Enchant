@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enchant</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/enchant/esqueciasenha2.css">
+    <link rel="stylesheet" href="/styles/global.css">
+    <script src="/scripts/enchant/esqueciasenha2.js"></script>
+    <script src="/scripts/layouts/enchant/headerenchant.js"></script>
+    <script src="/scripts/layouts/enchant/footerenchant.js"></script>
+
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="container">
+        <div class="lock-section">
+            <div class="lock-circle">
+                <div class="lock-icon">
+                    <div class="lock-shackle"></div>
+                    <div class="lock-body">
+                        <div class="lock-keyhole"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h1 class="title">Digite o código:</h1>
+            <p class="subtitle">Digite o código de 6 caracteres que recebeu para prosseguir:</p>
+            
+            <div class="code-inputs">
+                <input type="text" class="code-input" maxlength="1">
+                <input type="text" class="code-input" maxlength="1">
+                <input type="text" class="code-input" maxlength="1">
+                <input type="text" class="code-input" maxlength="1">
+                <input type="text" class="code-input" maxlength="1">
+                <input type="text" class="code-input" maxlength="1">
+            </div>
+            
+            <button class="confirm-btn" onclick="confirmCode()">Confirmar</button>
+            
+            <div class="resend-section">
+                <p class="resend-text">Não recebeu o código?</p>
+                <button class="resend-btn" onclick="resendCode()" id="resendBtn">Reenviar código</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mensagens - Compatível com Bootstrap 4 -->
+    <div class="modal fade" id="mensagemModal" tabindex="-1" role="dialog" aria-labelledby="mensagemModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mensagemModalLabel">Atenção</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="mensagemModalBody">
+                    <!-- Aqui será inserido o conteúdo da mensagem -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="confirm-btn" data-dismiss="modal">Entendi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="enchant-footer"></div>
+    <script src="../../scripts/layouts/enchant/footerenchant.js"></script></footer>
+
+     <script>
+    
+      document.addEventListener('DOMContentLoaded', function() {
+        // Carregar Bootstrap e FontAwesome automaticamente
+        HeaderComponent.loadDependencies();
+        
+        // Renderizar o header no container
+        initializeHeader('header-container');
+        
+          });
+              </script>
+   
+
+</body>
+</html>
+

@@ -1,0 +1,346 @@
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+
+:root {
+    --corfundo: #F5F5F5;
+    --corfundo-footer: #fcf2e8;
+    --corfundo-container: #F9E7D2;
+    --corbotao1: #e2ccae;
+    --corbotao2: #caae8d;
+    --cortitulo: #4E3629;
+    --cortexto: #535151;
+    --corlink: #EC9E07;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Lexend Deca", sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--corfundo);
+    justify-content: space-between;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 1rem 7rem 1rem;
+    margin-top: 80px;
+}
+
+main h2, .pagamento {
+    font-family: "Passion One";
+    color: var(--cortitulo);
+    text-align: center;
+    font-size: 32px;
+    font-weight: 500;
+}
+
+.container {
+    border: 1.5px #4E3629 solid;
+    padding: 2rem;
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto 0;
+    border-radius: 10px;
+}
+
+.recomendações {
+    padding: 0 1rem 1rem;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* --- AJUSTES NO FORMULÁRIO --- */
+
+/* REMOVIDO: Layout com CSS Grid. Agora o Bootstrap cuida disso através das classes no HTML. */
+/* As classes 'form-row' e 'col-md-6' no HTML já criam as duas colunas. */
+
+/* AJUSTE: Aplicando estilos diretamente na classe .form-control do Bootstrap */
+.form-control {
+    width: 100%;
+    border: 1px solid #B7B6B6;
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
+}
+
+/* Estilizando o select para ter a setinha customizada */
+.form-control:is(select) {
+    color: #757575;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: .65em auto;
+    padding-right: 2.5rem;
+}
+
+.form-control:focus {
+    outline: none; /* Removendo o outline padrão para usar box-shadow */
+    border-color: var(--corbotao2);
+    box-shadow: 0 0 0 0.2rem #caae8d80; /* Efeito de 'glow' do Bootstrap */
+}
+
+/* O Bootstrap 'form-group' já cuida do espaçamento, então não precisamos de margens extras */
+label {
+    margin-bottom: 0.5rem;
+    margin-left: 15px;
+}
+
+.requerimento-senha {
+    font-size: 12px;
+    padding: 0.5rem 1rem 0;
+}
+.requerimento-senha p {
+    line-height: 1.5;
+    margin: 0;
+}
+.requerimento-senha p:not(:first-child) {
+    color: #757575;
+}
+
+/* AJUSTE: Alinhando o botão usando Flexbox, já que não temos mais Grid */
+.div-botao-continuar {
+    display: flex;
+    justify-content: flex-end; /* Alinha o botão à direita */
+    width: 100%;
+    margin-top: 20px;
+    padding-right: 15px;
+}
+
+.botao-continuar {
+    border: none;
+    background-color: var(--corbotao1);
+    color: var(--cortitulo);
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 150px;
+    transition: background-color 0.3s;
+}
+
+.botao-continuar:hover {
+    background-color: var(--corbotao2);
+}
+
+/* --- ESTILOS DA SEGUNDA PARTE (PAGAMENTO) --- */
+/* (Nenhuma alteração necessária aqui, seu código já estava ótimo) */
+
+.segunda-parte {
+    display: none;
+    flex-direction: column;
+}
+
+.pagamento-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2.3rem;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.asd {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+}
+
+.detalhes-container {
+    width: 50rem;
+    max-width: 100%;
+    border: 1px solid black;
+    border-radius: 20px;
+    padding: 2rem;
+    gap: 1.5rem;
+}
+.detalhes-container .titulo, .pedido .titulo {
+    border-bottom: 1px solid #B7B6B6;
+    padding-bottom: 1rem;
+}
+.informações {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 1rem;
+}
+.detalhe-column p:first-child {
+    color: #B7B6B6;
+}
+
+.escolher-pagamento {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.escolher-pagamento input[type="radio"] {
+    display: none;
+}
+
+.escolher-pagamento label {
+    flex: 1;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1.5px solid #B7B6B6;
+    border-radius: 10px;
+    text-align: center;
+    margin: 0;
+}
+
+input::placeholder{
+    font-size: 14px;
+}
+
+#subtitulo{
+    color: var(--cortitulo);
+    font-family: 'Passion One';
+    font-size: 25px;
+}
+.escolher-pagamento label:hover {
+    background-color: #caac8d36;
+}
+
+.escolher-pagamento input[type="radio"]:checked + label {
+    border-color: var(--cortitulo);
+    color: var(--cortitulo);
+    font-weight: 500;
+}
+
+.escolher-pagamento label svg,
+.escolher-pagamento label i {
+    fill: currentColor; /* Faz o SVG herdar a cor do label */
+}
+
+.pedido {
+    width: 30rem;
+    max-width: 100%;
+    background-color: var(--corfundo-footer);
+    border-radius: 20px;
+    padding: 2rem;
+    gap: 1.5rem;
+}
+.valor {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.botaocomprar {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+#comprar, .btn-voltar {
+    background-color: var(--corbotao1);
+    border: 1px solid var(--corbotao1);
+    color: var(--cortitulo);
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+#comprar:hover, .btn-voltar:hover {
+    background-color: var(--corbotao2);
+}
+
+
+/* --- ESTILOS DO MODAL BOOTSTRAP --- */
+/* (Nenhuma alteração necessária aqui) */
+
+.modal-content {
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.modal-title {
+    color: rgba(97, 53, 12, 1);
+    font-size: 20px;
+    font-family: 'Lexend Deca', sans-serif;
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: black;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 16px;
+}
+
+.modal-body ul {
+    text-align: left;
+    color: #d9534f;
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.modal .btn-primary {
+    background-color: rgba(226, 204, 174, 1);
+    color: #4e3629;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+}
+
+.modal .btn-primary:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+    transition: transform 0.2s ease;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+    /* Não precisamos mais mexer no grid do formulário aqui, */
+    /* o Bootstrap já cuida da quebra de colunas para 1fr em telas menores */
+
+    .div-botao-continuar {
+        justify-content: center;
+    }
+
+    .botao-continuar {
+        width: 100%;
+    }
+
+    .pagamento-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .escolher-pagamento {
+        flex-direction: column;
+    }
+}

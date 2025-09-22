@@ -1,0 +1,194 @@
+ @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+
+    body {
+      margin: 0;
+      font-family: 'Lexend Deca', sans-serif;
+      background: #ffffff;
+      color: #000000;
+      font-size: 16px;
+      /* Ajuste para o header fixo */
+      padding-top: 70px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 0 150px;
+    }
+    
+    h1 {
+      margin-top: 60px;
+      margin-bottom: 30px;
+      font-family: 'Passion One', cursive !important;
+      font-size: 2rem;
+      text-align: center;
+      color: #693B11 !important;
+      font-weight: 400;
+    }
+    
+    .primeiro-texto {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #000000;
+    }
+    
+    .accordion-section {
+      background: white;
+      border: 1px solid #000000;
+      border-radius: 12px;
+      box-shadow: 0 0 5px rgba(92, 59, 30, 0.1);
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+    
+    .accordion-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #000000;
+      margin-bottom: 16px;
+    }
+    
+    .accordion-item {
+      border: 1px solid #e4d3c2;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    
+    .accordion-btn {
+      background-color: #fcf9f7;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 400;
+      color: #000000;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Lexend Deca', sans-serif;
+      transition: background-color 0.3s ease;
+    }
+    
+    .accordion-btn:hover {
+      background-color: #f2e8df;
+    }
+    
+    .arrow {
+      transition: transform 0.3s ease;
+      font-size: 14px;
+      color: #693B11;
+    }
+    
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      background: #fff9f4;
+      transition: max-height 0.3s ease;
+      padding: 0 16px;
+    }
+    
+    .accordion-item.open .accordion-content {
+      max-height: 500px;
+      padding: 16px;
+    }
+    
+    .accordion-content p {
+      margin: 0;
+      font-size: 16px;
+      color: #000000;
+      line-height: 1.6;
+    }
+    
+    .accordion-item.open .arrow {
+      transform: rotate(180deg);
+    }
+    
+    .segundo-texto {
+      text-align: center;
+      font-size: 16px;
+      color: #000000;
+      margin-top: 20px;
+    }
+    
+    .suporte-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      background: #EDD9C7;
+      color: rgb(0, 0, 0);
+      font-weight: 600;
+      text-decoration: none !important;
+      transition: background 0.3s;
+      font-size: 14px;
+    }
+    
+    .suporte-btn:hover {
+      background-color: #caae8d;
+      color: #3d2106;
+    }
+    
+    @media (max-width: 1024px) {
+      .container {
+        padding: 0 80px;
+      }
+      
+      body {
+        padding-top: 60px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .primeiro-texto, .segundo-texto{
+        font-size: 0.85rem;
+      }
+    
+      .container {
+        padding: 0 30px;
+      }
+    
+      h1 {
+        font-size: 28px;
+      }
+    
+      .accordion-btn {
+        font-size: 15px;
+        padding: 12px 14px;
+      }
+    
+      .accordion-content p {
+        font-size: 15px;
+      }
+      
+      body {
+        padding-top: 60px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 24px;
+      }
+    
+      .accordion-title {
+        font-size: 16px;
+      }
+    
+      .accordion-btn {
+        font-size: 14px;
+      }
+    
+      .accordion-item.open .accordion-content {
+        max-height: 600px;
+      }
+      
+      .accordion-content p {
+        font-size: 14px;
+        line-height: 1.5; 
+      }
+    }
