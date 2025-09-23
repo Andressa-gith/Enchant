@@ -223,7 +223,7 @@
                 const sidebarHTML = `
                     <aside class="sidebar" id="sidebar">
                         <nav class="sidebar-nav">
-                            <a href="/src/views/comprador/mapa.html">
+                            <a href="/dashboard">
                                 <i class="bi bi-table"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -231,7 +231,7 @@
                                 <i class="bi bi-map"></i>
                                 <span>Mapa</span>
                             </a>
-                            <a href="/src/views/comprador/doacao.html">
+                            <a href="/doacao">
                                 <i class="bi bi-box"></i>
                                 <span>Doação</span>
                             </a>

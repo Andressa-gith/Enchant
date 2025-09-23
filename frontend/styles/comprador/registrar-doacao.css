@@ -1,0 +1,190 @@
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("/styles/global.css"); /* Importa seu CSS global */
+
+/* Reset básico e fontes */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px; background-color: #f5f5f5; color: #4e3629; }
+
+/* Container principal da página */
+.main-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza horizontalmente */
+    position: relative;
+    overflow-x: hidden;
+    padding-top: 56px; /* Espaço para o header fixo */
+}
+
+/* Título da página */
+.title {
+    font-family: 'Passion One', cursive;
+    color: rgba(97, 53, 12, 1);
+    font-size: 30px;
+    text-align: center;
+    padding: 2rem 1rem;
+    z-index: 2;
+    margin-top: 2rem; /* Ajustado para melhor visual */
+}
+
+/* Wrapper para o conteúdo (imagem + formulário) */
+.content-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center; /* Centraliza verticalmente o conteúdo */
+    flex-grow: 1; /* Permite que o wrapper ocupe o espaço restante */
+}
+
+/* Container da imagem de fundo (a caixa de papelão) */
+.background-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centraliza a imagem na tela */
+    overflow: hidden;
+    z-index: 1;
+}
+
+.background-image {
+    max-height: 90vh; /* A caixa pode ser grande, mas sem exagerar */
+    max-width: 90vw;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin-top: -50px; /* Ajuste manual para subir um pouco a imagem, se necessário */
+    opacity: 0.8; /* Um pouco transparente para o formulário se destacar */
+}
+
+/* Wrapper para o card do formulário (para centralizá-lo dentro da imagem) */
+.form-card-wrapper {
+    position: relative; /* Para ficar acima da imagem */
+    z-index: 2;
+    width: 90%;
+    max-width: 550px; /* Ajustado para um tamanho bom */
+    margin: 2rem 0;
+}
+
+/* Estilo do card do formulário (que é a parte transparente da caixa) */
+.section-card {
+    background-color: rgba(179, 132, 88, 0.75); /* Cor da caixa interna com transparência */
+    padding: 2.5rem;
+    border-radius: 10px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
+}
+
+/* Títulos de seção dentro do formulário */
+.section-title {
+    font-size: 26px;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+    text-align: center;
+}
+
+/* Grupos de formulário */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Labels dos campos */
+.form-label {
+    display: block;
+    color: #f5f5f5;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Controles de formulário (inputs, selects) */
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem; /* Padding maior */
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #fff;
+    color: #333;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna para profundidade */
+}
+
+.form-control::placeholder {
+    color: #999;
+}
+
+/* Botões */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.botaozinho {
+    background-color: rgba(226, 204, 174, 1);
+    color: #000000;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600; /* Mais negrito */
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.botaozinho:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+    transform: translateY(-2px); /* Efeito de levantar */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.botaosem { /* Estilo para o botão "Voltar" ou "Fechar" nos modais */
+    background-color: transparent;
+    border: 1px solid #000000;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: #000000;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.botaosem:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: #333;
+    color: #333;
+    transform: translateY(-2px);
+}
+
+/* Estilos para os modais */
+.modal-content { border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); }
+.modal-header { border-bottom: none; }
+.modal-title { color: rgba(97, 53, 12, 1); font-size: 1.5rem; font-weight: 700; }
+.modal-body { padding: 1.5rem; color: black; font-family: 'Lexend Deca', sans-serif; }
+.modal-footer { border-top: none; }
+
+/* Media Queries para Responsividade */
+@media (max-width: 768px) {
+    .title { font-size: 2rem; margin-top: 1.5rem; }
+    .form-card-wrapper { max-width: 95%; margin: 1rem 0; }
+    .section-card { padding: 1.5rem; }
+    .form-label { font-size: 0.9rem; }
+    .form-control { padding: 0.6rem 0.8rem; font-size: 0.9rem; }
+    .botaozinho, .botaosem { padding: 8px 15px; font-size: 0.9rem; }
+    .background-image { margin-top: 0; }
+}
+
+@media (max-width: 576px) {
+    .title { font-size: 1.8rem; padding: 1rem; }
+    .section-card { padding: 1rem; }
+    .background-image { max-height: 80vh; } /* Reduz a altura da imagem em telas pequenas */
+}

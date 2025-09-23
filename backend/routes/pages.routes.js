@@ -57,4 +57,14 @@ pageRouter.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'dashboard.html')); // Garanta que o nome do arquivo está correto
 });
 
+pageRouter.get('/doacao', (req, res) => {
+    console.log(`\n⬆️  Rota /doacao acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'doacao.html')); // Garanta que o nome do arquivo está correto
+});
+
+pageRouter.get('/registrar-doacao', (req, res) => {
+    console.log(`\n⬆️  Rota /doacao acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html')); // Garanta que o nome do arquivo está correto
+});
+
 export default pageRouter;

@@ -1,26 +1,18 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. CONFIGURAÇÃO ---
-    const SUPABASE_URL = 'https://xztrvvpxhccackzoaalz.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6dHJ2dnB4aGNjYWNrem9hYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDYxNjUsImV4cCI6MjA3MDUyMjE2NX0.lNTBC-VzvHjvIydGUcg3uPb6leOIt78B6Zw6SeIa1zk';
+// ATENÇÃO: O caminho do import assume que o dashboard está em /scripts/comprador/
+import supabase from '/scripts/supabaseClient.js';
 
-    if (typeof supabase === 'undefined') {
-        document.body.innerHTML = "<h1>Erro Crítico: Biblioteca do Supabase não foi carregada.</h1>";
-        return;
-    }
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // --- 2. "GUARDA" DE SEGURANÇA ---
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (session) {
-            if (!document.body.classList.contains('dashboard-inicializado')) {
-                initializeApp(session);
-            }
+// O "Guarda" agora usa a conexão do "general"
+supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => initializeApp(session));
         } else {
-            // Agora, quando isso acontecer, será por um motivo real (usuário não logado)
-            window.location.href = '/entrar';
+            initializeApp(session);
         }
-    });
-})
+    } else {
+        window.location.href = '/entrar';
+    }
+});
 
 // --- 3. FUNÇÃO PRINCIPAL QUE MONTA O DASHBOARD COMPLETO ---
 function initializeApp(session) {
