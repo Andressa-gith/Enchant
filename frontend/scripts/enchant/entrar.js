@@ -1,64 +1,58 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('formSenha');
+// VERSÃO FINAL CORRIGIDA - ARQUITETURA CORRETA
+
+document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. CONFIGURAÇÃO ---
+    const SUPABASE_URL = 'https://xztrvvpxhccackzoaalz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6dHJ2dnB4aGNjYWNrem9hYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDYxNjUsImV4cCI6MjA3MDUyMjE2NX0.lNTBC-VzvHjvIydGUcg3uPb6leOIt78B6Zw6SeIa1zk';
+
+    if (typeof supabase === 'undefined') {
+        alert("Erro Crítico: A biblioteca do Supabase não foi carregada.");
+        return;
+    }
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- 2. LÓGICA DO FORMULÁRIO ---
+    const form = document.getElementById('form');
     const emailInput = document.getElementById('email');
+    const senhaInput = document.getElementById('senha');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    if (!form) return;
-
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Impede o envio padrão
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
         const email = emailInput.value.trim();
+        const senha = senhaInput.value.trim();
 
-        // Validação simples de email
-        if (!email) {
-            showModalAviso('Por favor, insira um endereço de email.');
+        if (!email || !senha) {
+            alert('Por favor, preencha o email e a senha.');
             return;
         }
 
-        // Desabilita o botão para evitar cliques múltiplos
         submitButton.disabled = true;
-        submitButton.textContent = 'Enviando...';
+        submitButton.textContent = 'Entrando...';
 
         try {
-            const response = await fetch('/esqueci-senha', { // Rota correta da API
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Informa que estamos enviando JSON
-                },
-                body: JSON.stringify({ email: email }) // Envia os dados como JSON
+            // --- A MUDANÇA PRINCIPAL ESTÁ AQUI ---
+            // Fazemos o login diretamente no navegador com a biblioteca do Supabase
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: senha,
             });
 
-            const data = await response.json();
+            if (error) {
+                // Se o Supabase retornar um erro (ex: senha errada), nós o mostramos
+                throw error;
+            }
 
-            // O back-end sempre retorna sucesso, então mostramos a mensagem de sucesso
-            showModalAviso(data.message, 'sucesso');
-            form.reset();
+            // Se chegou aqui, o login foi um sucesso e a sessão JÁ ESTÁ SALVA no navegador!
+            // Agora podemos redirecionar com segurança.
+            window.location.href = '/dashboard';
 
         } catch (error) {
-            console.error('❌ Erro na requisição:', error);
-            // Mensagem de erro genérica para problemas de rede, etc.
-            showModalAviso('Não foi possível conectar ao servidor. Tente novamente mais tarde.', 'erro');
-        } finally {
-            // Reabilita o botão ao final do processo
+            console.error('❌ Erro no login:', error.message);
+            alert(`Erro: ${error.message}`);
             submitButton.disabled = false;
-            submitButton.textContent = 'Continuar';
+            submitButton.textContent = 'Entrar';
         }
     });
-
-    /**
-     * Exibe um modal de aviso para o usuário.
-     * @param {string} message - A mensagem a ser exibida.
-     * @param {string} [tipo='erro'] - O tipo de aviso ('sucesso' ou 'erro').
-     */
-    function showModalAviso(message, tipo = 'erro') {
-        const modal = $('#mensagemModal'); // Usando jQuery que você já tem na página
-        const modalTitle = modal.find('.modal-title');
-        const modalBody = modal.find('.modal-body');
-
-        modalTitle.text(tipo === 'sucesso' ? 'Sucesso!' : 'Atenção');
-        modalBody.text(message);
-        
-        modal.modal('show');
-    }
 });

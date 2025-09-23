@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     try {
         // --- CORREÇÃO AQUI ---
-        const response = await fetch('/esqueci-senha', { // 1. Rota correta da API
+        const response = await fetch('/api/auth/esqueci-senha', { // 1. Rota correta da API
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' // 2. Informa que estamos enviando JSON

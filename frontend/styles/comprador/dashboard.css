@@ -1,0 +1,273 @@
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("../../styles/global.css");
+
+/* ================ VARIÁVEIS CSS ================ */
+:root {
+    --primary-color: #72330f;
+    --primary-light: #e2ccae;
+    --primary-dark: #3d2106;
+    --secondary-color: #EADBC8;
+    --text-color: #333;
+    --text-light: #694E4E;
+    --border-color: #DCD0C0;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --border-radius: 12px;
+}
+
+/* ================ RESET E BASE ================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Lexend Deca", sans-serif;
+    color: var(--text-color);
+    background-color: #FAFAFA; /* Um cinza bem claro para dar contraste */
+    min-height: 100vh;
+}
+
+/* ================ CONTAINER PRINCIPAL ================ */
+.dashboard-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 7rem 1.5rem 1.5rem 1.5rem;
+    width: 100%;
+}
+
+/* ================ HEADER DO DASHBOARD ================ */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.dashboard-header h1 {
+    font-family: "Passion One", sans-serif;
+    color: var(--primary-dark);
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.header-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-date-filter {
+    background-color: #fff;
+    color: var(--text-color);
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-date-filter.active, .btn-date-filter:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* ================ SUMMARY CARDS (KPIs) ================ */
+.summary-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+.summary-card-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 50px;
+    background: var(--secondary-color);
+    border-radius: 10px;
+}
+
+.summary-card-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.summary-card-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* ================ SEÇÃO PRINCIPAL (GRÁFICO E SIDEBAR) ================ */
+.chart-and-sidebar-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .chart-and-sidebar-section {
+        grid-template-columns: 3fr 1fr;
+    }
+}
+
+.chart-card, .sidebar-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    height: 100%;
+}
+
+.chart-header {
+    margin-bottom: 1.25rem;
+}
+
+.chart-title {
+    font-family: "Passion One", sans-serif;
+    color: var(--primary-dark);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.chart-container {
+    height: 450px;
+}
+
+/* NOVO: Estilo para o filtro <select> do gráfico */
+.chart-header .form-select {
+    border-radius: 8px;
+    border-color: #dee2e6;
+    font-size: 0.875rem;
+    background-color: #f8f9fa;
+}
+
+/* ================ SIDEBAR ================ */
+.sidebar-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--primary-dark);
+    font-weight: 600;
+    font-family: "Passion One", sans-serif;
+}
+
+/* NOVO: Estilo para a lista de atividades recentes */
+#lista-atividades-recentes .atividade-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+#lista-atividades-recentes .atividade-item:last-child {
+    border-bottom: none;
+}
+#lista-atividades-recentes .atividade-icon {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+#lista-atividades-recentes .atividade-texto {
+    color: var(--text-light);
+}
+#lista-atividades-recentes .atividade-texto strong {
+    color: var(--text-color);
+}
+
+/* ================ SEÇÃO TABELA DE DOAÇÕES ================ */
+/* NOVO: Estilo para a tabela de doações recentes */
+.recent-donations-section .card {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+.recent-donations-section .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    font-family: "Passion One", sans-serif;
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+}
+.table thead th {
+    font-weight: 600;
+    color: var(--text-light);
+    border: none;
+}
+.table tbody tr:hover {
+    background-color: #f8f5f1;
+}
+
+/* ================ GRID DE ESTATÍSTICAS ================ */
+.stats-section .section-title {
+    font-family: "Passion One", sans-serif;
+    color: var(--primary-dark);
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+}
+
+.stats-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.stats-grid-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-card {
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.stat-number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* ================ RESPONSIVIDADE ================ */
+@media (max-width: 767px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .chart-container {
+        height: 300px;
+    }
+}

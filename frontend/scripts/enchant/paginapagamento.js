@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const formData = new FormData(formPrincipal);
             const dadosCadastro = Object.fromEntries(formData.entries());
-            const ROTA_CADASTRO = '/cadastro';
+            const ROTA_CADASTRO = '/api/user/cadastro';
             const response = await fetch(ROTA_CADASTRO, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

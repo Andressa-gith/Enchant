@@ -52,4 +52,9 @@ pageRouter.get('/redefinir-senha', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'redefinirsenha.html'));
 });
 
+pageRouter.get('/dashboard', (req, res) => {
+    console.log(`\n⬆️  Rota /dashboard acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'dashboard.html')); // Garanta que o nome do arquivo está correto
+});
+
 export default pageRouter;

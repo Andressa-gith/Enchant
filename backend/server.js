@@ -6,6 +6,7 @@ import pageRoutes from './routes/pages.routes.js';
 import userRoutes from './routes/user.routes.js';
 import statusRoutes from './routes/status.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
 const app = express();
 const PORT = 3080;
@@ -17,13 +18,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
-app.use('/api/status', statusRoutes);
-
 app.use(pageRoutes);
 
-app.use(userRoutes);
+app.use('/api/status', statusRoutes);
 
-app.use(authRoutes);
+app.use('/api/user', userRoutes);
+
+app.use('/api/auth', authRoutes);
+
+app.use('/api/dashboard', dashboardRoutes);
 
 app.listen(PORT, () => {
     console.log(`✅  Server is running in http://localhost:${PORT}`);

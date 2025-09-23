@@ -37,7 +37,7 @@ export const loginInstituicao = async (req, res) => {
         // Enviamos uma resposta de sucesso com uma URL para redirecionamento
         res.status(200).json({ 
             message: 'Login bem-sucedido!',
-            redirectTo: '/dashboard' // <-- Página para onde o usuário irá após o login
+            redirectTo: '/dashboard'
         });
 
     } catch (error) {
