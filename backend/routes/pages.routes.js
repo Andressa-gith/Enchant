@@ -42,9 +42,14 @@ pageRouter.get('/entrar', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'entrar.html'));
 });
 
-pageRouter.get('/esqueci', (req, res) => {
-    console.log(`\n⬆️  Rota /esqueci acessada.`);
-    res.sendFile(path.join(__dirname, '..', 'views', 'esqueciasenha1.html'));
+pageRouter.get('/esqueci-senha', (req, res) => {
+    console.log(`\n⬆️  Rota /esqueci-senha acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'esqueciasenha.html'));
+});
+
+pageRouter.get('/redefinir-senha', (req, res) => {
+    console.log(`\n⬆️  Rota /redefinir-senha acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'redefinirsenha.html'));
 });
 
 export default pageRouter;

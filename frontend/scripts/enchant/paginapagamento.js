@@ -195,30 +195,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validarPagamentoEFinalizar() {
+        // ... toda a lógica de validação de pagamento continua a mesma ...
+        // A única diferença é que as chamadas de erro agora usam a nova função
+        // Ex: showErrorModal('msg') vira showModalAviso('msg', 'erro')
         const paymentMethod = parseInt(document.querySelector('input[name="opcao"]:checked').value);
         let pagamentoValido = false;
 
         if (paymentMethod === 1 || paymentMethod === 2) { 
-            const tipo = (paymentMethod === 1) ? '' : 'debito'; // Ajuste para pegar ID certo
+            const tipo = (paymentMethod === 1) ? '' : 'debito';
             const numCartao = document.getElementById(`numerocartao${tipo}`).value.replace(/\D/g, '');
             const cvv = document.getElementById(`cvv${tipo}`).value.replace(/\D/g, '');
             const mes = document.getElementById(`mes${tipo}`).value;
             const ano = document.getElementById(`ano${tipo}`).value;
 
-            if (numCartao.length !== 16) showErrorModal(`O número do cartão deve conter 16 dígitos.`);
-            else if (cvv.length < 3 || cvv.length > 4) showErrorModal(`O CVV deve conter 3 ou 4 dígitos.`);
-            else if (!mes || !ano) showErrorModal(`Selecione a data de validade do cartão.`);
+            if (numCartao.length !== 16) showModalAviso(`O número do cartão deve conter 16 dígitos.`, 'erro');
+            else if (cvv.length < 3 || cvv.length > 4) showModalAviso(`O CVV deve conter 3 ou 4 dígitos.`, 'erro');
+            else if (!mes || !ano) showModalAviso(`Selecione a data de validade do cartão.`, 'erro');
             else pagamentoValido = true;
-
         } else if (paymentMethod === 3) {
             const nomeCompleto = document.getElementById("nomecompleto").value.trim();
             const cpf = document.getElementById("cpf").value.replace(/\D/g, '');
 
-            if (nomeCompleto === "") showErrorModal("Preencha o nome completo para o pagamento PIX.");
-            else if (cpf.length !== 11) showErrorModal("O CPF para o pagamento PIX deve conter 11 dígitos.");
+            if (nomeCompleto === "") showModalAviso("Preencha o nome completo para o pagamento PIX.", 'erro');
+            else if (cpf.length !== 11) showModalAviso("O CPF para o pagamento PIX deve conter 11 dígitos.", 'erro');
             else pagamentoValido = true;
         }
-
         if (pagamentoValido) {
             submeterCadastro();
         }
@@ -228,41 +229,60 @@ document.addEventListener('DOMContentLoaded', function() {
     async function submeterCadastro() {
         btnComprar.disabled = true;
         btnComprar.textContent = 'Processando...';
-
         try {
             const formData = new FormData(formPrincipal);
             const dadosCadastro = Object.fromEntries(formData.entries());
             const ROTA_CADASTRO = '/cadastro';
-
             const response = await fetch(ROTA_CADASTRO, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosCadastro),
             });
-            
             const resultado = await response.json();
             if (!response.ok) throw new Error(resultado.message || 'Ocorreu um erro no servidor.');
 
-            showErrorModal('Cadastro realizado com sucesso! Redirecionando...');
-
+            // AQUI USAMOS A NOVA FUNÇÃO COM O TIPO 'sucesso'
+            showModalAviso('Cadastro realizado com sucesso! Redirecionando...', 'sucesso');
             setTimeout(() => {
                 window.location.href = '/entrar'; 
             }, 2000);
             
         } catch (error) {
             console.error('Erro na submissão:', error);
-            showErrorModal(error.message);
+            // E AQUI USAMOS A NOVA FUNÇÃO COM O TIPO 'erro'
+            showModalAviso(error.message, 'erro');
             btnComprar.disabled = false;
             btnComprar.textContent = 'Continuar com a compra';
         }
     }
     
-    function showErrorModal(message) {
+    /**
+     * Exibe um modal de aviso para o usuário.
+     * @param {string} message - A mensagem a ser exibida.
+     * @param {string} [tipo='erro'] - O tipo de aviso ('sucesso' ou 'erro').
+     */
+    function showModalAviso(message, tipo = 'erro') {
+        const modalHeader = document.getElementById('avisoModalHeader');
+        const modalTitle = document.getElementById('avisoModalLabel');
         const modalBody = document.getElementById('errorModalBody');
-        if (modalBody) {
+
+        if (modalHeader && modalTitle && modalBody) {
+            // Limpa classes de cor antigas
+            modalHeader.classList.remove('modal-header-success', 'modal-header-error');
+
+            if (tipo === 'sucesso') {
+                modalHeader.classList.add('modal-header-success');
+                modalTitle.textContent = 'Sucesso!';
+            } else { // 'erro' ou qualquer outro valor
+                modalHeader.classList.add('modal-header-error');
+                modalTitle.textContent = 'Ocorreu um Erro';
+            }
+
             modalBody.textContent = message;
+            // Usando jQuery para acionar o modal do Bootstrap
             $('#errorModal').modal('show');
         } else {
+            // Fallback caso o modal não seja encontrado
             alert(message);
         }
     }

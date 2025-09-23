@@ -322,6 +322,18 @@ input::placeholder{
     transition: transform 0.2s ease;
 }
 
+/* Adicione estas classes no final do seu arquivo CSS */
+
+.modal-header-success {
+    background-color: #d4edda; /* Verde claro (cor de sucesso do Bootstrap) */
+    color: #155724;
+}
+
+.modal-header-error {
+    background-color: #f8d7da; /* Vermelho claro (cor de erro do Bootstrap) */
+    color: #721c24;
+}
+
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
     /* Não precisamos mais mexer no grid do formulário aqui, */
