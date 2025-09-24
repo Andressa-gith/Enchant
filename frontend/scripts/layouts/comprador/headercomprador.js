@@ -1,16 +1,31 @@
-(function() {
+import supabase from '/scripts/supabaseClient.js';
+
+(async function() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error || !session) {
+        // Se, por algum motivo, não conseguir pegar a sessão, avisa no console e para.
+        console.error('Header Error: Não foi possível obter a sessão do usuário. O usuário será deslogado.');
+        window.location.href = '/entrarcomprador.html'; // Medida de segurança
+        return;
+    }
+    
+    // 2. Agora que temos a 'session', podemos inicializar o header com segurança.
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeHeader);
+        document.addEventListener('DOMContentLoaded', () => initializeHeader(session));
     } else {
-        initializeHeader();
+        initializeHeader(session);
     }
 
-    function initializeHeader() {
+})();
+
+    function initializeHeader(session) {
         class HeaderManager {
             constructor() {
+                if (document.getElementById('main-header')) return;
                 this.injectHeaderStyles();
                 this.injectHeaderHTML();
-                this.initializeHeaderScripts();
+                this.initializeHeaderScripts(session);
             }
 
             injectHeaderStyles() {
@@ -37,7 +52,7 @@
                         background-color: var(--white);
                     }
 
-                    .main-header {
+                    #main-header {
                         position: fixed;
                         top: 0;
                         left: 0;
@@ -236,7 +251,7 @@
                             margin-right: 0;
                         }
                         
-                        .main-header { height: 50px; }
+                        #main-header { height: 50px; }
                     }
 
                     @media (max-width: 768px) {
@@ -273,7 +288,7 @@
 
             injectHeaderHTML() {
                 const headerHTML = `
-                    <header class="main-header">
+                    <header id="main-header">
                         <div class="header-content">
                             <button class="sidebar-toggle" id="sidebarToggle">
                                 <i class="bi bi-list"></i>
@@ -287,11 +302,11 @@
                                     <button class="profile-button" id="profileButton">
                                         <img id="profilePhoto" class="profile-photo" src="" alt="Foto do Usuário">
                                         <i id="profileIcon" class="bi bi-person-circle profile-icon"></i>
-                                        <span>Nome do Usuário</span>
+                                        <span id="headerUserName">Carregando...</span>
                                     </button>
                                     <div class="profile-dropdown" id="profileDropdown">
-                                        <a class="dropdown-item" href="/src/views/comprador/perfilcomprador.html"><i class="bi bi-person"></i> Perfil</a>
-                                        <a class="dropdown-item" href="/src/views/comprador/telainicialparaocomprador.html"><i class="bi bi-box-arrow-right"></i> Sair</a>
+                                        <a class="dropdown-item" href="/perfil"><i class="bi bi-person"></i> Perfil</a>
+                                        <a class="dropdown-item" href="#" id="logoutButton"><i class="bi bi-box-arrow-right"></i> Sair</a>
                                     </div>
                                 </div>
                             </div>
@@ -299,14 +314,55 @@
                     </header>
                 `;
 
-                const headerContainer = document.createElement('div');
-                headerContainer.id = 'trapp-header-container';
-                headerContainer.innerHTML = headerHTML;
-                
-                document.body.insertBefore(headerContainer, document.body.firstChild);
+                let container = document.getElementById('main-header');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'main-header';
+                    document.body.prepend(container);
+                }
+                container.innerHTML = headerHTML;
             }
 
-            initializeHeaderScripts() {
+            initializeHeaderScripts(session) {
+                const logoutButton = document.getElementById('logoutButton');
+                const userNameSpan = document.getElementById('headerUserName');
+
+                if (logoutButton) {
+                    logoutButton.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        const { error } = await supabase.auth.signOut();
+                        if (error) {
+                            console.error('Erro ao fazer logout:', error.message);
+                        } else {
+                            // Logout bem-sucedido, redireciona para a página de entrada
+                            window.location.href = '/entrarcomprador.html'; // Ajuste para sua URL de login
+                        }
+                    });
+                }
+
+                async function fetchUserProfile() {
+                    const token = session.access_token;
+                    try {
+                        // Usamos a rota que já criamos no backend
+                        const response = await fetch('/api/user/profile', {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        if (!response.ok) throw new Error('Falha ao buscar dados do perfil.');
+
+                        const userData = await response.json();
+                        if (userNameSpan) {
+                            // Usa o nome que veio da nossa API
+                            userNameSpan.textContent = userData.nome; 
+                        }
+                    } catch (error) {
+                        console.error('Erro ao buscar perfil:', error);
+                        if (userNameSpan) userNameSpan.textContent = 'Visitante';
+                    }
+                }
+                
+                fetchUserProfile();
+
                 class HeaderNavigation {
                     constructor() {
                         this.sidebarToggle = document.getElementById('sidebarToggle');
@@ -422,10 +478,8 @@
                     }
                 }
                 
-                new HeaderNavigation();
             }
         }
         
         new HeaderManager();
     }
-})();

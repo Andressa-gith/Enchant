@@ -1,0 +1,1159 @@
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("../../styles/global.css");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #ffffff;
+    font-family: "Lexend Deca", sans-serif;
+}
+
+.container1 {
+    max-width: calc(100% - 300px);
+    margin: 0 150px;
+    padding: 20px 0;
+}
+
+header .user-info1 {
+    display: flex;
+    align-items: center;
+}
+
+header .profile-pic-small1 {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-left: 10px;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+.titulo {
+    font-family: Passion One, sans-serif;
+    font-size: 32px;
+    color: #693B11;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.profile-card1 {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 0.5px solid #000000;
+}
+
+.profile-header1 {
+    display: flex;
+    align-items: center;
+}
+
+.profile-pic1 {
+  width: 80px; 
+  height: 80px; 
+  border-radius: 50%;
+  background-color: #ddd;
+  position: relative;
+  overflow: hidden;
+  margin-right: 15px;
+}
+
+.profile-pic1 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-pic1 .edit-overlay1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px; 
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+.profile-pic1:hover .edit-overlay1 {
+    opacity: 1;
+}
+
+.profile-name1 {
+    flex: 1;
+}
+
+.profile-name1 h2 {
+  font-size: 16px; 
+  margin: 0;
+}
+
+.profile-name1 p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.section-title1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-button1 {
+    background-color: #e8d9c0;
+    border: none;
+    padding: 8px 35px;
+    border-radius: 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.edit-button1:hover{
+  background-color: #caae8d;
+  color: #3d2106;
+}
+
+.info-grid1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.password-field1 {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.password-field1 input {
+  width: 100%;
+  padding-right: 35px; 
+}
+
+.show-password1 {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 16px;
+}
+
+.info-item1 {
+  margin-bottom: 15px;
+}
+
+.info-label1 {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.info-value1 {
+  font-size: 14px;
+  color: #333;
+}
+
+.password-dots1 {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.modal1 {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content1 {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh; 
+  overflow-y: auto; 
+}
+
+#edit-form1 {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 0;
+}
+
+#edit-form1 .password-field1 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+#edit-form1 .password-field1 input {
+  width: 100%;
+  padding-right: 35px; 
+}
+
+.form-group1 {
+  margin-bottom: 15px;
+}
+
+.form-group1 label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.form-group1 input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#photo-modal1 .modal-content1 {
+  max-width: 400px;
+}
+
+.modal-header1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.modal-header1 h3 {
+  font-size: 24px;
+}
+
+.close-modal1 {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+}
+
+close-modal1:hover {
+  color: #333;
+}
+
+.modal-footer1 {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel-button1,
+.save-button1 {
+  padding: 8px 20px;
+  border-radius: 15px;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 120px;
+  border: none;
+  margin: 0;
+}
+
+.save-button1:hover{
+  background-color: #caae8d;
+  color: #3d2106;
+}
+
+.modal-footer1 button {
+  float: none;
+}
+
+.cancel-button1 {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+/* Botão Salvar */
+.save-button1 {
+  background-color: #e8d9c0;
+  color: #000000;
+}
+
+
+
+.show-password1 {
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.show-password1:focus,
+.show-password1:active,
+.show-password1:hover {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  color: #333;
+}
+
+.material-symbols-outlined1 {
+  font-size: 20px;
+}
+
+.donation-history-card1 {
+  margin-bottom: 20px;
+}
+
+.donation-list1 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+  * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            background-color: #ffffff;
+            font-family: "Lexend Deca", sans-serif;
+        }
+
+        .container1 {
+            max-width: calc(100% - 300px);
+            margin: 0 150px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-family: Passion One, sans-serif;
+            font-size: 32px;
+            color: #693B11;
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+
+        .profile-card1 {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 0.5px solid #000000;
+        }
+
+        .profile-header1 {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-pic1 {
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%;
+            background-color: #ddd;
+            position: relative;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .profile-pic1 img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-pic1 .edit-overlay1 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px; 
+            opacity: 0;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .profile-pic1:hover .edit-overlay1 {
+            opacity: 1;
+        }
+
+        .profile-name1 {
+            flex: 1;
+        }
+
+        .profile-name1 h2 {
+            font-size: 16px; 
+            margin: 0;
+        }
+
+        .section-title1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-button1 {
+            background-color: #e8d9c0;
+            border: none;
+            padding: 8px 35px;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .edit-button1:hover{
+            background-color: #caae8d;
+            color: #3d2106;
+        }
+
+        .info-grid1 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item1 {
+            margin-bottom: 15px;
+        }
+
+        .info-label1 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value1 {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .password-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .password-dots1 {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .show-password1 {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .show-password1:hover {
+            color: #333;
+        }
+
+        /* Logo section */
+        .logo-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0d5c0;
+            padding-bottom: 20px;
+        }
+
+        .logo-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-image {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-placeholder {
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .logo-info {
+            flex: 1;
+        }
+
+        .logo-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .logo-info p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Footer buttons */
+        .footer-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0d5c0;
+        }
+
+        .footer-button {
+            background-color: #E2CCAE;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #3d2106;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-button:hover {
+            background-color: #caae8d;
+         
+            text-decoration: none;
+        }
+
+        .modal1 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+/* Estilos adicionais para corrigir o campo de senha */
+
+/* Campo de senha na tela principal */
+.password-field-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
+.password-field-main .password-dots1 {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.password-field-main .show-password1 {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 16px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    min-width: 32px;
+    height: 32px;
+}
+
+.password-field-main .show-password1:hover {
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.password-field-main .show-password1:focus {
+    outline: 2px solid #693B11;
+    outline-offset: 1px;
+}
+
+/* Campo de senha no modal de edição */
+.password-field1 {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.password-field1 input {
+    width: 100%;
+    padding: 8px 40px 8px 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.password-field1 .show-password1 {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 16px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    min-width: 24px;
+    height: 24px;
+}
+
+.password-field1 .show-password1:hover {
+    color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.password-field1 .show-password1:focus {
+    outline: 2px solid #693B11;
+    outline-offset: 1px;
+}
+
+/* Garantir que os ícones do Bootstrap Icons sejam exibidos corretamente */
+.show-password1 i {
+    font-size: inherit;
+    line-height: 1;
+    vertical-align: baseline;
+}
+
+/* Melhorias visuais para feedback */
+.show-password1:active {
+    transform: scale(0.95);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .password-field-main {
+        gap: 8px;
+    }
+    
+    .password-field-main .show-password1 {
+        min-width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .password-field1 .show-password1 {
+        min-width: 20px;
+        height: 20px;
+        font-size: 14px;
+    }
+}
+        .modal-content1 {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh; 
+            overflow-y: auto; 
+        }
+
+        .form-group1 {
+            margin-bottom: 15px;
+        }
+
+        .form-group1 label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .form-group1 input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .password-field1 {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .password-field1 input {
+            width: 100%;
+            padding-right: 35px; 
+        }
+
+        .password-field1 .show-password1 {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-header1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .modal-header1 h3 {
+            font-size: 24px;
+        }
+
+        .close-modal1 {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            line-height: 1;
+        }
+
+        .close-modal1:hover {
+            color: #333;
+        }
+
+        .modal-footer1 {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cancel-button1,
+        .save-button1 {
+            padding: 8px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 120px;
+            border: none;
+            margin: 0;
+        }
+
+        .cancel-button1 {
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+        }
+
+        .save-button1 {
+            background-color: #e8d9c0;
+            color: #000000;
+        }
+
+        .save-button1:hover{
+            background-color: #caae8d;
+            color: #3d2106;
+        }
+
+        .material-symbols-outlined1 {
+            font-size: 20px;
+        }
+
+        /* Logo upload styles */
+        .logo-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo-upload-area:hover {
+            border-color: #693B11;
+            background-color: #f5f5f5;
+        }
+
+        .logo-upload-area.drag-over {
+            border-color: #693B11;
+            background-color: #fff8f0;
+        }
+
+        .logo-preview {
+            max-width: 200px;
+            max-height: 150px;
+            margin: 10px auto;
+            display: none;
+        }
+
+        .logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container1 {
+                margin: 0 20px;
+                max-width: calc(100% - 40px);
+            }
+
+            .info-grid1 {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-buttons {
+                flex-direction: column;
+            }
+
+            .modal-content1 {
+                width: 95%;
+                max-width: 400px;
+            }
+
+            .modal-footer1 {
+                flex-direction: row;
+                padding: 15px;
+            }
+        }
+
+        .logo-preview-container {
+    position: relative;
+}
+
+.logo-preview-image {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 4px;
+}
+
+.logo-preview-remove {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.logo-preview-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.logo-upload-icon {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.logo-upload-subtitle {
+    font-size: 12px;
+    color: #999;
+}
+
+.donation-date1 {
+  font-family: "Lexend Deca", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #693B11;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e0d5c0;
+}
+
+.donation-items1 {
+  list-style-type: none;
+  padding-left: 5px;
+}
+
+.donation-items1 li {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #333;
+  display: flex;
+  align-items: baseline;
+  font-weight: 400;
+}
+
+.item-type1 {
+  font-weight: 500;
+}
+
+#botao-validar1{
+  background-color: #E2CCAE;
+  border: none;
+  color: #000000;
+}
+
+#password-checklist1 li.valid1 {
+  color: #008000;
+  font-weight: 400;
+}
+
+
+/* Classe para quando a sidebar estiver expandida */
+.sidebar-expanded1 .container-fluid1 {
+  padding-left: 180px; /* Ajuste conforme a largura da sua sidebar expandida */
+}
+
+/* Garantir que apenas os itens do navbar se movam, não o perfil */
+.sidebar-expanded1 .navbar-nav1 {
+  margin-left: 170px; /* Ajuste conforme necessário */
+}
+
+/* Botão de upload e outros elementos à esquerda */
+#imgheader1 {
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar-expanded1 #imgheader1 {
+  margin-left: 20px; /* Ajuste conforme necessário */
+}
+
+.header1.animated1 {
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.container-fluid1 {
+  position: relative;
+  transition: padding-left 0.3s ease;
+}
+
+.page-content1 {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 65px;
+  margin-left: 60px;
+  position: relative;
+}
+
+
+
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+    .modal-footer1 {
+        flex-direction: row;
+        padding: 15px;
+    }
+
+    .save-button1,
+    .cancel-button1 {
+        width: auto;
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    #edit-form1 {
+        grid-template-columns: 1fr; 
+    }
+    
+    .modal-content1 {
+        width: 95%;
+        max-width: 400px;
+        margin: 20px;
+    }
+
+    .form-grid1 {
+        grid-template-columns: 1fr; 
+    }
+
+  .container1 {
+      margin: 0 20px;
+      max-width: calc(100% - 40px);
+  }
+
+  .modal-footer1 {
+    flex-direction: row;
+    padding: 15px;
+    gap: 10px;
+  }
+
+  #edit-modal1 .save-button1,
+  #edit-modal1 .cancel-button1 {
+    flex: 1;
+    text-align: center;
+  }
+
+  .profile-card1 .section-title1 span {
+    font-size: 20px;
+  }
+
+  .donation-date1 {
+    font-size: 20px;
+  }
+
+  #edit-modal1 .modal-content1 {
+      width: 95%;
+      max-width: 350px; 
+      margin: 10px auto;
+      padding: 15px;
+      overflow-y: auto;
+      max-height: 85vh;
+  }
+  
+  #edit-form1 {
+      display: block; 
+      padding: 0;
+  }
+  
+  #edit-modal1 .form-group1 {
+      margin-bottom: 12px;
+  }
+  
+  #edit-modal1 label {
+      font-size: 16px;
+      margin-bottom: 5px;
+  }
+  
+  #edit-modal1 input {
+      font-size: 14px;
+      padding: 8px;
+  }
+  
+  #edit-modal1 .modal-header1 h3 {
+      font-size: 20px;
+  }
+  
+  #edit-modal1 .modal-footer1 {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 12px;
+      margin-top: 15px;
+      gap: 10px;
+  }
+
+  .donation-item1 {
+    padding: 12px;
+  }
+  
+  .donation-date1 {
+    font-size: 16px;
+  }
+  
+  .donation-items1 li {
+    font-size: 14px;
+  }
+  
+}
+
+@media (max-width: 600px) {
+  .info-grid1 {
+      grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) {
+  #edit-modal1 .save-button1,
+  #edit-modal1 .cancel-button1 {
+    flex: 0 1 auto;
+    width: auto;
+    text-align: center;
+  }
+}
+
+@media (max-height: 600px) {
+  .modal-content1 {
+    max-height: 85vh;
+  }
+  
+  #edit-form1 {
+    gap: 10px;
+  }
+  
+  .form-group1 {
+    margin-bottom: 8px;
+  }
+}

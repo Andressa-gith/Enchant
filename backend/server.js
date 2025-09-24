@@ -9,7 +9,7 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import doacaoRoutes from './routes/doacao.routes.js'
 
 const app = express();
-const PORT = 3080;
+const PORT = 6969;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

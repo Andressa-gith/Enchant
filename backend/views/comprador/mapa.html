@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script> 
+    
+    <link rel="stylesheet" href="/styles/comprador/mapa.css">
+
+  <link rel="stylesheet" href="/styles/global.css">
+  <script src="/scripts/layouts/comprador/sidebar.js" type="module"></script>
+  <script src="/scripts/layouts/comprador/headercomprador.js" type="module"></script>
+  <script src="/scripts/layouts/comprador/footercomprador.js" type="module"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/supabaseClient.js" type="module"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+      <div class="map-container">
+        <div class="filter-panel">
+        <h3><i class="ph ph-funnel"></i> Filtros</h3>
+
+        <div class="filter-group">
+          <label for="filter-region">Região</label>
+          <select id="filter-region" class="form-select">
+            <option value="TODAS">Todas as Regiões</option>
+            <option value="NORDESTE">Nordeste</option>
+            <option value="SUDESTE">Sudeste</option>
+            <option value="SUL">Sul</option>
+            <option value="NORTE">Norte</option>
+            <option value="CENTRO-OESTE">Centro-Oeste</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-state">Estado</label>
+          <select id="filter-state" class="form-select">
+            <option value="TODOS">Todos os Estados</option>
+            <option value="AL" data-region="NORDESTE">Alagoas</option>
+            <option value="BA" data-region="NORDESTE">Bahia</option>
+            <option value="CE" data-region="NORDESTE">Ceará</option>
+            <option value="MA" data-region="NORDESTE">Maranhão</option>
+            <option value="PB" data-region="NORDESTE">Paraíba</option>
+            <option value="PE" data-region="NORDESTE">Pernambuco</option>
+            <option value="PI" data-region="NORDESTE">Piauí</option>
+            <option value="RN" data-region="NORDESTE">Rio Grande do Norte</option>
+            <option value="SE" data-region="NORDESTE">Sergipe</option>
+            <option value="ES" data-region="SUDESTE">Espírito Santo</option>
+            <option value="MG" data-region="SUDESTE">Minas Gerais</option>
+            <option value="RJ" data-region="SUDESTE">Rio de Janeiro</option>
+            <option value="SP" data-region="SUDESTE">São Paulo</option>
+            <option value="PR" data-region="SUL">Paraná</option>
+            <option value="RS" data-region="SUL">Rio Grande do Sul</option>
+            <option value="SC" data-region="SUL">Santa Catarina</option>
+            <option value="AC" data-region="NORTE">Acre</option>
+            <option value="AP" data-region="NORTE">Amapá</option>
+            <option value="AM" data-region="NORTE">Amazonas</option>
+            <option value="PA" data-region="NORTE">Pará</option>
+            <option value="RO" data-region="NORTE">Rondônia</option>
+            <option value="RR" data-region="NORTE">Roraima</option>
+            <option value="TO" data-region="NORTE">Tocantins</option>
+            <option value="DF" data-region="CENTRO-OESTE">Distrito Federal</option>
+            <option value="GO" data-region="CENTRO-OESTE">Goiás</option>
+            <option value="MT" data-region="CENTRO-OESTE">Mato Grosso</option>
+            <option value="MS" data-region="CENTRO-OESTE">Mato Grosso do Sul</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Nível de Risco</label>
+          <div class="filter-option">
+            <input type="checkbox" id="filter-muito-alto" value="Muito alto" checked>
+            <label for="filter-muito-alto">Muito Alto</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="filter-alto" value="Alto" checked>
+            <label for="filter-alto">Alto</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="filter-medio" value="Médio" checked>
+            <label for="filter-medio">Médio</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="filter-baixo" value="Baixo" checked>
+            <label for="filter-baixo">Baixo</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="filter-muito-baixo" value="Muito baixo" checked>
+            <label for="filter-muito-baixo">Muito Baixo</label>
+          </div>
+        </div>
+
+        </div>
+        <div id="mapa"></div>
+      </div>
+      <main id="main">
+
+        <div class="consulta-container">
+          <div class="consulta-busca">
+            <input type="search" id="input-consulta" placeholder="Pesquise seu município...">
+            <button id="botao-consulta">Pesquisar</button>
+          </div>
+          <div id="resultado-consulta"></div>
+        </div>
+  
+        <div class="dashboard-container">
+          <div class="grafico">
+            <h3>Número de municípios por classe de risco</h3>
+            <canvas id="graficoRisco"></canvas>
+            <p><br>Fonte: AdaptaBrasil</p>
+          </div>
+
+          <div class="grafico">
+            <h3>Número de municípios por classe num cenário otimista</h3>
+            <canvas id="graficoRisco2"></canvas>
+            <p><br>Fonte: AdaptaBrasil</p>
+          </div>
+        </div>
+      </main>
+      
+    </div> <div class="modal fade" id="erroSenhaModal" tabindex="-1" aria-labelledby="erroSenhaModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="erroSenhaModalLabel">Atenção</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              <div class="modal-body" id="erroSenhaModalBody">
+                  </div>
+              <div class="modal-footer">
+                  <button id="botao-validar" type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendi</button>
+              </div>
+          </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/scripts/comprador/mapa.js" defer></script>
+  </body>
+</html>

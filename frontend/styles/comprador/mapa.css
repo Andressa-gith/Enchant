@@ -1,0 +1,806 @@
+/* === FONTES IMPORTADAS === */
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+
+/* === ESTILOS GERAIS === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lexend Deca', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #333;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    overflow-x: hidden;
+}
+
+main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px;
+    width: 100%;
+}
+
+/* === ESTILOS PARA A SEÇÃO DE CONSULTA DETALhada === */
+
+.consulta-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #fff;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.consulta-container h3 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.consulta-busca {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto 30px auto; /* Centraliza e adiciona espaço abaixo */
+}
+
+#input-consulta {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px 0 0 8px;
+    font-size: 1rem;
+    outline: none;
+}
+#input-consulta:focus {
+    border-color: #8B4513;
+    box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.2);
+}
+
+#botao-consulta {
+    padding: 12px 20px;
+    background-color: #8B4513; /* Marrom escuro */
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+#botao-consulta:hover {
+    background-color: #61350C;
+}
+
+
+/* Estilo para o card de resultado */
+#resultado-consulta {
+    text-align: left;
+    margin-bottom: 1px;
+}
+
+.card-resultado {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: #ffffff;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-resultado h4 {
+    margin-top: 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.resultado-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.resultado-item {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #8B4513;
+}
+
+.resultado-item .label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.resultado-item .value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #212529;
+}
+
+/* Estilos para o container do gráfico */
+.grafico {
+    width: 87vh;
+    height: 100%;
+    margin: 40px auto; /* Centraliza e adiciona espaço acima/abaixo */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+.grafico p {
+    font-size: 1vh;
+}
+.grafico h3 {
+    text-align: center;
+    font-size: 1.3vh;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* === LAYOUT PRINCIPAL (MAPA E BUSCA) === */
+.imagem-mapa img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.map-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;    
+    padding: 50px 20px; 
+    border-radius: 8px;
+    border: 1px solid #cecece; 
+}
+.filter-panel{
+    width: 30%;
+    margin-right: 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+#mapa { 
+    width: 800px;
+    height: 600px;
+    max-width: 100%;
+    z-index: 0;
+    border-radius: 8px;
+    border: 1px solid #ccc; 
+}
+.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; }
+.info h4 { margin: 0 0 5px; color: #777; }
+.legend { text-align: left; line-height: 18px; color: #555; background-color: rgba(255,255,255,0.8); padding: 10px; border-radius: 5px;}
+.legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.9; }
+
+.busca {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
+    gap: 15px;
+}
+
+.lateral {
+    display: flex;
+    flex-grow: 1; /* Faz a barra de busca ocupar o espaço disponível */
+    min-width: 280px; /* Largura mínima antes de quebrar */
+}
+
+.lateral input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px 0 0 8px;
+    font-size: 1rem;
+}
+
+.lateral button {
+    padding: 10px 20px;
+    background-color: #E2CCAE;
+    color: #333;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.lateral button:hover {
+    background-color: #d1b895;
+}
+
+/* === NOVO DASHBOARD COM CSS GRID === */
+.dashboard-container {
+    display: flex;
+    width: 100%;
+    gap: 30px;
+}
+
+/* Mapeamento dos cards para as áreas do grid */
+.card-performance { 
+    grid-area: performance; 
+}
+
+.card-impact { 
+    grid-area: impact; 
+}
+
+.card-text-causes { 
+    grid-area: causes; 
+}
+
+.card-graph-image { 
+    grid-area: graph; 
+}
+
+.card-text-safety { 
+    grid-area: safety; 
+}
+
+/* === ESTILOS DOS CARDS (GERAL) === */
+.card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* === ESTILOS DOS GRÁFICOS === */
+.card-performance, 
+.card-impact {
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.chart-title {
+    font-size: 0.9rem; /* 14.4px */
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.donut-chart, 
+.pie-chart {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    margin: 15px auto;
+}
+
+.donut-chart {
+    background: conic-gradient(#8B4513 0% 75%, #CD853F 75% 100%);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Miolo branco do gráfico */
+.donut-chart::after {
+    content: "";
+    position: absolute;
+    width: 65px; /* Metade do tamanho do pai */
+    height: 65px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.pie-chart {
+    background: conic-gradient(#8B4513 0% 40%, #CD853F 40% 65%, #D2B48C 65% 100%);
+}
+
+.chart-label {
+    font-size: 0.8rem; /* 12.8px */
+    color: #555;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+/* === ESTILOS DE IMAGEM E TEXTO === */
+.card-graph-image {
+    padding: 0;
+    overflow: hidden; /* Garante que a imagem respeite o border-radius */
+}
+
+.card-graph-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz a imagem cobrir o card sem distorcer */
+    display: block;
+}
+
+.card h3 {
+    font-family: 'Passion One', sans-serif;
+    font-size: 1.5rem; /* 24px */
+    margin-bottom: 15px;
+    color: #61350C;
+    font-weight: 700;
+}
+
+.card p {
+    font-size: 1rem; /* 16px */
+    line-height: 1.8;
+    color: #333;
+}
+
+.card p:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+/* === ESTILOS DE MODALS E COMPONENTES ESPECÍFICOS === */
+#caixa-principal,
+#caixa-principal2 {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1100;
+    background-color: #FFFFFF;
+    width: 500px;
+    height: 20rem;
+    border-radius: 40px;
+}
+
+#instagramgeral, 
+#facebookgeral { 
+    display: flex; 
+    flex-direction: column; 
+}
+
+#botao, 
+#facebook { 
+    border: none; 
+    background-color: transparent; 
+    font-size: 12px; 
+    color: #EC9E07; 
+}
+
+#botao:hover, 
+#facebook:hover { 
+    text-decoration: underline; 
+    color: #8B7777; 
+}
+
+.botao-sair { 
+    margin-bottom: 30px; 
+    background-color: transparent; 
+    border: none; 
+}
+
+#texto-caixa, 
+#texto-caixa2, 
+#texto-caixa3, 
+#texto-caixa4 { 
+    margin-bottom: 10px; 
+    font-size: 20px; 
+    margin-top: 2px; 
+    text-align: start; 
+    margin-left: 35px; 
+}
+
+#texto-caixa3, 
+#texto-caixa4 { 
+    font-size: 14px; 
+    color: #817F7F; 
+}
+
+#botaocaixa, 
+#botaocaixa2 { 
+    display: flex; 
+    margin-top: 2rem; 
+    background-color: rgba(226, 204, 174, 1); 
+    font-size: 14px; 
+    border-radius: 15px; 
+    width: 130px; 
+    height: 35px; 
+    border: none; 
+    text-align: center; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+#confirmar, 
+#confirmar2 { 
+    display: flex; 
+    justify-content: end; 
+    margin-right: 30px; 
+}
+
+#instagram, 
+#facebook2 { 
+    width: 430px; 
+    height: 45px; 
+    border-radius: 15px; 
+    border: #535151 solid 1.5px; 
+    margin-top: 0.5rem; 
+    outline: none; 
+    padding: 0px 0px 0px 15px; 
+    margin-left: 35px; 
+}
+
+#instagram::placeholder, 
+#facebook2::placeholder { 
+    font-size: 14px; 
+}
+
+#editarLink, 
+#editarLink2 { 
+    margin-top: 2rem; 
+    background-color: rgba(226, 204, 174, 1); 
+    font-size: 14px; 
+    border-radius: 15px; 
+    width: 130px; 
+    height: 35px; 
+    justify-self: center; 
+    align-self: center; 
+    text-align: center; 
+    border: none; 
+}
+
+#btnn { 
+    width: 7.5rem; 
+    display: inline-block; 
+}
+
+#btnn2 { 
+    width: 180px; 
+    padding: 10px; 
+    display: inline-block; 
+    align-items: center; 
+}
+
+i { 
+    font-size: 23px; 
+}
+
+#dropzinho { 
+    position: absolute; 
+    top: 100%; 
+    right: 0; 
+    display: none; 
+    background: #ECECEC; 
+    border: none; 
+    border-radius: 8px; 
+    padding: 10px; 
+    min-width: 150px; 
+    z-index: 1000; 
+}
+
+.bi-person, 
+.bi-box-arrow-right { 
+    font-size: 1.1rem; 
+}
+
+/* === RESPONSIVIDADE DO DASHBOARD === */
+
+/* Layout para Tablets (2 colunas) */
+@media (max-width: 1024px) {
+}
+
+@media (max-width: 768px) {
+    .map-container {
+        flex-direction: column; 
+        height: auto; 
+        padding: 10px;
+        border: none; 
+    }
+
+    .info { 
+        padding: 5px 8px; 
+        font: 12px/16px Arial, Helvetica, sans-serif;
+        background: white; 
+        background: rgba(255,255,255,0.8); 
+        box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+        border-radius: 5px; 
+    }
+
+    .info h4 { 
+        margin: 0 0 5px; 
+        color: #777; 
+        font-size: 14px;
+    }
+
+    .legend { 
+        text-align: left; 
+        line-height: 16px; 
+        color: #555; 
+        font-size: 12px; 
+        background-color: rgba(255,255,255,0.8); 
+        padding: 8px;     
+        border-radius: 5px;
+    }
+
+    /* Os quadradinhos de cor na legenda */
+    .legend i { 
+        width: 14px;       /* Quadrados de cor menores */
+        height: 14px;      /* Quadrados de cor menores */
+        float: left; 
+        margin-right: 6px; /* Menos espaço entre o quadrado e o texto */
+        opacity: 0.9; 
+    }
+    
+    .filter-panel {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 40px;
+        align-items: center;
+    }
+
+    #mapa {
+        width: 190vh;
+        height: 300vh; 
+    }
+
+    .dashboard-container {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .grafico {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        width: 90%; 
+        height: auto;
+        flex-basis: 100%; /* Garante que ele ocupe a linha inteira */
+    }
+
+    .filter-panel{
+        margin: 0;
+    }
+
+    .card h3 {
+        font-size: 1.3rem;
+    }
+
+    .card p {
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    #caixa-principal,
+    #caixa-principal2 {
+        width: 90%;
+        max-width: 400px;
+    }
+    
+    #instagram,
+    #facebook2 {
+        width: 90%;
+        max-width: 350px;
+    }
+}
+
+/* === MEDIA QUERIES PARA SIDEBAR E HEADER === */
+@media (max-width: 1023px) {
+    .sidebar-expanded #imgheader { 
+        margin-left: 0 !important; 
+        visibility: visible !important; 
+        opacity: 1 !important; 
+        z-index: 800; 
+        position: relative; 
+    }
+    
+    #imgheader { 
+        transition: all 0.3s ease; 
+        z-index: 800; 
+        position: relative; 
+        display: block; 
+        margin: 0 auto; 
+        width: 130px; 
+    }
+    
+    .sidebar-expanded .container-fluid { 
+        padding-left: 0 !important; 
+    }
+    
+    #navbarNav { 
+        background-color: #ECECEC; 
+        border-radius: 15px; 
+        margin-top: 0.4rem; 
+        padding: 15px; 
+        width: 100%; 
+    }
+    
+    #abcd { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: flex-start; 
+        padding-left: 10px; 
+        margin-top: 10px; 
+        width: 100%; 
+        gap: 5px; 
+    }
+    
+    .nav-item { 
+        width: 100%; 
+    }
+    
+    .nav-link { 
+        padding: 8px 0; 
+        display: block; 
+    }
+    
+    .profile-dropdown { 
+        position: relative; 
+        width: 100%; 
+        right: auto; 
+        top: auto; 
+        transform: none; 
+        margin-top: 5px; 
+        display: flex; 
+        justify-content: flex-start; 
+    }
+    
+    .profile-dropdown button { 
+        width: 100%; 
+        text-align: left; 
+        padding: 8px 0; 
+    }
+    
+    #dropzinho { 
+        position: absolute; 
+        top: 100%; 
+        left: 0; 
+        display: none; 
+        background: #ECECEC; 
+        border: none; 
+        border-radius: 8px; 
+        padding: 10px; 
+        width: 150px; 
+        z-index: 1000; 
+        margin-top: 60px; 
+    }
+    
+    .profile-dropdown:hover #dropzinho, 
+    .profile-dropdown:focus-within #dropzinho { 
+        display: block; 
+    }
+    
+    .dropdown-item { 
+        padding: 8px 10px; 
+    }
+    
+    .perfill { 
+        display: flex; 
+        flex-direction: column; 
+    }
+    
+    .header { 
+        animation: none; 
+    }
+    
+    .navbar-collapse { 
+        transition: 0; 
+    }
+    
+    .sidebar-expanded .container-fluid, 
+    .sidebar-expanded .navbar-nav, 
+    .sidebar-expanded #imgheader { 
+        margin-left: 0; 
+        padding-left: 0; 
+    }
+    
+    .bi-list { 
+        display: none; 
+    }
+    
+    .sidebar nav a span { 
+        display: inline; 
+    }
+    
+    .navbar-nav { 
+        gap: 0; 
+    }
+    
+    .page-content { 
+        margin-left: 0; 
+    }
+    
+    #usuario { 
+        font-size: 14px; 
+        text-decoration: none; 
+    }
+    
+    #usuario:hover { 
+        color: black; 
+    }
+    
+    #icone, 
+    #icone2 { 
+        border: none; 
+        outline: none !important; 
+    }
+    
+    #icone:focus, 
+    #icone2:focus { 
+        outline: none; 
+    }
+    
+    .sidebar { 
+        top: 0; 
+        left: -230px; 
+        transition: left 0.3s ease; 
+        width: 230px; 
+        height: 100vh; 
+    }
+    
+    .sidebar.open { 
+        left: 0;
+        height: 100vh; 
+    }
+    
+    .navbar { 
+        background-color: #ffffff; 
+        padding-left: 0.00001rem; 
+        padding-right: 0.00001rem; 
+        height: 50px; 
+    }
+    
+    span { 
+        font-size: 14px; 
+    }
+    
+    #caixa-principal, 
+    #caixa-principal2 { 
+        width: 320px; 
+        height: 22rem; 
+        border-radius: 30px; 
+    }
+    
+    #instagram, 
+    #facebook2 { 
+        width: 250px; 
+        height: 40px; 
+        margin-left: 35px; 
+    }
+    
+    #texto-caixa, 
+    #texto-caixa2, 
+    #texto-caixa3, 
+    #texto-caixa4 { 
+        font-size: 16px; 
+    }
+    
+    #texto-caixa3, 
+    #texto-caixa4 { 
+        font-size: 12px; 
+    }
+    
+    .dropdown-menu { 
+        position: absolute; 
+        top: 50%; 
+        right: 100%; 
+        transform: translateY(-50%); 
+        display: none; 
+        background: #ECECEC; 
+        border: none; 
+        border-radius: 8px; 
+        padding: 10px; 
+        min-width: 150px; 
+        z-index: 1000; 
+    }
+}

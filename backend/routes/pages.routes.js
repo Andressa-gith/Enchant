@@ -57,6 +57,16 @@ pageRouter.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'dashboard.html')); // Garanta que o nome do arquivo está correto
 });
 
+pageRouter.get('/mapa', (req, res) => {
+    console.log(`\n⬆️  Rota /mapa acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'mapa.html')); // Garanta que o nome do arquivo está correto
+});
+
+pageRouter.get('/perfil', (req, res) => {
+    console.log(`\n⬆️  Rota /perfil acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'perfilcomprador.html')); // Garanta que o nome do arquivo está correto
+});
+
 pageRouter.get('/doacao', (req, res) => {
     console.log(`\n⬆️  Rota /doacao acessada.`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'doacao.html')); // Garanta que o nome do arquivo está correto

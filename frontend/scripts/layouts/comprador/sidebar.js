@@ -227,7 +227,7 @@
                                 <i class="bi bi-table"></i>
                                 <span>Dashboard</span>
                             </a>
-                            <a href="/src/views/comprador/mapa.html">
+                            <a href="/mapa">
                                 <i class="bi bi-map"></i>
                                 <span>Mapa</span>
                             </a>
