@@ -166,6 +166,34 @@ body {
     background-color: #f8f9fa;
 }
 
+/* ================ BOTÕES DE VISUALIZAÇÃO DO GRÁFICO ================ */
+.view-filter-group {
+    margin-left: auto; /* Empurra para a direita */
+}
+
+.btn-view-filter {
+    background-color: #f8f9fa;
+    color: var(--text-color);
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem; /* Um pouco menor para caber bem */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.btn-view-filter.active, .btn-view-filter:hover {
+    background-color: var(--primary-dark);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+/* Ajuste no header do gráfico para melhor alinhamento */
+.chart-header {
+    gap: 1rem;
+}
+
 /* ================ SIDEBAR ================ */
 .sidebar-title {
     font-size: 1.25rem;

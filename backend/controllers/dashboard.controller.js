@@ -1,89 +1,125 @@
 // backend/controllers/dashboard.controller.js
 import supabase from '../db/supabaseClient.js';
 
+// Função auxiliar para definir a data de início do filtro
+const getStartDate = (periodo) => {
+    const hoje = new Date();
+    if (periodo === 'ano') return new Date(hoje.getFullYear(), 0, 1).toISOString();
+    if (periodo === '3meses') return new Date(new Date().setMonth(hoje.getMonth() - 3)).toISOString();
+    // Padrão: 'mes'
+    return new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString();
+};
+
 export const getDashboardData = async (req, res) => {
     try {
         const instituicaoId = req.user.id;
         const { periodo = 'mes' } = req.query;
+        const dataInicio = getStartDate(periodo);
 
-        // Define o intervalo de data (sua lógica está ótima)
-        const agora = new Date();
-        let dataInicio = new Date(agora.getFullYear(), agora.getMonth(), 1); // Padrão: Mês
-        if (periodo === 'ano') dataInicio = new Date(agora.getFullYear(), 0, 1);
-        if (periodo === '3meses') dataInicio = new Date(new Date().setMonth(agora.getMonth() - 3)); // Corrigido para 3 meses
-        
-        // --- BUSCAS PARALELAS NO BANCO DE DADOS ---
+        // --- BUSCAS PARALELAS NO BANCO ---
         const [
             { data: dadosInstituicao, error: erroInstituicao },
-            { data: doacoesItens, error: erroItens },
+            { data: doacoesEntradas, error: erroEntradas },
+            { data: doacoesSaidas, error: erroSaidas },
             { data: dadosFinanceiros, error: erroFinanceiro }
         ] = await Promise.all([
             supabase.from('instituicao').select('nome').eq('id', instituicaoId).single(),
-            
-            // AJUSTE 3: Otimizado para buscar apenas as colunas necessárias
-            supabase.from('doacao_entrada')
-                .select('quantidade, doador_origem_texto, data_entrada, categoria:categoria_id(nome)')
-                .eq('instituicao_id', instituicaoId)
-                .gte('data_entrada', dataInicio.toISOString()),
-
-            supabase.from('gestao_financeira')
-                .select('valor_executado')
-                .eq('instituicao_id', instituicaoId)
-                .gte('data_criacao', dataInicio.toISOString())
+            supabase.from('doacao_entrada').select('quantidade, doador_origem_texto, data_entrada, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId).gte('data_entrada', dataInicio),
+            // NOVA BUSCA: Pega as saídas para subtrair do estoque
+            supabase.from('doacao_saida').select('quantidade_retirada, destinatario, data_saida, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId).gte('data_saida', dataInicio),
+            supabase.from('gestao_financeira').select('valor_executado').eq('instituicao_id', instituicaoId).gte('data_criacao', dataInicio)
         ]);
-
-        if (erroInstituicao || erroItens || erroFinanceiro) {
-            throw (erroInstituicao || erroItens || erroFinanceiro);
+        
+        // Melhor tratamento de erros
+        const anyError = erroInstituicao || erroEntradas || erroSaidas || erroFinanceiro;
+        if (anyError) {
+            console.error("Erro Supabase:", anyError);
+            throw new Error(anyError.message);
         }
 
-        // --- CÁLCULO DOS KPIs ---
-        const totaisPorCategoria = doacoesItens.reduce((acc, item) => {
-            const nomeCategoria = item.categoria.nome;
-            acc[nomeCategoria] = (acc[nomeCategoria] || 0) + Number(item.quantidade);
+        // --- CÁLCULO DOS DADOS ---
+        
+        // 1. Totais de ENTRADA por categoria
+        const totaisEntradaPorCategoria = doacoesEntradas.reduce((acc, item) => {
+            const nomeCat = item.categoria.nome;
+            acc[nomeCat] = (acc[nomeCat] || 0) + Number(item.quantidade);
             return acc;
         }, {});
 
-        const kpis = {
-            totalItensRecebidos: doacoesItens.reduce((acc, item) => acc + Number(item.quantidade), 0),
-            totalFinanceiro: dadosFinanceiros.reduce((acc, item) => acc + Number(item.valor_executado), 0),
-            // AJUSTE 2: Filtra "Anônimo" antes de contar os doadores únicos
-            doadoresUnicos: new Set(doacoesItens.map(d => d.doador_origem_texto).filter(d => d.toLowerCase() !== 'anônimo')).size,
-            principalCategoria: Object.keys(totaisPorCategoria).length > 0
-                ? Object.keys(totaisPorCategoria).reduce((a, b) => totaisPorCategoria[a] > totaisPorCategoria[b] ? a : b)
-                : 'Nenhuma',
-        };
-        
-        // --- DADOS PARA O GRÁFICO (TOTAIS POR CATEGORIA) ---
-        const labelsGrafico = Object.keys(totaisPorCategoria);
-        const dataGrafico = Object.values(totaisPorCategoria);
+        // 2. Totais de SAÍDA por categoria
+        const totaisSaidaPorCategoria = doacoesSaidas.reduce((acc, item) => {
+            if (item.entrada && item.entrada.categoria) {
+                const nomeCat = item.entrada.categoria.nome;
+                acc[nomeCat] = (acc[nomeCat] || 0) + Number(item.quantidade_retirada);
+            }
+            return acc;
+        }, {});
 
-        // --- DADOS PARA A SIDEBAR (ATIVIDADES RECENTES) ---
-        const atividadesRecentes = doacoesItens
-            .sort((a, b) => new Date(b.data_entrada) - new Date(a.data_entrada))
-            .slice(0, 5) // Pega os 5 mais recentes
-            .map(item => ({
-                descricao: `Recebido ${item.quantidade} de ${item.categoria.nome}`,
-                doador: item.doador_origem_texto
-            }));
+        // 3. CALCULA O ESTOQUE ATUAL por categoria
+        const estoqueAtualPorCategoria = {};
+        const todasCategorias = new Set([...Object.keys(totaisEntradaPorCategoria), ...Object.keys(totaisSaidaPorCategoria)]);
+        
+        todasCategorias.forEach(cat => {
+            const entradas = totaisEntradaPorCategoria[cat] || 0;
+            const saidas = totaisSaidaPorCategoria[cat] || 0;
+            estoqueAtualPorCategoria[cat] = entradas - saidas;
+        });
+
+        // --- CÁLCULO DOS KPIs ATUALIZADO ---
+        const kpis = {
+            // KPI agora reflete o total de itens EM ESTOQUE no período
+            totalItensEstoque: Object.values(estoqueAtualPorCategoria).reduce((acc, val) => acc + val, 0),
+            totalFinanceiro: dadosFinanceiros.reduce((acc, item) => acc + Number(item.valor_executado), 0),
+            doadoresUnicos: new Set(doacoesEntradas.map(d => d.doador_origem_texto).filter(d => d && d.toLowerCase() !== 'anônimo')).size,
+            // A principal categoria continua sendo baseada no que mais ENTROU
+            principalCategoria: Object.keys(totaisEntradaPorCategoria).length > 0
+                ? Object.keys(totaisEntradaPorCategoria).reduce((a, b) => totaisEntradaPorCategoria[a] > totaisEntradaPorCategoria[b] ? a : b)
+                : '--',
+        };
+
+        // --- ATIVIDADES RECENTES (ENTRADAS E SAÍDAS) ---
+        const atividadesEntrada = doacoesEntradas.map(item => ({
+            tipo: 'entrada',
+            descricao: `<b>${item.quantidade}</b> de <b>${item.categoria.nome}</b> recebido de <i>${item.doador_origem_texto}</i>`,
+            data: new Date(item.data_entrada)
+        }));
+        const atividadesSaida = doacoesSaidas.map(item => ({
+            tipo: 'saida',
+            descricao: `<b>${item.quantidade_retirada}</b> de <b>${item.entrada.categoria.nome}</b> retirado para <i>${item.destinatario || 'Não informado'}</i>`,
+            data: new Date(item.data_saida)
+        }));
+        
+        const atividadesRecentes = [...atividadesEntrada, ...atividadesSaida]
+            .sort((a, b) => b.data - a.data)
+            .slice(0, 7); // Pegar as 7 mais recentes
 
         // --- MONTA A RESPOSTA FINAL ---
         const responseData = {
             boasVindas: dadosInstituicao.nome,
             kpis,
-            // AJUSTE 1 (BUG FIX): Adicionando a contagem de categorias na resposta
-            totaisPorCategoria: totaisPorCategoria, 
-            grafico: {
-                labels: labelsGrafico,
-                data: dataGrafico,
+            // Os cards de totais agora mostram o estoque
+            totaisPorCategoria: estoqueAtualPorCategoria,
+            // Objeto com dados para os dois tipos de gráficos
+            graficos: {
+                estoqueAtual: {
+                    labels: Object.keys(estoqueAtualPorCategoria),
+                    data: Object.values(estoqueAtualPorCategoria)
+                },
+                fluxoDoacoes: {
+                    labels: Array.from(todasCategorias),
+                    datasets: [
+                        { label: 'Entradas', data: Array.from(todasCategorias).map(cat => totaisEntradaPorCategoria[cat] || 0) },
+                        { label: 'Saídas', data: Array.from(todasCategorias).map(cat => totaisSaidaPorCategoria[cat] || 0) }
+                    ]
+                }
             },
-            atividades: atividadesRecentes,
-            // detalhesInstituicao não é usado no JS do frontend, removi para manter limpo
+            atividades: atividadesRecentes
         };
 
         res.status(200).json(responseData);
 
     } catch (error) {
-        console.error("Erro ao buscar dados do dashboard:", error);
+        console.error("❌ Erro ao buscar dados do dashboard:", error);
         res.status(500).json({ message: "Erro interno ao buscar dados do dashboard." });
     }
 };
