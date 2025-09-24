@@ -1,13 +1,12 @@
 import express from 'express';
 import path from 'path';
-import pool from './db/supabaseClient.js'
 import {fileURLToPath} from 'url';
 import pageRoutes from './routes/pages.routes.js';
 import userRoutes from './routes/user.routes.js';
 import statusRoutes from './routes/status.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
-import doacaoRoutes from './routes/registrarDoacao.routes.js'
+import doacaoRoutes from './routes/doacao.routes.js'
 
 const app = express();
 const PORT = 3080;

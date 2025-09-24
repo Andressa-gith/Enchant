@@ -67,4 +67,9 @@ pageRouter.get('/registrar-doacao', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html')); // Garanta que o nome do arquivo está correto
 });
 
+pageRouter.get('/retirar-doacao', (req, res) => {
+    console.log(`\n⬆️  Rota /doacao acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-retirada.html')); // Garanta que o nome do arquivo está correto
+});
+
 export default pageRouter;
