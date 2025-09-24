@@ -469,7 +469,21 @@ h1 {
     margin-left: 10px;
 }
 
+.status-badge.rejected {
+    background: #dc3545; /* Vermelho para Rejeitado */
+    color: white;
+}
 
+.status-badge.review {
+    background: #ffc107; /* Amarelo para Em revisão */
+    color: #333; /* Texto escuro para fundos claros */
+}
+
+/* Ajuste no status 'approved' para ficar mais legível */
+.status-badge.approved {
+    background: #28a745; /* Verde para Aprovado */
+    color: white;
+}
 
 
 .status-published {

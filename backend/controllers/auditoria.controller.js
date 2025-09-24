@@ -70,3 +70,36 @@ export const addAuditoria = async (req, res) => {
         res.status(500).json({ message: 'Erro interno ao adicionar auditoria.', error: error.message });
     }
 };
+
+export const updateAuditoriaStatus = async (req, res) => {
+    try {
+        const instituicaoId = req.user.id;
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ message: 'Novo status não fornecido.' });
+        }
+
+        const { data, error } = await supabase
+            .from('nota_auditoria')
+            .update({ status: status })
+            .eq('id', id)
+            .eq('instituicao_id', instituicaoId) // Garante que o usuário só pode alterar seus próprios registros
+            .select()
+            .single();
+
+        if (error) {
+            if (error.code === 'PGRST116') { // Erro quando nenhum registro é encontrado
+                return res.status(404).json({ message: 'Auditoria não encontrada ou você não tem permissão para alterá-la.' });
+            }
+            throw error;
+        }
+
+        res.status(200).json({ message: 'Status atualizado com sucesso!', data });
+
+    } catch (error) {
+        console.error("Erro ao atualizar status da auditoria:", error);
+        res.status(500).json({ message: 'Erro interno ao atualizar status.', error: error.message });
+    }
+};

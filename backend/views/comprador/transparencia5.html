@@ -100,12 +100,12 @@
         <div class="form-grid1">
           <div class="form-group1">
             <label for="categoria">Categoria *</label>
-            <input type="text" id="categoria" name="categoria" class="form-control1" required
+            <input type="text" id="categoria" name="nome_categoria" class="form-control1" required
               placeholder="Ex: Educação, Saúde, Infraestrutura...">
           </div>
           <div class="form-group1">
             <label for="origemRecurso">Origem do Recurso *</label>
-            <select id="origemRecurso" name="origemRecurso" class="form-control1" required>
+            <select id="origemRecurso" name="origem_recurso" class="form-control1" required>
                 <option value="">Selecione...</option>
                 <option value="Governo Federal">Governo Federal</option>
                 <option value="Governo Estadual">Governo Estadual</option>
@@ -116,12 +116,12 @@
           </div>
           <div class="form-group1">
             <label for="orcamentoPrevisto">Orçamento Previsto (R$) *</label>
-            <input type="number" id="orcamentoPrevisto" name="orcamentoPrevisto" class="form-control1" step="0.01"
+            <input type="number" id="orcamentoPrevisto" name="orcamento_previsto" class="form-control1" step="0.01"
               min="0" required placeholder="0,00">
           </div>
           <div class="form-group1">
             <label for="valorExecutado">Valor Executado (R$) *</label>
-            <input type="number" id="valorExecutado" name="valorExecutado" class="form-control1" step="0.01" min="0"
+            <input type="number" id="valorExecutado" name="valor_executado" class="form-control1" step="0.01" min="0"
               required placeholder="0,00">
           </div>
           <div class="form-group1">
@@ -201,7 +201,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/scripts/comprador/transparencia5.js" defer></script>
+    <script type="module" src="/scripts/comprador/transparencia5.js" defer></script>
 
 
 </body>

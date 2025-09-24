@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scriptTag) scriptTag.type = 'module';
     }
 
-    // Mapeamento dos elementos da UI
     const ui = {
         form: document.getElementById('audits-form'),
         titleInput: document.getElementById('audit-title'),
@@ -25,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedFile = null;
 
-    // --- FUNÇÕES DE VALIDAÇÃO ---
+    // --- VALIDAÇÃO ---
     const validateField = (element, condition, errorMsg, errorElementId) => {
         const errorElement = document.getElementById(errorElementId);
         if (condition) {
@@ -39,22 +38,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
     };
-
     const validateDate = () => {
         const inputDate = new Date(ui.dateInput.value);
         const today = new Date();
         const fiveYearsAgo = new Date();
         fiveYearsAgo.setFullYear(today.getFullYear() - 5);
-        
-        // Zera as horas para comparar apenas as datas
         inputDate.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
         fiveYearsAgo.setHours(0, 0, 0, 0);
-
         const isValid = ui.dateInput.value !== '' && inputDate <= today && inputDate >= fiveYearsAgo;
         return validateField(ui.dateInput, isValid, 'A data deve ser válida, não futura e de no máximo 5 anos atrás.', 'audit-date-error');
     };
-
     const validateForm = () => {
         const isTitleValid = validateField(ui.titleInput, ui.titleInput.value.length >= 10, 'O título deve ter no mínimo 10 caracteres.', 'audit-title-error');
         const isDateValid = validateDate();
@@ -64,13 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return isTitleValid && isDateValid && isTypeValid && isStatusValid && isFileValid;
     };
 
-    // --- LÓGICA DE UPLOAD DE ARQUIVO ---
+    // --- UPLOAD DE ARQUIVO ---
     const handleFileSelection = (file) => {
         if (!file) return;
-
         const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        const maxSize = 20 * 1024 * 1024; // 20MB
-
+        const maxSize = 20 * 1024 * 1024;
         if (!allowedTypes.includes(file.type)) {
             validateField(ui.fileUploadArea, false, 'Formato inválido. Use PDF ou DOC.', 'audit-file-error');
             selectedFile = null;
@@ -81,71 +73,54 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedFile = null;
             return;
         }
-
         selectedFile = file;
         ui.fileUploadText.textContent = `Arquivo: ${file.name}`;
         validateField(ui.fileUploadArea, true, '', 'audit-file-error');
     };
-
     ui.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); ui.fileUploadArea.classList.add('dragover'); });
     ui.fileUploadArea.addEventListener('dragleave', () => ui.fileUploadArea.classList.remove('dragover'));
-    ui.fileUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        ui.fileUploadArea.classList.remove('dragover');
-        handleFileSelection(e.dataTransfer.files[0]);
-    });
+    ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); });
     ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
 
     // --- FUNÇÕES DE API ---
     const loadAudits = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
-
         try {
-            const response = await fetch('/api/auditorias', {
-                headers: { 'Authorization': `Bearer ${session.access_token}` }
-            });
+            const response = await fetch('/api/auditorias', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
             if (!response.ok) throw new Error('Falha ao carregar auditorias.');
-            
             const audits = await response.json();
             renderAudits(audits);
         } catch (error) {
             showAlert('Erro ao carregar as auditorias existentes.');
         }
     };
-    
+
     const submitForm = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         ui.submitBtn.disabled = true;
         ui.submitBtn.textContent = 'Enviando...';
-
         const formData = new FormData();
         formData.append('titulo', ui.titleInput.value);
         formData.append('data_auditoria', ui.dateInput.value);
         formData.append('tipo', ui.typeSelect.value);
         formData.append('status', ui.statusSelect.value);
         formData.append('arquivo_auditoria', selectedFile);
-
         const { data: { session } } = await supabase.auth.getSession();
-
         try {
             const response = await fetch('/api/auditorias', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${session.access_token}` },
                 body: formData,
             });
-
             const result = await response.json();
             if (!response.ok) throw new Error(result.message || 'Erro no servidor.');
-
             showSuccess('Auditoria adicionada com sucesso!');
             ui.form.reset();
             selectedFile = null;
             ui.fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
             loadAudits();
-
         } catch (error) {
             showAlert(error.message);
         } finally {
@@ -153,41 +128,70 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.submitBtn.textContent = 'Adicionar auditoria';
         }
     };
-    
+
+    // NOVA FUNÇÃO para atualizar o status via API
+    const updateStatusInAPI = async (id, newStatus) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        try {
+            const response = await fetch(`/api/auditorias/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Erro ao atualizar status.');
+            showSuccess('Status atualizado!');
+            // Recarrega a lista para garantir consistência
+            loadAudits();
+        } catch (error) {
+            showAlert(error.message);
+            // Se der erro, recarrega a lista para reverter a mudança visual
+            loadAudits();
+        }
+    };
+
     // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
     const showAlert = (message) => {
         ui.alertMessage.textContent = message;
         ui.alertMessage.style.display = 'block';
         setTimeout(() => ui.alertMessage.style.display = 'none', 5000);
     };
-
     const showSuccess = (message) => {
         ui.successMessage.textContent = message;
         ui.successMessage.style.display = 'block';
         setTimeout(() => ui.successMessage.style.display = 'none', 4000);
     };
 
-    const statusMap = {
-        approved: { text: 'Aprovado', class: 'approved' },
-        pending: { text: 'Em andamento', class: 'pending' },
-        rejected: { text: 'Rejeitado', class: 'rejected' }, // Adicione classes CSS para estes se necessário
-        review: { text: 'Em revisão', class: 'review' }
+    const statusOptions = {
+        'Aprovado': 'Aprovado',
+        'Em andamento': 'Em andamento',
+        'Rejeitado': 'Rejeitado',
+        'Em revisão': 'Em revisão'
     };
     
+    // FUNÇÃO DE RENDERIZAÇÃO ATUALIZADA
     const renderAudits = (audits) => {
-        ui.auditsList.innerHTML = '<h3>Auditorias publicadas</h3>'; 
-        
+        ui.auditsList.innerHTML = '<h3>Auditorias publicadas</h3>';
         if (audits.length === 0) {
             ui.auditsList.innerHTML += '<p>Nenhuma auditoria publicada ainda.</p>';
             return;
         }
-        
         const cardsGrid = document.createElement('div');
-        cardsGrid.className = 'audit-cards'; // Usando a classe de grid específica para auditoria
+        cardsGrid.className = 'audit-cards';
 
         audits.forEach(audit => {
             const date = new Date(audit.data_auditoria).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
-            const statusInfo = statusMap[audit.status] || { text: audit.status, class: '' };
+            
+            // Gera as options para o select
+            let optionsHTML = '';
+            for (const [value, text] of Object.entries(statusOptions)) {
+                const isSelected = value === audit.status ? 'selected' : '';
+                optionsHTML += `<option value="${value}" ${isSelected}>${text}</option>`;
+            }
 
             const card = document.createElement('div');
             card.className = 'audit-card';
@@ -197,7 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="audit-date">Data da auditoria: <strong>${date}</strong></span>
                     <div class="audit-status">
                         <span class="status-label">Status:</span>
-                        <span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>
+                        <select class="form-select form-select-sm status-select" data-id="${audit.id}">
+                            ${optionsHTML}
+                        </select>
                     </div>
                 </div>
                 <div class="audit-actions">
@@ -211,10 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.auditsList.appendChild(cardsGrid);
     };
 
-    // --- DELEGAÇÃO DE EVENTOS PARA DOWNLOAD ---
+    // --- DELEGAÇÃO DE EVENTOS ---
     ui.auditsList.addEventListener('click', async (e) => {
         const downloadBtn = e.target.closest('.download-btn');
-
         if (downloadBtn) {
             const filePath = downloadBtn.dataset.path;
             const { data, error } = await supabase.storage.from('audit').download(filePath);
@@ -230,6 +235,15 @@ document.addEventListener('DOMContentLoaded', () => {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+    });
+
+    // NOVO EVENT LISTENER para a mudança de status
+    ui.auditsList.addEventListener('change', (e) => {
+        if (e.target.classList.contains('status-select')) {
+            const auditId = e.target.dataset.id;
+            const newStatus = e.target.value;
+            updateStatusInAPI(auditId, newStatus);
         }
     });
 

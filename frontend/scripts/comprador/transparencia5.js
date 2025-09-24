@@ -1,400 +1,221 @@
-let budgetData = [];
-let originChart = null;
-let destinationChart = null;
+import supabase from '/scripts/supabaseClient.js';
 
-// Initialize charts
-function initializeCharts() {
-    const originCanvas = document.getElementById('originChart');
-    const destinationCanvas = document.getElementById('destinationChart');
-
-    if (!originCanvas || !destinationCanvas) {
-        console.error('Chart canvases not found');
-        return;
+document.addEventListener('DOMContentLoaded', () => {
+    // Garante que o script seja um módulo
+    if (!document.querySelector('script[src="/scripts/comprador/transparencia5.js"][type="module"]')) {
+        const scriptTag = document.querySelector('script[src="/scripts/comprador/transparencia5.js"]');
+        if (scriptTag) scriptTag.type = 'module';
     }
 
-    const originCtx = originCanvas.getContext('2d');
-    originChart = new Chart(originCtx, {
-        type: 'doughnut',
-        data: {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: [
-                    '#8B4513',  // 1ª fatia - Marrom (cor principal do tema)
-                    '#CD853F',  // 2ª fatia - Peru
-                    '#D2691E',  // 3ª fatia - Chocolate
-                    '#A0522D',  // 4ª fatia - Sienna
-                    '#DEB887',  // 5ª fatia - Burlywood
-                    '#F4A460'
-                ],
-                borderWidth: 3,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed.toFixed(1);
-                            return `${label}: ${value}% de execução`;
-                        }
-                    }
-                }
-            }
-        }
-    });
+    const ui = {
+        form: document.getElementById('categoryForm'),
+        tableBody: document.getElementById('budgetTableBody'),
+        originChartCanvas: document.getElementById('originChart').getContext('2d'),
+        destinationChartCanvas: document.getElementById('destinationChart').getContext('2d'),
+    };
 
-    const destinationCtx = document.getElementById('destinationChart').getContext('2d');
-    destinationChart = new Chart(destinationCtx, {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Valor Executado (R$)',
-                data: [],
-                backgroundColor: '#CD853F',
-                borderColor: '#5a67d8',
-                borderWidth: 2,
-                borderRadius: 8,
-                borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.label}: R$ ${context.parsed.y.toLocaleString('pt-BR')}`;
-                        }
-                    }
-                }
+    let originChart = null;
+    let destinationChart = null;
+    let allFinancialData = [];
+
+    const chartColors = ['#72330f', '#e2ccae', '#3d2106', '#EADBC8', '#694E4E'];
+
+    const updateCharts = () => {
+        const originData = allFinancialData.reduce((acc, item) => {
+            acc[item.origem_recurso] = (acc[item.origem_recurso] || 0) + parseFloat(item.orcamento_previsto);
+            return acc;
+        }, {});
+
+        if (originChart) originChart.destroy();
+        originChart = new Chart(ui.originChartCanvas, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(originData),
+                datasets: [{ data: Object.values(originData), backgroundColor: chartColors, borderColor: '#fff', borderWidth: 2 }]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#f0f0f0'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return 'R$ ' + value.toLocaleString('pt-BR');
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        const destinationData = allFinancialData.reduce((acc, item) => {
+            acc[item.nome_categoria] = (acc[item.nome_categoria] || 0) + parseFloat(item.valor_executado);
+            return acc;
+        }, {});
+        
+        if (destinationChart) destinationChart.destroy();
+        destinationChart = new Chart(ui.destinationChartCanvas, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(destinationData),
+                datasets: [{ label: 'Valor Executado (R$)', data: Object.values(destinationData), backgroundColor: chartColors[0], borderRadius: 4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+        });
+    };
+    
+    const formatCurrency = (value) => `R$ ${parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    
+    // Objeto com as opções de status para o <select>
+    const statusOptions = {
+        'Planejado': 'Planejado',
+        'Pendente': 'Pendente',
+        'Executado': 'Executado'
+    };
+
+    const renderTable = () => {
+        ui.tableBody.innerHTML = '';
+        if (allFinancialData.length === 0) {
+            ui.tableBody.innerHTML = `<tr><td colspan="7" class="no-data1">Nenhuma categoria adicionada para este ano.</td></tr>`;
+            return;
+        }
+
+        allFinancialData.forEach(item => {
+            const orcamento = parseFloat(item.orcamento_previsto);
+            const executado = parseFloat(item.valor_executado);
+            const percentual = orcamento > 0 ? ((executado / orcamento) * 100).toFixed(1) : '0.0';
+            
+            // Gera as opções de status para o dropdown
+            let optionsHTML = '';
+            for (const [value, text] of Object.entries(statusOptions)) {
+                const isSelected = value === item.status ? 'selected' : '';
+                optionsHTML += `<option value="${value}" ${isSelected}>${text}</option>`;
             }
-        }
-    });
-}
 
-// Update charts based on current data
-function updateCharts() {
-    if (!originChart || !destinationChart) {
-        console.warn('Charts not initialized yet');
-        return;
-    }
-
-    // Update origin chart (based on execution percentage by origin)
-    const originData = {};
-    const originTotals = {};
-
-    // Calculate totals and executed values by origin
-    budgetData.forEach(item => {
-        const origem = item.origem;
-        const orcamento = parseFloat(item.orcamentoPrevisto);
-        const executado = parseFloat(item.valorExecutado);
-
-        if (!originTotals[origem]) {
-            originTotals[origem] = { orcamento: 0, executado: 0 };
-        }
-
-        originTotals[origem].orcamento += orcamento;
-        originTotals[origem].executado += executado;
-    });
-
-    // Calculate execution percentage for each origin
-    Object.keys(originTotals).forEach(origem => {
-        const total = originTotals[origem];
-        originData[origem] = total.orcamento > 0 ? (total.executado / total.orcamento * 100) : 0;
-    });
-
-    originChart.data.labels = Object.keys(originData);
-    originChart.data.datasets[0].data = Object.values(originData);
-    originChart.update();
-
-    // Update destination chart (based on accumulated executed values by category)
-    const categoryTotals = {};
-
-    // Accumulate values for same categories
-    budgetData.forEach(item => {
-        const categoria = item.categoria;
-        const executado = parseFloat(item.valorExecutado);
-
-        if (!categoryTotals[categoria]) {
-            categoryTotals[categoria] = 0;
-        }
-
-        categoryTotals[categoria] += executado;
-    });
-
-    const categories = Object.keys(categoryTotals);
-    const executedValues = Object.values(categoryTotals);
-
-    destinationChart.data.labels = categories;
-    destinationChart.data.datasets[0].data = executedValues;
-    destinationChart.update();
-}
-
-// Update budget table with mobile responsive support
-function updateBudgetTable() {
-    const tbody = document.getElementById('budgetTableBody');
-    const isMobile = window.innerWidth <= 480;
-    
-    if (budgetData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="no-data1">Nenhuma categoria adicionada ainda. Use o formulário acima para adicionar dados.</td></tr>';
-        return;
-    }
-
-    if (isMobile) {
-        // Create mobile card layout
-        const tableContainer = document.querySelector('.budget-table1').parentElement;
-        let mobileContainer = tableContainer.querySelector('.budget-table-mobile1');
-        
-        if (!mobileContainer) {
-            mobileContainer = document.createElement('div');
-            mobileContainer.className = 'budget-table-mobile1';
-            mobileContainer.style.display = 'none';
-            tableContainer.appendChild(mobileContainer);
-        }
-        
-        mobileContainer.innerHTML = budgetData.map((item, index) => {
-            const orcamentoPrevisto = parseFloat(item.orcamentoPrevisto);
-            const valorExecutado = parseFloat(item.valorExecutado);
-            const execucaoPercent = orcamentoPrevisto > 0 ? (valorExecutado / orcamentoPrevisto * 100).toFixed(1) : 0;
-            
-            return `
-                <div class="table-card1">
-                    <div class="card-header1">
-                        <div class="category1">${item.categoria}</div>
-                        <span class="status-badge1 status-${item.status.toLowerCase()}1">${item.status}</span>
-                    </div>
-                    <div class="card-body1">
-                        <div class="field1">
-                            <span class="field-label1">Origem:</span>
-                            <span class="field-value1">${item.origem}</span>
-                        </div>
-                        <div class="field1">
-                            <span class="field-label1">Orçamento:</span>
-                            <span class="field-value1">R$ ${orcamentoPrevisto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                        </div>
-                        <div class="field1">
-                            <span class="field-label1">Executado:</span>
-                            <span class="field-value1">R$ ${valorExecutado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                        </div>
-                        <div class="field1">
-                            <span class="field-label1">% Execução:</span>
-                            <span class="field-value1">${execucaoPercent}%</span>
-                        </div>
-                    </div>
-                    <div class="actions1">
-                        <button class="editinho1" onclick="editCategory(${index})">Editar</button>
-                        <button class="exclusivo1" onclick="removeCategory(${index})">Remover</button>
-                    </div>
-                </div>
+            const row = document.createElement('tr');
+            row.dataset.id = item.id;
+            row.innerHTML = `
+                <td class="category1">${item.nome_categoria}</td>
+                <td>${item.origem_recurso}</td>
+                <td>${formatCurrency(orcamento)}</td>
+                <td class="valor-executado-cell">${formatCurrency(executado)}</td>
+                <td class="percentual-cell">${percentual}%</td>
+                <td>
+                    <select class="form-control1 status-select-financeiro" data-id="${item.id}">
+                        ${optionsHTML}
+                    </select>
+                </td>
+                <td class="actions-cell1">
+                    <button class="editinho1" data-id="${item.id}">Editar Valor</button>
+                </td>
             `;
-        }).join('');
-        
-        // Show mobile version and hide table
-        document.querySelector('.budget-table1').style.display = 'none';
-        mobileContainer.style.display = 'block';
-    } else {
-        // Regular table layout
-        const mobileContainer = document.querySelector('.budget-table-mobile1');
-        if (mobileContainer) {
-            mobileContainer.style.display = 'none';
-        }
-        
-        document.querySelector('.budget-table1').style.display = 'table';
-        
-        tbody.innerHTML = budgetData.map((item, index) => {
-            const orcamentoPrevisto = parseFloat(item.orcamentoPrevisto);
-            const valorExecutado = parseFloat(item.valorExecutado);
-            const execucaoPercent = orcamentoPrevisto > 0 ? (valorExecutado / orcamentoPrevisto * 100).toFixed(1) : 0;
-            
-            return `
-                <tr>
-                    <td class="category1" data-label="Categoria:">${item.categoria}</td>
-                    <td data-label="Origem:">${item.origem}</td>
-                    <td data-label="Orçamento Previsto:">R$ ${orcamentoPrevisto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                    <td data-label="Valor Executado:">R$ ${valorExecutado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                    <td data-label="% Execução:">${execucaoPercent}%</td>
-                    <td data-label="Status:"><span class="status-badge1 status-${item.status.toLowerCase()}1">${item.status}</span></td>
-                    <td class="actions-cell1" data-label="Ações:">
-                        <button class="editinho1" onclick="editCategory(${index})">Editar</button>
-                        <button class="exclusivo1" onclick="removeCategory(${index})">Remover</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-}
+            ui.tableBody.appendChild(row);
+        });
+    };
 
-// Add new category
-function addCategory(categoryData) {
-    budgetData.push(categoryData);
-    updateBudgetTable();
-    updateCharts();
-}
+    const loadFinancialData = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
 
-// Edit category
-function editCategory(index) {
-    const item = budgetData[index];
-    
-    // Fill form with existing data
-    document.getElementById('categoria').value = item.categoria;
-    document.getElementById('origemRecurso').value = item.origem;
-    document.getElementById('orcamentoPrevisto').value = item.orcamentoPrevisto;
-    document.getElementById('valorExecutado').value = item.valorExecutado;
-    document.getElementById('status').value = item.status;
-    
-    // Change form button to update mode
-    const form = document.getElementById('categoryForm');
-    const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.textContent = 'Atualizar Categoria';
-    submitBtn.className = 'primeirinho1';
-    
-    // Store the index being edited
-    form.dataset.editIndex = index;
-    
-    // Scroll to form
-    form.scrollIntoView({ behavior: 'smooth' });
-}
+        try {
+            const response = await fetch('/api/financeiro', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
+            if (!response.ok) throw new Error('Falha ao carregar dados financeiros.');
+            allFinancialData = await response.json();
+            renderTable();
+            updateCharts();
+        } catch (error) { console.error(error); }
+    };
 
-// Update existing category
-function updateCategory(index, categoryData) {
-    budgetData[index] = categoryData;
-    updateBudgetTable();
-    updateCharts();
-}
-
-// Remove category
-function removeCategory(index) {
-    if (confirm('Tem certeza que deseja remover esta categoria?')) {
-        budgetData.splice(index, 1);
-        updateBudgetTable();
-        updateCharts();
-    }
-}
-
-// Handle window resize for responsive table
-function handleResize() {
-    updateBudgetTable();
-}
-
-// Form submission
-const categoryForm = document.getElementById('categoryForm');
-if (categoryForm) {
-    categoryForm.addEventListener('submit', function(e) {
+    const addCategory = async (e) => {
         e.preventDefault();
+        const formData = new FormData(e.target);
+        const newCategory = Object.fromEntries(formData.entries());
+        const { data: { session } } = await supabase.auth.getSession();
+        try {
+            const response = await fetch('/api/financeiro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+                body: JSON.stringify(newCategory),
+            });
+            if (!response.ok) throw new Error('Erro ao adicionar categoria.');
+            e.target.reset();
+            loadFinancialData();
+        } catch (error) { console.error(error); }
+    };
 
-        const formData = new FormData(this);
+    const updateExecutedValue = async (id, newValue) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        try {
+            const response = await fetch(`/api/financeiro/${id}/valor-executado`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+                body: JSON.stringify({ valor_executado: newValue })
+            });
+            if (!response.ok) throw new Error('Falha ao atualizar valor.');
+            const updatedItem = await response.json();
+            const itemIndex = allFinancialData.findIndex(item => item.id == id);
+            if (itemIndex > -1) allFinancialData[itemIndex] = updatedItem.data;
+            updateRowInTable(id);
+            updateCharts();
+        } catch (error) { console.error(error); }
+    };
 
-        // Validate that executed value doesn't exceed planned budget
-        const orcamentoPrevisto = parseFloat(formData.get('orcamentoPrevisto'));
-        const valorExecutado = parseFloat(formData.get('valorExecutado'));
-
-        if (valorExecutado > orcamentoPrevisto) {
-            if (!confirm('O valor executado é maior que o orçamento previsto. Deseja continuar?')) {
-                return;
-            }
+    // NOVA FUNÇÃO para atualizar o status
+    const updateStatus = async (id, newStatus) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        try {
+            const response = await fetch(`/api/financeiro/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+                body: JSON.stringify({ status: newStatus })
+            });
+             if (!response.ok) throw new Error('Falha ao atualizar status.');
+            
+            // Atualiza o dado localmente e recarrega os gráficos
+            const itemIndex = allFinancialData.findIndex(item => item.id == id);
+            if (itemIndex > -1) allFinancialData[itemIndex].status = newStatus;
+            updateCharts();
+        } catch (error) {
+            console.error(error);
+            loadFinancialData(); // Recarrega tudo em caso de erro
         }
+    };
+    
+    const updateRowInTable = (id) => {
+        const row = ui.tableBody.querySelector(`tr[data-id='${id}']`);
+        const item = allFinancialData.find(d => d.id == id);
+        if (!row || !item) return;
+        const orcamento = parseFloat(item.orcamento_previsto);
+        const executado = parseFloat(item.valor_executado);
+        const percentual = orcamento > 0 ? ((executado / orcamento) * 100).toFixed(1) : '0.0';
+        row.querySelector('.valor-executado-cell').textContent = formatCurrency(executado);
+        row.querySelector('.percentual-cell').textContent = `${percentual}%`;
+    };
 
-        const categoryData = {
-            categoria: formData.get('categoria'),
-            origem: formData.get('origemRecurso'),
-            orcamentoPrevisto: formData.get('orcamentoPrevisto'),
-            valorExecutado: formData.get('valorExecutado'),
-            status: formData.get('status')
+    const handleEditClick = (e) => {
+        const button = e.target.closest('.editinho1');
+        if (!button) return;
+        const id = button.dataset.id;
+        const row = button.closest('tr');
+        const cell = row.querySelector('.valor-executado-cell');
+        const currentTextValue = cell.textContent;
+        const currentValue = parseFloat(currentTextValue.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
+        cell.innerHTML = `<input type="number" class="form-control1" value="${currentValue}" step="0.01" min="0">`;
+        const input = cell.querySelector('input');
+        input.focus();
+        input.select();
+        const saveChanges = () => {
+            const newValue = input.value;
+            cell.innerHTML = formatCurrency(newValue);
+            updateExecutedValue(id, newValue);
         };
+        input.addEventListener('blur', saveChanges);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') input.blur();
+            else if (e.key === 'Escape') cell.innerHTML = currentTextValue;
+        });
+    };
 
-        const editIndex = this.dataset.editIndex;
-
-        if (editIndex !== undefined) {
-            // Update existing category
-            updateCategory(parseInt(editIndex), categoryData);
-            delete this.dataset.editIndex;
-
-            // Reset button to add mode
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.textContent = 'Adicionar Categoria';
-            submitBtn.className = 'primeirinho1';
-        } else {
-            // Add new category
-            addCategory(categoryData);
+    // --- EVENT LISTENERS ---
+    ui.form.addEventListener('submit', addCategory);
+    ui.tableBody.addEventListener('click', handleEditClick);
+    
+    // NOVO EVENT LISTENER para a mudança de status
+    ui.tableBody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('status-select-financeiro')) {
+            const id = e.target.dataset.id;
+            const newStatus = e.target.value;
+            updateStatus(id, newStatus);
         }
-
-        // Reset form
-        this.reset();
-
-        // Show success message
-        const btn = this.querySelector('button[type="submit"]');
-        const originalText = btn.textContent;
-        const isUpdate = editIndex !== undefined;
-        btn.textContent = isUpdate ? 'Categoria Atualizada!' : 'Categoria Adicionada!';
-        btn.className = 'primeirinho1';
-
-        setTimeout(() => {
-            btn.textContent = 'Adicionar Categoria';
-            btn.className = 'primeirinho1';
-        }, 2000);
     });
-} else {
-    console.error('Category form not found');
-}
 
-// Initialize everything when page loads
-function initPage() {
-    initializeCharts();
-    updateBudgetTable();
-
-    // Add resize listener for responsive table
-    window.addEventListener('resize', handleResize);
-
-    // Wrap table in container for better mobile scrolling if not already wrapped
-    const table = document.querySelector('.budget-table1');
-    if (table && !table.closest('.table-container1')) {
-        const container = document.createElement('div');
-        container.className = 'table-container1';
-        table.parentNode.insertBefore(container, table);
-        container.appendChild(table);
-    }
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPage);
-} else {
-    initPage();
-}
+    loadFinancialData();
+});

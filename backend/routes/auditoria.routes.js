@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getAuditorias, addAuditoria } from '../controllers/auditoria.controller.js';
+import { getAuditorias, addAuditoria, updateAuditoriaStatus } from '../controllers/auditoria.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const auditoriaRouter = express.Router();
@@ -16,5 +16,7 @@ const upload = multer({
 auditoriaRouter.get('/', protegerRota, getAuditorias);
 // O 'arquivo_auditoria' deve ser o mesmo nome usado no FormData do frontend
 auditoriaRouter.post('/', protegerRota, upload.single('arquivo_auditoria'), addAuditoria);
+
+auditoriaRouter.patch('/:id/status', protegerRota, updateAuditoriaStatus);
 
 export default auditoriaRouter;
