@@ -235,10 +235,6 @@
                                 <i class="bi bi-box"></i>
                                 <span>Doação</span>
                             </a>
-                            <a href="/src/views/comprador/pontosdecoleta.html">
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <span>Pontos de coleta</span>
-                            </a>
                             <a href="/src/views/comprador/historicodoacoes.html">
                                 <i class="bi bi-journal"></i>
                                 <span>Histórico de doação</span>

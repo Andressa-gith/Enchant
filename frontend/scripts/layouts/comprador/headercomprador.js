@@ -283,10 +283,6 @@
                                 </div>
                             </div>
                             <div class="right-section">
-                                <nav class="desktop-nav">
-                                    <a href="/src/views/comprador/quemsomos2.html">Quem somos?</a>
-                                    <a href="/src/views/comprador/saibamais2.html">Saiba mais</a>
-                                </nav>
                                 <div class="profile-section">
                                     <button class="profile-button" id="profileButton">
                                         <img id="profilePhoto" class="profile-photo" src="" alt="Foto do Usuário">
