@@ -7,9 +7,12 @@ import statusRoutes from './routes/status.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import doacaoRoutes from './routes/doacao.routes.js'
+import relatorioRoutes from './routes/relatorio.routes.js';
+import contratoRoutes from './routes/contrato.routes.js';
+import auditoriaRoutes from './routes/auditoria.routes.js';
 
 const app = express();
-const PORT = 6969;
+const PORT = 3080;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,6 +32,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
 app.use('/api/doacao', doacaoRoutes);
+
+app.use('/api/relatorios', relatorioRoutes);
+
+app.use('/api/contratos', contratoRoutes);
+
+app.use('/api/auditorias', auditoriaRoutes);
 
 app.listen(PORT, () => {
     console.log(`✅  Server is running in http://localhost:${PORT}`);

@@ -54,7 +54,12 @@ pageRouter.get('/redefinir-senha', (req, res) => {
 
 pageRouter.get('/dashboard', (req, res) => {
     console.log(`\n⬆️  Rota /dashboard acessada.`);
-    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'dashboard.html')); // Garanta que o nome do arquivo está correto
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'dashboard.html'));
+});
+
+pageRouter.get('/mapa', (req, res) => {
+    console.log(`\n⬆️  Rota /mapa acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'mapa.html')); // Garanta que o nome do arquivo está correto
 });
 
 pageRouter.get('/mapa', (req, res) => {
@@ -69,17 +74,52 @@ pageRouter.get('/perfil', (req, res) => {
 
 pageRouter.get('/doacao', (req, res) => {
     console.log(`\n⬆️  Rota /doacao acessada.`);
-    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'doacao.html')); // Garanta que o nome do arquivo está correto
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'doacao.html'));
 });
 
 pageRouter.get('/registrar-doacao', (req, res) => {
-    console.log(`\n⬆️  Rota /doacao acessada.`);
-    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html')); // Garanta que o nome do arquivo está correto
+    console.log(`\n⬆️  Rota /registrar-doacao acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html'));
 });
 
 pageRouter.get('/retirar-doacao', (req, res) => {
-    console.log(`\n⬆️  Rota /doacao acessada.`);
-    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-retirada.html')); // Garanta que o nome do arquivo está correto
+    console.log(`\n⬆️  Rota /retirar-doacao acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-retirada.html'));
+});
+
+pageRouter.get('/transparencia/relatorios', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia/relatorios acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'transparencia1.html'));
+});
+
+pageRouter.get('/transparencia/contratos', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia/contratos acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'transparencia2.html'));
+});
+
+pageRouter.get('/transparencia/notas-auditoria', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia/notas-auditoria acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'transparencia3.html'));
+});
+
+pageRouter.get('/transparencia/documentos-comprobatorios', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia/documentos-comprobatorios acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'transparencia4.html'));
+});
+
+pageRouter.get('/transparencia/gestao-financeira', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia/gestao-financeira acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'transparencia5.html'));
+});
+
+pageRouter.get('/transparencia/parcerias', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia/parcerias acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'transparencia6.html'));
+});
+
+pageRouter.get('/perfil', (req, res) => {
+    console.log(`\n⬆️  Rota /perfil acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'perfilcomprador.html')); // Garanta que o nome do arquivo está correto
 });
 
 export default pageRouter;

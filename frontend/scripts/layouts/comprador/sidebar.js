@@ -239,7 +239,7 @@
                                 <i class="bi bi-journal"></i>
                                 <span>Histórico de doação</span>
                             </a>
-                            <a href="/src/views/comprador/transparencia1.html">
+                            <a href="/transparencia/relatorios">
                                 <i class="bi bi-search"></i>
                                 <span>Transparência</span>
                             </a>
