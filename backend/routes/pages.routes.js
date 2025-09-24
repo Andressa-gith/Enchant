@@ -122,4 +122,9 @@ pageRouter.get('/perfil', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'perfilcomprador.html')); // Garanta que o nome do arquivo está correto
 });
 
+pageRouter.get('/historico-doacoes', (req, res) => {
+    console.log(`\n⬆️  Rota /historico-doacoes acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'historico-doacoes.html')); // Garanta que o nome do arquivo está correto
+});
+
 export default pageRouter;
