@@ -21,23 +21,27 @@ export const getDashboardData = async (req, res) => {
             { data: dadosInstituicao, error: erroInstituicao },
             { data: doacoesEntradas, error: erroEntradas },
             { data: doacoesSaidas, error: erroSaidas },
-            { data: dadosFinanceiros, error: erroFinanceiro }
+            // ALTERADO: Renomeado para 'gastosFinanceiros' para maior clareza
+            { data: gastosFinanceiros, error: erroGastos },
+            // NOVO: Adicionada a busca por receitas de doações financeiras
+            { data: recibosDoacao, error: erroRecibos }
         ] = await Promise.all([
             supabase.from('instituicao').select('nome').eq('id', instituicaoId).single(),
             supabase.from('doacao_entrada').select('quantidade, doador_origem_texto, data_entrada, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId).gte('data_entrada', dataInicio),
-            // NOVA BUSCA: Pega as saídas para subtrair do estoque
             supabase.from('doacao_saida').select('quantidade_retirada, destinatario, data_saida, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId).gte('data_saida', dataInicio),
-            supabase.from('gestao_financeira').select('valor_executado').eq('instituicao_id', instituicaoId).gte('data_criacao', dataInicio)
+            supabase.from('gestao_financeira').select('valor_executado').eq('instituicao_id', instituicaoId).gte('data_criacao', dataInicio),
+            // NOVA CONSULTA para buscar o valor dos 'Recibos de doação'
+            supabase.from('documento_comprobatorio').select('valor').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Recibo de doação').gte('data_criacao', dataInicio)
         ]);
         
         // Melhor tratamento de erros
-        const anyError = erroInstituicao || erroEntradas || erroSaidas || erroFinanceiro;
+        const anyError = erroInstituicao || erroEntradas || erroSaidas || erroGastos || erroRecibos;
         if (anyError) {
             console.error("Erro Supabase:", anyError);
             throw new Error(anyError.message);
         }
 
-        // --- CÁLCULO DOS DADOS ---
+        // --- CÁLCULO DOS ITENS FÍSICOS (ESTOQUE) ---
         
         // 1. Totais de ENTRADA por categoria
         const totaisEntradaPorCategoria = doacoesEntradas.reduce((acc, item) => {
@@ -66,12 +70,17 @@ export const getDashboardData = async (req, res) => {
         });
 
         // --- CÁLCULO DOS KPIs ATUALIZADO ---
+
+        // NOVO: Lógica para calcular o saldo financeiro
+        const totalReceitas = recibosDoacao.reduce((acc, item) => acc + Number(item.valor), 0);
+        const totalGastos = gastosFinanceiros.reduce((acc, item) => acc + Number(item.valor_executado), 0);
+        const saldoFinanceiro = totalReceitas - totalGastos;
+
         const kpis = {
-            // KPI agora reflete o total de itens EM ESTOQUE no período
             totalItensEstoque: Object.values(estoqueAtualPorCategoria).reduce((acc, val) => acc + val, 0),
-            totalFinanceiro: dadosFinanceiros.reduce((acc, item) => acc + Number(item.valor_executado), 0),
+            // ALTERADO: Agora usa o saldo calculado
+            totalFinanceiro: saldoFinanceiro,
             doadoresUnicos: new Set(doacoesEntradas.map(d => d.doador_origem_texto).filter(d => d && d.toLowerCase() !== 'anônimo')).size,
-            // A principal categoria continua sendo baseada no que mais ENTROU
             principalCategoria: Object.keys(totaisEntradaPorCategoria).length > 0
                 ? Object.keys(totaisEntradaPorCategoria).reduce((a, b) => totaisEntradaPorCategoria[a] > totaisEntradaPorCategoria[b] ? a : b)
                 : '--',
@@ -97,9 +106,7 @@ export const getDashboardData = async (req, res) => {
         const responseData = {
             boasVindas: dadosInstituicao.nome,
             kpis,
-            // Os cards de totais agora mostram o estoque
             totaisPorCategoria: estoqueAtualPorCategoria,
-            // Objeto com dados para os dois tipos de gráficos
             graficos: {
                 estoqueAtual: {
                     labels: Object.keys(estoqueAtualPorCategoria),
