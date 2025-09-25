@@ -12,12 +12,12 @@
     <link rel="stylesheet" href="/styles/global.css">
     
     <!--FAZER A HEADER E O SUPABASE FUNFAR-->
-    <script src="/scripts/layouts/comprador/sidebar.js" type="module"></script>
-    <script src="/scripts/layouts/comprador/headercomprador.js" type="module"></script>
-    <script src="/scripts/comprador/perfilcomprador.js" defer></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/scripts/supabaseClient.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="/scripts/supabaseClient.js" type="module" defer></script>
+    <script src="/scripts/authGuard.js" type="module" defer></script>
+    <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
+    <script src="/scripts/layouts/comprador/headercomprador.js" type="module" defer></script>
+    <script src="/scripts/comprador/perfilcomprador.js" type="module" defer></script>
 
 </head>
 <body>
@@ -29,7 +29,7 @@
             <div class="profile-header1">
                 <div class="profile-pic1" id="profile-pic">
                     <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjIwIiB5PSIyNCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Gb3RvPC90ZXh0Pgo8L3N2Zz4K" alt="Foto de perfil" id="profile-image">
-                    <div class="edit-overlay1" onclick="openPhotoModal()">Editar</div>
+                    <div class="edit-overlay1" id="btn-open-photo-modal">Editar</div>
                 </div>
                 <div class="profile-name1">
                     <h2 id="org-name">Nome do Comprador</h2>
@@ -41,7 +41,7 @@
         <div class="profile-card1">
             <div class="section-title1">
                 <span>Logo da Organização</span>
-                <button class="edit-button1" onclick="openLogoModal()">Editar Logo</button>
+                <button class="edit-button1" id="btn-open-logo-modal">Editar Logo</button>
             </div>
             
             <div class="logo-display">
@@ -62,7 +62,7 @@
         <div class="profile-card1">
             <div class="section-title1">
                 <span>Informações pessoais</span>
-                <button class="edit-button1" onclick="openEditModal()">Editar</button>
+                <button class="edit-button1" id="btn-open-edit-modal">Editar</button>
             </div>
             
             <div class="info-grid1">
@@ -110,11 +110,11 @@
 
         <!-- Footer com links para políticas -->
         <div class="footer-buttons">
-            <button class="footer-button" onclick="openPrivacyModal()">
+            <button class="footer-button" id="btn-open-privacy-modal">
                 <i class="bi bi-shield-check"></i>
                 Política de Privacidade
             </button>
-            <button class="footer-button" onclick="openTermsModal()">
+            <button class="footer-button" id="btn-open-terms-modal">
                 <i class="bi bi-file-text"></i>
                 Termos de Serviço
             </button>
@@ -144,7 +144,7 @@
         <div class="modal-content1">
             <div class="modal-header1">
                 <h3>Editar informações</h3>
-                <button class="close-modal1" onclick="closeEditModal()">&times;</button>
+                <button class="close-modal1" id="btn-close-edit-modal-x">&times;</button>
             </div>
             <div class="form-group1">
                 <label for="edit-institution-name">Nome da ONG</label>
@@ -190,8 +190,8 @@
                 <input type="text" id="edit-cidade">
             </div>
             <div class="modal-footer1">
-                <button type="button" class="cancel-button1" onclick="closeEditModal()">Cancelar</button>
-                <button type="button" class="save-button1" onclick="saveChanges()">Salvar</button>
+                <button type="button" class="cancel-button1" id="btn-cancel-edit-modal">Cancelar</button>
+                <button type="button" class="save-button1" id="btn-save-changes">Salvar</button>
             </div>
         </div>
     </div>
@@ -201,7 +201,7 @@
         <div class="modal-content1">
             <div class="modal-header1">
                 <h3>Alterar foto</h3>
-                <button class="close-modal1" onclick="closePhotoModal()">&times;</button>
+                <button class="close-modal1" id="btn-close-photo-modal-x">&times;</button>
             </div>
             
             <div class="form-group1">
@@ -210,8 +210,8 @@
             </div>
 
             <div class="modal-footer1">
-                <button type="button" class="cancel-button1" onclick="closePhotoModal()">Cancelar</button>
-                <button type="button" class="save-button1" onclick="savePhoto()">Salvar</button>
+                <button type="button" class="cancel-button1" id="btn-cancel-photo-modal">Cancelar</button>
+                <button type="button" class="save-button1" id="btn-save-photo">Salvar</button>
             </div>
         </div>
     </div>
@@ -221,12 +221,12 @@
         <div class="modal-content1">
             <div class="modal-header1">
                 <h3>Alterar Logo</h3>
-                <button class="close-modal1" onclick="closeLogoModal()">&times;</button>
+                <button class="close-modal1" id="btn-close-logo-modal-x">&times;</button>
             </div>
             
             <div class="form-group1">
                 <label>Logo da Organização</label>
-                <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-upload').click()">
+                <div class="logo-upload-area" id="logo-upload-area">
                     <div class="logo-preview" id="logo-preview">
                         <i class="bi bi-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
                         <p>Clique ou arraste uma imagem aqui</p>
@@ -237,8 +237,8 @@
             </div>
 
             <div class="modal-footer1">
-                <button type="button" class="cancel-button1" onclick="closeLogoModal()">Cancelar</button>
-                <button type="button" class="save-button1" onclick="saveLogo()">Salvar</button>
+                <button type="button" class="cancel-button1" id="btn-cancel-logo-modal">Cancelar</button>
+                <button type="button" class="save-button1" id="btn-save-logo">Salvar</button>
             </div>
         </div>
     </div>
@@ -248,7 +248,7 @@
         <div class="modal-content1" style="max-width: 700px;">
             <div class="modal-header1">
                 <h3>Política de Privacidade</h3>
-                <button class="close-modal1" onclick="closePrivacyModal()">&times;</button>
+                <button class="close-modal1" id="btn-close-privacy-modal-x">&times;</button>
             </div>
             
             <div style="max-height: 60vh; overflow-y: auto; padding: 10px;">
@@ -275,7 +275,7 @@
             </div>
 
             <div class="modal-footer1">
-                <button type="button" class="save-button1" onclick="closePrivacyModal()">Fechar</button>
+                <button type="button" class="save-button1" id="btn-close-privacy-modal-footer">Fechar</button>
             </div>
         </div>
     </div>
@@ -285,7 +285,7 @@
         <div class="modal-content1" style="max-width: 700px;">
             <div class="modal-header1">
                 <h3>Termos de Serviço</h3>
-                <button class="close-modal1" onclick="closeTermsModal()">&times;</button>
+                <button class="close-modal1" id="btn-close-terms-modal-x">&times;</button>
             </div>
             
             <div style="max-height: 60vh; overflow-y: auto; padding: 10px;">
@@ -310,4 +310,4 @@
                 <h4>5. Limitação de Responsabilidade</h4>
                 <p>Não nos responsabilizamos por danos diretos ou indiretos resultantes do uso da plataforma ou de transações entre usuários.</p>
                 
-                <h4
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
