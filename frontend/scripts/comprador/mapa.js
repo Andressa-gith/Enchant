@@ -1,22 +1,5 @@
 import supabase from '/scripts/supabaseClient.js';
 
-// O "Guarda" reativo que inicializa a página (TEM Q colocar isso em todas as paginas se pa)
-supabase.auth.onAuthStateChange((event, session) => {
-    if (session) {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => initializeApp(session));
-        } else {
-            initializeApp(session);
-        }
-    } else {
-        if (!window.isLoggingOut) {
-            alert('Você precisa estar logado para acessar essa página.');
-            window.location.href = '/entrar';
-        }
-    }
-});
-
-// colocando o openstreetmap
 const map = L.map('mapa').setView([-12.5, -41.7], 7); 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://adaptabrasil.mcti.gov.br/" target="_blank">AdaptaBrasil MCTI</a>'

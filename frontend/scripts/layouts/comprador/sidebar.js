@@ -56,10 +56,14 @@ import supabase from '/scripts/supabaseClient.js';
                         flex-direction: column;
                     }
 
+                    #sidebarProfileButton {
+                        margin-top: auto; /* Empurra o botão de perfil e o de sair para baixo */
+                        border-top: 1px solid rgba(0, 0, 0, 0.1); /* Linha divisória acima do perfil */
+                        border-radius: 0; /* Remove o arredondamento caso haja */
+                    }
+
                     #sidebarLogoutButton {
-                        margin-top: auto; /* A MÁGICA: Empurra este item para o fundo do container flex */
-                        border-top: 1px solid rgba(0, 0, 0, 0.1); /* Opcional: Adiciona uma linha divisória bonita */
-                        border-radius: 0;
+                        border-radius: 0; /* Apenas garante que não tenha arredondamento */
                     }
 
                     @media (min-width: 1025px) {
@@ -317,13 +321,17 @@ import supabase from '/scripts/supabaseClient.js';
                                 <i class="bi bi-search"></i>
                                 <span>Transparência</span>
                             </a>
+
+                            <a href="/perfil" id="sidebarProfileButton">
+                                <i class="bi bi-person-circle"></i>
+                                <span>Perfil</span>
+                            </a>
+                            
                             <a href="#" id="sidebarLogoutButton">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Sair</span>
                             </a>
                         </nav>
-                        
-                       
                     </aside>
                     
                     <div class="sidebar-overlay" id="sidebarOverlay"></div>
