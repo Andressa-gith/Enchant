@@ -1,17 +1,19 @@
 // Importa o cliente Supabase para verificar a autenticação
 import supabase from '/scripts/supabaseClient.js';
 
-// "Guarda" que protege a página: só inicializa se o usuário estiver logado.
+// O "Guarda" reativo que inicializa a página (TEM Q colocar isso em todas as paginas se pa)
 supabase.auth.onAuthStateChange((event, session) => {
     if (session) {
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => initializeHeader(session));
+            document.addEventListener('DOMContentLoaded', () => initializeApp(session));
         } else {
-            initializeHeader(session);
+            initializeApp(session);
         }
     } else {
-        console.warn("Nenhum usuário logado. Redirecionando para a página de entrada.");
-        window.location.href = '/entrar'; // Ajuste se a URL for outra
+        if (!window.isLoggingOut) {
+            alert('Você precisa estar logado para acessar essa página.');
+            window.location.href = '/entrar';
+        }
     }
 });
 

@@ -1,5 +1,7 @@
 import supabase from '/scripts/supabaseClient.js';
 
+let isLoggingOut = false; 
+
 supabase.auth.onAuthStateChange((event, session) => {
     if (session) {
         if (document.readyState === 'loading') {
@@ -8,8 +10,11 @@ supabase.auth.onAuthStateChange((event, session) => {
             initializeHeader(session);
         }
     } else {
-        console.warn("Nenhum usuário logado. Redirecionando para a página de entrada.");
-        window.location.href = '/entrar'; // Ajuste se a URL for outra
+
+        if (!isLoggingOut) {
+            console.warn('Nenhum usuário logado. Redirecionando para a página de entrada.');
+            window.location.href = '/entrar';
+        }
     }
 });
 
@@ -277,7 +282,7 @@ function initializeHeader(session) {
                 <header class="main-header" id="main-header">
                     <div class="header-content">
                         <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
-                        <a href="/src/views/comprador/dashboard.html" class="logo-da-ong">Dashboard</a>
+                        <a href="/dashboard" class="logo-da-ong"></a>
                         <div class="right-section">
                             <div class="profile-section">
                                 <button class="profile-button" id="profileButton">
@@ -337,9 +342,13 @@ function initializeHeader(session) {
             if (logoutButton) {
                 logoutButton.addEventListener('click', async (e) => {
                     e.preventDefault();
+
+                    window.isLoggingOut = true;
+
                     const { error } = await supabase.auth.signOut();
                     if (error) {
                         console.error('Erro ao fazer logout:', error.message);
+                        window.isLoggingOut = false; 
                     } else {
                         window.location.href = '/entrar';
                     }

@@ -1,6 +1,6 @@
 import supabase from '/scripts/supabaseClient.js';
 
-// O "Guarda" reativo que inicializa a página
+// O "Guarda" reativo que inicializa a página (TEM Q colocar isso em todas as paginas se pa)
 supabase.auth.onAuthStateChange((event, session) => {
     if (session) {
         if (document.readyState === 'loading') {
@@ -9,8 +9,10 @@ supabase.auth.onAuthStateChange((event, session) => {
             initializeApp(session);
         }
     } else {
-        alert('Você precisa estar logado para acessar essa página.');
-        window.location.href = '/entrar';
+        if (!window.isLoggingOut) {
+            alert('Você precisa estar logado para acessar essa página.');
+            window.location.href = '/entrar';
+        }
     }
 });
 

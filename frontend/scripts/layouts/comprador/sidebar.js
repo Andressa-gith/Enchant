@@ -1,3 +1,5 @@
+import supabase from '/scripts/supabaseClient.js';
+
 (function() {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeSidebar);
@@ -54,6 +56,12 @@
                         flex-direction: column;
                     }
 
+                    #sidebarLogoutButton {
+                        margin-top: auto; /* A MÁGICA: Empurra este item para o fundo do container flex */
+                        border-top: 1px solid rgba(0, 0, 0, 0.1); /* Opcional: Adiciona uma linha divisória bonita */
+                        border-radius: 0;
+                    }
+
                     @media (min-width: 1025px) {
                         .sidebar {
                             display: block;
@@ -69,6 +77,10 @@
                     }
 
                     .sidebar-nav {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%; /* 3. Faz a <nav> ocupar toda a largura da sidebar */
+                        height: 100%;
                         padding-top: var(--header-height);
                         flex: 1;
                     }
@@ -156,6 +168,38 @@
                         font-size: 14px;
                     }
 
+                    .sidebar-logout-footer {
+                        /* Esta seção não cresce, ficando sempre no final */
+                        padding: 0 8px 15px 8px;
+                    }
+                    .sidebar-logout-footer a {
+                        display: flex;
+                        align-items: center;
+                        color: var(--text-color);
+                        padding: 13px;
+                        text-decoration: none;
+                        white-space: nowrap;
+                        border-radius: 6px;
+                        transition: background-color var(--transition);
+                    }
+                    .sidebar-logout-footer a:hover {
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+                    .sidebar-logout-footer i {
+                        /* Garante o mesmo tamanho dos outros ícones */
+                        font-size: 1.2rem;
+                        margin-right: 20px;
+                        color: #4e4e4e;
+                        min-width: 20px;
+                        text-align: center;
+                    }
+                    .sidebar-logout-footer span {
+                        font-size: 14px;
+                        opacity: 0;
+                        visibility: hidden;
+                        transition: opacity 0.2s, visibility 0.2s;
+                    }
+
                     .sidebar-overlay {
                         position: fixed;
                         top: 0;
@@ -179,6 +223,24 @@
                         min-height: 100vh;
                         padding: 20px;
                     }
+                    
+                    .sidebar-logout-footer {
+                        margin-top: auto; /* Empurra o botão para o fundo */
+                        padding: 0 13px 15px 13px; /* Espaçamento inferior */
+                    }
+                    .sidebar-logout-footer a {
+                        display: flex;
+                        align-items: center;
+                        color: var(--text-color);
+                        padding: 13px;
+                        text-decoration: none;
+                        white-space: nowrap;
+                        transition: var(--transition);
+                        border-radius: 6px;
+                    }
+                    .sidebar-logout-footer a:hover {
+                        background-color: rgba(0, 0, 0, 0.05);
+                    }
 
                     @media (max-width: 1024px) {
                         .sidebar {
@@ -195,6 +257,18 @@
                         .sidebar-profile {
                             display: flex;
                             border-top: 1px solid rgba(0, 0, 0, 0.1);
+                        }
+                    }
+                    
+                    @media (min-width: 1025px) {
+                        .sidebar:hover {
+                            width: var(--sidebar-width);
+                        }
+                        .sidebar:hover .sidebar-nav a span,
+                        .sidebar:hover .sidebar-logout-footer a span {
+                            opacity: 1;
+                            visibility: visible;
+                            transition-delay: 0.1s; /* Pequeno delay para o texto aparecer */
                         }
                     }
 
@@ -243,19 +317,13 @@
                                 <i class="bi bi-search"></i>
                                 <span>Transparência</span>
                             </a>
-                        </nav>
-                        
-                        <div class="sidebar-profile">
-                            <div class="sidebar-profile-content">
-                                <img id="sidebarProfilePhoto" class="sidebar-profile-photo" src="" alt="Foto do Usuário">
-                                <i id="sidebarProfileIcon" class="bi bi-person-circle sidebar-profile-icon"></i>
-                                <span class="sidebar-profile-name">Nome do Usuário</span>
-                            </div>
-                            <a href="/src/views/comprador/telainicialparaocomprador.html" class="sidebar-logout">
+                            <a href="#" id="sidebarLogoutButton">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Sair</span>
                             </a>
-                        </div>
+                        </nav>
+                        
+                       
                     </aside>
                     
                     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -288,6 +356,7 @@
                         this.sidebarOverlay = document.getElementById('sidebarOverlay');
                         this.sidebarProfilePhoto = document.getElementById('sidebarProfilePhoto');
                         this.sidebarProfileIcon = document.getElementById('sidebarProfileIcon');
+                        this.logoutButton = document.getElementById('sidebarLogoutButton');
                         
                         this.init();
                     }
@@ -302,6 +371,25 @@
                         this.sidebarOverlay.addEventListener('click', () => this.closeSidebar());
                         
                         window.addEventListener('resize', () => this.handleResize());
+
+                        if(this.logoutButton) {
+                            this.logoutButton.addEventListener('click', async (e) => {
+                                e.preventDefault();
+
+                                window.isLoggingOut = true;
+
+                                console.log("Botão de sair da sidebar clicado.");
+                                const { error } = await supabase.auth.signOut();
+                                if (error) {
+                                    console.error('Erro ao fazer logout:', error.message);
+                                    window.isLoggingOut = false;
+                                    alert('Não foi possível sair. Tente novamente.');
+                                } else {
+                                    // Logout bem-sucedido, redireciona para a página de entrada
+                                    window.location.href = '/entrar';
+                                }
+                            });
+                        }
                     }
 
                     setupSidebarToggle() {
