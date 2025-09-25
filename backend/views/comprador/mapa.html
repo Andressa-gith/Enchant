@@ -32,6 +32,18 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
+
+      <h1 id="titulo">Mapa de Riscos</h1>
+
+      <div class="consulta-container">
+          <div class="consulta-busca">
+            <input type="search" id="input-consulta" placeholder="Pesquise seu município...">
+            <button id="botao-consulta">Pesquisar</button>
+          </div>
+          <div id="resultado-consulta">
+          </div>
+        </div>
+
       <div class="map-container">
         <div class="filter-panel">
         <h3><i class="ph ph-funnel"></i> Filtros</h3>
@@ -111,13 +123,7 @@
       </div>
       <main id="main">
 
-        <div class="consulta-container">
-          <div class="consulta-busca">
-            <input type="search" id="input-consulta" placeholder="Pesquise seu município...">
-            <button id="botao-consulta">Pesquisar</button>
-          </div>
-          <div id="resultado-consulta"></div>
-        </div>
+        
   
         <div class="dashboard-container">
           <div class="grafico">
