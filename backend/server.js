@@ -12,6 +12,8 @@ import contratoRoutes from './routes/contrato.routes.js';
 import auditoriaRoutes from './routes/auditoria.routes.js';
 import gestaoFinanceiraRoutes from './routes/gestaoFinanceira.routes.js';
 import historicoRoutes from './routes/historico-doacoes.routes.js';
+import parceriaRoutes from './routes/parceria.routes.js';
+import documentoRoutes from './routes/documento.routes.js';
 
 const app = express();
 const PORT = 3080;
@@ -44,6 +46,10 @@ app.use('/api/auditorias', auditoriaRoutes);
 app.use('/api/financeiro', gestaoFinanceiraRoutes);
 
 app.use('/api/historico-doacoes', historicoRoutes);
+
+app.use('/api/parcerias', parceriaRoutes);
+
+app.use('/api/documentos', documentoRoutes);
 
 app.listen(PORT, () => {
     console.log(`✅  Server is running in http://localhost:${PORT}`);

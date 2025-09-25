@@ -1,4 +1,3 @@
-@ -0,0 +1,401 @@
 import supabase from '../db/supabaseClient.js';
 import { v4 as uuidv4 } from 'uuid';
 
