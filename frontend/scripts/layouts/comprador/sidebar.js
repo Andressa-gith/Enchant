@@ -235,7 +235,7 @@
                                 <i class="bi bi-box"></i>
                                 <span>Doação</span>
                             </a>
-                            <a href="/src/views/comprador/historicodoacoes.html">
+                            <a href="/historico-doacoes">
                                 <i class="bi bi-journal"></i>
                                 <span>Histórico de doação</span>
                             </a>

@@ -3,189 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Histórico de Doações</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="/scripts/authGuard.js"></script>
-    
+    <title>Enchant</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles/global.css">
-
-    <link rel="stylesheet" href="../../../public/styles/comprador/historicodoacoes.css">
-    <script src="/scripts/comprador/historico-doacoes.js" defer></script>
-    
-
- <link rel="stylesheet" href="/styles/comprador/historico-doacoes.css"> 
-
-  <script>
-    // Formatar inputs de data para dd/mm/yyyy
-    document.addEventListener('DOMContentLoaded', function() {
-      const dateInputs = document.querySelectorAll('input[type="date"]');
-      dateInputs.forEach(input => {
-        input.addEventListener('change', function() {
-          if (this.value) {
-            const date = new Date(this.value);
-            const formatted = date.toLocaleDateString('pt-BR'); // dd/mm/yyyy
-            // Para exibir, podemos usar um placeholder ou tooltip, mas manter o value original
-            this.setAttribute('data-formatted', formatted);
-          }
-        });
-      });
-    });
-  </script>
-  <script src="/scripts/layouts/comprador/sidebar.js" defer></script>
-  <script src="/scripts/layouts/comprador/headercomprador.js" defer></script>
-  <script src="/scripts/layouts/comprador/footercomprador.js" defer></script>
-   
+    <link rel="stylesheet" href="/styles/comprador/historico-doacoes.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/authGuard.js" type="module" defer></script>
+    <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
+    <script src="/scripts/layouts/comprador/headercomprador.js" type="module" defer></script>
+    <script src="/scripts/comprador/historico-doacoes.js" type="module" defer></script>
 </head>
 <body>
-
     <header id="header-container"></header>
     <aside id="sidebar-container"></aside>
 
-    <div class="container1">
-       
-            <h1 class = "titulo1" >Histórico de doações</h1>
-            <div class="status-indicator1">
-                <span class="status-dot1"></span>
-                <span>Sistema conectado - Recebendo dados externos</span>
-            </div>
+    <div class="relatorio-container">
+        <header class="relatorio-header">
+            <h1>Relatório de Doações</h1>
+            <p>Consulte o histórico e gere novos relatórios em PDF sobre as entradas e saídas de doações.</p>
+        </header>
     
-
-        <main class="main-content1">
-            <!-- Seção Principal - Histórico -->
-            <section class="history-section1">
-                <!-- Filtros -->
-                <div class="filters-section1">
-                    <button class="filters-toggle1" id="filtersToggle">
-                        <span>Filtros</span>
-                        <span id="activeFiltersCount" class="active-filters-count1" style="display: none;">0</span>
-                    </button>
-                    
-                    <div class="filters-content1" id="filtersContent">
-                       <div class="filters-container1">
-                                <div class="filter-group1">
-                                <label>Data Inicial</label>
-                                <input type="date" id="startDateFilter">
-                            </div>
-                            <div class="filter-group1">
-                                <label>Data Final</label>
-                                <input type="date" id="endDateFilter">
-                            </div>
-                            <div class="filter-group1">
-                                <label>Tipo</label>
-                                <select id="typeFilter">
-                                    <option value="">Todos</option>
-                                    <option value="Semestral">Semestral</option>
-                                    <option value="Anual">Anual</option>
-                                    <option value="Mensal">Mensal</option>
-                                    <option value="Semanal">Semanal</option>
-                                    
-                                </select>
-                            </div>
-                            <div class="filter-group1">
-                                <label>Categoria</label>
-                                <select id="categoryFilter">
-                                    <option value="">Todas</option>
-                                    <option value="Roupas">Roupas</option>
-                                    <option value="Alimentos">Alimentos</option>
-                                    <option value="Brinquedos">Brinquedos</option>
-                                    <option value="Livros">Livros</option>
-                                    <option value="Geral">Geral</option>
-                                </select>
-                            </div>
-                            <button class="clear-filters-btn1" id="clearFiltersBtn">
-                                <i class="fas fa-times"></i> Limpar Filtros
-                            </button>
-                        </div>
+        <main class="relatorio-main-content">
+            <div class="historico-coluna">
+                <div class="card">
+                    <h2 class="card-title">Relatórios Gerados</h2>
+                    <div class="table-wrapper">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Período</th>
+                                    <th>Responsável</th>
+                                    <th>Ação</th>
+                                    <th>Data</th>
+                                    <th>PDF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                </tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
 
-                <!-- Tabela -->
-                <div class="table-container1">
-                    <div class="table-header1">
-                        <div>Data</div>
-                        <div>Tipo</div>
-                        <div>Categoria</div>
-                        <div>Origem</div>
-                        <div>PDF</div>
-                    </div>
-                    <div id="tableBody" class="table-body1">
-                        <!-- Dados serão inseridos via JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Paginação -->
-                <div id="pagination" class="pagination1">
-                    <!-- Botões de paginação serão inseridos via JavaScript -->
-                </div>
-            </section>
-
-            <!-- Seção Lateral - Relatórios -->
-            <aside class="report-section1">
-                <div class="report-section-wrapper1">
-                    <h3>Gerar relatório de doações</h3>
-
-                    <form id="reportForm" class="report-form1">
-                        <div class="form-group1">
-                            <label for="responsible">Responsável</label>
-                            <input type="text" id="responsible" value="XXXXXX" placeholder="Nome do responsável">
+            <aside class="gerador-coluna">
+                <div class="card card-form">
+                    <h2 class="card-title">Gerar Novo Relatório</h2>
+                    <form id="reportForm">
+                        <div class="form-group">
+                            <label for="responsavel">Responsável</label>
+                            <input type="text" id="responsavel" name="responsavel" required placeholder="Seu nome completo">
                         </div>
-
-                        <div class="form-group1">
-                            <label for="startPeriod">Data Inicial do Relatório</label>
-                            <input type="date" id="startPeriod" value="2023-09-12">
+                        <div class="form-group">
+                            <label for="data_inicio_filtro">Data Inicial</label>
+                            <input type="date" id="data_inicio_filtro" name="data_inicio_filtro" required>
                         </div>
-
-                        <div class="form-group1">
-                            <label for="endPeriod">Data Final do Relatório</label>
-                            <input type="date" id="endPeriod" value="2025-10-19">
+                        <div class="form-group">
+                            <label for="data_fim_filtro">Data Final</label>
+                            <input type="date" id="data_fim_filtro" name="data_fim_filtro" required>
                         </div>
-
-                        <div class="form-group1">
-                            <label for="reportType">Tipo</label>
-                            <select id="reportType">
-                                <option value="Anual" selected>Anual</option>
-                                <option value="Semestral">Semestral</option>
-                                <option value="Mensal">Mensal</option>
-                                <option value="Semanal">Semanal</option>
+                        <div class="form-group">
+                            <label for="frequencia_filtro">Frequência</label>
+                            <select id="frequencia_filtro" name="frequencia_filtro" required>
                                 <option value="Pontual">Pontual</option>
+                                <option value="Semanal">Semanal</option>
+                                <option value="Mensal">Mensal</option>
+                                <option value="Semestral">Semestral</option>
+                                <option value="Anual">Anual</option>
                             </select>
                         </div>
-
-                        <div class="form-group1">
-                            <label for="reportCategory">Categoria</label>
-                            <select id="reportCategory">
-                                <option value="Geral" selected>Geral</option>
-                                <option value="Roupas">Roupas</option>
-                                <option value="Alimentos">Alimentos</option>
-                                <option value="Brinquedos">Brinquedos</option>
-                                <option value="Livros">Livros</option>
-                                <option value="Medicamentos">Medicamentos</option>
+                        <div class="form-group">
+                            <label for="categoria_filtro">Categoria</label>
+                            <select id="categoria_filtro" name="categoria_filtro" required>
+                                <option value="Geral">Todas as Categorias</option>
                             </select>
                         </div>
-
-                        <button type="button" id="generateReportBtn" class="generate-btn1">
-                            Adicionar
+                        <button type="submit" id="generateReportBtn" class="generate-btn">
+                            <i class="fas fa-file-pdf"></i> Gerar e Salvar
                         </button>
                     </form>
                 </div>
             </aside>
         </main>
-
-        <!-- Loading para geração de PDF -->
-        <div id="pdfLoading" class="pdf-loading1">
-            <div class="spinner1"></div>
-            <p>Gerando relatório PDF...</p>
-        </div>
-
-        <!-- Toast de notificação -->
-        <div id="toastContainer" class="toast-container1"></div>
-
-        <!-- Canvas oculto para gráficos -->
-        <canvas id="hiddenChart" width="800" height="400" style="display: none;"></canvas>
     </div>
-
+    
+    <div id="pdfLoading" class="pdf-loading">
+        <div class="spinner"></div><p>Gerando seu relatório...</p>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
 </body>
 </html>
