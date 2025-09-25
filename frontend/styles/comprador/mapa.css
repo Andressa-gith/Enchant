@@ -31,6 +31,16 @@ main {
 
 /* === ESTILOS PARA A SEÇÃO DE CONSULTA DETALhada === */
 
+#titulo {
+    font-family: 'Passion One', cursive;
+    color: rgba(97, 53, 12, 1);
+    font-size: 50px;
+    text-align: center;
+    padding: 2rem 1rem;
+    z-index: 2;
+    margin-top: 2rem; /* Ajustado para melhor visual */
+}
+
 .consulta-container {
     width: 90%;
     max-width: 1000px;
@@ -85,6 +95,7 @@ main {
 #resultado-consulta {
     text-align: left;
     margin-bottom: 1px;
+    color:#54300e;
 }
 
 .card-resultado {
