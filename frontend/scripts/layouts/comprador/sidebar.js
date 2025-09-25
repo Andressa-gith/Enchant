@@ -24,7 +24,7 @@ import supabase from '/scripts/supabaseClient.js';
                         --light-bg: #ECECEC;
                         --white: #FFFFFF;
                         --shadow: rgba(180, 180, 180, 0.3);
-                        --sidebar-width: 230px;
+                        --sidebar-width: 290px;
                         --sidebar-collapsed: 50px;
                         --header-height: 56px;
                         --transition: 0.3s ease;
@@ -83,7 +83,7 @@ import supabase from '/scripts/supabaseClient.js';
                     .sidebar-nav {
                         display: flex;
                         flex-direction: column;
-                        width: 100%; /* 3. Faz a <nav> ocupar toda a largura da sidebar */
+                        width: 100%;
                         height: 100%;
                         padding-top: var(--header-height);
                         flex: 1;
@@ -318,8 +318,28 @@ import supabase from '/scripts/supabaseClient.js';
                                 <span>Histórico de doação</span>
                             </a>
                             <a href="/transparencia/relatorios">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>Relatórios</span>
+                            </a>
+                            <a href="/transparencia/contratos">
+                                <i class="bi bi-paperclip me-2"></i>
+                                <span>Contratos</span>
+                            </a>
+                            <a href="/transparencia/notas-auditoria">
                                 <i class="bi bi-search"></i>
-                                <span>Transparência</span>
+                                <span>Notas de auditoria</span>
+                            </a>
+                            <a href="/transparencia/documentos-comprobatorios">
+                                <i class="bi bi-folder"></i>
+                                <span>Documentos comprobatórios</span>
+                            </a>
+                            <a href="/transparencia/gestao-financeira">
+                                <i class="bi bi-wallet2"></i>
+                                <span>Gestão financeira</span>
+                            </a>
+                            <a href="/transparencia/parcerias">
+                                <i class="bi bi-people"></i>
+                                <span>Parcerias</span>
                             </a>
 
                             <a href="/perfil" id="sidebarProfileButton">
