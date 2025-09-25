@@ -164,6 +164,7 @@ function initializeHeader(session) {
                         display: flex;
                         align-items: center;
                         margin-left: auto;
+                        gap: 20px; /* Adiciona um espaço entre o nome e o botão "Sair" */
                     }
 
                     .profile-section {
@@ -180,6 +181,11 @@ function initializeHeader(session) {
                         font-size: 14px;
                         color: var(--text-color);
                         padding: 0;
+                        text-decoration: none; /* Garante que não tenha sublinhado de link */
+                    }
+
+                    .profile-button:hover {
+                        color: var(--primary-color); /* Efeito hover sutil */
                     }
 
                     .profile-photo {
@@ -211,6 +217,10 @@ function initializeHeader(session) {
                     
                     .profile-dropdown.show {
                         display: block;
+                    }
+
+                    .right-section .dropdown-item {
+                        padding: 6px 12px; /* Ajusta o padding para ficar melhor no header */
                     }
 
                     .dropdown-item {
@@ -277,24 +287,18 @@ function initializeHeader(session) {
         }
 
         injectHeaderHTML() {
-            // SEU CÓDIGO HTML DO HEADER VEM AQUI, SEM MUDANÇAS
             const headerHTML = `
                 <header class="main-header" id="main-header">
                     <div class="header-content">
                         <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
                         <a href="/dashboard" class="logo-da-ong"></a>
+                        
                         <div class="right-section">
-                            <div class="profile-section">
-                                <button class="profile-button" id="profileButton">
-                                    <span id="headerUserName">Carregando...</span>
-                                </button>
-                                <div class="profile-dropdown" id="profileDropdown">
-                                    <a class="dropdown-item" href="/perfil"><i class="bi bi-person"></i> Perfil</a>
-                                    <a class="dropdown-item" href="#" id="logoutButton"><i class="bi bi-box-arrow-right"></i> Sair</a>
-                                </div>
-                            </div>
+                            <a href="/perfil" class="profile-button" id="profileButton">
+                                <span id="headerUserName">Carregando...</span>
+                            </a>
                         </div>
-                    </div>
+                        </div>
                 </header>
             `;
             let container = document.getElementById('header-container');
@@ -310,39 +314,23 @@ function initializeHeader(session) {
         // ===== CORREÇÃO PRINCIPAL APLICADA AQUI =====
         // ===================================================================
         initializeHeaderScripts(session) {
-            // Selecionamos os elementos DEPOIS de garantir que o HTML foi injetado.
-            const profileButton = document.getElementById('profileButton');
-            const profileDropdown = document.getElementById('profileDropdown');
-            const logoutButton = document.getElementById('logoutButton');
+            // Selecionamos apenas os elementos que ainda existem
             const userNameSpan = document.getElementById('headerUserName');
             const sidebarToggle = document.getElementById('sidebarToggle');
+            // O ID do botão de logout foi atualizado para evitar conflitos
+            const logoutButton = document.getElementById('headerLogoutButton'); 
             
-            // Lógica do dropdown (simplificada e corrigida)
-            if (profileButton && profileDropdown) {
-                profileButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Impede que o clique feche o menu imediatamente
-                    profileDropdown.classList.toggle('show');
-                });
-            }
+            // TODA a lógica de abrir/fechar o dropdown foi removida.
 
-            // Lógica para fechar o dropdown ao clicar fora
-            document.addEventListener('click', (e) => {
-                // Se o clique foi fora do botão de perfil E fora do próprio dropdown, ele fecha.
-                if (profileButton && !profileButton.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) {
-                    profileDropdown.classList.remove('show');
-                }
-            });
-
-            // Lógica do botão da sidebar
+            // Lógica do botão da sidebar (continua igual)
             if(sidebarToggle && typeof toggleSidebar === 'function') {
                 sidebarToggle.addEventListener('click', () => toggleSidebar());
             }
 
-            // Lógica do Logout (funcional)
+            // Lógica do Logout (agora no novo botão)
             if (logoutButton) {
                 logoutButton.addEventListener('click', async (e) => {
                     e.preventDefault();
-
                     window.isLoggingOut = true;
 
                     const { error } = await supabase.auth.signOut();
@@ -355,7 +343,7 @@ function initializeHeader(session) {
                 });
             }
             
-            // Lógica para buscar e mostrar o nome (funcional)
+            // Lógica para buscar e mostrar o nome (continua igual)
             async function fetchUserProfile() {
                 const token = session.access_token;
                 try {
@@ -373,7 +361,7 @@ function initializeHeader(session) {
                 }
             }
             
-            fetchUserProfile(); // Busca o nome do usuário.
+            fetchUserProfile();
         }
     }
     
