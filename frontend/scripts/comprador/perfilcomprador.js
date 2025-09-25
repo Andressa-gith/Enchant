@@ -4,6 +4,7 @@ import supabase from '/scripts/supabaseClient.js';
 // O "Guarda" reativo que inicializa a página (TEM Q colocar isso em todas as paginas se pa)
 supabase.auth.onAuthStateChange((event, session) => {
     if (session) {
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => initializeApp(session));
         } else {
@@ -35,6 +36,8 @@ async function fetchUserProfile(session) {
         return null;
     }
 }
+
+const userData = await fetchUserProfile(session);
 
 // Função principal que "monta" a página e ativa todas as suas funcionalidades
 function initializeProfilePage(userData, session) {
