@@ -167,8 +167,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             return showNotification('Nenhuma nova foto selecionada.', 'info');
         }
 
+        const cleanFileName = photoPreviewFile.name
+        .replace(/\s+/g, '_') // Substitui espaços por underscore
+        .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
+        .toLowerCase();
+
         // Usa o nome original do ficheiro para mais flexibilidade (ex: .jpg, .png)
-        const filePath = `${session.user.id}/${photoPreviewFile.name}`;
+        const filePath = `${session.user.id}/${cleanFileName}`;
         showNotification('A enviar foto...', 'info');
 
         // 1. Tenta fazer o upload para o Storage
@@ -209,8 +214,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             return showNotification('Nenhum novo logo selecionado.', 'info');
         }
 
+        const cleanFileName2 = logoPreviewFile.name
+        .replace(/\s+/g, '_') // Substitui espaços por underscore
+        .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
+        .toLowerCase();
+
         // Usa o nome original do ficheiro para consistência
-        const filePath = `${session.user.id}/${logoPreviewFile.name}`;
+        const filePath = `${session.user.id}/${cleanFileName2}`;
         showNotification('A enviar logo...', 'info');
 
         // 1. Tenta fazer o upload para o Storage
@@ -259,11 +269,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
 
-        if (userData.url_foto_perfil) {
-            ui.profileImage.src = userData.url_foto_perfil;
-        } else {
-            ui.profileImage.src = "";
-        }
+        ui.profileImage.src = userData.url_foto_perfil;
 
         if (userData.url_logo) {
             // Se tem um logo, esconde o placeholder e mostra a imagem

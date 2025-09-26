@@ -36,18 +36,48 @@ class UserProfileController {
             };
 
             if (data.caminho_foto_perfil) {
-                const { data: photoUrlData } = await supabase.storage
-                .from('profile-photos')
-                .createSignedUrl(data.caminho_foto_perfil, 3600); // 1 hora de validade
-                profileData.url_foto_perfil = photoUrlData?.signedUrl;
+                try {
+                    const { data: photoUrlData, error: photoError } = await supabase.storage
+                        .from('profile-photos')
+                        .createSignedUrl(data.caminho_foto_perfil, 3600);
+        
+                if (photoError) {
+                    console.error('Erro ao gerar URL da foto:', photoError);
+                    // Fallback para URL pública se der erro
+                    const { data: publicUrlData } = supabase.storage
+                        .from('profile-photos')
+                        .getPublicUrl(data.caminho_foto_perfil);
+                    profileData.url_foto_perfil = publicUrlData.publicUrl;
+                } else {
+                    profileData.url_foto_perfil = photoUrlData.signedUrl;
+                }
+                console.log('URL da foto:', profileData.url_foto_perfil);
+                } catch (error) {
+                    console.error('Erro ao processar foto:', error);
+                }
             }
 
             // Se um caminho para o logo existir, gere a URL assinada
             if (data.caminho_logo) {
-                const { data: logoUrlData } = await supabase.storage
-                .from('logos')
-                .createSignedUrl(data.caminho_logo, 3600);
-                profileData.url_logo = logoUrlData?.signedUrl;
+                try {
+                    const { data: logoUrlData, error: logoError } = await supabase.storage
+                        .from('logos')
+                        .createSignedUrl(data.caminho_logo, 3600);
+        
+                    if (logoError) {
+                        console.error('Erro ao gerar URL do logo:', logoError);
+                        // Fallback para URL pública se der erro
+                        const { data: publicUrlData } = supabase.storage
+                            .from('logos')
+                            .getPublicUrl(data.caminho_logo);
+                        profileData.url_logo = publicUrlData.publicUrl;
+                    } else {
+                        profileData.url_logo = logoUrlData.signedUrl;
+                    }
+                    console.log('URL do logo:', profileData.url_logo);
+                } catch (error) {
+                    console.error('Erro ao processar logo:', error);
+                }
             }
 
             res.status(200).json(profileData); 
