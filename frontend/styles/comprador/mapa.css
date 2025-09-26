@@ -151,14 +151,14 @@ main {
 }
 
 input[type="checkbox"] {
-    accent-color: #72330f; /* << A MÁGICA ACONTECE AQUI */
+    accent-color: #72330f; 
     }
 
 /* Estilos para o container do gráfico */
 .grafico {
     width: 87vh;
     height: 100%;
-    margin: 40px auto; /* Centraliza e adiciona espaço acima/abaixo */
+    margin: 40px auto; 
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
