@@ -7,7 +7,7 @@ class UserProfileController {
 
             const { data, error } = await supabase
                 .from('instituicao') // 1. O nome da sua tabela
-                .select('nome, email_contato, cnpj, telefone ( numero ), endereco ( cidade, estado )')    // 2. As colunas que você quer
+                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado )')    // 2. As colunas que você quer
                 .eq('id', usuarioId)      // 3. A condição (WHERE id = usuarioId)
                 .single();                // 4. Diz que esperamos apenas um resultado
 
@@ -30,8 +30,25 @@ class UserProfileController {
                 // Extrai a string 'numero' de dentro do array 'telefones'
                 telefone: fone?.numero || null,
                 cidade: end?.cidade || null,
-                estado: end?.estado || null
+                estado: end?.estado || null,
+                url_foto_perfil: null,
+                url_logo: null
             };
+
+            if (data.caminho_foto_perfil) {
+                const { data: photoUrlData } = await supabase.storage
+                .from('profile-photos')
+                .createSignedUrl(data.caminho_foto_perfil, 3600); // 1 hora de validade
+                profileData.url_foto_perfil = photoUrlData?.signedUrl;
+            }
+
+            // Se um caminho para o logo existir, gere a URL assinada
+            if (data.caminho_logo) {
+                const { data: logoUrlData } = await supabase.storage
+                .from('logos')
+                .createSignedUrl(data.caminho_logo, 3600);
+                profileData.url_logo = logoUrlData?.signedUrl;
+            }
 
             res.status(200).json(profileData); 
 
@@ -46,10 +63,10 @@ class UserProfileController {
             // 1. Obter dados da requisição
             const usuarioId = req.user.id;
             // Pegamos os dados que o frontend enviou no 'body'
-            const { nome, email_contato, cnpj, telefone, cidade, estado } = req.body;
+            const { nome, email_contato, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo } = req.body;
 
             // 2. Preparar os objetos de dados para cada tabela
-            const instituicaoData = { nome, email_contato, cnpj };
+            const instituicaoData = { nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo };
             // Filtra chaves com valores undefined para não sobrescrever com 'nada' no banco
             Object.keys(instituicaoData).forEach(key => instituicaoData[key] === undefined && delete instituicaoData[key]);
 

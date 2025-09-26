@@ -291,7 +291,7 @@ function initializeHeader(session) {
                 <header class="main-header" id="main-header">
                     <div class="header-content">
                         <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
-                        <a href="/dashboard" class="logo-da-ong"></a>
+                        <a href="/dashboard" class="logo-da-ong" id="headerLogoLink"></a>
                         
                         <div class="right-section">
                             <a href="/perfil" class="profile-button" id="profileButton">
@@ -319,6 +319,7 @@ function initializeHeader(session) {
             const sidebarToggle = document.getElementById('sidebarToggle');
             // O ID do botão de logout foi atualizado para evitar conflitos
             const logoutButton = document.getElementById('headerLogoutButton'); 
+            const logoLink = document.getElementById('headerLogoLink');
             
             // TODA a lógica de abrir/fechar o dropdown foi removida.
 
@@ -355,6 +356,17 @@ function initializeHeader(session) {
                     if (userNameSpan) {
                         userNameSpan.textContent = userData.nome; 
                     }
+
+                    if (logoLink && userData.url_logo) {
+                        logoLink.innerHTML = ''; 
+                        const logoImg = document.createElement('img');
+                        // Define o src com a URL segura vinda do backend
+                        logoImg.src = userData.url_logo;
+                        logoImg.alt = `Logo de ${userData.nome}`;
+                        // Adiciona a imagem dentro do link
+                        logoLink.appendChild(logoImg);
+                    }
+                    
                 } catch (error) {
                     console.error('Erro ao buscar perfil:', error);
                     if (userNameSpan) userNameSpan.textContent = 'Visitante';

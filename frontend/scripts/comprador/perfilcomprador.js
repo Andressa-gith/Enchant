@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnCloseLogoModalX: document.getElementById('btn-close-logo-modal-x'),
         btnCancelLogoModal: document.getElementById('btn-cancel-logo-modal'),
         btnSaveLogo: document.getElementById('btn-save-logo'),
+        photoUploadInput: document.getElementById('photo-upload'), 
         
         btnClosePrivacyModalX: document.getElementById('btn-close-privacy-modal-x'),
         btnClosePrivacyModalFooter: document.getElementById('btn-close-privacy-modal-footer'),
@@ -152,6 +153,100 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function handlePhotoFile(file) {
+        if (!file) return;
+        // Validações (pode adicionar mais se quiser)
+        if (!file.type.startsWith('image/')) {
+            return showNotification('Por favor, selecione um ficheiro de imagem.', 'danger');
+        }
+        photoPreviewFile = file; // Armazena o ficheiro selecionado
+    }
+
+    async function saveProfilePhoto() {
+        if (!photoPreviewFile) {
+            return showNotification('Nenhuma nova foto selecionada.', 'info');
+        }
+
+        // Usa o nome original do ficheiro para mais flexibilidade (ex: .jpg, .png)
+        const filePath = `${session.user.id}/${photoPreviewFile.name}`;
+        showNotification('A enviar foto...', 'info');
+
+        // 1. Tenta fazer o upload para o Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('profile-photos')
+            .upload(filePath, photoPreviewFile, { upsert: true });
+
+        // 2. Verifica se o upload falhou
+        if (uploadError) {
+            console.error('Erro no upload da foto:', uploadError);
+            return showNotification('Erro ao enviar a sua foto.', 'danger');
+        }
+        
+        // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
+        try {
+            await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ caminho_foto_perfil: uploadData.path })
+            });
+
+            showNotification('Foto de perfil atualizada!', 'success');
+            await fetchUserProfile(); // Re-busca tudo para atualizar a UI com a nova imagem
+            closeModal(ui.photoModal);
+            photoPreviewFile = null; // Limpa a seleção
+        
+        } catch (dbError) {
+            console.error('Erro ao salvar caminho no DB:', dbError);
+            showNotification('A foto foi enviada, mas houve um erro ao salvar a referência.', 'danger');
+        }
+    }
+
+    async function saveOrganizationLogo() {
+        if (!logoPreviewFile) {
+            return showNotification('Nenhum novo logo selecionado.', 'info');
+        }
+
+        // Usa o nome original do ficheiro para consistência
+        const filePath = `${session.user.id}/${logoPreviewFile.name}`;
+        showNotification('A enviar logo...', 'info');
+
+        // 1. Tenta fazer o upload para o Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('logos')
+            .upload(filePath, logoPreviewFile, {
+                upsert: true // Substitui o logo se já existir
+            });
+
+        // 2. Verifica se o upload falhou
+        if (uploadError) {
+            console.error('Erro no upload do logo:', uploadError);
+            return showNotification('Erro ao enviar o seu logo.', 'danger');
+        }
+        
+        // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
+        try {
+            await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ caminho_logo: uploadData.path })
+            });
+
+            showNotification('Logo atualizado com sucesso!', 'success');
+            await fetchUserProfile(); // Re-busca os dados para obter a nova URL assinada
+            closeModal(ui.logoModal);
+            logoPreviewFile = null; // Limpa a seleção
+
+        } catch (dbError) {
+            console.error('Erro ao salvar caminho no DB:', dbError);
+            showNotification('O logo foi enviado, mas houve um erro ao salvar a referência.', 'danger');
+        }
+    }
     // --- Funções de UI e Modais ---
 
     function updateUI() {
@@ -164,6 +259,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
 
+        if (userData.url_foto_perfil) {
+            ui.profileImage.src = userData.url_foto_perfil;
+        } else {
+            ui.profileImage.src = "";
+        }
+
+        if (userData.url_logo) {
+            // Se tem um logo, esconde o placeholder e mostra a imagem
+            ui.logoPlaceholder.style.display = 'none';
+            ui.currentLogo.src = userData.url_logo;
+            ui.currentLogo.style.display = 'block';
+        } else {
+            // Se não tem, mostra o placeholder e esconde a imagem
+            ui.logoPlaceholder.style.display = 'flex';
+            ui.currentLogo.style.display = 'none';
+        }
+
         // Preenche o formulário de edição com os dados atuais
         ui.editInstitutionName.value = userData.nome || '';
         ui.editEmail.value = userData.email_contato || '';
@@ -173,20 +285,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.editCidade.value = userData.cidade || '';
         ui.editPassword.value = ''; // Senha sempre vazia por segurança
 
-        // TODO: A foto de perfil e a logo precisam ser implementadas no backend
-        // ui.profileImage.src = userData.url_foto_perfil || 'caminho/para/imagem/padrao.svg';
-        updateLogoDisplay();
-    }
-
-    function updateLogoDisplay() {
-        if (userData.url_logo) {
-            ui.logoPlaceholder.style.display = 'none';
-            ui.currentLogo.src = userData.url_logo;
-            ui.currentLogo.style.display = 'block';
-        } else {
-            ui.logoPlaceholder.style.display = 'flex';
-            ui.currentLogo.style.display = 'none';
-        }
     }
 
     function createModalOverlayIfNeeded() {
@@ -380,8 +478,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Ações dos Modais (Salvar)
         ui.btnSaveChanges.addEventListener('click', saveProfileChanges);
-        // ui.btnSavePhoto.addEventListener('click', saveProfilePhoto); // TODO: Criar esta função
-        // ui.btnSaveLogo.addEventListener('click', saveProfileLogo); // TODO: Criar esta função
+
+        ui.btnSavePhoto.addEventListener('click', saveProfilePhoto); 
+        ui.btnSaveLogo.addEventListener('click', saveOrganizationLogo);
+        ui.photoUploadInput.addEventListener('change', (event) => {
+            handlePhotoFile(event.target.files[0]);
+        });
 
         // Outros eventos
         ui.editPassword.addEventListener('input', checkPasswordStrength);
