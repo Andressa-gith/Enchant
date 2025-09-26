@@ -9,6 +9,8 @@ userRouter.post('/cadastro', cadastrarInstituicao);
 
 userRouter.get('/profile', protegerRota, UserProfileController.getProfile);
 
+userRouter.put('/profile', protegerRota, UserProfileController.updateProfile);
+
 userRouter.post('/logout', protegerRota, UserProfileController.logout);
 
 export default userRouter;

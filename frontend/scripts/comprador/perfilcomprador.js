@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session) {
         // Se não houver sessão ativa, redireciona para a página de login
-        window.location.href = '/login.html';
+        window.location.href = '/entrar';
         return;
     }
 
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnCloseLogoModalX: document.getElementById('btn-close-logo-modal-x'),
         btnCancelLogoModal: document.getElementById('btn-cancel-logo-modal'),
         btnSaveLogo: document.getElementById('btn-save-logo'),
+        photoUploadInput: document.getElementById('photo-upload'), 
         
         btnClosePrivacyModalX: document.getElementById('btn-close-privacy-modal-x'),
         btnClosePrivacyModalFooter: document.getElementById('btn-close-privacy-modal-footer'),
@@ -118,12 +119,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             nome: ui.editInstitutionName.value,
             email: ui.editEmail.value,
             senha: ui.editPassword.value,
-            documento_numero: ui.editCnpj.value,
+            cnpj: ui.editCnpj.value,
             telefone: ui.editPhone.value,
             estado: ui.editEstado.value,
             cidade: ui.editCidade.value,
         };
         
+        const aSenhaFoiAlterada = !!dadosParaEnviar.senha;
+
         // Não envia a senha se o campo estiver vazio
         if (!dadosParaEnviar.senha) {
             delete dadosParaEnviar.senha;
@@ -142,16 +145,133 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const err = await response.json();
                 throw new Error(err.message || 'Falha ao salvar no servidor');
             }
-            const updatedData = await response.json();
-            Object.assign(userData, updatedData); // Atualiza a variável local
-            updateUI();
-            closeModal(ui.editModal);
-            showNotification('Dados atualizados com sucesso!', 'success');
+
+            if (aSenhaFoiAlterada) {
+                closeModal(ui.editModal);
+                showNotification('Senha alterada com sucesso! Por segurança, você será desconectado.', 'success');
+            
+                setTimeout(async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = '/entrar';
+                }, 2000); 
+
+            } else {
+                const updatedData = await response.json();
+                Object.assign(userData, updatedData); // Atualiza a variável local
+                updateUI();
+                closeModal(ui.editModal);
+                showNotification('Dados atualizados com sucesso!', 'success');
+            }
         } catch (error) {
+            closeModal(ui.editModal);
             showNotification(`Erro do Servidor: ${error.message}`, 'danger');
         }
     }
 
+    function handlePhotoFile(file) {
+        if (!file) return;
+        // Validações (pode adicionar mais se quiser)
+        if (!file.type.startsWith('image/')) {
+            return showNotification('Por favor, selecione um ficheiro de imagem.', 'danger');
+        }
+        photoPreviewFile = file; // Armazena o ficheiro selecionado
+    }
+
+    async function saveProfilePhoto() {
+        if (!photoPreviewFile) {
+            return showNotification('Nenhuma nova foto selecionada.', 'info');
+        }
+
+        const cleanFileName = photoPreviewFile.name
+        .replace(/\s+/g, '_') // Substitui espaços por underscore
+        .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
+        .toLowerCase();
+
+        // Usa o nome original do ficheiro para mais flexibilidade (ex: .jpg, .png)
+        const filePath = `${session.user.id}/${cleanFileName}`;
+        showNotification('A enviar foto...', 'info');
+
+        // 1. Tenta fazer o upload para o Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('profile-photos')
+            .upload(filePath, photoPreviewFile, { upsert: true });
+
+        // 2. Verifica se o upload falhou
+        if (uploadError) {
+            console.error('Erro no upload da foto:', uploadError);
+            return showNotification('Erro ao enviar a sua foto.', 'danger');
+        }
+        
+        // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
+        try {
+            await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ caminho_foto_perfil: uploadData.path })
+            });
+
+            showNotification('Foto de perfil atualizada!', 'success');
+            await fetchUserProfile(); // Re-busca tudo para atualizar a UI com a nova imagem
+            closeModal(ui.photoModal);
+            photoPreviewFile = null; // Limpa a seleção
+        
+        } catch (dbError) {
+            console.error('Erro ao salvar caminho no DB:', dbError);
+            showNotification('A foto foi enviada, mas houve um erro ao salvar a referência.', 'danger');
+        }
+    }
+
+    async function saveOrganizationLogo() {
+        if (!logoPreviewFile) {
+            return showNotification('Nenhum novo logo selecionado.', 'info');
+        }
+
+        const cleanFileName2 = logoPreviewFile.name
+        .replace(/\s+/g, '_') // Substitui espaços por underscore
+        .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
+        .toLowerCase();
+
+        // Usa o nome original do ficheiro para consistência
+        const filePath = `${session.user.id}/${cleanFileName2}`;
+        showNotification('A enviar logo...', 'info');
+
+        // 1. Tenta fazer o upload para o Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('logos')
+            .upload(filePath, logoPreviewFile, {
+                upsert: true // Substitui o logo se já existir
+            });
+
+        // 2. Verifica se o upload falhou
+        if (uploadError) {
+            console.error('Erro no upload do logo:', uploadError);
+            return showNotification('Erro ao enviar o seu logo.', 'danger');
+        }
+        
+        // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
+        try {
+            await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ caminho_logo: uploadData.path })
+            });
+
+            showNotification('Logo atualizado com sucesso!', 'success');
+            await fetchUserProfile(); // Re-busca os dados para obter a nova URL assinada
+            closeModal(ui.logoModal);
+            logoPreviewFile = null; // Limpa a seleção
+
+        } catch (dbError) {
+            console.error('Erro ao salvar caminho no DB:', dbError);
+            showNotification('O logo foi enviado, mas houve um erro ao salvar a referência.', 'danger');
+        }
+    }
     // --- Funções de UI e Modais ---
 
     function updateUI() {
@@ -159,34 +279,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.orgName.textContent = userData.nome || 'Nome não encontrado';
         ui.institutionName.textContent = userData.nome || 'Não informado';
         ui.email.textContent = userData.email || 'Não informado';
-        ui.cnpj.textContent = userData.documento_numero || 'Não informado';
+        ui.cnpj.textContent = userData.cnpj || 'Não informado';
         ui.phone.textContent = userData.telefone || 'Não informado';
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
 
+        ui.profileImage.src = userData.url_foto_perfil;
+
+        if (userData.url_logo) {
+            // Se tem um logo, esconde o placeholder e mostra a imagem
+            ui.logoPlaceholder.style.display = 'none';
+            ui.currentLogo.src = userData.url_logo;
+            ui.currentLogo.style.display = 'block';
+        } else {
+            // Se não tem, mostra o placeholder e esconde a imagem
+            ui.logoPlaceholder.style.display = 'flex';
+            ui.currentLogo.style.display = 'none';
+        }
+
         // Preenche o formulário de edição com os dados atuais
         ui.editInstitutionName.value = userData.nome || '';
         ui.editEmail.value = userData.email || '';
-        ui.editCnpj.value = userData.documento_numero || '';
+        ui.editCnpj.value = userData.cnpj || '';
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
         ui.editCidade.value = userData.cidade || '';
         ui.editPassword.value = ''; // Senha sempre vazia por segurança
 
-        // TODO: A foto de perfil e a logo precisam ser implementadas no backend
-        // ui.profileImage.src = userData.url_foto_perfil || 'caminho/para/imagem/padrao.svg';
-        updateLogoDisplay();
-    }
-
-    function updateLogoDisplay() {
-        if (userData.url_logo) {
-            ui.logoPlaceholder.style.display = 'none';
-            ui.currentLogo.src = userData.url_logo;
-            ui.currentLogo.style.display = 'block';
-        } else {
-            ui.logoPlaceholder.style.display = 'flex';
-            ui.currentLogo.style.display = 'none';
-        }
     }
 
     function createModalOverlayIfNeeded() {
@@ -228,18 +347,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Lógica de Senha ---
 
     function setupPasswordToggles() {
-        ui.togglePassword.addEventListener('click', (e) => {
-            e.stopPropagation();
-            isPasswordVisible = !isPasswordVisible;
-            const icon = ui.togglePassword.querySelector('i');
-            if (isPasswordVisible) {
-                ui.passwordDots.textContent = "Não é possível exibir a senha";
-                icon.className = 'bi bi-eye-slash';
-            } else {
-                ui.passwordDots.textContent = '••••••••';
-                icon.className = 'bi bi-eye';
-            }
-        });
 
         ui.toggleEditPassword.addEventListener('click', () => {
             const isPassword = ui.editPassword.type === 'password';
@@ -351,6 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         for (const campo of campos) {
             const resultado = campo.val(campo.el.value);
             if (!resultado.v) {
+                closeModal(ui.editModal);
                 showNotification(`${campo.nome}: ${resultado.m}`, 'danger');
                 campo.el.focus();
                 return false;
@@ -380,8 +488,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Ações dos Modais (Salvar)
         ui.btnSaveChanges.addEventListener('click', saveProfileChanges);
-        // ui.btnSavePhoto.addEventListener('click', saveProfilePhoto); // TODO: Criar esta função
-        // ui.btnSaveLogo.addEventListener('click', saveProfileLogo); // TODO: Criar esta função
+
+        ui.btnSavePhoto.addEventListener('click', saveProfilePhoto); 
+        ui.btnSaveLogo.addEventListener('click', saveOrganizationLogo);
+        ui.photoUploadInput.addEventListener('change', (event) => {
+            handlePhotoFile(event.target.files[0]);
+        });
 
         // Outros eventos
         ui.editPassword.addEventListener('input', checkPasswordStrength);

@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getContratos, addContrato } from '../controllers/contrato.controller.js';
+import { getContratos, addContrato, deleteContrato } from '../controllers/contrato.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const contratoRouter = express.Router();
@@ -16,5 +16,7 @@ const upload = multer({
 contratoRouter.get('/', protegerRota, getContratos);
 // O 'arquivo_contrato' deve ser o mesmo nome usado no FormData do frontend
 contratoRouter.post('/', protegerRota, upload.single('arquivo_contrato'), addContrato);
+
+contratoRouter.delete('/:id', protegerRota, deleteContrato);
 
 export default contratoRouter;

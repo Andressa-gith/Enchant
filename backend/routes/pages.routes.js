@@ -78,12 +78,18 @@ pageRouter.get('/doacao', (req, res) => {
 });
 
 pageRouter.get('/registrar-doacao', (req, res) => {
+<<<<<<< Updated upstream
     console.log(`\n⬆️  Rota /registrar-doacao acessada.`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html'));
+=======
+    console.log(`\n⬆️  Rota /retirar-doacao acessada.`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html')); // Garanta que o nome do arquivo está correto
+>>>>>>> Stashed changes
 });
 
 pageRouter.get('/retirar-doacao', (req, res) => {
     console.log(`\n⬆️  Rota /retirar-doacao acessada.`);
+<<<<<<< Updated upstream
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-retirada.html'));
 });
 
@@ -122,9 +128,18 @@ pageRouter.get('/perfil', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'perfilcomprador.html')); // Garanta que o nome do arquivo está correto
 });
 
+=======
+    res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-retirada.html')); // Garanta que o nome do arquivo está correto
+});
+
+>>>>>>> Stashed changes
 pageRouter.get('/historico-doacoes', (req, res) => {
     console.log(`\n⬆️  Rota /historico-doacoes acessada.`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'historico-doacoes.html')); // Garanta que o nome do arquivo está correto
 });
 
+<<<<<<< Updated upstream
 export default pageRouter;
+=======
+export default pageRouter;
+>>>>>>> Stashed changes

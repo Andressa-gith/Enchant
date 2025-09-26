@@ -321,7 +321,7 @@ import supabase from '/scripts/supabaseClient.js';
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Relatórios</span>
                             </a>
-                            <a href="/transparencia/contratos">
+                            <a href="/transparencia/contratos" style="display:flex; gap: 10px">
                                 <i class="bi bi-paperclip me-2"></i>
                                 <span>Contratos</span>
                             </a>

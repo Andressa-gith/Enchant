@@ -53,6 +53,10 @@ function initializeHeader(session) {
                         padding: 0;
                         background-color: var(--white);
                     }
+                    
+                    .tithead {
+                        font-family: "Lexend Deca", sans-serif;
+                    }
 
                     #main-header {
                         position: fixed;
@@ -99,7 +103,29 @@ function initializeHeader(session) {
                         margin-right: auto;
                         color: #D3D3D3;
                     }
-                    
+
+                    #container-logo {
+                        width: 220px;
+                        height: 40px;
+
+                        /* Empurra os outros itens (seção do perfil) para a direita */
+                        margin-right: auto;
+
+                        /* Garante que o link dentro dele fique centralizado, se necessário */
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .logo-da-ong img {
+                        /* Garante que a imagem se ajuste perfeitamente dentro do link */
+                        max-width: 100%;
+                        max-height: 100%;
+
+                        /* A propriedade mais importante: mantém a proporção do logo sem distorcer */
+                        object-fit: contain;
+                    }
+
                     #inicio{
                        color: #D3D3D3;
                        justify-content: center;
@@ -244,6 +270,23 @@ function initializeHeader(session) {
                         font-size: 16px;
                     }
 
+                    //profile
+                    .profile-button {
+                        /* Garantir que o botão alinhe a foto e o nome */
+                        display: flex;
+                        align-items: center;
+                        gap: 10px; /* Espaço entre a foto e o nome */
+                    }
+
+                    .header-profile-photo {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%; /* Deixa a imagem redonda */
+                        object-fit: cover;   /* Garante que a foto preencha o círculo sem distorcer */
+                        border: 1px solid #ddd;
+                        background-color: #f0f0f0; /* Cor de fundo enquanto a imagem carrega */
+                    }
+
                     @media (max-width: 1024px) {
                         .desktop-nav, .right-section { display: none; }
                         .sidebar-toggle { display: block; }
@@ -280,6 +323,7 @@ function initializeHeader(session) {
                             padding-top: 50px;
                         }
                     }
+<<<<<<< Updated upstream
             `;
             const styleElement = document.createElement('style');
             styleElement.innerHTML = css;
@@ -291,10 +335,12 @@ function initializeHeader(session) {
                 <header class="main-header" id="main-header">
                     <div class="header-content">
                         <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
-                        <a href="/dashboard" class="logo-da-ong"></a>
-                        
+                        <div id="container-logo">
+                            <a href="/dashboard" class="logo-da-ong" id="headerLogoLink"></a>
+                        </div>
                         <div class="right-section">
                             <a href="/perfil" class="profile-button" id="profileButton">
+                                <img id="headerProfilePhoto" class="header-profile-photo" src="" alt="Foto de perfil">
                                 <span id="headerUserName">Carregando...</span>
                             </a>
                         </div>
@@ -319,6 +365,8 @@ function initializeHeader(session) {
             const sidebarToggle = document.getElementById('sidebarToggle');
             // O ID do botão de logout foi atualizado para evitar conflitos
             const logoutButton = document.getElementById('headerLogoutButton'); 
+            const logoLink = document.getElementById('headerLogoLink');
+            const profilePhotoImg = document.getElementById('headerProfilePhoto');
             
             // TODA a lógica de abrir/fechar o dropdown foi removida.
 
@@ -355,6 +403,26 @@ function initializeHeader(session) {
                     if (userNameSpan) {
                         userNameSpan.textContent = userData.nome; 
                     }
+
+                    if (logoLink && userData.url_logo) {
+                        logoLink.innerHTML = ''; 
+                        logoLink.style.backgroundColor = 'transparent';
+                        const logoImg = document.createElement('img');
+                        // Define o src com a URL segura vinda do backend
+                        logoImg.src = userData.url_logo;
+                        logoImg.alt = `Logo de ${userData.nome}`;
+                        // Adiciona a imagem dentro do link
+                        logoLink.appendChild(logoImg);
+                    }
+
+                    if (profilePhotoImg && userData.url_foto_perfil) {
+                        profilePhotoImg.src = userData.url_foto_perfil;
+                    } else if (profilePhotoImg) {
+                        // Se não houver foto, esconde a imagem para não mostrar um ícone quebrado
+                        // Você pode definir um src para uma imagem de placeholder aqui se quiser
+                        profilePhotoImg.style.display = 'none'; 
+                    }
+                    
                 } catch (error) {
                     console.error('Erro ao buscar perfil:', error);
                     if (userNameSpan) userNameSpan.textContent = 'Visitante';
@@ -362,6 +430,179 @@ function initializeHeader(session) {
             }
             
             fetchUserProfile();
+=======
+                `;
+                
+                const styleElement = document.createElement('style');
+                styleElement.innerHTML = css;
+
+                const bootstrapIcons = document.createElement('link');
+                bootstrapIcons.rel = 'stylesheet';
+                bootstrapIcons.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css';
+                
+                const lexendDecaFont = document.createElement('link');
+                lexendDecaFont.rel = 'stylesheet';
+                lexendDecaFont.href = 'https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap';
+                
+                document.head.appendChild(bootstrapIcons);
+                document.head.appendChild(lexendDecaFont);
+                document.head.appendChild(styleElement);
+            }
+
+            injectHeaderHTML() {
+                const headerHTML = `
+                    <header class="main-header">
+                        <div class="header-content">
+                            <button class="sidebar-toggle" id="sidebarToggle">
+                                <i class="bi bi-list"></i>
+                            </button>
+                            <a href="/src/views/comprador/dashboard.html" id="inicio"><div class="logo-da-ong" id="logoUpload">Inicio-do-site-dashboard</a>
+                                <div class="logo-da-ong">
+                                </div>
+                            </div>
+                            <div class="right-section">
+                                <div class="profile-section">
+                                    <button class="profile-button" id="profileButton">
+                                        <img id="profilePhoto" class="profile-photo" src="" alt="Foto do Usuário">
+                                        <i id="profileIcon" class="bi bi-person-circle profile-icon"></i>
+                                        <span class="tithead" >Nome do Usuário</span>
+                                    </button>
+                                    <div class="profile-dropdown" id="profileDropdown">
+                                        <a class="dropdown-item" href="/src/views/comprador/perfilcomprador.html"><i class="bi bi-person"></i> Perfil</a>
+                                        <a class="dropdown-item" href="/src/views/comprador/telainicialparaocomprador.html"><i class="bi bi-box-arrow-right"></i> Sair</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                `;
+
+                const headerContainer = document.createElement('div');
+                headerContainer.id = 'trapp-header-container';
+                headerContainer.innerHTML = headerHTML;
+                
+                document.body.insertBefore(headerContainer, document.body.firstChild);
+            }
+
+            initializeHeaderScripts() {
+                class HeaderNavigation {
+                    constructor() {
+                        this.sidebarToggle = document.getElementById('sidebarToggle');
+                        this.profileButton = document.getElementById('profileButton');
+                        this.profileDropdown = document.getElementById('profileDropdown');
+                        
+                        this.init();
+                    }
+
+                    init() {
+                        this.bindEvents();
+                        this.setupImageUploads();
+                        this.setupProfilePhoto();
+                    }
+
+                    bindEvents() {
+                        this.sidebarToggle.addEventListener('click', () => {
+                            if (typeof toggleSidebar === 'function') {
+                                toggleSidebar();
+                            }
+                        });
+                        
+                        this.profileButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.toggleProfileDropdown();
+                        });
+                        
+                        document.addEventListener('click', (e) => {
+                            if (!this.profileButton.contains(e.target) && !this.profileDropdown.contains(e.target)) {
+                                this.profileDropdown.classList.remove('show');
+                            }
+                        });
+                    }
+
+                    toggleProfileDropdown() {
+                        this.profileDropdown.classList.toggle('show');
+                    }
+
+                    setupImageUploads() {
+                        const logoInput = document.getElementById('logoInput');
+                        const logoPreview = document.getElementById('logoPreview');
+                        const removeLogo = document.getElementById('removeLogo');
+
+                        if (logoInput && logoPreview && removeLogo) {
+                            logoInput.addEventListener('change', (e) => this.handleImageUpload(e.target, logoPreview));
+                            removeLogo.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                this.removeImage(logoInput, logoPreview);
+                            });
+                        }
+                    }
+
+                    handleImageUpload(input, preview) {
+                        if (input.files && input.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                preview.style.backgroundImage = `url(${e.target.result})`;
+                                preview.style.display = 'block';
+                                preview.parentElement.querySelector('i').style.display = 'none';
+                            };
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    }
+
+                    removeImage(input, preview) {
+                        input.value = '';
+                        preview.style.display = 'none';
+                        preview.style.backgroundImage = '';
+                        preview.parentElement.querySelector('i').style.display = 'block';
+                    }
+
+                    setupProfilePhoto() {
+                        const profileIcon = document.getElementById('profileIcon');
+                        const profilePhoto = document.getElementById('profilePhoto');
+
+                        const profilePhotoInput = document.createElement('input');
+                        profilePhotoInput.type = 'file';
+                        profilePhotoInput.accept = 'image/*';
+                        profilePhotoInput.style.display = 'none';
+                        document.body.appendChild(profilePhotoInput);
+
+                        if (profileIcon) {
+                            profileIcon.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                profilePhotoInput.click();
+                            });
+                        }
+
+                        profilePhotoInput.addEventListener('change', function() {
+                            if (this.files && this.files[0]) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    const imageUrl = e.target.result;
+                                    if (profilePhoto) {
+                                        profilePhoto.src = imageUrl;
+                                        profilePhoto.style.display = 'inline-block';
+                                    }
+                                    if (profileIcon) profileIcon.style.display = 'none';
+                                    
+                                    const sidebarProfilePhoto = document.getElementById('sidebarProfilePhoto');
+                                    const sidebarProfileIcon = document.getElementById('sidebarProfileIcon');
+                                    if (sidebarProfilePhoto) {
+                                        sidebarProfilePhoto.src = imageUrl;
+                                        sidebarProfilePhoto.style.display = 'inline-block';
+                                    }
+                                    if (sidebarProfileIcon) {
+                                        sidebarProfileIcon.style.display = 'none';
+                                    }
+                                };
+                                reader.readAsDataURL(this.files[0]);
+                            }
+                        });
+                    }
+                }
+                
+                new HeaderNavigation();
+            }
+>>>>>>> Stashed changes
         }
     }
     
