@@ -69,3 +69,46 @@ export const addContrato = async (req, res) => {
         res.status(500).json({ message: 'Erro interno ao adicionar contrato.', error: error.message });
     }
 };
+
+export const deleteContrato = async (req, res) => {
+    try {
+        const instituicaoId = req.user.id;
+        const { id } = req.params; // Pega o ID do contrato pela URL
+
+        // 1. Pega o caminho do arquivo antes de deletar o registro do banco
+        const { data: contrato, error: fetchError } = await supabase
+            .from('contrato') // <-- Tabela de contratos
+            .select('caminho_arquivo')
+            .eq('id', id)
+            .eq('instituicao_id', instituicaoId)
+            .single();
+
+        if (fetchError || !contrato) {
+            throw new Error('Contrato não encontrado ou você não tem permissão para excluí-lo.');
+        }
+
+        // 2. Deleta o registro da tabela 'contrato'
+        const { error: deleteDbError } = await supabase
+            .from('contrato') // <-- Tabela de contratos
+            .delete()
+            .eq('id', id);
+
+        if (deleteDbError) throw deleteDbError;
+        
+        // 3. Deleta o arquivo do Supabase Storage
+        const { error: deleteStorageError } = await supabase.storage
+            .from('contracts') // <-- Bucket de contratos
+            .remove([contrato.caminho_arquivo]);
+            
+        // Mesmo que dê erro ao apagar o arquivo, a operação no banco foi um sucesso.
+        // Apenas logamos o aviso no console do servidor.
+        if (deleteStorageError) {
+            console.warn("Aviso: Registro do banco deletado, mas falha ao deletar arquivo no Storage:", deleteStorageError.message);
+        }
+
+        res.status(200).json({ message: 'Contrato deletado com sucesso!' });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao deletar contrato.', error: error.message });
+    }
+}

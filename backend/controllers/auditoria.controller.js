@@ -103,3 +103,44 @@ export const updateAuditoriaStatus = async (req, res) => {
         res.status(500).json({ message: 'Erro interno ao atualizar status.', error: error.message });
     }
 };
+
+export const deleteAuditoria = async (req, res) => {
+    try {
+        const instituicaoId = req.user.id;
+        const { id } = req.params;
+
+        // 1. Busca o caminho do arquivo na tabela correta: 'nota_auditoria'
+        const { data: auditoria, error: fetchError } = await supabase
+            .from('nota_auditoria') // <-- NOME CORRETO DA TABELA
+            .select('caminho_arquivo')
+            .eq('id', id)
+            .eq('instituicao_id', instituicaoId)
+            .single();
+
+        if (fetchError || !auditoria) {
+            throw new Error('Nota de auditoria não encontrada ou você não tem permissão.');
+        }
+
+        // 2. Deleta o registro da tabela 'nota_auditoria'
+        const { error: deleteDbError } = await supabase
+            .from('nota_auditoria') // <-- NOME CORRETO DA TABELA
+            .delete()
+            .eq('id', id);
+
+        if (deleteDbError) throw deleteDbError;
+        
+        // 3. Deleta o arquivo do bucket 'audit'
+        const { error: deleteStorageError } = await supabase.storage
+            .from('audit') // Bucket correto
+            .remove([auditoria.caminho_arquivo]);
+            
+        if (deleteStorageError) {
+            console.warn("Aviso: Registro deletado, mas falha ao remover arquivo do Storage:", deleteStorageError.message);
+        }
+
+        res.status(200).json({ message: 'Nota de auditoria deletada com sucesso!' });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao deletar nota de auditoria.', error: error.message });
+    }
+}

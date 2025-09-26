@@ -1,204 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enchant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&family=Passero+One&family=Passion+One:wght@400;700;900&display=swap">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Enchant - Notas de Auditoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@700&family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="https://phosphoricons.com?q=%22menu%22" />
-
-    <link rel="stylesheet" href="/styles/comprador/transparencia1.css">
     <link rel="stylesheet" href="/styles/global.css">
-
+    <link rel="stylesheet" href="/styles/comprador/auditoria.css"> 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/scripts/supabaseClient.js" type="module"></script>
-    <script type="module" src="/scripts/authGuard.js"></script>
-    <script type="module" src="/scripts/layouts/comprador/sidebar.js" defer></script>
-    <script type="module" src="/scripts/layouts/comprador/headercomprador.js" defer></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/scripts/authGuard.js" type="module"></script>
+    <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
+    <script src="/scripts/layouts/comprador/headercomprador.js" type="module" defer></script>
+    <script src="/scripts/comprador/transparencia3.js" type="module" defer></script>
 </head>
-
 <body>
-  <div class="container">
-    <h1>Transparência</h1>
-    <div class="nav-tabs">
-      <a class="aaa" href="/transparencia/relatorios">
-        <button class="nav-tab" data-page="page1">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-          </svg>
-          Relatórios
-        </button>
-      </a>
-      <a class="aaa" href="/transparencia/contratos">
-        <button class="nav-tab" data-page="page2">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path
-              d="M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M19,21H8V7H19V21Z" />
-          </svg>
-          Contratos
-        </button>
-      </a>
-      <a class="aaa" href="/transparencia/notas-auditoria">
-        <button class="nav-tab active" data-page="page3">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path
-              d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.98C19.47,12.66 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.02L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.02C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.66 4.57,12.98L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.98Z" />
-          </svg>
-          Notas de auditoria
-        </button>
-      </a>
-      <a class="aaa" href="/transparencia/documentos-comprobatorios">
-        <button class="nav-tab" data-page="page1">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path
-              d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M15,13H9V15H15V13M17,9H9V11H17V9Z" />
-          </svg>
-          Documentos comprobatórios
-        </button>
-      </a>
-      <a class="aaa" href="/transparencia/gestao-financeira">
-        <button class="nav-tab " data-page="page1">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path
-              d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M17,18H7V16H17V18M15.5,14H8.5V12H15.5V14M17,10H7V8H17V10Z" />
-          </svg>
-          Gestão financeira
-        </button>
-      </a>
-      <a class="aaa" href="/transparencia/parcerias">
-        <button class="nav-tab  " data-page="page1">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path
-              d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7V11.59L15.71,14.3L14.29,15.71L11,12.41V7H13Z" />
-          </svg>
-          Parcerias
-        </button>
-      </a>
-    </div>
 
-    <div class="upload-section">
-      <div class="validation-info">
-        <h4>Requisitos para notas de auditoria:</h4>
-        <ul>
-          <li>Título deve identificar claramente o tipo e período da auditoria</li>
-          <li>Data não pode ser futura nem anterior a 5 anos</li>
-          <li>Tipo de auditoria deve ser especificado corretamente</li>
-          <li>Status deve refletir a situação atual do processo</li>
-          <li>Arquivo em formato PDF ou DOC (máximo 20MB)</li>
-        </ul>
-      </div>
-
-      <div class="success-message" id="success-audits">Auditoria adicionada com sucesso!</div>
-      <div class="alert-message" id="alert-audits"></div>
-
-      <h2>Adicionar nota de auditoria</h2>
-      <form id="audits-form">
-        <div class="audit-form">
-          <div class="form-group required">
-            <label for="audit-title">Título da auditoria</label>
-            <input type="text" id="audit-title"
-              placeholder="Ex: Auditoria Interna de Processos Financeiros - 1º Semestre 2024">
-            <div class="error-message" id="audit-title-error"></div>
-          </div>
-          <div class="form-group required">
-            <label for="audit-date">Data da auditoria</label>
-            <input type="date" id="audit-date">
-            <div class="error-message" id="audit-date-error"></div>
-          </div>
-          <div class="form-group required">
-            <label for="audit-type">Tipo de auditoria</label>
-            <select id="audit-type">
-              <option value="">Selecione o tipo</option>
-              <option value="Auditoria interna">Auditoria interna</option>
-              <option value="Auditoria externa">Auditoria externa</option>
-              <option value="Revisão de processos">Revisão de processos</option>
-              <option value="Auditoria de compliance">Auditoria de compliance</option>
-              <option value="Auditoria financeira">Auditoria financeira</option>
-            </select>
-            <div class="error-message" id="audit-type-error"></div>
-          </div>
-          <div class="form-group required">
-            <label for="audit-status">Status</label>
-            <select id="audit-status">
-              <option value="">Selecione o status</option>
-              <option value="Aprovado">Aprovado</option>
-              <option value="Em andamento">Em andamento</option>
-              <option value="Rejeitado">Rejeitado</option>
-              <option value="Em revisão">Em revisão</option>
-            </select>
-            <div class="error-message" id="audit-status-error"></div>
-          </div>
-          <div class="form-group full-width required">
-            <label>Arquivo da auditoria</label>
-            <div class="file-upload" onclick="document.getElementById('audit-file').click()">
-              <svg class="icon" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin-bottom: 10px;">
-                <path
-                  d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.98C19.47,12.66 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.02L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.02C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.66 4.57,12.98L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.98Z" />
-              </svg>
-              <p>Clique para selecionar o arquivo ou arraste aqui</p>
-              <small>PDF, DOC aceitos (máximo 20MB)</small>
-              <input type="file" id="audit-file" accept=".pdf,.doc,.docx">
+    <div class="container">
+        <h1>Notas de Auditoria</h1>
+        <div class="upload-section">
+            <div class="validation-info">
+                <h4><i class="bi bi-lightbulb-fill"></i> Requisitos para notas de auditoria:</h4>
+                <ul>
+                    <li><i class="bi bi-check-circle-fill"></i> Título deve identificar claramente o tipo e período da auditoria</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Data não pode ser futura nem anterior a 5 anos</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Tipo de auditoria e status devem ser especificados</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Arquivo em formato PDF ou DOC (máximo 20MB)</li>
+                </ul>
             </div>
-            <div class="error-message" id="audit-file-error"></div>
-          </div>
+            <div class="success-message" id="success-audits"></div>
+            <div class="alert-message" id="alert-audits"></div>
+            <h2>Adicionar nota de auditoria</h2>
+            <form id="audits-form">
+                <div class="audit-form-grid">
+                    <div class="form-group">
+                        <label for="audit-title">Título</label>
+                        <input type="text" id="audit-title" placeholder="Ex: Auditoria Interna - 1º Semestre 2024">
+                        <div class="error-message" id="audit-title-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="audit-date">Data</label>
+                        <input type="date" id="audit-date">
+                        <div class="error-message" id="audit-date-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="audit-type">Tipo</label>
+                        <select id="audit-type"><option value="">Selecione</option><option value="Auditoria interna">Interna</option><option value="Auditoria externa">Externa</option><option value="Revisão de processos">Processos</option><option value="Auditoria de compliance">Compliance</option><option value="Auditoria financeira">Financeira</option></select>
+                        <div class="error-message" id="audit-type-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="audit-status">Status</label>
+                        <select id="audit-status"><option value="">Selecione</option><option value="Aprovado">Aprovado</option><option value="Em andamento">Em andamento</option><option value="Rejeitado">Rejeitado</option><option value="Em revisão">Em revisão</option></select>
+                        <div class="error-message" id="audit-status-error"></div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Arquivo da auditoria</label>
+                        <div class="file-upload" onclick="document.getElementById('audit-file').click()">
+                            <p>Clique para selecionar o arquivo ou arraste aqui</p>
+                            <small>PDF, DOC aceitos (máximo 20MB)</small>
+                            <input type="file" id="audit-file" accept=".pdf,.doc,.docx" hidden>
+                        </div>
+                        <div class="error-message" id="audit-file-error"></div>
+                    </div>
+                </div>
+                <button type="submit" class="upload-btn">Adicionar Auditoria</button>
+            </form>
+            
+            <div class="uploaded-items">
+                <h3>Auditorias publicadas</h3>
+                <div id="list-states-container">
+                    <div id="loader" class="loader-container"><div class="spinner"></div><p>Carregando...</p></div>
+                    <div id="empty-state" class="empty-state-container"><i class="bi bi-cloud-slash"></i><h4>Nenhuma auditoria por aqui</h4><p>Use o formulário acima para começar.</p></div>
+                </div>
+                <div class="cards-grid" id="audits-list"></div>
+            </div>
         </div>
-        <button type="submit" class="upload-btn">
-          Adicionar auditoria
-        </button>
-      </form>
-
-      <div class="uploaded-items" id="audits-list">
-        <h3>Auditorias publicadas</h3>
-      </div>
     </div>
-  </div>
 
-  <!-- Modal para visualizar descrição -->
-  <div id="descriptionModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <h3 id="modal-title"></h3>
-      </div>
-      <div class="modal-body">
-        <p id="modal-description"></p>
-      </div>
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><p>Tem certeza que deseja excluir esta nota de auditoria? A ação não pode ser desfeita.</p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-danger" id="confirmDeleteBtn">Sim, Excluir</button></div></div></div>
     </div>
-  </div>
-
-  <div class="modal fade" id="erroSenhaModal" tabindex="-1" aria-labelledby="erroSenhaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="erroSenhaModalLabel">Atenção</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-        </div>
-        <div class="modal-body" id="erroSenhaModalBody">
-          <!-- Mensagem de erro será inserida aqui -->
-        </div>
-        <div class="modal-footer">
-          <button id="botao-validar" type="button" class="botaozinho" data-bs-dismiss="modal">Entendi</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS e Popper -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="/scripts/comprador/transparencia3.js" defer></script>
 
 </body>
-
 </html>

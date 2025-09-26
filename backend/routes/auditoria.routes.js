@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getAuditorias, addAuditoria, updateAuditoriaStatus } from '../controllers/auditoria.controller.js';
+import { getAuditorias, addAuditoria, updateAuditoriaStatus, deleteAuditoria } from '../controllers/auditoria.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const auditoriaRouter = express.Router();
@@ -18,5 +18,7 @@ auditoriaRouter.get('/', protegerRota, getAuditorias);
 auditoriaRouter.post('/', protegerRota, upload.single('arquivo_auditoria'), addAuditoria);
 
 auditoriaRouter.patch('/:id/status', protegerRota, updateAuditoriaStatus);
+
+auditoriaRouter.delete('/:id', protegerRota, deleteAuditoria);
 
 export default auditoriaRouter;
