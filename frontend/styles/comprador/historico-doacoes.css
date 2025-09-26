@@ -35,9 +35,9 @@ body {
 
 .relatorio-header h1 {
   font-family: "Passion One", sans-serif;
-  font-size: 3rem;
-  font-weight: 700;
-  color: #343a40;
+  color: #3d2106;
+  font-size: 3.0rem;
+  text-align: center;
 }
 
 .relatorio-header p {
@@ -158,12 +158,12 @@ body {
    ========================================================================== */
 
 .card-form {
-  background: #c49b61; /* Cor de fundo original restaurada */
-  color: #5a3811; /* Alterado de branco para marrom escuro para melhor leitura */
+  background: #bb8262; /* Cor de fundo original restaurada */
+  color: #37230c; /* Alterado de branco para marrom escuro para melhor leitura */
 }
 
 .card-form .card-title {
-  color: #5a3811; /* Cor escura para melhor contraste com o fundo */
+  color: #37230c; /* Cor escura para melhor contraste com o fundo */
   text-align: center;
 }
 
@@ -200,7 +200,7 @@ body {
 }
 
 .generate-btn {
-  background: rgba(226, 204, 174, 1); /* Cor original do botão */
+  background: #eee0cc; /* Cor original do botão */
   color: #3a1804; /* Texto escuro para combinar com o botão claro */
   border: none;
   width: 100%;

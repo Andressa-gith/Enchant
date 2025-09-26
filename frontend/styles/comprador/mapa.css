@@ -32,13 +32,20 @@ main {
 /* === ESTILOS PARA A SEÇÃO DE CONSULTA DETALhada === */
 
 #titulo {
-    font-family: 'Passion One', cursive;
-    color: rgba(97, 53, 12, 1);
-    font-size: 50px;
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
+    font-size: 3.0rem;
     text-align: center;
-    padding: 2rem 1rem;
-    z-index: 2;
+    padding: 1rem;
     margin-top: 2rem; /* Ajustado para melhor visual */
+}
+
+#descrição {
+    font-size: 1rem;
+    color: #6c757d;
+    max-width: 600px;
+    margin: 0.5rem auto 0;
+    text-align: center;
 }
 
 .consulta-container {
@@ -143,6 +150,10 @@ main {
     color: #212529;
 }
 
+input[type="checkbox"] {
+    accent-color: #72330f; /* << A MÁGICA ACONTECE AQUI */
+    }
+
 /* Estilos para o container do gráfico */
 .grafico {
     width: 87vh;
@@ -152,15 +163,21 @@ main {
     background-color: #fff;
     border-radius: 8px;
     border: 1px solid #dee2e6;
+    
 }
 .grafico p {
     font-size: 1vh;
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.7rem;
+
 }
 .grafico h3 {
     text-align: center;
     font-size: 1.3vh;
     margin-bottom: 25px;
     color: #333;
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.9rem;
 }
 
 /* === LAYOUT PRINCIPAL (MAPA E BUSCA) === */
@@ -273,6 +290,16 @@ main {
     padding: 25px;
     display: flex;
     flex-direction: column;
+}
+
+.ph.ph-funnel {
+    font-size: 2.0rem;
+}
+
+#filtros{
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
+    font-size: 2.5rem;
 }
 
 /* === ESTILOS DOS GRÁFICOS === */
