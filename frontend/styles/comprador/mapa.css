@@ -32,9 +32,9 @@ main {
 /* === ESTILOS PARA A SEÇÃO DE CONSULTA DETALhada === */
 
 #titulo {
-    font-family: 'Passion One', cursive;
-    color: rgba(97, 53, 12, 1);
-    font-size: 50px;
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
+    font-size: 3.0rem;
     text-align: center;
     padding: 2rem 1rem;
     z-index: 2;

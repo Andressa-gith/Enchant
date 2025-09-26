@@ -180,6 +180,8 @@ function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca
     });
 }
 
+
+
 function desenharMapaGeoJSON(geojson) {
     if (geojsonLayer) map.removeLayer(geojsonLayer);
     geojsonLayer = L.geoJson(geojson, { 
