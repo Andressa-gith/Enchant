@@ -1,7 +1,7 @@
 import supabase from '/scripts/supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Mapeamento dos elementos da UI
+    // Mapeamento de todos os elementos da interface
     const ui = {
         form: document.getElementById('reports-form'),
         titleInput: document.getElementById('report-title'),
@@ -10,18 +10,33 @@ document.addEventListener('DOMContentLoaded', () => {
         fileUploadArea: document.querySelector('.file-upload'),
         fileUploadText: document.querySelector('.file-upload p'),
         submitBtn: document.querySelector('.upload-btn'),
-        reportsList: document.getElementById('reports-list'),
+        reportsList: document.getElementById('reports-list'), // Agora é a grid
         successMessage: document.getElementById('success-reports'),
         alertMessage: document.getElementById('alert-reports'),
-        modal: document.getElementById('descriptionModal'),
         modalTitle: document.getElementById('modal-title'),
         modalDescription: document.getElementById('modal-description'),
-        modalCloseBtn: document.querySelector('.modal .close'),
+        confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
+        // NOVO: Seletores para os estados de UI
+        loader: document.getElementById('loader'),
+        emptyState: document.getElementById('empty-state'),
     };
 
     let selectedFile = null;
+    let reportIdToDelete = null;
 
-    // --- FUNÇÕES DE VALIDAÇÃO ---
+    const showLoader = (isLoading) => {
+        ui.loader.style.display = isLoading ? 'block' : 'none';
+    };
+
+    const showEmptyState = (isEmpty) => {
+        ui.emptyState.style.display = isEmpty ? 'flex' : 'none';
+    };
+    
+    const showReportsGrid = (shouldShow) => {
+        ui.reportsList.style.display = shouldShow ? 'grid' : 'none';
+    };
+
+    // --- LÓGICA DE VALIDAÇÃO ---
     const validateField = (input, condition, errorMsg, errorElementId) => {
         const errorElement = document.getElementById(errorElementId);
         if (condition) {
@@ -46,95 +61,72 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE UPLOAD DE ARQUIVO ---
     const handleFileSelection = (file) => {
         if (!file) return;
-
         const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-        const maxSize = 10 * 1024 * 1024; // 10MB
-
+        const maxSize = 10 * 1024 * 1024;
         if (!allowedTypes.includes(file.type)) {
-            validateField(ui.fileUploadArea, false, 'Formato de arquivo inválido. Use PDF, DOC ou XLS.', 'report-file-error');
-            selectedFile = null;
-            return;
+            validateField(ui.fileUploadArea, false, 'Formato inválido. Use PDF, DOC ou XLS.', 'report-file-error');
+            selectedFile = null; return;
         }
         if (file.size > maxSize) {
-            validateField(ui.fileUploadArea, false, 'O arquivo é muito grande (máximo 10MB).', 'report-file-error');
-            selectedFile = null;
-            return;
+            validateField(ui.fileUploadArea, false, 'Arquivo muito grande (máx 10MB).', 'report-file-error');
+            selectedFile = null; return;
         }
-
         selectedFile = file;
-        ui.fileUploadText.textContent = `Arquivo selecionado: ${file.name}`;
+        ui.fileUploadText.textContent = `Arquivo: ${file.name}`;
         validateField(ui.fileUploadArea, true, '', 'report-file-error');
     };
-
-    // Eventos de Drag & Drop
-    ui.fileUploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        ui.fileUploadArea.classList.add('dragover');
-    });
+    
+    ui.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); ui.fileUploadArea.classList.add('dragover'); });
     ui.fileUploadArea.addEventListener('dragleave', () => ui.fileUploadArea.classList.remove('dragover'));
-    ui.fileUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        ui.fileUploadArea.classList.remove('dragover');
-        const file = e.dataTransfer.files[0];
-        handleFileSelection(file);
-    });
+    ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); });
     ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
 
-
-    // --- FUNÇÕES DE API ---
+    // --- FUNÇÕES DE API (INTEGRAÇÃO COM BACKEND) ---
     const loadReports = async () => {
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError || !sessionData.session) {
-            console.error('Não autenticado.');
-            return;
-        }
-        const token = sessionData.session.access_token;
+        showLoader(true);
+        showReportsGrid(false);
+        showEmptyState(false);
 
         try {
-            const response = await fetch('/api/relatorios', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) throw new Error('Falha ao carregar relatórios.');
-            
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { throw new Error('Não autenticado.'); }
+
+            const response = await fetch('/api/relatorios', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
+            if (!response.ok) { throw new Error('Falha ao carregar relatórios.'); }
+
             const reports = await response.json();
             renderReports(reports);
         } catch (error) {
-            showAlert('Erro ao carregar os relatórios existentes.');
+            showAlert(error.message || 'Erro ao carregar os relatórios.');
+            showEmptyState(true); // Mostra estado de erro/vazio se falhar
+        } finally {
+            showLoader(false);
         }
     };
     
     const submitForm = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         ui.submitBtn.disabled = true;
         ui.submitBtn.textContent = 'Enviando...';
-
         const formData = new FormData();
         formData.append('titulo', ui.titleInput.value);
         formData.append('descricao', ui.descriptionInput.value);
         formData.append('arquivo_relatorio', selectedFile);
 
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session.access_token;
-
         try {
-            const response = await fetch('/api/relatorios', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData,
-            });
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada.');
 
+            const response = await fetch('/api/relatorios', { method: 'POST', headers: { 'Authorization': `Bearer ${session.access_token}` }, body: formData });
             const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Erro ao enviar.');
 
-            if (!response.ok) throw new Error(result.message || 'Erro desconhecido.');
-
-            showSuccess('Relatório adicionado com sucesso!');
+            showSuccess('Relatório adicionado!');
             ui.form.reset();
             selectedFile = null;
             ui.fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
-            loadReports(); // Recarrega a lista
-
+            loadReports();
         } catch (error) {
             showAlert(error.message);
         } finally {
@@ -142,8 +134,27 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.submitBtn.textContent = 'Adicionar relatório';
         }
     };
-    
-    // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
+
+    const deleteReport = async (reportId) => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada.');
+
+            const response = await fetch(`/api/relatorios/${reportId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${session.access_token}` }
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'Erro ao deletar.');
+            
+            showSuccess('Relatório excluído com sucesso!');
+            loadReports();
+        } catch (error) {
+            showAlert(error.message);
+        }
+    };
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO E FEEDBACK VISUAL ---
     const showAlert = (message) => {
         ui.alertMessage.textContent = message;
         ui.alertMessage.style.display = 'block';
@@ -157,86 +168,90 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const renderReports = (reports) => {
-        // Limpa a lista antes de adicionar os novos itens
-        ui.reportsList.innerHTML = '<h3>Relatórios publicados</h3>'; 
-        
+        ui.reportsList.innerHTML = '';
+
         if (reports.length === 0) {
-            ui.reportsList.innerHTML += '<p>Nenhum relatório publicado ainda.</p>';
+            showEmptyState(true);
+            showReportsGrid(false);
             return;
         }
-        
-        const cardsGrid = document.createElement('div');
-        cardsGrid.className = 'cards-grid';
+
+        showEmptyState(false);
+        showReportsGrid(true);
 
         reports.forEach(report => {
             const date = new Date(report.data_publicacao).toLocaleDateString('pt-BR');
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                <h3>${report.titulo}</h3>
-                <div class="card-meta">
-                    <div>Publicado em: ${date}</div>
+                <div class="card-content">
+                    <h3>${report.titulo}</h3>
+                    <div class="card-meta">Publicado em: ${date}</div>
                 </div>
                 <div class="card-actions">
+                    <button class="view-description-btn" data-title="${report.titulo}" data-description="${report.descricao}">
+                        <i class="bi bi-eye-fill"></i> Descrição
+                    </button>
                     <button class="download-btn" data-path="${report.caminho_arquivo}">
                         <i class="bi bi-download"></i> Baixar
                     </button>
-                    <button class="view-description-btn" data-title="${report.titulo}" data-description="${report.descricao}">
-                       Ver Descrição
+                    <button class="delete-btn" data-id="${report.id}">
+                        <i class="bi bi-trash-fill"></i> Excluir
                     </button>
                 </div>
             `;
-            cardsGrid.appendChild(card);
+            ui.reportsList.appendChild(card);
         });
-        ui.reportsList.appendChild(cardsGrid);
     };
 
-    // --- MODAL ---
-    const openModal = (title, description) => {
-        ui.modalTitle.textContent = title;
-        ui.modalDescription.textContent = description;
-        ui.modal.style.display = 'block';
-    };
-
-    const closeModal = () => {
-        ui.modal.style.display = 'none';
-    };
-
-    ui.modalCloseBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (event) => {
-        if (event.target === ui.modal) {
-            closeModal();
-        }
-    });
-
-    // --- DELEGAÇÃO DE EVENTOS ---
+    // --- EVENT LISTENERS (OUVINTES DE AÇÕES) ---
     ui.reportsList.addEventListener('click', async (e) => {
         const downloadBtn = e.target.closest('.download-btn');
         const viewBtn = e.target.closest('.view-description-btn');
+        const deleteBtn = e.target.closest('.delete-btn');
 
         if (downloadBtn) {
             const filePath = downloadBtn.dataset.path;
-            const { data, error } = await supabase.storage.from('reports').download(filePath);
-            if (error) {
+            try {
+                const { data, error } = await supabase.storage.from('reports').download(filePath);
+                if (error) throw error;
+                const url = URL.createObjectURL(data);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filePath.split(/-(.+)/)[1] || filePath;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch(error) {
                 showAlert('Erro ao baixar o arquivo.');
-                return;
             }
-            const url = URL.createObjectURL(data);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filePath.split('-').pop(); // Pega o nome original do arquivo
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
 
         if (viewBtn) {
-            openModal(viewBtn.dataset.title, viewBtn.dataset.description);
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('descriptionModal'));
+            ui.modalTitle.textContent = viewBtn.dataset.title;
+            ui.modalDescription.textContent = viewBtn.dataset.description;
+            modal.show();
+        }
+        
+        if (deleteBtn) {
+            reportIdToDelete = deleteBtn.dataset.id;
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmDeleteModal'));
+            modal.show();
         }
     });
 
-    // --- INICIALIZAÇÃO ---
+    ui.confirmDeleteBtn.addEventListener('click', () => {
+        if (reportIdToDelete) {
+            deleteReport(reportIdToDelete);
+            reportIdToDelete = null;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+            modal.hide();
+        }
+    });
+
     ui.form.addEventListener('submit', submitForm);
-    loadReports(); // Carrega os relatórios ao iniciar a página
+
+    loadReports();
 });

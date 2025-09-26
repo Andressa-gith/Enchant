@@ -1,0 +1,310 @@
+/* =================================
+   1. Estilos Globais e Layout Principal
+   ================================= */
+:root {
+    --cor-primaria: #4A2B00;
+    --cor-secundaria: #DAA520;
+    --cor-fundo-pagina: #F8F5F0;
+    --cor-fundo-card: #FFFFFF;
+    --cor-texto-principal: #2C2C2C;
+    --cor-texto-suave: #6A6A6A;
+    --cor-sucesso: #28a745;
+    --cor-erro: #dc3545;
+    --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --borda-padrao: #E0E0E0;
+}
+
+body {
+    background-color: var(--cor-fundo-pagina);
+    color: var(--cor-texto-principal);
+    font-family: 'Lexend Deca', sans-serif;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+}
+
+h1 {
+    font-family: 'Passion One', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+/* ... (Seções 2 e 3 do CSS - Dicas e Formulário - continuam iguais ao anterior) ... */
+.validation-info { background-color: #FFFDE7; border: 1px solid #FFECB3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; width: 100%; }
+.validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
+.validation-info h4::before { font-family: 'bootstrap-icons'; content: '\f4a1'; font-size: 1.5rem; color: var(--cor-secundaria); }
+.validation-info ul { list-style: none; padding-left: 0; margin: 0; }
+.validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: flex-start; gap: 0.5rem; }
+.validation-info li::before { content: none; }
+.validation-info li::after { font-family: 'bootstrap-icons'; content: '\f26a'; color: var(--cor-secundaria); flex-shrink: 0; margin-top: 2px; order: -1; }
+.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 2.5rem; box-shadow: var(--sombra-suave); }
+.upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1.05rem; }
+.form-group input, .form-group textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; font-family: 'Lexend Deca', sans-serif; transition: all 0.2s ease-in-out; }
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--cor-secundaria); box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3); }
+button{ font-family: 'Lexend Deca', sans-serif; }
+.file-upload { text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
+.file-upload:hover, .file-upload.dragover { border-color: var(--cor-secundaria); background-color: #FFFDF0; }
+.file-upload svg { display: none; }
+.file-upload::before { font-family: 'bootstrap-icons'; content: '\f3ee'; font-size: 3.5rem; color: var(--cor-primaria); display: block; margin-bottom: 1rem; }
+.file-upload p { margin: 0; font-weight: 600; font-size: 1.2rem; }
+.file-upload small { color: var(--cor-texto-suave); font-size: 0.9rem; }
+.file-upload input { display: none; }
+.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-primaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+.upload-btn:hover { background-color: #2e1a00; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); box-shadow: none; }
+.upload-btn::before { font-family: 'bootstrap-icons'; content: '\f5fe'; font-size: 1.2rem; }
+.success-message, .alert-message { padding: 1.1rem; border-radius: 10px; margin-bottom: 1.8rem; font-weight: 500; display: none; }
+.success-message { background-color: #E6FFED; color: #1E8449; border: 1px solid #A2E0B6; }
+.alert-message { background-color: #FFF3E6; color: #D64545; border: 1px solid #FFBEB8; }
+.error-message { color: var(--cor-erro); font-size: 0.95rem; margin-top: 0.6rem; display: none; font-weight: 500;}
+
+/* =================================
+   4. Lista de Itens Publicados
+   ================================= */
+.uploaded-items {
+    margin-top: 3.5rem;
+}
+
+/* NOVO: Estilos para os estados de carregamento e lista vazia */
+.loader-container {
+    display: none; text-align: center; padding: 3rem; color: var(--cor-texto-suave);
+}
+.spinner {
+    width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top: 4px solid var(--cor-secundaria);
+    border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.empty-state-container {
+    display: none; flex-direction: column; align-items: center; text-align: center;
+    padding: 3rem; background-color: #fafafa; border: 1px dashed var(--borda-padrao);
+    border-radius: 12px; color: var(--cor-texto-suave);
+}
+.empty-state-container i { font-size: 3.5rem; color: var(--borda-padrao); margin-bottom: 1rem; }
+.empty-state-container h4 { font-size: 1.2rem; color: var(--cor-texto-principal); margin-bottom: 0.5rem; }
+
+.cards-grid {
+    display: none; /* Começa escondido, o JS controla a exibição */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+}
+
+.card {
+    background-color: var(--cor-fundo-card); border: 1px solid var(--borda-padrao);
+    border-radius: 12px; padding: 1.6rem; display: flex; flex-direction: column;
+    justify-content: space-between; transition: all 0.2s ease-in-out;
+}
+.card:hover {
+    transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card-content h3 {
+    font-size: 1.3rem; font-weight: 700; color: var(--cor-primaria);
+    border: none; padding: 0; margin: 0 0 0.5rem 0;
+    /* === CORREÇÃO 2: QUEBRA DE LINHA AUTOMÁTICA === */
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.card .card-meta {
+    font-size: 0.95rem; color: var(--cor-texto-suave); margin-bottom: 1rem;
+}
+.card .card-actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: auto;
+}
+.card-actions .delete-btn {
+    grid-column: 1 / -1; background-color: #FFF1F1; color: #D64545; border-color: #FFBEB8;
+}
+.card-actions .delete-btn:hover {
+    background-color: #D64545; border-color: #D64545; color: white;
+}
+.card-actions button {
+    font-family: 'Lexend Deca', sans-serif; padding: 0.7rem 0.9rem; border-radius: 8px;
+    cursor: pointer; font-weight: 600; border: 1px solid; transition: all 0.2s ease-in-out;
+    display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.95rem;
+}
+.card-actions .download-btn {
+    background-color: var(--cor-secundaria); color: var(--cor-primaria); border-color: var(--cor-secundaria);
+}
+.card-actions .download-btn:hover {
+    background-color: #C1911D; border-color: #C1911D; color: white;
+}
+.card-actions .view-description-btn {
+    background-color: transparent; color: var(--cor-primaria); border-color: var(--borda-padrao);
+}
+.card-actions .view-description-btn:hover {
+    background-color: #F0F0F0; border-color: var(--cor-primaria);
+}
+
+/* =================================
+   5. Modal 
+   ================================= */
+/* === CORREÇÃO 1: MODAL PERFEITO === */
+/* Estilos que garantem que o modal do Bootstrap funcione como um overlay */
+.modal {
+    position: fixed; top: 0; left: 0; z-index: 1055;
+    display: none; width: 100%; height: 100%;
+    overflow-x: hidden; overflow-y: auto; outline: 0;
+}
+.modal.fade { transition: opacity .15s linear; }
+.modal-backdrop {
+    position: fixed; top: 0; left: 0; z-index: 1050;
+    width: 100vw; height: 100vh; background-color: #000;
+}
+.modal-backdrop.fade { opacity: 0; }
+.modal-backdrop.show { opacity: 0.5; }
+
+.modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 1.75rem auto; /* Ajustado para espaçamento superior/inferior */
+    pointer-events: none;
+    z-index: 1060; /* Acima do backdrop */
+    transition: transform .3s ease-out;
+    transform: translateY(-50px); /* Posição inicial para animação */
+
+    /* === CORREÇÃO 1: TAMANHO MÁXIMO DO MODAL === */
+    max-width: 500px; /* Define a largura máxima padrão para o modal */
+    
+    /* === CORREÇÃO 2: CENTRALIZAÇÃO HORIZONTAL EM MODAIS NÃO-CENTERED === */
+    /* Isso garante que ele sempre tente centralizar */
+    margin-left: auto;
+    margin-right: auto;
+}
+.modal.show .modal-dialog {
+    transform: none; /* Posição final da animação */
+    pointer-events: auto;
+}
+
+.modal-dialog-centered {
+    /* === CORREÇÃO 3: CENTRALIZAÇÃO VERTICAL FORÇADA === */
+    /* Garante a centralização vertical perfeita */
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 3.5rem); /* Ajusta a altura mínima para o margin de 1.75rem em cima e embaixo */
+}
+
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: var(--cor-fundo-card);
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    outline: 0;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+}
+
+/* O cabeçalho do modal */
+.modal-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--borda-padrao);
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+}
+
+/* O título do modal (h5) */
+.modal-title {
+    margin-bottom: 0;
+    line-height: 1.5;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--cor-primaria);
+}
+
+/* Botão de fechar (o "X") */
+.modal-header .btn-close {
+    padding: 0.5rem;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+}
+
+/* O corpo (conteúdo principal) do modal */
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    font-size: 1rem;
+    color: var(--cor-texto-principal);
+}
+.modal-body p {
+    margin-bottom: 0;
+}
+
+
+/* O rodapé, onde ficam os botões */
+.modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end; /* Alinha os botões à direita */
+    padding: 1rem;
+    border-top: 1px solid var(--borda-padrao);
+    border-bottom-right-radius: 11px;
+    border-bottom-left-radius: 11px;
+}
+
+/* Espaçamento entre os botões no rodapé */
+.modal-footer > * {
+    margin: 0.25rem;
+}
+
+/* =================================
+   7. VERSÃO FINAL - BOTÕES DO MODAL NO PADRÃO DA PÁGINA
+   ================================= */
+
+/* O Bootstrap agora cuida do ícone "X", nós só ajustamos o foco */
+.modal-header .btn-close:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3);
+}
+
+/* Deixando o botão "Cancelar" com o padrão da página */
+.modal-footer .btn-secondary {
+    color: var(--cor-primaria);
+    background-color: transparent;
+    border-color: var(--borda-padrao);
+}
+.modal-footer .btn-secondary:hover {
+    background-color: #F0F0F0;
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+}
+
+/* Deixando o botão "Excluir" com o padrão da página */
+.modal-footer .btn-danger {
+    color: #fff;
+    background-color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+}
+.modal-footer .btn-danger:hover {
+    background-color: #2e1a00;
+    border-color: #2e1a00;
+}
+
+@media (max-width: 992px) {
+    .container { display: block; }
+}
+@media (max-width: 768px) {
+    h1 { font-size: 2.8rem; }
+    .container { margin: 1.5rem auto; }
+    .upload-section { padding: 1.8rem; }
+}
