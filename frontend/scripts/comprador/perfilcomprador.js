@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session) {
         // Se não houver sessão ativa, redireciona para a página de login
-        window.location.href = '/login.html';
+        window.location.href = '/entrar';
         return;
     }
 
@@ -116,9 +116,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const dadosParaEnviar = {
             nome: ui.editInstitutionName.value,
-            email: ui.editEmail.value,
+            email_contato: ui.editEmail.value,
             senha: ui.editPassword.value,
-            documento_numero: ui.editCnpj.value,
+            cnpj: ui.editCnpj.value,
             telefone: ui.editPhone.value,
             estado: ui.editEstado.value,
             cidade: ui.editCidade.value,
@@ -158,16 +158,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Atualiza os textos na página principal
         ui.orgName.textContent = userData.nome || 'Nome não encontrado';
         ui.institutionName.textContent = userData.nome || 'Não informado';
-        ui.email.textContent = userData.email || 'Não informado';
-        ui.cnpj.textContent = userData.documento_numero || 'Não informado';
+        ui.email.textContent = userData.email_contato || 'Não informado';
+        ui.cnpj.textContent = userData.cnpj || 'Não informado';
         ui.phone.textContent = userData.telefone || 'Não informado';
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
 
         // Preenche o formulário de edição com os dados atuais
         ui.editInstitutionName.value = userData.nome || '';
-        ui.editEmail.value = userData.email || '';
-        ui.editCnpj.value = userData.documento_numero || '';
+        ui.editEmail.value = userData.email_contato || '';
+        ui.editCnpj.value = userData.cnpj || '';
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
         ui.editCidade.value = userData.cidade || '';
