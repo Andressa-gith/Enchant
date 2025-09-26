@@ -1,219 +1,287 @@
 import supabase from '/scripts/supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Garante que o script seja um módulo
-    if (!document.querySelector('script[src="/scripts/comprador/transparencia5.js"][type="module"]')) {
-        const scriptTag = document.querySelector('script[src="/scripts/comprador/transparencia5.js"]');
-        if (scriptTag) scriptTag.type = 'module';
-    }
-
+    // CORRIGIDO: Mapeamento completo e correto de todos os elementos da UI
     const ui = {
-        form: document.getElementById('categoryForm'),
+        form: document.getElementById('finance-form'),
+        categoriaInput: document.getElementById('categoria'),
+        origemRecursoSelect: document.getElementById('origemRecurso'),
+        orcamentoPrevistoInput: document.getElementById('orcamentoPrevisto'),
+        valorExecutadoInput: document.getElementById('valorExecutado'),
+        statusSelect: document.getElementById('status'),
+        submitBtn: document.querySelector('#finance-form .upload-btn'), // Seletor específico
         tableBody: document.getElementById('budgetTableBody'),
         originChartCanvas: document.getElementById('originChart').getContext('2d'),
         destinationChartCanvas: document.getElementById('destinationChart').getContext('2d'),
+        successMessage: document.getElementById('success-financeiro'),
+        alertMessage: document.getElementById('alert-financeiro'),
+        loader: document.getElementById('loader'),
+        emptyState: document.getElementById('empty-state'),
+        
+        // Modais
+        editModal: new bootstrap.Modal(document.getElementById('editModal')),
+        editForm: document.getElementById('edit-form'),
+        editId: document.getElementById('edit-id'),
+        editCategoria: document.getElementById('edit-categoria'),
+        editOrcamento: document.getElementById('edit-orcamentoPrevisto'),
+        editExecutado: document.getElementById('edit-valorExecutado'),
+        saveEditBtn: document.getElementById('saveEditBtn'),
+        confirmDeleteModal: new bootstrap.Modal(document.getElementById('confirmDeleteModal')),
+        confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
     };
 
-    let originChart = null;
-    let destinationChart = null;
+    let originChart, destinationChart;
     let allFinancialData = [];
+    let itemToDeleteId = null;
 
-    const chartColors = ['#72330f', '#e2ccae', '#3d2106', '#EADBC8', '#694E4E'];
+    const chartColors = ['#4A2B00', '#DAA520', '#A0522D', '#D2B48C', '#8B4513'];
+    
+    // Funções de controle de UI
+    const showLoader = (isLoading) => { ui.loader.style.display = isLoading ? 'flex' : 'none'; };
+    const showEmptyState = (isEmpty) => { ui.emptyState.style.display = isEmpty ? 'flex' : 'none'; };
+    const showTable = (shouldShow) => { ui.tableBody.closest('.table-wrapper').style.display = shouldShow ? 'block' : 'none'; };
 
+    // --- LÓGICA DOS GRÁFICOS ---
     const updateCharts = () => {
+        if (allFinancialData.length === 0) {
+            if (originChart) originChart.destroy();
+            if (destinationChart) destinationChart.destroy();
+            ui.originChartCanvas.clearRect(0, 0, ui.originChartCanvas.canvas.width, ui.originChartCanvas.canvas.height);
+            ui.destinationChartCanvas.clearRect(0, 0, ui.destinationChartCanvas.canvas.width, ui.destinationChartCanvas.canvas.height);
+            return;
+        }
+
         const originData = allFinancialData.reduce((acc, item) => {
             acc[item.origem_recurso] = (acc[item.origem_recurso] || 0) + parseFloat(item.orcamento_previsto);
             return acc;
         }, {});
-
         if (originChart) originChart.destroy();
         originChart = new Chart(ui.originChartCanvas, {
             type: 'pie',
-            data: {
-                labels: Object.keys(originData),
-                datasets: [{ data: Object.values(originData), backgroundColor: chartColors, borderColor: '#fff', borderWidth: 2 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            data: { labels: Object.keys(originData), datasets: [{ data: Object.values(originData), backgroundColor: chartColors, borderColor: '#fff', borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: { family: 'Lexend Deca' }} } } }
         });
 
         const destinationData = allFinancialData.reduce((acc, item) => {
             acc[item.nome_categoria] = (acc[item.nome_categoria] || 0) + parseFloat(item.valor_executado);
             return acc;
         }, {});
-        
         if (destinationChart) destinationChart.destroy();
         destinationChart = new Chart(ui.destinationChartCanvas, {
             type: 'bar',
-            data: {
-                labels: Object.keys(destinationData),
-                datasets: [{ label: 'Valor Executado (R$)', data: Object.values(destinationData), backgroundColor: chartColors[0], borderRadius: 4 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+            data: { labels: Object.keys(destinationData), datasets: [{ label: 'Valor Executado (R$)', data: Object.values(destinationData), backgroundColor: chartColors[0], borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: {font: { family: 'Lexend Deca' }} }, y: { ticks: {font: { family: 'Lexend Deca' }} } } }
         });
     };
     
-    const formatCurrency = (value) => `R$ ${parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // --- LÓGICA DA TABELA E FORMATAÇÃO ---
+    const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
-    // Objeto com as opções de status para o <select>
-    const statusOptions = {
-        'Planejado': 'Planejado',
-        'Pendente': 'Pendente',
-        'Executado': 'Executado'
-    };
-
     const renderTable = () => {
         ui.tableBody.innerHTML = '';
         if (allFinancialData.length === 0) {
-            ui.tableBody.innerHTML = `<tr><td colspan="7" class="no-data1">Nenhuma categoria adicionada para este ano.</td></tr>`;
+            showEmptyState(true);
+            showTable(false);
             return;
         }
+        showEmptyState(false);
+        showTable(true);
 
+        const statusOptions = { 'Planejado': 'Planejado', 'Pendente': 'Pendente', 'Executado': 'Executado' };
         allFinancialData.forEach(item => {
+            let optionsHTML = '';
+            for (const [value, text] of Object.entries(statusOptions)) {
+                optionsHTML += `<option value="${value}" ${value === item.status ? 'selected' : ''}>${text}</option>`;
+            }
             const orcamento = parseFloat(item.orcamento_previsto);
             const executado = parseFloat(item.valor_executado);
             const percentual = orcamento > 0 ? ((executado / orcamento) * 100).toFixed(1) : '0.0';
-            
-            // Gera as opções de status para o dropdown
-            let optionsHTML = '';
-            for (const [value, text] of Object.entries(statusOptions)) {
-                const isSelected = value === item.status ? 'selected' : '';
-                optionsHTML += `<option value="${value}" ${isSelected}>${text}</option>`;
-            }
 
             const row = document.createElement('tr');
-            row.dataset.id = item.id;
             row.innerHTML = `
-                <td class="category1">${item.nome_categoria}</td>
+                <td>${item.nome_categoria}</td>
                 <td>${item.origem_recurso}</td>
                 <td>${formatCurrency(orcamento)}</td>
-                <td class="valor-executado-cell">${formatCurrency(executado)}</td>
-                <td class="percentual-cell">${percentual}%</td>
-                <td>
-                    <select class="form-control1 status-select-financeiro" data-id="${item.id}">
-                        ${optionsHTML}
-                    </select>
-                </td>
-                <td class="actions-cell1">
-                    <button class="editinho1" data-id="${item.id}">Editar Valor</button>
+                <td>${formatCurrency(executado)}</td>
+                <td>${percentual}%</td>
+                <td><select class="status-select" data-id="${item.id}">${optionsHTML}</select></td>
+                <td class="actions-cell">
+                    <button class="action-btn edit-btn" data-id="${item.id}" title="Editar"><i class="bi bi-pencil-square"></i></button>
+                    <button class="action-btn delete-btn" data-id="${item.id}" title="Excluir"><i class="bi bi-trash-fill"></i></button>
                 </td>
             `;
             ui.tableBody.appendChild(row);
         });
     };
 
+    // --- FUNÇÕES DE API ---
     const loadFinancialData = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-
+        showLoader(true);
+        showTable(false);
+        showEmptyState(false);
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Não autenticado.');
             const response = await fetch('/api/financeiro', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
             if (!response.ok) throw new Error('Falha ao carregar dados financeiros.');
             allFinancialData = await response.json();
             renderTable();
             updateCharts();
-        } catch (error) { console.error(error); }
+        } catch (error) {
+            showAlert(error.message || 'Erro ao carregar os dados.');
+            renderTable([]);
+            updateCharts();
+        } finally {
+            showLoader(false);
+        }
     };
-
-    const addCategory = async (e) => {
+    
+    const addLancamento = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const newCategory = Object.fromEntries(formData.entries());
-        const { data: { session } } = await supabase.auth.getSession();
+        
+        const newLancamento = {
+            nome_categoria: ui.categoriaInput.value.trim(),
+            origem_recurso: ui.origemRecursoSelect.value,
+            orcamento_previsto: ui.orcamentoPrevistoInput.value,
+            valor_executado: ui.valorExecutadoInput.value,
+            status: ui.statusSelect.value,
+        };
+
+        if (!newLancamento.nome_categoria || !newLancamento.origem_recurso || !newLancamento.orcamento_previsto || !newLancamento.valor_executado || !newLancamento.status) {
+            showAlert('Todos os campos marcados com * são obrigatórios.');
+            return;
+        }
+
+        ui.submitBtn.disabled = true;
+        ui.submitBtn.innerHTML = 'Enviando...';
+
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada.');
             const response = await fetch('/api/financeiro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-                body: JSON.stringify(newCategory),
+                body: JSON.stringify(newLancamento),
             });
-            if (!response.ok) throw new Error('Erro ao adicionar categoria.');
-            e.target.reset();
+            if (!response.ok) throw new Error('Erro ao adicionar lançamento.');
+            showSuccess('Lançamento adicionado com sucesso!');
+            ui.form.reset();
             loadFinancialData();
-        } catch (error) { console.error(error); }
+        } catch (error) {
+            showAlert(error.message);
+        } finally {
+            ui.submitBtn.disabled = false;
+            ui.submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Adicionar Lançamento';
+        }
     };
 
-    const updateExecutedValue = async (id, newValue) => {
-        const { data: { session } } = await supabase.auth.getSession();
+    const deleteItem = async (id) => {
         try {
-            const response = await fetch(`/api/financeiro/${id}/valor-executado`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-                body: JSON.stringify({ valor_executado: newValue })
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada.');
+            const response = await fetch(`/api/financeiro/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
-            if (!response.ok) throw new Error('Falha ao atualizar valor.');
-            const updatedItem = await response.json();
-            const itemIndex = allFinancialData.findIndex(item => item.id == id);
-            if (itemIndex > -1) allFinancialData[itemIndex] = updatedItem.data;
-            updateRowInTable(id);
-            updateCharts();
-        } catch (error) { console.error(error); }
+            if (!response.ok) throw new Error('Erro ao excluir lançamento.');
+            showSuccess('Lançamento excluído com sucesso!');
+            loadFinancialData();
+        } catch (error) {
+            showAlert(error.message);
+        }
     };
-
-    // NOVA FUNÇÃO para atualizar o status
+    
     const updateStatus = async (id, newStatus) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        try {
+         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada.');
             const response = await fetch(`/api/financeiro/${id}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
                 body: JSON.stringify({ status: newStatus })
             });
              if (!response.ok) throw new Error('Falha ao atualizar status.');
-            
-            // Atualiza o dado localmente e recarrega os gráficos
+            const updatedItem = await response.json();
             const itemIndex = allFinancialData.findIndex(item => item.id == id);
-            if (itemIndex > -1) allFinancialData[itemIndex].status = newStatus;
+            if (itemIndex > -1) allFinancialData[itemIndex].status = updatedItem.data.status;
+            showSuccess('Status atualizado!');
             updateCharts();
         } catch (error) {
-            console.error(error);
-            loadFinancialData(); // Recarrega tudo em caso de erro
+            showAlert(error.message);
+            loadFinancialData();
+        }
+    };
+
+    const saveEdit = async (id, updatedData) => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada.');
+            const response = await fetch(`/api/financeiro/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+                body: JSON.stringify(updatedData)
+            });
+            if (!response.ok) throw new Error('Falha ao salvar alterações.');
+            showSuccess('Lançamento atualizado com sucesso!');
+            ui.editModal.hide();
+            loadFinancialData();
+        } catch (error) {
+            showAlert(error.message);
         }
     };
     
-    const updateRowInTable = (id) => {
-        const row = ui.tableBody.querySelector(`tr[data-id='${id}']`);
-        const item = allFinancialData.find(d => d.id == id);
-        if (!row || !item) return;
-        const orcamento = parseFloat(item.orcamento_previsto);
-        const executado = parseFloat(item.valor_executado);
-        const percentual = orcamento > 0 ? ((executado / orcamento) * 100).toFixed(1) : '0.0';
-        row.querySelector('.valor-executado-cell').textContent = formatCurrency(executado);
-        row.querySelector('.percentual-cell').textContent = `${percentual}%`;
-    };
-
-    const handleEditClick = (e) => {
-        const button = e.target.closest('.editinho1');
-        if (!button) return;
-        const id = button.dataset.id;
-        const row = button.closest('tr');
-        const cell = row.querySelector('.valor-executado-cell');
-        const currentTextValue = cell.textContent;
-        const currentValue = parseFloat(currentTextValue.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
-        cell.innerHTML = `<input type="number" class="form-control1" value="${currentValue}" step="0.01" min="0">`;
-        const input = cell.querySelector('input');
-        input.focus();
-        input.select();
-        const saveChanges = () => {
-            const newValue = input.value;
-            cell.innerHTML = formatCurrency(newValue);
-            updateExecutedValue(id, newValue);
-        };
-        input.addEventListener('blur', saveChanges);
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') input.blur();
-            else if (e.key === 'Escape') cell.innerHTML = currentTextValue;
-        });
-    };
+    const showAlert = (message) => { ui.alertMessage.textContent = message; ui.alertMessage.style.display = 'block'; setTimeout(() => ui.alertMessage.style.display = 'none', 5000); };
+    const showSuccess = (message) => { ui.successMessage.textContent = message; ui.successMessage.style.display = 'block'; setTimeout(() => ui.successMessage.style.display = 'none', 4000); };
 
     // --- EVENT LISTENERS ---
-    ui.form.addEventListener('submit', addCategory);
-    ui.tableBody.addEventListener('click', handleEditClick);
-    
-    // NOVO EVENT LISTENER para a mudança de status
+    ui.form.addEventListener('submit', addLancamento);
+
+    ui.saveEditBtn.addEventListener('click', () => {
+        const id = ui.editId.value;
+        const updatedData = {
+            nome_categoria: ui.editCategoria.value.trim(),
+            orcamento_previsto: ui.editOrcamento.value,
+            valor_executado: ui.editExecutado.value
+        };
+        if (!updatedData.nome_categoria || !updatedData.orcamento_previsto || !updatedData.valor_executado) {
+            // Apenas para garantir, uma validação simples no modal
+            return; 
+        }
+        saveEdit(id, updatedData);
+    });
+
+    ui.tableBody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-btn');
+        const deleteBtn = e.target.closest('.delete-btn');
+
+        if (editBtn) {
+            const id = editBtn.dataset.id;
+            const item = allFinancialData.find(d => d.id == id);
+            if (item) {
+                ui.editId.value = item.id;
+                ui.editCategoria.value = item.nome_categoria;
+                ui.editOrcamento.value = item.orcamento_previsto;
+                ui.editExecutado.value = item.valor_executado;
+                ui.editModal.show();
+            }
+        }
+        if (deleteBtn) {
+            itemToDeleteId = deleteBtn.dataset.id;
+            ui.confirmDeleteModal.show();
+        }
+    });
+
+    ui.confirmDeleteBtn.addEventListener('click', () => {
+        if (itemToDeleteId) {
+            deleteItem(itemToDeleteId);
+            itemToDeleteId = null;
+            ui.confirmDeleteModal.hide();
+        }
+    });
+
     ui.tableBody.addEventListener('change', (e) => {
-        if (e.target.classList.contains('status-select-financeiro')) {
-            const id = e.target.dataset.id;
-            const newStatus = e.target.value;
-            updateStatus(id, newStatus);
+        if (e.target.classList.contains('status-select')) {
+            updateStatus(e.target.dataset.id, e.target.value);
         }
     });
 
