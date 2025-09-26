@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const dadosParaEnviar = {
             nome: ui.editInstitutionName.value,
-            email_contato: ui.editEmail.value,
+            email: ui.editEmail.value,
             senha: ui.editPassword.value,
             cnpj: ui.editCnpj.value,
             telefone: ui.editPhone.value,
@@ -125,6 +125,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             cidade: ui.editCidade.value,
         };
         
+        const aSenhaFoiAlterada = !!dadosParaEnviar.senha;
+
         // Não envia a senha se o campo estiver vazio
         if (!dadosParaEnviar.senha) {
             delete dadosParaEnviar.senha;
@@ -143,12 +145,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const err = await response.json();
                 throw new Error(err.message || 'Falha ao salvar no servidor');
             }
-            const updatedData = await response.json();
-            Object.assign(userData, updatedData); // Atualiza a variável local
-            updateUI();
-            closeModal(ui.editModal);
-            showNotification('Dados atualizados com sucesso!', 'success');
+
+            if (aSenhaFoiAlterada) {
+                closeModal(ui.editModal);
+                showNotification('Senha alterada com sucesso! Por segurança, você será desconectado.', 'success');
+            
+                setTimeout(async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = '/entrar';
+                }, 2000); 
+
+            } else {
+                const updatedData = await response.json();
+                Object.assign(userData, updatedData); // Atualiza a variável local
+                updateUI();
+                closeModal(ui.editModal);
+                showNotification('Dados atualizados com sucesso!', 'success');
+            }
         } catch (error) {
+            closeModal(ui.editModal);
             showNotification(`Erro do Servidor: ${error.message}`, 'danger');
         }
     }
@@ -263,7 +278,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Atualiza os textos na página principal
         ui.orgName.textContent = userData.nome || 'Nome não encontrado';
         ui.institutionName.textContent = userData.nome || 'Não informado';
-        ui.email.textContent = userData.email_contato || 'Não informado';
+        ui.email.textContent = userData.email || 'Não informado';
         ui.cnpj.textContent = userData.cnpj || 'Não informado';
         ui.phone.textContent = userData.telefone || 'Não informado';
         ui.estado.textContent = userData.estado || 'Não informado';
@@ -284,7 +299,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Preenche o formulário de edição com os dados atuais
         ui.editInstitutionName.value = userData.nome || '';
-        ui.editEmail.value = userData.email_contato || '';
+        ui.editEmail.value = userData.email || '';
         ui.editCnpj.value = userData.cnpj || '';
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
@@ -332,18 +347,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Lógica de Senha ---
 
     function setupPasswordToggles() {
-        ui.togglePassword.addEventListener('click', (e) => {
-            e.stopPropagation();
-            isPasswordVisible = !isPasswordVisible;
-            const icon = ui.togglePassword.querySelector('i');
-            if (isPasswordVisible) {
-                ui.passwordDots.textContent = "Não é possível exibir a senha";
-                icon.className = 'bi bi-eye-slash';
-            } else {
-                ui.passwordDots.textContent = '••••••••';
-                icon.className = 'bi bi-eye';
-            }
-        });
 
         ui.toggleEditPassword.addEventListener('click', () => {
             const isPassword = ui.editPassword.type === 'password';
@@ -455,6 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         for (const campo of campos) {
             const resultado = campo.val(campo.el.value);
             if (!resultado.v) {
+                closeModal(ui.editModal);
                 showNotification(`${campo.nome}: ${resultado.m}`, 'danger');
                 campo.el.focus();
                 return false;

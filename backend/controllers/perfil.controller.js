@@ -1,4 +1,4 @@
-import supabase from '../db/supabaseClient.js';
+import supabase from '../db/supabaseAdmin.js';
 
 class UserProfileController {
     async getProfile(req, res) {
@@ -22,10 +22,12 @@ class UserProfileController {
 
             const fone = Array.isArray(data.telefone) ? data.telefone[0] : data.telefone;
             const end = Array.isArray(data.endereco) ? data.endereco[0] : data.endereco;
+            const emailDoUsuarioLogado = req.user.email;
 
             const profileData = {
                 nome: data.nome,
                 email_contato: data.email_contato,
+                email: emailDoUsuarioLogado,
                 cnpj: data.cnpj,
                 // Extrai a string 'numero' de dentro do array 'telefones'
                 telefone: fone?.numero || null,
@@ -51,7 +53,6 @@ class UserProfileController {
                 } else {
                     profileData.url_foto_perfil = photoUrlData.signedUrl;
                 }
-                console.log('URL da foto:', profileData.url_foto_perfil);
                 } catch (error) {
                     console.error('Erro ao processar foto:', error);
                 }
@@ -74,7 +75,6 @@ class UserProfileController {
                     } else {
                         profileData.url_logo = logoUrlData.signedUrl;
                     }
-                    console.log('URL do logo:', profileData.url_logo);
                 } catch (error) {
                     console.error('Erro ao processar logo:', error);
                 }
@@ -89,11 +89,36 @@ class UserProfileController {
     }
 
     async updateProfile(req, res) {
+
         try {
             // 1. Obter dados da requisição
             const usuarioId = req.user.id;
             // Pegamos os dados que o frontend enviou no 'body'
-            const { nome, email_contato, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo } = req.body;
+            const { nome, email_contato, email, senha, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo } = req.body;
+
+            const authUpdateData = {};
+
+            if (email && email !== req.user.email) {
+                authUpdateData.email = email;
+            }
+            if (senha) {
+                authUpdateData.password = senha;
+            }
+
+            // 2. Se houver algo para atualizar (e-mail ou senha), executa a chamada
+            if (Object.keys(authUpdateData).length > 0) {
+                const { error: authError } = await supabase.auth.admin.updateUserById(
+                    usuarioId,
+                    authUpdateData // O objeto agora contém e-mail e/ou senha
+                );
+
+                if (authError) {
+                    if (authError.message.includes('unique constraint')) {
+                        return res.status(409).json({ message: 'Este e-mail já está em uso.' });
+                    }
+                    throw authError;
+                }
+            }
 
             // 2. Preparar os objetos de dados para cada tabela
             const instituicaoData = { nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo };
