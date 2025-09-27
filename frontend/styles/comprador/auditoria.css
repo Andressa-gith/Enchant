@@ -82,8 +82,9 @@ p {
 }
 .file-upload p { margin: 0; font-weight: 600; font-size: 1.2rem; }
 .file-upload small { color: var(--cor-texto-suave); font-size: 0.9rem; }
-.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; }
+.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); border: none; }
 
 /* =================================
    4. Lista de Itens Publicados

@@ -81,8 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedFile = null; return;
         }
         selectedFile = file;
-        fileUploadText.textContent = `Arquivo selecionado:`;
-        fileNameDisplay.textContent = file.name;
+        fileUploadText.textContent = `Arquivo: ${file.name}`;
         validateField(ui.fileUploadArea, true, '', 'audit-file-error');
     };
     

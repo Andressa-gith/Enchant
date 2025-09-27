@@ -27,8 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fileUploadText = ui.fileUploadArea.querySelector('p');
         const fileNameDisplay = ui.fileUploadArea.querySelector('small');
         if (!file) return;
-        fileUploadText.textContent = `Arquivo selecionado:`;
-        fileNameDisplay.textContent = file.name;
+        fileUploadText.textContent = `Arquivo: ${file.name}`;
     };
     ui.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); ui.fileUploadArea.classList.add('dragover'); });
     ui.fileUploadArea.addEventListener('dragleave', () => ui.fileUploadArea.classList.remove('dragover'));

@@ -68,12 +68,9 @@ p {
 .form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1rem; }
 .form-group input, .form-group select { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; transition: all 0.2s ease-in-out; }
 .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--cor-secundaria); border: 0 0 0 3px rgba(218, 165, 32, 0.3); }
-.upload-btn {
-    width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria);
-    color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem;
-    transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-}
-.upload-btn:hover { background-color: var(--cor-secundaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+.upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); border: none; }
 
 /* =================================
    4. Gráficos e Tabela
