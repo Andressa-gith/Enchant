@@ -7,7 +7,6 @@ import supabaseClient from './supabaseClient.js';
 
     // Se NÃO houver um usuário logado...
     if (!user) {
-        alert('Você precisa estar logado para acessar esta página.');
         window.location.href = '/entrar'; 
     }
 })();

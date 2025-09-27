@@ -10,7 +10,6 @@ supabase.auth.onAuthStateChange((event, session) => {
         }
     } else {
         if (!window.isLoggingOut) {
-            alert('Você precisa estar logado para acessar essa página.');
             window.location.href = '/entrar';
         }
     }
