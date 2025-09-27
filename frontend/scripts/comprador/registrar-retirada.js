@@ -14,41 +14,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carrega os itens do estoque ao iniciar a página
     async function carregarItensEmEstoque() {
-        const [
-            { data: entradas, error: erroEntradas },
-            { data: saidas, error: erroSaidas }
-        ] = await Promise.all([
-            supabaseClient.from('doacao_entrada').select(`*, categoria:categoria_id(nome)`),
-            supabaseClient.from('doacao_saida').select('entrada_id, quantidade_retirada')
-        ]);
+        try {
+            // Primeiro, pegamos a sessão para saber qual instituição está logada
+            const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+            if (sessionError || !session) throw new Error('Sessão não encontrada.');
+            
+            const instituicaoId = session.user.id; // ID da instituição logada
 
-        if (erroEntradas || erroSaidas) {
-            console.error('Erro ao carregar estoque:', erroEntradas || erroSaidas);
-            selectItemEstoque.innerHTML = '<option>Erro ao carregar estoque</option>';
-            return;
+            // **CORREÇÃO AQUI**
+            // Agora, as buscas são filtradas pelo 'instituicao_id'
+            const [
+                { data: entradas, error: erroEntradas },
+                { data: saidas, error: erroSaidas }
+            ] = await Promise.all([
+                supabaseClient.from('doacao_entrada')
+                    .select(`*, categoria:categoria_id(nome)`)
+                    .eq('instituicao_id', instituicaoId), // <-- FILTRO DE SEGURANÇA ADICIONADO
+                
+                supabaseClient.from('doacao_saida')
+                    .select('entrada_id, quantidade_retirada')
+                    .eq('instituicao_id', instituicaoId) // <-- FILTRO DE SEGURANÇA ADICIONADO
+            ]);
+
+            if (erroEntradas || erroSaidas) {
+                throw new Error(erroEntradas?.message || erroSaidas?.message || 'Erro ao carregar dados.');
+            }
+
+            const totaisRetirados = saidas.reduce((acc, saida) => {
+                acc[saida.entrada_id] = (acc[saida.entrada_id] || 0) + Number(saida.quantidade_retirada);
+                return acc;
+            }, {});
+
+            estoqueDisponivel = entradas.map(entrada => {
+                const retirado = totaisRetirados[entrada.id] || 0;
+                const disponivel = Number(entrada.quantidade) - retirado;
+                return { ...entrada, quantidade_disponivel: disponivel };
+            }).filter(item => item.quantidade_disponivel > 0);
+
+            selectItemEstoque.innerHTML = '<option value="" disabled selected>Selecione um item do estoque...</option>';
+            
+            if (estoqueDisponivel.length === 0) {
+                 selectItemEstoque.innerHTML = '<option value="" disabled>Nenhum item em estoque para retirada.</option>';
+            } else {
+                estoqueDisponivel.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = `Lote #${item.id}: ${item.categoria.nome} (de ${item.doador_origem_texto}) - Disp: ${item.quantidade_disponivel}`;
+                    selectItemEstoque.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao carregar estoque:', error);
+            selectItemEstoque.innerHTML = `<option>${error.message}</option>`;
         }
-
-        const totaisRetirados = saidas.reduce((acc, saida) => {
-            acc[saida.entrada_id] = (acc[saida.entrada_id] || 0) + Number(saida.quantidade_retirada);
-            return acc;
-        }, {});
-
-        estoqueDisponivel = entradas.map(entrada => {
-            const retirado = totaisRetirados[entrada.id] || 0;
-            const disponivel = Number(entrada.quantidade) - retirado;
-            return { ...entrada, quantidade_disponivel: disponivel };
-        }).filter(item => item.quantidade_disponivel > 0);
-
-        selectItemEstoque.innerHTML = '<option value="" disabled selected>Selecione um item do estoque...</option>';
-        estoqueDisponivel.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.id;
-            option.textContent = `Lote #${item.id}: ${item.categoria.nome} (de ${item.doador_origem_texto}) - Disp: ${item.quantidade_disponivel}`;
-            selectItemEstoque.appendChild(option);
-        });
     }
 
-    // "Ouve" a seleção de um item no menu
+    // "Ouve" a seleção de um item no menu (sem alteração)
     selectItemEstoque.addEventListener('change', (event) => {
         const itemId = event.target.value;
         const itemSelecionado = estoqueDisponivel.find(item => item.id == itemId);
@@ -65,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Envia o formulário
+    // Envia o formulário (sem alteração)
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
