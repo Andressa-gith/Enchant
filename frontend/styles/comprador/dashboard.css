@@ -26,8 +26,7 @@
 body {
     font-family: "Lexend Deca", sans-serif;
     color: var(--text-color);
-    background-color: #FAFAFA; /* Um cinza bem claro para dar contraste */
-    min-height: 100vh;
+    background-color: #FAFAFA;
 }
 
 /* ================ CONTAINER PRINCIPAL ================ */
@@ -55,28 +54,46 @@ body {
     margin: 0;
 }
 
+/* ================== ESTILOS PARA OS NOVOS FILTROS DE DATA ================== */
 .header-filters {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
 }
-
-.btn-date-filter {
+.date-picker-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     background-color: #fff;
-    color: var(--text-color);
-    border: 1px solid #dee2e6;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem;
     border-radius: 8px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
 }
-
-.btn-date-filter.active, .btn-date-filter:hover {
+.date-picker-group label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-left: 0.25rem;
+}
+.date-picker-group .form-control {
+    border: none;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+.date-picker-group .btn {
     background-color: var(--primary-color);
-    color: white;
     border-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.date-picker-group .btn:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
 }
 
 /* ================ SUMMARY CARDS (KPIs) ================ */
@@ -86,7 +103,6 @@ body {
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
-
 .summary-card {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
@@ -108,13 +124,11 @@ body {
     background: var(--secondary-color);
     border-radius: 10px;
 }
-
 .summary-card-value {
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--primary-dark);
 }
-
 .summary-card-label {
     font-size: 0.875rem;
     color: var(--text-light);
@@ -123,17 +137,10 @@ body {
 /* ================ SEÇÃO PRINCIPAL (GRÁFICO E SIDEBAR) ================ */
 .chart-and-sidebar-section {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 3fr 1fr;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
-
-@media (min-width: 992px) {
-    .chart-and-sidebar-section {
-        grid-template-columns: 3fr 1fr;
-    }
-}
-
 .chart-card, .sidebar-card {
     background: var(--card-bg);
     border-radius: var(--border-radius);
@@ -142,71 +149,59 @@ body {
     box-shadow: var(--shadow);
     height: 100%;
 }
-
 .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.25rem;
+    flex-wrap: wrap;
 }
-
 .chart-title {
     font-family: "Passion One", sans-serif;
     color: var(--primary-dark);
     font-size: 1.5rem;
     margin: 0;
 }
-
-.chart-container {
-    height: 450px;
-}
-
-/* NOVO: Estilo para o filtro <select> do gráfico */
+.chart-container { height: 450px; }
 .chart-header .form-select {
     border-radius: 8px;
     border-color: #dee2e6;
     font-size: 0.875rem;
     background-color: #f8f9fa;
+    max-width: 200px;
 }
-
-/* ================ BOTÕES DE VISUALIZAÇÃO DO GRÁFICO ================ */
-.view-filter-group {
-    margin-left: auto; /* Empurra para a direita */
-}
-
 .btn-view-filter {
     background-color: #f8f9fa;
     color: var(--text-color);
     border: 1px solid #dee2e6;
     padding: 0.375rem 0.75rem;
     border-radius: 8px;
-    font-size: 0.8rem; /* Um pouco menor para caber bem */
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
 }
-
 .btn-view-filter.active, .btn-view-filter:hover {
     background-color: var(--primary-dark);
     color: white;
     border-color: var(--primary-dark);
 }
 
-/* Ajuste no header do gráfico para melhor alinhamento */
-.chart-header {
-    gap: 1rem;
-}
-
-/* ================ SIDEBAR ================ */
+/* SIDEBAR DE ATIVIDADES */
 .sidebar-title {
     font-size: 1.25rem;
     margin-bottom: 1rem;
     color: var(--primary-dark);
     font-weight: 600;
     font-family: "Passion One", sans-serif;
-}
-
-/* NOVO: Estilo para a lista de atividades recentes */
-#lista-atividades-recentes .atividade-item {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
+}
+#lista-atividades-recentes .atividade-item {
+    display: flex;
+    align-items: flex-start;
     gap: 0.75rem;
     padding: 0.75rem 0;
     border-bottom: 1px solid #f0f0f0;
@@ -217,39 +212,27 @@ body {
 }
 #lista-atividades-recentes .atividade-icon {
     font-size: 1.25rem;
-    color: var(--primary-color);
+    margin-top: 2px;
 }
 #lista-atividades-recentes .atividade-texto {
     color: var(--text-light);
+    flex-grow: 1;
 }
-#lista-atividades-recentes .atividade-texto strong {
+#lista-atividades-recentes .atividade-texto strong,
+#lista-atividades-recentes .atividade-texto b {
     color: var(--text-color);
 }
-
-/* ================ SEÇÃO TABELA DE DOAÇÕES ================ */
-/* NOVO: Estilo para a tabela de doações recentes */
-.recent-donations-section .card {
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow);
-}
-.recent-donations-section .card-header {
-    background-color: transparent;
-    border-bottom: 1px solid var(--border-color);
-    font-family: "Passion One", sans-serif;
-    font-size: 1.5rem;
-    color: var(--primary-dark);
-}
-.table thead th {
-    font-weight: 600;
-    color: var(--text-light);
-    border: none;
-}
-.table tbody tr:hover {
-    background-color: #f8f5f1;
+#lista-atividades-recentes .atividade-data {
+    font-size: 0.75rem;
+    color: #aaa;
+    white-space: nowrap;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
 }
 
-/* ================ GRID DE ESTATÍSTICAS ================ */
+/* SEÇÃO DE ESTOQUE POR CATEGORIA (INTOCADA) */
 .stats-section .section-title {
     font-family: "Passion One", sans-serif;
     color: var(--primary-dark);
@@ -257,7 +240,6 @@ body {
     margin-bottom: 1rem;
     padding-top: 1rem;
 }
-
 .stats-grid-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -267,7 +249,6 @@ body {
 .stats-grid-row:last-child {
     margin-bottom: 0;
 }
-
 .stat-card {
     border-radius: var(--border-radius);
     padding: 1.5rem;
@@ -276,20 +257,49 @@ body {
     background-color: var(--card-bg);
     box-shadow: var(--shadow);
 }
-
 .stat-number {
     font-size: 2.25rem;
     font-weight: 700;
     color: var(--primary-dark);
 }
-
 .stat-label {
     font-size: 0.9rem;
     color: var(--text-light);
     font-weight: 500;
 }
 
-/* ================ RESPONSIVIDADE ================ */
+/* ================== ESTILOS ATUALIZADOS PARA OS FILTROS ================== */
+.date-picker-group {
+    display: flex; align-items: center; gap: 0.5rem; background-color: #fff;
+    padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+.date-picker-group label { font-size: 0.8rem; color: var(--text-light); font-weight: 500; }
+.date-picker-group .form-control { border: 1px solid #ddd; font-size: 0.875rem; padding: 0.25rem 0.5rem; }
+
+/* ESTILO DO BOTÃO FILTRAR PADRONIZADO */
+.btn-filter {
+    background-color: var(--primary-color); color: white; border: none;
+    padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600;
+    display: flex; align-items: center; gap: 0.4rem; transition: background-color 0.2s;
+}
+.btn-filter:hover { background-color: var(--primary-dark); }
+
+/* ESTILO DO NOVO BOTÃO RESETAR */
+.btn-reset {
+    background-color: #f0f0f0; color: var(--text-light); border: 1px solid #ddd;
+    padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 600;
+    display: flex; align-items: center; transition: all 0.2s;
+}
+.btn-reset:hover { background-color: #e0e0e0; color: var(--primary-dark); }
+/* ======================================================================== */
+
+/* RESPONSIVIDADE */
+@media (max-width: 992px) {
+    .chart-and-sidebar-section {
+        grid-template-columns: 1fr;
+    }
+}
 @media (max-width: 767px) {
     .dashboard-header {
         flex-direction: column;
