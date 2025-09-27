@@ -21,36 +21,32 @@ export const getDashboardData = async (req, res) => {
             { data: dadosInstituicao, error: erroInstituicao },
             { data: doacoesEntradas, error: erroEntradas },
             { data: doacoesSaidas, error: erroSaidas },
-            // ALTERADO: Renomeado para 'gastosFinanceiros' para maior clareza
-            { data: gastosFinanceiros, error: erroGastos },
-            // NOVO: Adicionada a busca por receitas de doações financeiras
-            { data: recibosDoacao, error: erroRecibos }
+            { data: recibos, error: erroRecibos },
+            { data: parcerias, error: erroParcerias },
+            { data: transferencias, error: erroTransferencias },
+            { data: gastosProprios, error: erroGastos }
         ] = await Promise.all([
             supabase.from('instituicao').select('nome').eq('id', instituicaoId).single(),
             supabase.from('doacao_entrada').select('quantidade, doador_origem_texto, data_entrada, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId).gte('data_entrada', dataInicio),
             supabase.from('doacao_saida').select('quantidade_retirada, destinatario, data_saida, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId).gte('data_saida', dataInicio),
-            supabase.from('gestao_financeira').select('valor_executado').eq('instituicao_id', instituicaoId).gte('data_criacao', dataInicio),
-            // NOVA CONSULTA para buscar o valor dos 'Recibos de doação'
-            supabase.from('documento_comprobatorio').select('valor').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Recibo de doação').gte('data_criacao', dataInicio)
+            supabase.from('documento_comprobatorio').select('valor').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Recibo de doação').gte('data_criacao', dataInicio),
+            supabase.from('parceiro').select('valor_total_parceria, status, data_fim').eq('instituicao_id', instituicaoId).gte('data_inicio', dataInicio),
+            supabase.from('documento_comprobatorio').select('valor').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Comprovante de transferência').gte('data_criacao', dataInicio),
+            supabase.from('gestao_financeira').select('valor_executado').eq('instituicao_id', instituicaoId).eq('origem_recurso', 'Recursos Próprios').gte('data_criacao', dataInicio)
         ]);
         
-        // Melhor tratamento de erros
-        const anyError = erroInstituicao || erroEntradas || erroSaidas || erroGastos || erroRecibos;
+        const anyError = erroInstituicao || erroEntradas || erroSaidas || erroRecibos || erroParcerias || erroTransferencias || erroGastos;
         if (anyError) {
             console.error("Erro Supabase:", anyError);
             throw new Error(anyError.message);
         }
 
         // --- CÁLCULO DOS ITENS FÍSICOS (ESTOQUE) ---
-        
-        // 1. Totais de ENTRADA por categoria
         const totaisEntradaPorCategoria = doacoesEntradas.reduce((acc, item) => {
             const nomeCat = item.categoria.nome;
             acc[nomeCat] = (acc[nomeCat] || 0) + Number(item.quantidade);
             return acc;
         }, {});
-
-        // 2. Totais de SAÍDA por categoria
         const totaisSaidaPorCategoria = doacoesSaidas.reduce((acc, item) => {
             if (item.entrada && item.entrada.categoria) {
                 const nomeCat = item.entrada.categoria.nome;
@@ -58,11 +54,8 @@ export const getDashboardData = async (req, res) => {
             }
             return acc;
         }, {});
-
-        // 3. CALCULA O ESTOQUE ATUAL por categoria
         const estoqueAtualPorCategoria = {};
         const todasCategorias = new Set([...Object.keys(totaisEntradaPorCategoria), ...Object.keys(totaisSaidaPorCategoria)]);
-        
         todasCategorias.forEach(cat => {
             const entradas = totaisEntradaPorCategoria[cat] || 0;
             const saidas = totaisSaidaPorCategoria[cat] || 0;
@@ -70,15 +63,23 @@ export const getDashboardData = async (req, res) => {
         });
 
         // --- CÁLCULO DOS KPIs ATUALIZADO ---
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
 
-        // NOVO: Lógica para calcular o saldo financeiro
-        const totalReceitas = recibosDoacao.reduce((acc, item) => acc + Number(item.valor), 0);
-        const totalGastos = gastosFinanceiros.reduce((acc, item) => acc + Number(item.valor_executado), 0);
-        const saldoFinanceiro = totalReceitas - totalGastos;
+        const parceriasAtivasValidas = parcerias.filter(p => {
+            const dataFim = p.data_fim ? new Date(p.data_fim) : null;
+            const expirada = dataFim && dataFim < hoje;
+            return p.status === 'Ativo' && !expirada;
+        });
+
+        const totalReceitasRecibos = recibos.reduce((acc, item) => acc + Number(item.valor), 0);
+        const totalReceitasParcerias = parceriasAtivasValidas.reduce((acc, item) => acc + Number(item.valor_total_parceria), 0);
+        const totalDespesasTransferencias = transferencias.reduce((acc, item) => acc + Number(item.valor), 0);
+        const totalDespesasGastosProprios = gastosProprios.reduce((acc, item) => acc + Number(item.valor_executado), 0);
+        const saldoFinanceiro = (totalReceitasRecibos + totalReceitasParcerias) - (totalDespesasTransferencias + totalDespesasGastosProprios);
 
         const kpis = {
             totalItensEstoque: Object.values(estoqueAtualPorCategoria).reduce((acc, val) => acc + val, 0),
-            // ALTERADO: Agora usa o saldo calculado
             totalFinanceiro: saldoFinanceiro,
             doadoresUnicos: new Set(doacoesEntradas.map(d => d.doador_origem_texto).filter(d => d && d.toLowerCase() !== 'anônimo')).size,
             principalCategoria: Object.keys(totaisEntradaPorCategoria).length > 0
@@ -97,10 +98,9 @@ export const getDashboardData = async (req, res) => {
             descricao: `<b>${item.quantidade_retirada}</b> de <b>${item.entrada.categoria.nome}</b> retirado para <i>${item.destinatario || 'Não informado'}</i>`,
             data: new Date(item.data_saida)
         }));
-        
         const atividadesRecentes = [...atividadesEntrada, ...atividadesSaida]
             .sort((a, b) => b.data - a.data)
-            .slice(0, 7); // Pegar as 7 mais recentes
+            .slice(0, 7);
 
         // --- MONTA A RESPOSTA FINAL ---
         const responseData = {
