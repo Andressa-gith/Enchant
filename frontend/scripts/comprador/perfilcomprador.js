@@ -474,16 +474,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.btnOpenEditModal.addEventListener('click', () => openModal(ui.editModal));
         ui.btnOpenPhotoModal.addEventListener('click', () => openModal(ui.photoModal));
         ui.btnOpenLogoModal.addEventListener('click', () => openModal(ui.logoModal));
-        ui.btnOpenPrivacyModal.addEventListener('click', () => openModal(ui.privacyModal));
-        ui.btnOpenTermsModal.addEventListener('click', () => openModal(ui.termsModal));
 
         // Fechar Modais (Botões 'X' e 'Cancelar')
         [
             ui.btnCloseEditModalX, ui.btnCancelEditModal,
             ui.btnClosePhotoModalX, ui.btnCancelPhotoModal,
-            ui.btnCloseLogoModalX, ui.btnCancelLogoModal,
-            ui.btnClosePrivacyModalX, ui.btnClosePrivacyModalFooter,
-            ui.btnCloseTermsModalX
+            ui.btnCloseLogoModalX, ui.btnCancelLogoModal
         ].forEach(btn => btn.addEventListener('click', closeAllModals));
 
         // Ações dos Modais (Salvar)

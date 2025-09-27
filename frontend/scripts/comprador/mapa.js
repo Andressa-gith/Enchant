@@ -76,6 +76,8 @@ Promise.all([
             criarGraficoDeRiscoEmpilhado(results.data, dados2030, dados2050);
 
             configurarConsultaDetalhada(geojsonFeatureCollection, dadosDosMunicipios, dadosVulnerabilidade, dadosAmeaca, dadosExposicao, dados2030, dados2050);
+
+            setTimeout(() => { map.invalidateSize(); }, 100);
         }
     });
 }).catch(error => {
