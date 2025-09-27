@@ -95,8 +95,8 @@ button{ font-family: 'Lexend Deca', sans-serif; }
 .card-actions .delete-btn { grid-column: 1 / -1; background-color: #FFF1F1; color: #D64545; border-color: #FFBEB8; }
 .card-actions .delete-btn:hover { background-color: #D64545; border-color: #D64545; color: white; }
 .card-actions button { font-family: 'Lexend Deca', sans-serif; padding: 0.7rem 0.9rem; border-radius: 8px; cursor: pointer; font-weight: 600; border: 1px solid; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.95rem; }
-.card-actions .download-btn { background-color: var(--cor-secundaria); color: var(--cor-primaria); border-color: var(--cor-secundaria); }
-.card-actions .download-btn:hover { background-color: #C1911D; border-color: #C1911D; color: white; }
+.card-actions .download-btn { background-color: var(--cor-secundaria); color: #FFFFFF; border-color: var(--cor-secundaria); }
+.card-actions .download-btn:hover { background-color: var(--cor-primaria); border: 0 6px 12px rgba(0,0,0,0.15); }
 .card-actions .view-description-btn { background-color: transparent; color: var(--cor-primaria); border-color: var(--borda-padrao); }
 .card-actions .view-description-btn:hover { background-color: #F0F0F0; border-color: var(--cor-primaria); }
 

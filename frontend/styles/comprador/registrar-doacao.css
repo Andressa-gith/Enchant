@@ -131,8 +131,9 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 }
 
 .botaozinho {
-    background-color: rgba(226, 204, 174, 1);
-    color: #000000;
+    background-color:  #72330f; 
+    color: #FFFFFF; 
+    border-color:  #72330f;
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
@@ -144,9 +145,9 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 }
 
 .botaozinho:hover {
-    background-color: #caae8d;
-    color: #3d2106;
-    transform: translateY(-2px); /* Efeito de levantar */
+    background-color: #4A2B00; 
+    border: 0 6px 12px rgba(0,0,0,0.15);     
+    transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -160,28 +161,26 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 
 /* Estilo adicional para o botão voltar quando for um link */
 .botaosem {
-    background-color: transparent;
-    border: 1px solid #FFFFFF;
+    background-color:  #72330f; 
+    color: #FFFFFF; 
+    border-color:  #72330f;
     padding: 10px 20px;
     border-radius: 10px;
-    color: #FFFFFF;
-    font-weight: 600;
+    border: none;
+    font-weight: 600; /* Mais negrito */
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     gap: 0.5rem; /* Espaço entre o ícone e o texto */
 }
 
 
 
 .botaosem:hover {
-    background-color: #caae8d;
-    color: #3d2106;
-    border-color: #FFFFFF;
+    background-color: #4A2B00; 
+    border: 0 6px 12px rgba(0,0,0,0.15);     
     transform: translateY(-2px);
-    text-decoration: none; /* Remove sublinhado se for um link */
 }
 
 

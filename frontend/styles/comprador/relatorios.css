@@ -160,10 +160,10 @@ button{ font-family: 'Lexend Deca', sans-serif; }
     display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.95rem;
 }
 .card-actions .download-btn {
-    background-color: var(--cor-secundaria); color: var(--cor-primaria); border-color: var(--cor-secundaria);
+    background-color: var(--cor-secundaria); color: #FFFFFF; border-color: var(--cor-secundaria);
 }
 .card-actions .download-btn:hover {
-    background-color: #C1911D; border-color: #C1911D; color: white;
+    background-color: var(--cor-primaria); border: 0 6px 12px rgba(0,0,0,0.15);
 }
 .card-actions .view-description-btn {
     background-color: transparent; color: var(--cor-primaria); border-color: var(--borda-padrao);
