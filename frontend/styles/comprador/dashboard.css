@@ -2,273 +2,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
 @import url("../../styles/global.css");
 
-/* ================ VARIÁVEIS CSS ================ */
 :root {
-    --primary-color: #72330f;
-    --primary-light: #e2ccae;
-    --primary-dark: #3d2106;
-    --secondary-color: #EADBC8;
-    --text-color: #333;
-    --text-light: #694E4E;
-    --border-color: #DCD0C0;
-    --card-bg: #ffffff;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --primary-color: #72330f; --primary-light: #e2ccae; --primary-dark: #3d2106;
+    --secondary-color: #EADBC8; --text-color: #333; --text-light: #694E4E;
+    --border-color: #DCD0C0; --card-bg: #ffffff; --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
     --border-radius: 12px;
 }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Lexend Deca", sans-serif; color: var(--text-color); background-color: #FAFAFA; }
 
-/* ================ RESET E BASE ================ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+.dashboard-container { max-width: 1600px; margin: 0 auto; padding: 4rem 1.5rem 1.5rem 1.5rem; }
 
-body {
-    font-family: "Lexend Deca", sans-serif;
-    color: var(--text-color);
-    background-color: #FAFAFA;
-}
+/* HEADER DO DASHBOARD */
+.dashboard-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.dashboard-header h1 { font-family: "Passion One", sans-serif; color: var(--primary-dark); font-size: 2.5rem; margin: 0; }
 
-/* ================ CONTAINER PRINCIPAL ================ */
-.dashboard-container {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 1.5rem 1.5rem;
-    width: 100%;
-}
-
-/* ================ HEADER DO DASHBOARD ================ */
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.dashboard-header h1 {
-    font-family: "Passion One", sans-serif;
-    color: var(--primary-dark);
-    font-size: 2.5rem;
-    margin: 0;
-}
-
-/* ================== ESTILOS PARA OS NOVOS FILTROS DE DATA ================== */
-.header-filters {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-.date-picker-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #fff;
-    padding: 0.5rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow);
-}
-.date-picker-group label {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    font-weight: 500;
-    margin-left: 0.25rem;
-}
-.date-picker-group .form-control {
-    border: none;
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-}
-.date-picker-group .btn {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-.date-picker-group .btn:hover {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
-}
-
-/* ================ SUMMARY CARDS (KPIs) ================ */
-.summary-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.summary-card {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow);
-}
-.summary-card-icon {
-    font-size: 2rem;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 50px;
-    height: 50px;
-    background: var(--secondary-color);
-    border-radius: 10px;
-}
-.summary-card-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--primary-dark);
-}
-.summary-card-label {
-    font-size: 0.875rem;
-    color: var(--text-light);
-}
-
-/* ================ SEÇÃO PRINCIPAL (GRÁFICO E SIDEBAR) ================ */
-.chart-and-sidebar-section {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.chart-card, .sidebar-card {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow);
-    height: 100%;
-}
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-}
-.chart-title {
-    font-family: "Passion One", sans-serif;
-    color: var(--primary-dark);
-    font-size: 1.5rem;
-    margin: 0;
-}
-.chart-container { height: 450px; }
-.chart-header .form-select {
-    border-radius: 8px;
-    border-color: #dee2e6;
-    font-size: 0.875rem;
-    background-color: #f8f9fa;
-    max-width: 200px;
-}
-.btn-view-filter {
-    background-color: #f8f9fa;
-    color: var(--text-color);
-    border: 1px solid #dee2e6;
-    padding: 0.375rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-.btn-view-filter.active, .btn-view-filter:hover {
-    background-color: var(--primary-dark);
-    color: white;
-    border-color: var(--primary-dark);
-}
-
-/* SIDEBAR DE ATIVIDADES */
-.sidebar-title {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    color: var(--primary-dark);
-    font-weight: 600;
-    font-family: "Passion One", sans-serif;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-#lista-atividades-recentes .atividade-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 0.875rem;
-}
-#lista-atividades-recentes .atividade-item:last-child {
-    border-bottom: none;
-}
-#lista-atividades-recentes .atividade-icon {
-    font-size: 1.25rem;
-    margin-top: 2px;
-}
-#lista-atividades-recentes .atividade-texto {
-    color: var(--text-light);
-    flex-grow: 1;
-}
-#lista-atividades-recentes .atividade-texto strong,
-#lista-atividades-recentes .atividade-texto b {
-    color: var(--text-color);
-}
-#lista-atividades-recentes .atividade-data {
-    font-size: 0.75rem;
-    color: #aaa;
-    white-space: nowrap;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-}
-
-/* SEÇÃO DE ESTOQUE POR CATEGORIA (INTOCADA) */
-.stats-section .section-title {
-    font-family: "Passion One", sans-serif;
-    color: var(--primary-dark);
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-    padding-top: 1rem;
-}
-.stats-grid-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.stats-grid-row:last-child {
-    margin-bottom: 0;
-}
-.stat-card {
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    text-align: center;
-    border: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-    box-shadow: var(--shadow);
-}
-.stat-number {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: var(--primary-dark);
-}
-.stat-label {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
-
-/* ================== ESTILOS ATUALIZADOS PARA OS FILTROS ================== */
+/* FILTROS DE DATA ATUALIZADOS */
+.header-filters { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 .date-picker-group {
     display: flex; align-items: center; gap: 0.5rem; background-color: #fff;
     padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color);
@@ -276,36 +26,80 @@ body {
 }
 .date-picker-group label { font-size: 0.8rem; color: var(--text-light); font-weight: 500; }
 .date-picker-group .form-control { border: 1px solid #ddd; font-size: 0.875rem; padding: 0.25rem 0.5rem; }
-
-/* ESTILO DO BOTÃO FILTRAR PADRONIZADO */
 .btn-filter {
     background-color: var(--primary-color); color: white; border: none;
     padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600;
-    display: flex; align-items: center; gap: 0.4rem; transition: background-color 0.2s;
+    display: flex; align-items: center; gap: 0.4rem; transition: background-color 0.2s; cursor: pointer;
 }
 .btn-filter:hover { background-color: var(--primary-dark); }
-
-/* ESTILO DO NOVO BOTÃO RESETAR */
 .btn-reset {
     background-color: #f0f0f0; color: var(--text-light); border: 1px solid #ddd;
     padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 600;
-    display: flex; align-items: center; transition: all 0.2s;
+    display: flex; align-items: center; transition: all 0.2s; cursor: pointer;
 }
 .btn-reset:hover { background-color: #e0e0e0; color: var(--primary-dark); }
-/* ======================================================================== */
+
+/* SUMMARY CARDS (KPIs) */
+.summary-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.summary-card { background-color: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+.summary-card-icon { font-size: 2rem; color: var(--primary-color); display: flex; align-items: center; justify-content: center; min-width: 50px; height: 50px; background: var(--secondary-color); border-radius: 10px; }
+.summary-card-value { font-size: 1.75rem; font-weight: 700; color: var(--primary-dark); }
+.summary-card-label { font-size: 0.875rem; color: var(--text-light); }
+
+/* ================== NOVO LAYOUT DE GRID V2.1 ================== */
+.main-charts-section, .widgets-section {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.main-charts-section { grid-template-columns: 2fr 1fr; }
+.widgets-section { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+.chart-card, .widget-card {
+    background: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem;
+    border: 1px solid var(--border-color); box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+}
+.chart-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.chart-title, .widget-title {
+    font-family: "Passion One", sans-serif; color: var(--primary-dark); font-size: 1.5rem;
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.chart-container { flex-grow: 1; position: relative; min-height: 350px; }
+.widget-content { flex-grow: 1; overflow-y: auto; max-height: 300px; /* Evita que os widgets fiquem muito grandes */ }
+
+.chart-view-toggle .btn-view-filter {
+    background-color: #f8f9fa; color: var(--text-color); border: 1px solid #dee2e6;
+    padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.875rem;
+    cursor: pointer; transition: all 0.2s ease; font-weight: 500;
+}
+.chart-view-toggle .btn-view-filter.active, .chart-view-toggle .btn-view-filter:hover {
+    background-color: var(--primary-dark); color: white; border-color: var(--primary-dark);
+}
+
+/* ESTILOS PARA OS WIDGETS */
+.alert-item, .report-item, .atividade-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0.25rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; }
+.alert-item:last-child, .report-item:last-child, .atividade-item:last-child { border-bottom: none; }
+.alert-icon, .report-icon, .atividade-icon { font-size: 1.25rem; margin-top: 2px; }
+.alert-text, .report-text, .atividade-texto { color: var(--text-light); flex-grow: 1; }
+.alert-text b, .report-text b, .atividade-texto b { color: var(--text-color); }
+
+.report-download-btn {
+    background-color: var(--primary-light); color: var(--primary-dark); text-decoration: none;
+    padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;
+    margin-left: auto; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.report-download-btn:hover { background-color: var(--primary-color); color: white; }
+.atividade-data { font-size: 0.75rem; color: #aaa; white-space: nowrap; text-align: right; display: flex; flex-direction: column; line-height: 1.2; }
+/* ================================================================= */
+
+/* SEÇÃO DE ESTOQUE POR CATEGORIA (INTACTA) */
+.stats-section .section-title { font-family: "Passion One", sans-serif; color: var(--primary-dark); font-size: 1.75rem; margin-bottom: 1rem; padding-top: 1rem; }
+.stats-grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.stat-card { border-radius: var(--border-radius); padding: 1.5rem; text-align: center; border: 1px solid var(--border-color); background-color: var(--card-bg); box-shadow: var(--shadow); }
+.stat-number { font-size: 2.25rem; font-weight: 700; color: var(--primary-dark); }
+.stat-label { font-size: 0.9rem; color: var(--text-light); font-weight: 500; }
 
 /* RESPONSIVIDADE */
-@media (max-width: 992px) {
-    .chart-and-sidebar-section {
-        grid-template-columns: 1fr;
-    }
-}
-@media (max-width: 767px) {
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .chart-container {
-        height: 300px;
-    }
-}
+@media (max-width: 992px) { .main-charts-section { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .dashboard-header { flex-direction: column; align-items: flex-start; } .chart-container { min-height: 300px; } }
