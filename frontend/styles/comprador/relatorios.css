@@ -72,11 +72,11 @@ p {
 .form-group input, .form-group textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; font-family: 'Lexend Deca', sans-serif; transition: all 0.2s ease-in-out; }
 .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--cor-secundaria); border: 0 0 0 3px rgba(218, 165, 32, 0.3); }
 button{ font-family: 'Lexend Deca', sans-serif; }
-.file-upload { text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
+.file-upload { display: flex; flex-direction: column; justify-content: center; align-items:center; text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
 .file-upload:hover, .file-upload.dragover { border-color: var(--cor-secundaria); background-color: #FFFDF0; }
 .file-upload svg { display: none; }
 .file-upload::before { font-family: 'bootstrap-icons'; content: '\f3ee'; font-size: 3.5rem; color: var(--cor-primaria); display: block; margin-bottom: 1rem; }
-.file-upload p { margin: 0; font-weight: 600; font-size: 1.2rem; }
+.file-upload p { margin: 0; font-weight: 600; font-size: 1.2rem;}
 .file-upload small { color: var(--cor-texto-suave); font-size: 0.9rem; }
 .file-upload input { display: none; }
 .upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }

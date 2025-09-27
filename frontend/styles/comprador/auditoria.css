@@ -69,7 +69,7 @@ p {
 .form-group.full-width label { margin-bottom: 0.6rem; }
 .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; font-family: 'Lexend Deca', sans-serif; transition: all 0.2s ease-in-out; -webkit-appearance: none; appearance: none; background-color: #fff;}
 .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--cor-secundaria); border: 0 0 0 3px rgba(218, 165, 32, 0.3); }
-.file-upload { text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; margin-top: 0; }
+.file-upload { display: flex; flex-direction: column; justify-content: center; align-items:center; text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
 .file-upload:hover, .file-upload.dragover { border-color: var(--cor-secundaria); background-color: #FFFDF0; }
 .file-upload::before {
     font-family: 'bootstrap-icons';

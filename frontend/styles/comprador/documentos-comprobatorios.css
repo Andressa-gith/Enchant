@@ -62,7 +62,7 @@ p {
 .form-group.full-width { grid-column: 1 / -1; }
 .form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1rem; }
 .form-group input, .form-group select { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; }
-.file-upload { text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
+.file-upload { display: flex; flex-direction: column; justify-content: center; align-items:center; text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
 .file-upload:hover, .file-upload.dragover { border-color: var(--cor-secundaria); background-color: #FFFDF0; }
 .file-upload svg { display: none; }
 .file-upload::before { font-family: 'bootstrap-icons'; content: '\f3ee'; font-size: 3.5rem; color: var(--cor-primaria); display: block; margin-bottom: 1rem; }
