@@ -1,0 +1,98 @@
+/* =================================
+   1. Estilos Globais e Layout
+   ================================= */
+:root {
+    --cor-primaria: #4A2B00; --cor-secundaria: #DAA520; --cor-fundo-pagina: #F8F5F0;
+    --cor-fundo-card: #FFFFFF; --cor-texto-principal: #2C2C2C; --cor-texto-suave: #6A6A6A;
+    --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.08); --borda-padrao: #E0E0E0;
+    --cor-status-ativo: #1E8449; --cor-fundo-ativo: #E6FFED;
+    --cor-status-inativo: #D64545; --cor-fundo-inativo: #FFF1F1;
+    --cor-status-finalizado: #495057; --cor-fundo-finalizado: #e9ecef;
+}
+body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-principal); font-family: 'Lexend Deca', sans-serif; line-height: 1.6; }
+.container { max-width: 1200px; margin: 2.5rem auto; padding: 0 1.5rem; }
+h1 { font-family: 'Passion One', sans-serif; font-size: 3.2rem; color: var(--cor-primaria); text-align: center; margin-bottom: 2.5rem; }
+
+/* =================================
+   2. Seções Principais e Dicas
+   ================================= */
+.form-section, .list-section {
+    width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px;
+    padding: 2.5rem; box-shadow: var(--sombra-suave); margin-bottom: 2rem;
+}
+.form-section h2, .list-section h3 {
+    font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria);
+    margin-bottom: 2rem; border-bottom: 1px solid var(--borda-padrao); padding-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+}
+.validation-info { background-color: #FFFDE7; border: 1px solid #FFECB3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; }
+.validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
+.validation-info h4 i { font-size: 1.5rem; color: var(--cor-secundaria); }
+.validation-info ul { list-style: none; padding-left: 0; margin: 0; }
+.validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: center; gap: 0.75rem; }
+.validation-info li i { color: var(--cor-secundaria); font-size: 1rem; }
+
+/* =================================
+   3. Formulário
+   ================================= */
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group { margin-bottom: 0; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1rem; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; }
+.upload-btn {
+    width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-primaria);
+    color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem;
+    transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+}
+.upload-btn:hover { background-color: #2e1a00; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-section, .card {
+    width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px;
+    padding: 2.5rem; box-shadow: var(--sombra-suave); margin-bottom: 2rem;
+}
+.upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
+.upload-section h3, .card-title {
+    font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria);
+    margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;
+}
+.upload-section h3 { margin-top: 2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--borda-padrao); padding-bottom: 0.75rem; }
+/* =================================
+   4. Estatísticas e Lista de Parcerias
+   ================================= */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
+.stat-card { background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; box-shadow: var(--sombra-suave); text-align: center; }
+.stat-card.highlight { background-color: var(--cor-primaria); color: white; }
+.stat-card .stat-label { font-size: 1rem; font-weight: 500; color: var(--cor-texto-suave); }
+.stat-card.highlight .stat-label { color: rgba(255,255,255,0.8); }
+.stat-card .stat-value { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
+
+.partnerships-list { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.partnership-card {
+    background-color: #fff; border: 1px solid var(--borda-padrao); border-radius: 12px;
+    padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: all 0.2s;
+}
+.partnership-card:hover { border-color: var(--cor-secundaria); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.partnership-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.partnership-name { font-size: 1.3rem; font-weight: 600; color: var(--cor-primaria); }
+.status-badge { font-size: 0.8rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 20px; text-transform: capitalize; }
+.status-badge.status-ativo { background-color: var(--cor-fundo-ativo); color: var(--cor-status-ativo); }
+.status-badge.status-inativo, .status-badge.status-expirado { background-color: var(--cor-fundo-inativo); color: var(--cor-status-inativo); }
+.status-badge.status-finalizado { background-color: var(--cor-fundo-finalizado); color: var(--cor-status-finalizado); }
+.partnership-objective { color: var(--cor-texto-suave); margin-bottom: 1rem; border-left: 3px solid var(--cor-secundaria); padding-left: 1rem; }
+.partnership-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.2rem; font-size: 0.9rem; }
+.detail-item .detail-label { display: block; color: var(--cor-texto-suave); font-size: 0.8rem; text-transform: uppercase; }
+.detail-item .detail-value { font-weight: 500; }
+.action-buttons { display: flex; gap: 0.75rem; align-self: flex-end; margin-top: 1rem; }
+.action-buttons button { padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; border: 1px solid; display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+.action-buttons .edit-btn { background-color: transparent; color: var(--cor-primaria); border-color: var(--borda-padrao); }
+.action-buttons .delete-btn { background-color: #FFF1F1; color: #D64545; border-color: #FFBEB8; }
+
+/* =================================
+   5. Estados, Modais e Responsividade
+   ================================= */
+.loader-container, .empty-state-container { display: none; }
+#list-states-container .empty-state-container { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 4rem 2rem; color: var(--cor-texto-suave); background-color: #fafafa; border-radius: 12px; }
+.modal-footer .btn-primary { color: #fff; background-color: var(--cor-primaria); border-color: var(--cor-primaria); }
+@media (max-width: 992px) { .stats-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
