@@ -27,33 +27,50 @@ body {
     display: flex;
     flex-direction: column;
     max-width: 1200px;
-    margin: 2.5rem auto;
+    margin-top: 0; /* Remove apenas a margem do topo */
+    margin-bottom: 2.5rem; /* Mantém a margem de baixo */
+    margin-left: auto; /* Mantém a centralização */
+    margin-right: auto; /* Mantém a centralização */
     padding: 0 1.5rem;
 }
 
 h1 {
-    font-family: 'Passion One', sans-serif;
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
     font-size: 3.2rem;
-    font-weight: 700;
-    color: var(--cor-primaria);
     text-align: center;
-    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0rem;
 }
 
+p {
+  font-size: 1rem;
+  color: #6c757d;
+  max-width: 550px;
+  margin: 0.5rem auto 0;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+
+
+
 /* ... (Seções 2 e 3 do CSS - Dicas e Formulário - continuam iguais ao anterior) ... */
-.validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; width: 100%; }
+.validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; margin-bottom: 1.5rem; }
 .validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
 /*.validation-info h4::before { font-family: 'bootstrap-icons'; content: '\f4a1'; font-size: 1.5rem; color: var(--cor-secundaria); }*/
 .validation-info ul { list-style: none; padding-left: 0; margin: 0; }
 .validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: flex-start; gap: 0.5rem; }
 .validation-info li::before { content: none; }
 .validation-info li::after { font-family: 'bootstrap-icons'; content: '\f26a'; color: var(--cor-secundaria); flex-shrink: 0; margin-top: 2px; order: -1; }
-.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 2.5rem; box-shadow: var(--sombra-suave); }
+.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; border: var(--sombra-suave); margin-top: 0rem; }
 .upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
 .form-group { margin-bottom: 1.5rem; }
 .form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1.05rem; }
 .form-group input, .form-group textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; font-family: 'Lexend Deca', sans-serif; transition: all 0.2s ease-in-out; }
-.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--cor-secundaria); box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3); }
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--cor-secundaria); border: 0 0 0 3px rgba(218, 165, 32, 0.3); }
 button{ font-family: 'Lexend Deca', sans-serif; }
 .file-upload { text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
 .file-upload:hover, .file-upload.dragover { border-color: var(--cor-secundaria); background-color: #FFFDF0; }
@@ -63,8 +80,8 @@ button{ font-family: 'Lexend Deca', sans-serif; }
 .file-upload small { color: var(--cor-texto-suave); font-size: 0.9rem; }
 .file-upload input { display: none; }
 .upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-primaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
-.upload-btn:hover { background-color: #2e1a00; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-.upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); box-shadow: none; }
+.upload-btn:hover { background-color: #2e1a00; transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); border: none; }
 .success-message, .alert-message { padding: 1.1rem; border-radius: 10px; margin-bottom: 1.8rem; font-weight: 500; display: none; }
 .success-message { background-color: #E6FFED; color: #1E8449; border: 1px solid #A2E0B6; }
 .alert-message { background-color: #FFF3E6; color: #D64545; border: 1px solid #FFBEB8; }
@@ -114,7 +131,7 @@ button{ font-family: 'Lexend Deca', sans-serif; }
     justify-content: space-between; transition: all 0.2s ease-in-out;
 }
 .card:hover {
-    transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-5px); border: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 .card-content h3 {
@@ -214,7 +231,7 @@ button{ font-family: 'Lexend Deca', sans-serif; }
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     outline: 0;
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    border: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
 }
 
 /* O cabeçalho do modal */
@@ -282,7 +299,7 @@ button{ font-family: 'Lexend Deca', sans-serif; }
 /* O Bootstrap agora cuida do ícone "X", nós só ajustamos o foco */
 .modal-header .btn-close:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3);
+    border: 0 0 0 3px rgba(218, 165, 32, 0.3);
 }
 
 /* Deixando o botão "Cancelar" com o padrão da página */

@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 /* ==========================================================================
    1. Imports e Configurações Globais
    ========================================================================== */
@@ -35,10 +35,14 @@ body {
 }
 
 .relatorio-header h1 {
-  font-family: "Passion One", sans-serif;
-  color: #3d2106;
-  font-size: 3.0rem;
-  text-align: center;
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
+    font-size: 3.2rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
 }
 
 .relatorio-header p {
@@ -333,7 +337,7 @@ body {
   .history-table td:nth-child(5) {
     display: none;
   }
-=======
+}
 @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
 @import url("../../styles/global.css");
@@ -929,5 +933,5 @@ display: none;
 .table-row1 > div:nth-child(5) {
 display: block;
 }
->>>>>>> Stashed changes
+
 }

@@ -20,10 +20,14 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 
 /* Título da página */
 .title {
-    font-family: 'Passion One', cursive;
-    color: rgba(97, 53, 12, 1);
-    font-size: 30px;
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
+    font-size: 3.2rem;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
     padding: 2rem 1rem;
     z-index: 2;
     margin-top: 2rem; /* Ajustado para melhor visual */

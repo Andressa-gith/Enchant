@@ -2,21 +2,45 @@
    1. Estilos Globais e Layout
    ================================= */
 :root {
-    --cor-primaria: #4A2B00; --cor-secundaria: #DAA520; --cor-fundo-pagina: #F8F5F0;
+    --cor-primaria: #4A2B00; --cor-secundaria: #72330f; --cor-fundo-pagina: #F8F5F0;
     --cor-fundo-card: #FFFFFF; --cor-texto-principal: #2C2C2C; --cor-texto-suave: #6A6A6A;
     --cor-sucesso: #28a745; --cor-erro: #dc3545; --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.08);
     --borda-padrao: #E0E0E0;
 }
 body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-principal); font-family: 'Lexend Deca', sans-serif; line-height: 1.6; }
-.container { max-width: 1200px; margin: 2.5rem auto; padding: 0 1.5rem; }
-h1 { font-family: 'Passion One', sans-serif; font-size: 3.2rem; color: var(--cor-primaria); text-align: center; margin-bottom: 2.5rem; }
-
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin-top: 0; /* Remove apenas a margem do topo */
+    margin-bottom: 2.5rem; /* Mantém a margem de baixo */
+    margin-left: auto; /* Mantém a centralização */
+    margin-right: auto; /* Mantém a centralização */
+    padding: 0 1.5rem;
+}
+h1 {
+    font-family: "Passion One", sans-serif;
+    color: #3d2106;
+    font-size: 3.2rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem; margin-bottom: 2.5rem;
+}
+p {
+  font-size: 1rem;
+  color: #6c757d;
+  max-width: 550px;
+  margin: 0.5rem auto 0;
+  text-align: center;
+}
 /* =================================
    2. Seção Principal e Dicas
    ================================= */
 .upload-section {
     width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px;
-    padding: 2.5rem; box-shadow: var(--sombra-suave);
+    padding: 2.5rem; border: var(--sombra-suave);
 }
 .upload-section h2, .uploaded-items h3 {
     font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria);
@@ -26,6 +50,7 @@ h1 { font-family: 'Passion One', sans-serif; font-size: 3.2rem; color: var(--cor
 .validation-info { background-color: #FFFDE7; border: 1px solid #FFECB3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; }
 .validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
 .validation-info h4 i { font-size: 1.5rem; color: var(--cor-secundaria); }
+#icon-info { width: 1.3em; height: 1.3em; flex-shrink: 0; }
 .validation-info ul { list-style: none; padding-left: 0; margin: 0; }
 .validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: center; gap: 0.75rem; }
 .validation-info li i { color: var(--cor-secundaria); font-size: 1rem; }

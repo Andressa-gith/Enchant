@@ -24,10 +24,13 @@ body {
 #titulo {
     font-family: "Passion One", sans-serif;
     color: #3d2106;
-    font-size: 3.0rem;
+    font-size: 3.2rem;
     text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
 }
 
 #descrição {
