@@ -8,6 +8,7 @@
     --cor-status-ativo: #1E8449; --cor-fundo-ativo: #E6FFED;
     --cor-status-inativo: #D64545; --cor-fundo-inativo: #FFF1F1;
     --cor-status-finalizado: #495057; --cor-fundo-finalizado: #e9ecef;
+    --borda-padrao: #E0E0E0;
 }
 body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-principal); font-family: 'Lexend Deca', sans-serif; line-height: 1.6; }
 .container {
@@ -20,7 +21,7 @@ body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-princip
     margin-right: auto; /* Mantém a centralização */
     padding: 0 1.5rem;
 }
-h1 {
+h1 {     
     font-family: "Passion One", sans-serif;
     color: #3d2106;
     font-size: 3.2rem;
@@ -29,13 +30,15 @@ h1 {
     justify-content: center;
     align-items: center;
     gap: 1rem;
- }
+    margin-bottom: 0rem; /* ← ADICIONE ESTA LINHA */
+}
 p {
   font-size: 1rem;
   color: #6c757d;
   max-width: 550px;
   margin: 0.5rem auto 0;
   text-align: center;
+  margin-bottom: 0.3rem;
 }
 /* =================================
    2. Seções Principais e Dicas
@@ -49,7 +52,7 @@ p {
     margin-bottom: 2rem; border-bottom: 1px solid var(--borda-padrao); padding-bottom: 1rem;
     display: flex; align-items: center; gap: 0.75rem;
 }
-.validation-info { background-color: #FFFDE7; border: 1px solid #FFECB3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; }
+.validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; margin-bottom: 1.5rem; }
 .validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
 .validation-info h4 i { font-size: 1.5rem; color: var(--cor-secundaria); }
 #icon-info { width: 1.3em; height: 1.3em; flex-shrink: 0; }
@@ -66,16 +69,9 @@ p {
 .form-group { margin-bottom: 0; }
 .form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1rem; }
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; }
-.upload-btn {
-    width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-primaria);
-    color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem;
-    transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-}
-.upload-btn:hover { background-color: #2e1a00; transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
-.upload-section, .card {
-    width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px;
-    padding: 2.5rem; border: var(--sombra-suave); margin-top: 2rem;
-}
+.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+.upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; border: var(--sombra-suave); margin-top: 0rem; }
 .upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
 .upload-section h3, .card-title {
     font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria);
@@ -87,7 +83,7 @@ p {
    ================================= */
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
 .stat-card { background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; border: var(--sombra-suave); text-align: center; }
-.stat-card.highlight { background-color: var(--cor-primaria); color: white; }
+.stat-card.highlight { background-color: var(--cor-secundaria); color: white; }
 .stat-card .stat-label { font-size: 1rem; font-weight: 500; color: var(--cor-texto-suave); }
 .stat-card.highlight .stat-label { color: rgba(255,255,255,0.8); }
 .stat-card .stat-value { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
