@@ -150,24 +150,40 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.botaosem { /* Estilo para o botão "Voltar" ou "Fechar" nos modais */
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Muda de flex-end para space-between */
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem; /* Adiciona espaçamento entre os botões */
+}
+
+/* Estilo adicional para o botão voltar quando for um link */
+.botaosem {
     background-color: transparent;
-    border: 1px solid #000000;
+    border: 1px solid #FFFFFF;
     padding: 10px 20px;
     border-radius: 10px;
-    color: #000000;
+    color: #FFFFFF;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* Espaço entre o ícone e o texto */
 }
 
+
+
 .botaosem:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-color: #333;
-    color: #333;
+    background-color: #caae8d;
+    color: #3d2106;
+    border-color: #FFFFFF;
     transform: translateY(-2px);
+    text-decoration: none; /* Remove sublinhado se for um link */
 }
+
 
 /* Estilos para os modais */
 .modal-content { border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); }
