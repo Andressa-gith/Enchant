@@ -26,13 +26,17 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem; }
+    gap: 1rem;
+    margin-bottom: 0rem; /* ← ADICIONE ESTA LINHA */
+}
+
 p {
   font-size: 1rem;
   color: #6c757d;
   max-width: 550px;
   margin: 0.5rem auto 0;
   text-align: center;
+  margin-bottom: 0.3rem;
 }
 /* =================================
    2. Abas de Navegação
@@ -50,9 +54,9 @@ p {
 /* =================================
    3. Seção de Upload e Formulário
    ================================= */
-.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 2.5rem; border: var(--sombra-suave); }
+.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; border: var(--sombra-suave); margin-top: 0rem; }
 .upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
-.validation-info { background-color: #FFFDE7; border: 1px solid #FFECB3; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; width: 100%; }
+.validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; margin-bottom: 1.5rem; }
 .validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
 #icon-info { width: 1.3em; height: 1.3em; flex-shrink: 0; }
 .validation-info ul { list-style: none; padding-left: 0; margin: 0; }
@@ -78,8 +82,8 @@ p {
 }
 .file-upload p { margin: 0; font-weight: 600; font-size: 1.2rem; }
 .file-upload small { color: var(--cor-texto-suave); font-size: 0.9rem; }
-.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-primaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; }
-.upload-btn:hover { background-color: #2e1a00; transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
+.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; }
+.upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
 
 /* =================================
    4. Lista de Itens Publicados
