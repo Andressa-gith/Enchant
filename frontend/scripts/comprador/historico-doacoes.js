@@ -86,8 +86,15 @@ class ReportManager {
 
         this.allReports.forEach(report => {
             const row = document.createElement('tr');
-            // Formata o período para exibição
-            const periodo = `${new Date(report.data_inicio_filtro).toLocaleDateString('pt-BR')} - ${new Date(report.data_fim_filtro).toLocaleDateString('pt-BR')}`;
+            
+            // ================== CORREÇÃO 2: AJUSTE DE DATA PARA EXIBIÇÃO ==================
+            // Força a interpretação da data como UTC para evitar o bug do "dia anterior"
+            const dataInicio = new Date(report.data_inicio_filtro);
+            const dataFim = new Date(report.data_fim_filtro);
+            const options = { timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric' };
+            const periodo = `${dataInicio.toLocaleDateString('pt-BR', options)} - ${dataFim.toLocaleDateString('pt-BR', options)}`;
+            // ==============================================================================
+
             row.innerHTML = `
                 <td>${report.responsavel || 'N/A'}</td>
                 <td>${periodo}</td>
@@ -155,10 +162,21 @@ class ReportManager {
      */
     async generateReport(e) {
         e.preventDefault();
-        this.toggleLoading(true);
-
+        
         const formData = new FormData(e.target);
         const reportData = Object.fromEntries(formData.entries());
+
+        // ================== CORREÇÃO 1: VALIDAÇÃO DAS DATAS ==================
+        const dataInicio = new Date(reportData.data_inicio_filtro);
+        const dataFim = new Date(reportData.data_fim_filtro);
+
+        if (dataFim < dataInicio) {
+            this.showToast('A data final não pode ser anterior à data inicial.', 'error');
+            return; // Interrompe a execução se a data for inválida
+        }
+        // ======================================================================
+        
+        this.toggleLoading(true);
 
         try {
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
