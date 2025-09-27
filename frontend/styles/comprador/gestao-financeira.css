@@ -40,7 +40,7 @@ p {
 /* =================================
    2. Seções Principais e Dicas
    ================================= */
-.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; border: var(--sombra-suave); margin-top: 0rem; }
+.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 2.0rem; border: var(--sombra-suave); margin-top: 0rem; }
 .upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
 .upload-section h3, .card-title {
     font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria);
