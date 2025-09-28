@@ -256,11 +256,11 @@ body {
 
 /* === CONTROLES DO LEAFLET === */
 .leaflet-control-container {
-    z-index: 500;
+    z-index: 500 !important;
 }
 
 .leaflet-control {
-    z-index: 500;
+    z-index: 500 !important;
 }
 
 .info {
@@ -270,7 +270,7 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     border: 1px solid #ccc;
-    z-index: 500;
+    z-index: 500 !important;
 }
 
 .info h4 {
@@ -289,7 +289,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     border: 1px solid #ccc;
-    z-index: 500;
+    z-index: 500 !important;
 }
 
 .legend i {
