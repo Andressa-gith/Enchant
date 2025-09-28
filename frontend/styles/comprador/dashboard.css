@@ -9,7 +9,13 @@
     --border-radius: 12px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Lexend Deca", sans-serif; color: var(--text-color); background-color: #FAFAFA; }
+body { 
+    font-family: "Lexend Deca", sans-serif; 
+    color: var(--text-color); 
+    background-color: #FAFAFA;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
 
 .dashboard-container { max-width: 1600px; margin: 0 auto; padding: 4rem 1.5rem 1.5rem 1.5rem; }
 
@@ -55,6 +61,10 @@ body { font-family: "Lexend Deca", sans-serif; color: var(--text-color); backgro
 .main-charts-section { grid-template-columns: 2fr 1fr; }
 .widgets-section { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 
+.chart-card.small .chart-container {
+    min-height: auto; /* O gráfico menor não precisa ser tão alto */
+}
+
 .chart-card, .widget-card {
     background: var(--card-bg); border-radius: var(--border-radius); padding: 1.5rem;
     border: 1px solid var(--border-color); box-shadow: var(--shadow);
@@ -65,7 +75,12 @@ body { font-family: "Lexend Deca", sans-serif; color: var(--text-color); backgro
     font-family: "Passion One", sans-serif; color: var(--primary-dark); font-size: 1.5rem;
     margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
 }
-.chart-container { flex-grow: 1; position: relative; min-height: 350px; }
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 350px; /* Mantém uma altura mínima */
+}
 .widget-content { flex-grow: 1; overflow-y: auto; max-height: 300px; /* Evita que os widgets fiquem muito grandes */ }
 
 .chart-view-toggle .btn-view-filter {
@@ -75,6 +90,11 @@ body { font-family: "Lexend Deca", sans-serif; color: var(--text-color); backgro
 }
 .chart-view-toggle .btn-view-filter.active, .chart-view-toggle .btn-view-filter:hover {
     background-color: var(--primary-dark); color: white; border-color: var(--primary-dark);
+}
+
+#mainChart, #stockDoughnutChart {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* ESTILOS PARA OS WIDGETS */
