@@ -85,6 +85,10 @@ p {
 .upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
 .upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); border: none; }
+.success-message, .alert-message { padding: 1.1rem; border-radius: 10px; margin-bottom: 1.8rem; font-weight: 500; display: none; }
+.success-message { background-color: #E6FFED; color: #1E8449; border: 1px solid #A2E0B6; }
+.alert-message { background-color: #FFF3E6; color: #D64545; border: 1px solid #FFBEB8; }
+.error-message { color: var(--cor-erro); font-size: 0.95rem; margin-top: 0.6rem; display: none; font-weight: 500;}
 
 /* =================================
    4. Lista de Itens Publicados
