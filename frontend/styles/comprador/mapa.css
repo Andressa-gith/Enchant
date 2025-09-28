@@ -78,7 +78,7 @@ body {
 
 #botao-consulta {
     padding: 12px 20px;
-    background-color: #8B4513;
+    background-color: #72330f;
     color: white;
     border: none;
     cursor: pointer;
@@ -88,7 +88,7 @@ body {
 }
 
 #botao-consulta:hover {
-    background-color: #61350C;
+    background-color: #8B4513;
 }
 
 /* === RESULTADO DA CONSULTA === */
