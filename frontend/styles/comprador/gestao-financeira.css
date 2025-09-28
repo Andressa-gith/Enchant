@@ -20,7 +20,7 @@ body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-princip
 }
 h1 {     
     font-family: "Passion One", sans-serif;
-    color: #3d2106;
+    color: var(--cor-primaria);
     font-size: 3.2rem;
     text-align: center;
     display: flex;
@@ -54,6 +54,7 @@ p {
 /* CORRIGIDO: Estilos para a caixa de requisitos */
 .validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; margin-bottom: 1.5rem; }
 .validation-info h4 i { font-size: 1.5rem; color: var(--cor-secundaria); }
+.validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
 #icon-info { width: 1.3em; height: 1.3em; flex-shrink: 0; }
 .validation-info ul { list-style: none; padding-left: 0; margin: 0; }
 .validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: center; gap: 0.75rem; }

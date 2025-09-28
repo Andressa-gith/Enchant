@@ -3,7 +3,7 @@
 @import url("../../styles/global.css");
 
 :root {
-    --primary-color: #72330f; --primary-light: #e2ccae; --primary-dark: #3d2106;
+    --primary-color: #72330f; --primary-light: #e2ccae; --primary-dark: #4A2B00;
     --secondary-color: #EADBC8; --text-color: #333; --text-light: #694E4E;
     --border-color: #DCD0C0; --card-bg: #ffffff; --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
     --border-radius: 12px;

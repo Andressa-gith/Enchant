@@ -20,7 +20,7 @@ body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-princip
 }
 h1 {     
     font-family: "Passion One", sans-serif;
-    color: #3d2106;
+    color: var(--cor-primaria);
     font-size: 3.2rem;
     text-align: center;
     display: flex;

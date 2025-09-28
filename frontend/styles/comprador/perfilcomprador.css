@@ -8,7 +8,7 @@
     --secondary-brown: #e8d9c0;
     --light-brown: #E2CCAE;
     --hover-brown: #caae8d;
-    --dark-brown: #3d2106;
+    --dark-brown: #4A2B00;
     --text-light: #666;
     --text-dark: #333;
     --border-color: #e0d5c0;
@@ -60,9 +60,9 @@ body {
 
 /* Título mantido igual */
 .titulo {
-    font-family: Passion One, sans-serif;
-    font-size: 32px;
-    color: #693B11;
+    font-family: "Passion One", sans-serif;
+    color: var(--dark-brown);
+    font-size: 3.2rem;
     margin-bottom: 30px;
     margin-top: 30px;
 }

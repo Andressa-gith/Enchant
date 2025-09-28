@@ -41,35 +41,44 @@
             <form id="documentForm">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="companyName">Nome da Empresa/Título *</label>
-                        <input type="text" id="companyName" name="titulo" placeholder="Ex: Recibo de Aluguel - Imobiliária Céu Azul" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="documentType">Tipo de Documento *</label>
-                        <select id="documentType" name="tipo_documento" required>
-                            <option value="">Selecione o tipo</option>
-                            <option value="Recibo de doação">Recibo de doação</option>
-                            <option value="Nota fiscal">Nota fiscal</option>
-                            <option value="Comprovante de transferência">Comprovante de transferência</option>
-                            <option value="Contrato">Contrato</option>
-                            <option value="Orçamento">Orçamento</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="documentValue">Valor (R$) *</label>
-                        <input type="number" id="documentValue" name="valor" step="0.01" placeholder="0,00" required>
-                    </div>
-                    <div class="form-group full-width">
-                        <label>Arquivo do Documento *</label>
-                        <div class="file-upload" onclick="document.getElementById('documentFile').click()">
-                            <p>Clique para selecionar ou arraste aqui</p>
-                            <small>PDF, DOC, JPG, PNG (máx. 10MB)</small>
-                            <input type="file" id="documentFile" name="arquivo_documento" accept=".pdf,.doc,.docx,.jpg,.png" hidden required>
-                        </div>
+    <label for="companyName">Nome da Empresa/Título *</label>
+    <input type="text" id="companyName" name="titulo" placeholder="Ex: Recibo de Aluguel - Imobiliária Céu Azul" required>
+    <div class="field-error" id="companyName-error"></div>
+</div>
+
+<div class="form-group">
+    <label for="documentType">Tipo de Documento *</label>
+    <select id="documentType" name="tipo_documento" required>
+        <option value="">Selecione o tipo</option>
+        <option value="Recibo de doação">Recibo de doação</option>
+        <option value="Nota fiscal">Nota fiscal</option>
+        <option value="Comprovante de transferência">Comprovante de transferência</option>
+        <option value="Contrato">Contrato</option>
+        <option value="Orçamento">Orçamento</option>
+        <option value="Outros">Outros</option>
+    </select>
+    <div class="field-error" id="documentType-error"></div>
+</div>
+
+<div class="form-group">
+    <label for="documentValue">Valor (R$) *</label>
+    <input type="number" id="documentValue" name="valor" step="0.01" placeholder="0,00" required>
+    <div class="field-error" id="documentValue-error"></div>
+</div>
+
+<div class="form-group full-width">
+    <label>Arquivo do Documento *</label>
+    <div class="file-upload" onclick="document.getElementById('documentFile').click()">
+        <p>Clique para selecionar ou arraste aqui</p>
+        <small>PDF, DOC, JPG, PNG (máx. 10MB)</small>
+        <input type="file" id="documentFile" name="arquivo_documento" accept=".pdf,.doc,.docx,.jpg,.png" hidden required>
+    </div>
+    <div class="field-error" id="documentFile-error"></div>
+</div>
                     </div>
                 </div>
                 <button type="submit" class="upload-btn">Adicionar Documento</button>
+
             </form>
 
             <div class="uploaded-items">

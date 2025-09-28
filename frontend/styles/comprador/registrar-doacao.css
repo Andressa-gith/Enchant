@@ -15,7 +15,8 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     align-items: center; /* Centraliza horizontalmente */
     position: relative;
     overflow-x: hidden;
-    padding-top: 56px; /* Espaço para o header fixo */
+    padding-top: 20px; /* Bem menos espaço do topo */
+    justify-content: flex-start; /* Remove a centralização vertical */
 }
 
 /* Título da página */
@@ -28,10 +29,11 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    padding: 2rem 1rem;
     z-index: 2;
-    margin-top: 2rem; /* Ajustado para melhor visual */
+    margin-top: 0.5rem; /* Quase sem margem superior */
+    padding: 1rem; /* Padding menor */
 }
+
 
 /* Wrapper para o conteúdo (imagem + formulário) */
 .content-wrapper {
@@ -42,6 +44,7 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     align-items: center;
     justify-content: center; /* Centraliza verticalmente o conteúdo */
     flex-grow: 1; /* Permite que o wrapper ocupe o espaço restante */
+    margin-top: -1rem; /* Move o conteúdo para cima */
 }
 
 /* Container da imagem de fundo (a caixa de papelão) */
@@ -59,10 +62,11 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 .background-image {
     max-height: 90vh; /* A caixa pode ser grande, mas sem exagerar */
     max-width: 90vw;
+    margin-left: 30px;
     width: auto;
     height: auto;
     object-fit: contain;
-    margin-top: -50px; /* Ajuste manual para subir um pouco a imagem, se necessário */
+    margin-top: -70px; /* Sobe ainda mais a imagem */
     opacity: 0.8; /* Um pouco transparente para o formulário se destacar */
 }
 
@@ -73,6 +77,7 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     width: 90%;
     max-width: 550px; /* Ajustado para um tamanho bom */
     margin: 2rem 0;
+    margin-top: 50px;
 }
 
 /* Estilo do card do formulário (que é a parte transparente da caixa) */
