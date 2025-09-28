@@ -165,7 +165,7 @@ class ReportManager {
             
             this.toggleLoading(true, 'Enviando para o Storage...');
             const fileName = `relatorios/${session.user.id}/${uuidv4()}.pdf`;
-            const { data: uploadData, error: uploadError } = await supabase.storage.from('relatorios-doacao').upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: false });
+            const { data: uploadData, error: uploadError } = await supabase.storage.from('donation_report').upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: false });
             if (uploadError) throw new Error('Falha ao enviar PDF para o Storage.');
 
             if (deveSalvarRegistro) {
@@ -173,7 +173,7 @@ class ReportManager {
             }
 
             this.showToast('PDF gerado com sucesso!', 'success');
-            const { data: urlData } = supabase.storage.from('relatorios-doacao').getPublicUrl(uploadData.path);
+            const { data: urlData } = supabase.storage.from('donation_report').getPublicUrl(uploadData.path);
             if (urlData.publicUrl) window.open(urlData.publicUrl, '_blank');
 
         } catch (error) {
