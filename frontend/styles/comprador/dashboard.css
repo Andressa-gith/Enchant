@@ -98,7 +98,7 @@ body {
 }
 
 /* ESTILOS PARA OS WIDGETS */
-.alert-item, .report-item, .atividade-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0.25rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; }
+.alert-item, .report-item, .atividade-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.25rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; }
 .alert-item:last-child, .report-item:last-child, .atividade-item:last-child { border-bottom: none; }
 .alert-icon, .report-icon, .atividade-icon { font-size: 1.25rem; margin-top: 2px; }
 .alert-text, .report-text, .atividade-texto { color: var(--text-light); flex-grow: 1; }
