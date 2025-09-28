@@ -339,7 +339,7 @@ function initializeHeader(session) {
                         </div>
                         <div class="right-section">
                             <a href="/perfil" class="profile-button" id="profileButton">
-                                <img id="headerProfilePhoto" class="header-profile-photo" src="" alt="Foto de perfil">
+                                <img id="headerProfilePhoto" class="header-profile-photo" src="/assets/imgs/comprador/avatar-padrao.jpg" alt="Foto de perfil">
                                 <span id="headerUserName">Carregando...</span>
                             </a>
                         </div>
