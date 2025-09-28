@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enchant</title>
+    <title>Enchant - Histórico de Doações</title>
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/comprador/historico-doacoes.css"> 
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/scripts/authGuard.js" type="module" defer></script>
     <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
     <script src="/scripts/layouts/comprador/headercomprador.js" type="module" defer></script>
-    <script src="/scripts/layouts/comprador/footercomprador.js" type="module"></script>
-
     <script src="/scripts/supabaseClient.js" type="module"></script>
     <script src="/scripts/comprador/historico-doacoes.js" type="module" defer></script>
 </head>
@@ -40,8 +43,7 @@
                                     <th>Frequência</th>
                                     <th>Categoria</th>
                                     <th>Data</th>
-                                    <th>PDF</th>
-                                </tr>
+                                    <th>Ações</th> </tr>
                             </thead>
                             <tbody id="tableBody">
                                 </tbody>
@@ -90,17 +92,14 @@
             </aside>
         </main>
 
-        <!-- Loading para geração de PDF -->
-        <div id="pdfLoading" class="pdf-loading1">
-            <div class="spinner1"></div>
-            <p>Gerando relatório PDF...</p>
+        <div id="pdfLoading" class="pdf-loading-overlay">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <p>Aguarde...</p>
+            </div>
         </div>
 
-        <!-- Toast de notificação -->
-        <div id="toastContainer" class="toast-container1"></div>
-
-        <!-- Canvas oculto para gráficos -->
-        <canvas id="hiddenChart" width="800" height="400" style="display: none;"></canvas>
+        <div id="toastContainer" class="toast-container"></div>
     </div>
 
 </body>

@@ -1,24 +1,20 @@
 import express from 'express';
 import { 
-    getHistoricoDoacoes, 
-    adicionarRelatorio,
     getRelatoriosSalvos,
-    gerarPDFRelatorio
+    adicionarRelatorio,
+    getDadosParaPDF,
+    deletarRelatorio // <-- Importa a nova função
 } from '../controllers/historico-doacoes.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const historicoRouter = express.Router();
 
-// Rota para buscar histórico com filtros e paginação
-historicoRouter.get('/', protegerRota, getHistoricoDoacoes);
-
-// Rota para ADICIONAR relatório à lista (botão "Adicionar")
-historicoRouter.post('/adicionar-relatorio', protegerRota, adicionarRelatorio);
-
-// Rota para buscar relatórios salvos
 historicoRouter.get('/relatorios-salvos', protegerRota, getRelatoriosSalvos);
+historicoRouter.post('/adicionar', protegerRota, adicionarRelatorio);
+historicoRouter.get('/dados-pdf', protegerRota, getDadosParaPDF);
 
-// Rota para GERAR PDF de um relatório específico (botão "PDF")
-historicoRouter.get('/gerar-pdf/:id', protegerRota, gerarPDFRelatorio);
+// ================== NOVA ROTA ADICIONADA ==================
+historicoRouter.delete('/deletar/:id', protegerRota, deletarRelatorio);
+// ==========================================================
 
 export default historicoRouter;

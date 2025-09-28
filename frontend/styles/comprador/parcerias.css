@@ -19,7 +19,7 @@ body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-princip
     margin-bottom: 2.5rem; /* Mantém a margem de baixo */
     margin-left: auto; /* Mantém a centralização */
     margin-right: auto; /* Mantém a centralização */
-    padding: 0 1.5rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
 }
 h1 {     
     font-family: "Passion One", sans-serif;

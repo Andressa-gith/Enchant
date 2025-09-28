@@ -16,8 +16,7 @@ body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-princip
     margin-bottom: 2.5rem; /* Mantém a margem de baixo */
     margin-left: auto; /* Mantém a centralização */
     margin-right: auto; /* Mantém a centralização */
-    padding: 0 1.5rem;
-    gap: 3rem;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
 }
 h1 {     
     font-family: "Passion One", sans-serif;
@@ -75,7 +74,7 @@ p {
 /* =================================
    4. Gráficos e Tabela
    ================================= */
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem;}
 .chart-container { position: relative; height: 250px; }
 .table-wrapper { width: 100%; overflow-x: auto; }
 .budget-table { width: 100%; border-collapse: collapse; }
