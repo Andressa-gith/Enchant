@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (segundaParte) segundaParte.style.display = 'none';
         carregarEstados();
         adicionarEventListeners();
-        addInputMasks(); // Adicionando máscaras
-        mudarpagamento(1); // Deixa o cartão de crédito como padrão
+        addInputMasks();
+        mudarpagamento(1);
     }
 
     function adicionarEventListeners() {
@@ -41,7 +41,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- FUNÇÕES DE LÓGICA E API ---
+    // --- NOVAS FUNÇÕES DE VALIDAÇÃO CUSTOMIZADA ---
+
+    /**
+     * Mostra uma mensagem de erro abaixo de um campo específico.
+     */
+    function showError(inputId, message) {
+        const inputElement = document.getElementById(inputId);
+        if (!inputElement) return;
+        
+        inputElement.classList.add('is-invalid');
+        const errorElement = inputElement.nextElementSibling;
+        if (errorElement && errorElement.classList.contains('error-message')) {
+            errorElement.textContent = message;
+            errorElement.classList.add('visible');
+        }
+    }
+
+    /**
+     * Limpa todas as mensagens de erro e destaques do formulário.
+     */
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(msg => {
+            msg.textContent = '';
+            msg.classList.remove('visible');
+        });
+        document.querySelectorAll('.is-invalid').forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+    }
+
+    /**
+     * Valida todos os campos da primeira parte do formulário.
+     * @returns {boolean} - True se o formulário for válido, false caso contrário.
+     */
+    function validateForm() {
+        clearErrors();
+        let isValid = true;
+
+        const fields = [
+            { id: 'nome_instituicao', msg: 'O nome da instituição é obrigatório.' },
+            { id: 'tipo_instituicao', msg: 'Selecione o tipo de instituição.' },
+            { id: 'cnpj', msg: 'O CNPJ é obrigatório.' },
+            { id: 'email', msg: 'O email é obrigatório.' },
+            { id: 'tel', msg: 'O telefone é obrigatório.' },
+            { id: 'cep', msg: 'O CEP é obrigatório.' },
+            { id: 'estado', msg: 'Selecione um estado.' },
+            { id: 'cidade', msg: 'Selecione uma cidade.' },
+            { id: 'bairro', msg: 'O bairro é obrigatório.' },
+            { id: 'senha', msg: 'A senha é obrigatória.' },
+            { id: 'confirmarsenha', msg: 'A confirmação de senha é obrigatória.' },
+        ];
+
+        fields.forEach(field => {
+            const input = document.getElementById(field.id);
+            if (!input.value.trim()) {
+                showError(field.id, field.msg);
+                isValid = false;
+            }
+        });
+
+        // Validações específicas adicionais
+        const cep = document.getElementById('cep');
+        if (cep.value && cep.value.length !== 9) {
+            showError('cep', 'O CEP deve ter o formato XXXXX-XXX.');
+            isValid = false;
+        }
+
+        const senha = document.getElementById('senha');
+        const confirmarSenha = document.getElementById('confirmarsenha');
+        if (senha.value && confirmarSenha.value && senha.value !== confirmarSenha.value) {
+            showError('confirmarsenha', 'As senhas não coincidem.');
+            isValid = false;
+        }
+
+        if (senha.value && !validarSenha(senha.value).valida) {
+            showError('senha', 'A senha não atende aos requisitos de segurança.');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // --- FUNÇÕES DE LÓGICA E API (ORIGINAIS) ---
 
     async function carregarEstados() {
         try {
@@ -58,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } catch (error) {
             console.error(error);
-            showErrorModal('Não foi possível carregar a lista de estados. Tente recarregar a página.');
+            showModalAviso('Não foi possível carregar a lista de estados. Tente recarregar a página.');
         }
     }
 
@@ -82,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selectCidade.disabled = false;
         } catch (error) {
             console.error(error);
-            showErrorModal('Não foi possível carregar a lista de cidades.');
+            showModalAviso('Não foi possível carregar a lista de cidades.');
         }
     }
     
@@ -96,19 +178,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (data.erro) {
-                showErrorModal('CEP não encontrado. Verifique o número digitado.');
+                showError('cep', 'CEP não encontrado. Verifique o número digitado.');
                 return;
             }
 
             document.getElementById('bairro').value = data.bairro;
             selectEstado.value = data.uf;
-            
             await carregarCidades(data.uf);
             selectCidade.value = data.localidade;
-
         } catch (error) {
             console.error(error);
-            showErrorModal('Erro ao buscar o CEP. Tente novamente.');
+            showError('cep', 'Erro ao buscar o CEP. Tente novamente.');
         }
     }
 
@@ -117,7 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleFormSubmit(event) {
         event.preventDefault();
-        irParaPagamento();
+        // A mágica acontece aqui: trocamos a validação padrão pela nossa
+        if (validateForm()) {
+            irParaPagamento();
+        }
     }
 
     function handleCepBlur(event) {
@@ -145,24 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA PRINCIPAL DO FORMULÁRIO ---
 
     function irParaPagamento() {
-        if (!formPrincipal.checkValidity()) {
-            showErrorModal('Por favor, preencha todos os campos obrigatórios (*) corretamente.');
-            return;
-        }
-
-        const senha = document.getElementById('senha').value;
-        const confirmarSenha = document.getElementById('confirmarsenha').value;
-
-        if (senha !== confirmarSenha) {
-            showErrorModal('As senhas não coincidem.');
-            return;
-        }
-
-        if (!validarSenha(senha).valida) {
-            showErrorModal('A senha não atende aos requisitos de segurança.');
-            return;
-        }
-
+        // A validação pesada já foi feita, aqui só transferimos os dados
         document.getElementById('display-nome').textContent = document.getElementById('nome_instituicao').value;
         document.getElementById('display-email').textContent = document.getElementById('email').value;
         document.getElementById('display-telefone').textContent = document.getElementById('tel').value;
@@ -187,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
-    // FUNÇÃO REINTEGRADA PARA TROCAR O FORMULÁRIO DE PAGAMENTO
     function mudarpagamento(opcao) {
         document.querySelector('.cartao-credito').style.display = (opcao === 1) ? 'block' : 'none';
         document.querySelector('.cartao-debito').style.display = (opcao === 2) ? 'block' : 'none';
@@ -195,12 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validarPagamentoEFinalizar() {
-        // ... toda a lógica de validação de pagamento continua a mesma ...
-        // A única diferença é que as chamadas de erro agora usam a nova função
-        // Ex: showErrorModal('msg') vira showModalAviso('msg', 'erro')
         const paymentMethod = parseInt(document.querySelector('input[name="opcao"]:checked').value);
         let pagamentoValido = false;
 
+        // ================== LÓGICA RESTAURADA AQUI ==================
         if (paymentMethod === 1 || paymentMethod === 2) { 
             const tipo = (paymentMethod === 1) ? '' : 'debito';
             const numCartao = document.getElementById(`numerocartao${tipo}`).value.replace(/\D/g, '');
@@ -212,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             else if (cvv.length < 3 || cvv.length > 4) showModalAviso(`O CVV deve conter 3 ou 4 dígitos.`, 'erro');
             else if (!mes || !ano) showModalAviso(`Selecione a data de validade do cartão.`, 'erro');
             else pagamentoValido = true;
+
         } else if (paymentMethod === 3) {
             const nomeCompleto = document.getElementById("nomecompleto").value.trim();
             const cpf = document.getElementById("cpf").value.replace(/\D/g, '');
@@ -220,12 +284,13 @@ document.addEventListener('DOMContentLoaded', function() {
             else if (cpf.length !== 11) showModalAviso("O CPF para o pagamento PIX deve conter 11 dígitos.", 'erro');
             else pagamentoValido = true;
         }
+        // ==============================================================
+        
         if (pagamentoValido) {
             submeterCadastro();
         }
     }
     
-    // --- FUNÇÃO FINAL DE SUBMISSÃO PARA O BACK-END ---
     async function submeterCadastro() {
         btnComprar.disabled = true;
         btnComprar.textContent = 'Processando...';
@@ -241,7 +306,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultado = await response.json();
             if (!response.ok) throw new Error(resultado.message || 'Ocorreu um erro no servidor.');
 
-            // AQUI USAMOS A NOVA FUNÇÃO COM O TIPO 'sucesso'
             showModalAviso('Cadastro realizado com sucesso! Redirecionando...', 'sucesso');
             setTimeout(() => {
                 window.location.href = '/entrar'; 
@@ -249,49 +313,38 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Erro na submissão:', error);
-            // E AQUI USAMOS A NOVA FUNÇÃO COM O TIPO 'erro'
             showModalAviso(error.message, 'erro');
             btnComprar.disabled = false;
             btnComprar.textContent = 'Continuar com a compra';
         }
     }
     
-    /**
-     * Exibe um modal de aviso para o usuário.
-     * @param {string} message - A mensagem a ser exibida.
-     * @param {string} [tipo='erro'] - O tipo de aviso ('sucesso' ou 'erro').
-     */
     function showModalAviso(message, tipo = 'erro') {
         const modalHeader = document.getElementById('avisoModalHeader');
         const modalTitle = document.getElementById('avisoModalLabel');
         const modalBody = document.getElementById('errorModalBody');
 
         if (modalHeader && modalTitle && modalBody) {
-            // Limpa classes de cor antigas
             modalHeader.classList.remove('modal-header-success', 'modal-header-error');
-
             if (tipo === 'sucesso') {
                 modalHeader.classList.add('modal-header-success');
                 modalTitle.textContent = 'Sucesso!';
-            } else { // 'erro' ou qualquer outro valor
+            } else {
                 modalHeader.classList.add('modal-header-error');
                 modalTitle.textContent = 'Ocorreu um Erro';
             }
-
             modalBody.textContent = message;
-            // Usando jQuery para acionar o modal do Bootstrap
             $('#errorModal').modal('show');
         } else {
-            // Fallback caso o modal não seja encontrado
             alert(message);
         }
     }
 
-    // FUNÇÃO REINTEGRADA PARA MÁSCARAS DE INPUT
     function addInputMasks() {
         const inputs = {
             cnpj: document.getElementById('cnpj'),
             tel: document.getElementById('tel'),
+            cep: document.getElementById('cep'), // Adicionado CEP
             cpf: document.getElementById('cpf'),
             numerocartao: document.getElementById('numerocartao'),
             numerocartaodebito: document.getElementById('numerocartaodebito'),
@@ -314,6 +367,14 @@ document.addEventListener('DOMContentLoaded', function() {
             v = v.replace(/(\d{5})(\d)/, '$1-$2');
             e.target.value = v;
         });
+        
+        // ================== NOVA MÁSCARA DE CEP ==================
+        if (inputs.cep) inputs.cep.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+            e.target.value = v;
+        });
+        // =========================================================
 
         if (inputs.cpf) inputs.cpf.addEventListener('input', (e) => {
             let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -332,7 +393,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (inputs.numerocartao) inputs.numerocartao.addEventListener('input', mascaraCartao);
         if (inputs.numerocartaodebito) inputs.numerocartaodebito.addEventListener('input', mascaraCartao);
     }
-
 
     // --- INICIA O SCRIPT ---
     inicializarFormulario();

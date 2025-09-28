@@ -64,7 +64,7 @@ class HeaderComponent {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        font-size: 14px;
+        font-size: 16px !important;
         gap: 0.5rem;
         margin-left: 20px;
       }
@@ -136,6 +136,10 @@ class HeaderComponent {
 
       .navbar-toggler-icon::before {
         top: -6px;
+      }
+
+      .nav-link{
+        font-size: 14px !important;
       }
 
       .navbar-toggler-icon::after {

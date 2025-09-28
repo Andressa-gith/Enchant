@@ -10,6 +10,7 @@
     --cortitulo: #4E3629;
     --cortexto: #535151;
     --corlink: #EC9E07;
+    --cor-erro: #dc3545; /* Cor de erro padrão (Bootstrap) */
 }
 
 * {
@@ -59,12 +60,7 @@ main h2, .pagamento {
     text-align: center;
 }
 
-/* --- AJUSTES NO FORMULÁRIO --- */
-
-/* REMOVIDO: Layout com CSS Grid. Agora o Bootstrap cuida disso através das classes no HTML. */
-/* As classes 'form-row' e 'col-md-6' no HTML já criam as duas colunas. */
-
-/* AJUSTE: Aplicando estilos diretamente na classe .form-control do Bootstrap */
+/* --- Estilos do Formulário --- */
 .form-control {
     width: 100%;
     border: 1px solid #B7B6B6;
@@ -77,7 +73,6 @@ main h2, .pagamento {
     background-color: white;
 }
 
-/* Estilizando o select para ter a setinha customizada */
 .form-control:is(select) {
     color: #757575;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
@@ -88,12 +83,11 @@ main h2, .pagamento {
 }
 
 .form-control:focus {
-    outline: none; /* Removendo o outline padrão para usar box-shadow */
+    outline: none;
     border-color: var(--corbotao2);
-    box-shadow: 0 0 0 0.2rem #caae8d80; /* Efeito de 'glow' do Bootstrap */
+    box-shadow: 0 0 0 0.2rem #caae8d80;
 }
 
-/* O Bootstrap 'form-group' já cuida do espaçamento, então não precisamos de margens extras */
 label {
     margin-bottom: 0.5rem;
     margin-left: 15px;
@@ -111,10 +105,9 @@ label {
     color: #757575;
 }
 
-/* AJUSTE: Alinhando o botão usando Flexbox, já que não temos mais Grid */
 .div-botao-continuar {
     display: flex;
-    justify-content: flex-end; /* Alinha o botão à direita */
+    justify-content: flex-end;
     width: 100%;
     margin-top: 20px;
     padding-right: 15px;
@@ -136,9 +129,7 @@ label {
     background-color: var(--corbotao2);
 }
 
-/* --- ESTILOS DA SEGUNDA PARTE (PAGAMENTO) --- */
-/* (Nenhuma alteração necessária aqui, seu código já estava ótimo) */
-
+/* --- Estilos da Segunda Parte (Pagamento) --- */
 .segunda-parte {
     display: none;
     flex-direction: column;
@@ -229,7 +220,7 @@ input::placeholder{
 
 .escolher-pagamento label svg,
 .escolher-pagamento label i {
-    fill: currentColor; /* Faz o SVG herdar a cor do label */
+    fill: currentColor;
 }
 
 .pedido {
@@ -266,10 +257,7 @@ input::placeholder{
     background-color: var(--corbotao2);
 }
 
-
-/* --- ESTILOS DO MODAL BOOTSTRAP --- */
-/* (Nenhuma alteração necessária aqui) */
-
+/* --- Estilos do Modal Bootstrap --- */
 .modal-content {
     border-radius: 5px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -322,23 +310,18 @@ input::placeholder{
     transition: transform 0.2s ease;
 }
 
-/* Adicione estas classes no final do seu arquivo CSS */
-
 .modal-header-success {
-    background-color: #d4edda; /* Verde claro (cor de sucesso do Bootstrap) */
+    background-color: #d4edda;
     color: #155724;
 }
 
 .modal-header-error {
-    background-color: #f8d7da; /* Vermelho claro (cor de erro do Bootstrap) */
+    background-color: #f8d7da;
     color: #721c24;
 }
 
-/* --- RESPONSIVIDADE --- */
+/* --- Responsividade --- */
 @media (max-width: 768px) {
-    /* Não precisamos mais mexer no grid do formulário aqui, */
-    /* o Bootstrap já cuida da quebra de colunas para 1fr em telas menores */
-
     .div-botao-continuar {
         justify-content: center;
     }
@@ -355,4 +338,29 @@ input::placeholder{
     .escolher-pagamento {
         flex-direction: column;
     }
+}
+
+/* ==========================================================================
+   NOVAS REGRAS PARA VALIDAÇÃO CUSTOMIZADA
+   ========================================================================== */
+
+/* Estilo para o campo de input quando ele está inválido */
+.form-control.is-invalid {
+    border-color: var(--cor-erro);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); /* Efeito de 'glow' vermelho */
+}
+
+/* Estilo para a mensagem de erro que vai aparecer abaixo do campo */
+.error-message {
+    color: var(--cor-erro);
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 5px;
+    margin-left: 15px;
+    display: none; /* Escondido por padrão */
+    height: 1rem; /* Garante que o layout não "pule" quando a mensagem aparece */
+}
+
+.error-message.visible {
+    display: block; /* Mostra a mensagem quando a classe 'visible' é adicionada */
 }

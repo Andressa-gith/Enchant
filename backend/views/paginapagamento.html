@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/styles/enchant/paginapagamento.css">
     <link rel="stylesheet" href="/styles/global.css">
 
-    <script src="/scripts/enchant/paginapagamento.js"></script>
+    <script src="/scripts/enchant/paginapagamento.js" defer></script>
     <script src="/scripts/layouts/enchant/headerenchant.js"></script>
     <script src="/scripts/layouts/enchant/footerenchant.js"></script>
 
@@ -32,62 +32,71 @@
                         Recomendamos atenção total ao preencher os dados nos campos solicitados. É fundamental que as informações sejam inseridas de forma responsável, a fim de evitar fraudes.
                     </p>
                 </div>
-                <form id="dados-form" method="POST" action="/cadastro">
+                <form id="dados-form" method="POST" action="/cadastro" novalidate>
                     <div class="form-row">
                         
                         <div class="form-group col-12">
                             <label for="nome_instituicao">Nome da Instituição/ONG: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="nome_instituicao" id="nome_instituicao" class="form-control" autocomplete="off" placeholder="ex: Nome da Instituição" required>
+                            <input type="text" name="nome_instituicao" id="nome_instituicao" class="form-control" autocomplete="off" placeholder="ex: Nome da Instituição">
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="tipo_instituicao">Tipo de Instituição: <b style="color: #FF0404;">*</b></label>
-                            <select name="tipo_instituicao" id="tipo_instituicao" class="form-control" required>
+                            <select name="tipo_instituicao" id="tipo_instituicao" class="form-control">
                                 <option value="" hidden>Selecione o tipo...</option>
                                 <option value="ONG">ONG</option>
                                 <option value="Associacao">Associação Comunitária</option>
                                 <option value="Fundacao">Fundação</option>
                                 <option value="Organizacao Religiosa">Organização Religiosa</option>
-                                </select>
+                            </select>
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="cnpj">CNPJ: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="cnpj" id="cnpj" class="form-control" autocomplete="off" placeholder="ex: XX.XXX.XXX/0001-XX" required>
+                            <input type="text" name="cnpj" id="cnpj" class="form-control" autocomplete="off" placeholder="ex: XX.XXX.XXX/0001-XX">
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="email">Email: <b style="color: #FF0404;">*</b></label>
-                            <input type="email" name="email_contato" id="email" class="form-control" autocomplete="off" placeholder="ex: example@gmail.com" required>
+                            <input type="email" name="email_contato" id="email" class="form-control" autocomplete="off" placeholder="ex: example@gmail.com">
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="tel">Telefone: <b style="color: #FF0404;">*</b></label>
-                            <input type="tel" name="numero" id="tel" class="form-control" autocomplete="off" placeholder="ex: (XX) XXXXX-XXXX" required>
+                            <input type="tel" name="numero" id="tel" class="form-control" autocomplete="off" placeholder="ex: (XX) XXXXX-XXXX">
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
                             <label for="cep">CEP: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="cep" id="cep" class="form-control" autocomplete="off" placeholder="ex: 00000-000" required>
+                            <input type="text" name="cep" id="cep" class="form-control" autocomplete="off" placeholder="ex: 00000-000" maxlength="9">
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
                             <label for="estado">Estado: <b style="color: #FF0404;">*</b></label>
-                            <select name="estado" id="estado" class="form-control" required>
+                            <select name="estado" id="estado" class="form-control">
                                 <option value="" hidden>Escolha uma opção...</option>
                             </select>
+                            <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
                             <label for="cidade">Cidade: <b style="color: #FF0404;">*</b></label>
-                            <select name="cidade" id="cidade" class="form-control" disabled required>
+                            <select name="cidade" id="cidade" class="form-control" disabled>
                                 <option value="" hidden>Selecione um estado primeiro...</option>
                             </select>
+                            <div class="error-message"></div>
                         </div>
                         
                         <div class="form-group col-12">
                             <label for="bairro">Bairro: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="bairro" id="bairro" class="form-control" autocomplete="off" placeholder="ex: Centro" required>
+                            <input type="text" name="bairro" id="bairro" class="form-control" autocomplete="off" placeholder="ex: Centro">
+                            <div class="error-message"></div>
                         </div>
 
                     </div>
@@ -95,11 +104,13 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="senha">Senha: <b style="color: #FF0404;">*</b></label>
-                            <input type="password" name="senha" id="senha" class="form-control" placeholder="ex: Senha@123" required>
+                            <input type="password" name="senha" id="senha" class="form-control" placeholder="ex: Senha@123">
+                            <div class="error-message"></div>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="confirmarsenha">Confirme a senha: <b style="color: #FF0404;">*</b></label>
-                            <input type="password" name="confirmarsenha" id="confirmarsenha" class="form-control" placeholder="ex: Senha@123" required>
+                            <input type="password" name="confirmarsenha" id="confirmarsenha" class="form-control" placeholder="ex: Senha@123">
+                            <div class="error-message"></div>
                         </div>
                     </div>
 
@@ -195,7 +206,7 @@
                                 </div>
 
                                 <div class="cartao-debito">
-                                <div class="form-row">
+                                    <div class="form-row">
                                         <div class="form-group col-12">
                                             <label for="numerocartaodebito">Número do cartão: <b style="color: #FF0404;">*</b></label>
                                             <input type="text" name="numerocartaodebito" id="numerocartaodebito" class="form-control" placeholder="ex: 0000 0000 0000 0000" autocomplete="off">
@@ -222,16 +233,16 @@
                                 </div>
 
                                 <div class="pix">
-                                <div class="form-row">
-                                    <div class="form-group col-12">
-                                        <label for="nomecompleto">Nome completo: <b style="color: #FF0404;">*</b></label>
-                                        <input type="text" name="nomecompleto" id="nomecompleto" class="form-control" autocomplete="off" required>
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="nomecompleto">Nome completo: <b style="color: #FF0404;">*</b></label>
+                                            <input type="text" name="nomecompleto" id="nomecompleto" class="form-control" autocomplete="off">
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="cpf">CPF: <b style="color: #FF0404;">*</b></label>
+                                            <input type="text" name="cpf" id="cpf" class="form-control" autocomplete="off">
+                                        </div>
                                     </div>
-                                    <div class="form-group col-12">
-                                        <label for="cpf">CPF: <b style="color: #FF0404;">*</b></label>
-                                        <input type="text" name="cpf" id="cpf" class="form-control" autocomplete="off" required>
-                                    </div>
-                                </div>
                                 </div>
                             </form>
                         </div>
@@ -263,19 +274,19 @@
             </section>
         </div>
         
-        <div class="modal fade" id="errorModal" ...>
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                <div class="modal-header" id="avisoModalHeader"> 
-                    <h5 class="modal-title" id="avisoModalLabel">Erro de Validação</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="errorModalBody"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
-                </div>
+                    <div class="modal-header" id="avisoModalHeader"> 
+                        <h5 class="modal-title" id="avisoModalLabel">Erro de Validação</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="errorModalBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -288,9 +299,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        initializeHeader('header-container');
-      });
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeHeader('header-container');
+        });
     </script>
 </body>
 </html>
