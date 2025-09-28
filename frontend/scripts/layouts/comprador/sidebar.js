@@ -1,11 +1,161 @@
 import supabase from '/scripts/supabaseClient.js';
 
-(function() {
+// Sistema de Modal para Logout - Versão Sidebar
+function createSimpleLogoutModal() {
+    // Remove modal anterior se existir
+    const existingModal = document.getElementById('simple-logout-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modalHTML = `
+        <div id="simple-logout-modal" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        ">
+            <div style="
+                background: white;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+                max-width: 420px;
+                width: 90%;
+                transform: scale(0.9);
+                transition: transform 0.3s ease;
+                overflow: hidden;
+            ">
+                <div style="
+                    background: #ee5a52;
+                    color: white;
+                    padding: 24px;
+                    text-align: center;
+                ">
+                    <i class="bi bi-box-arrow-right" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 600;">Confirmar Saída</h3>
+                </div>
+                <div style="padding: 32px 24px; text-align: center;">
+                    <p style="margin: 0; color: #4a5568; font-size: 16px;">Tem certeza que deseja sair da sua conta?</p>
+                </div>
+                <div style="padding: 0 24px 24px; display: flex; gap: 12px; justify-content: center;">
+                    <button id="simple-cancel-btn" style="
+                        padding: 12px 24px;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 8px;
+                        background: #f7fafc;
+                        color: #4a5568;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    ">
+                        Cancelar
+                    </button>
+                    <button id="simple-confirm-btn" style="
+                        padding: 12px 24px;
+                        border: none;
+                        border-radius: 8px;
+                        background: #ee5a52;
+                        color: white;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    ">
+                        <span id="simple-btn-text">Sair</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    return document.getElementById('simple-logout-modal');
+}
+
+function showSimpleLogoutModal(logoutCallback) {
+    return new Promise((resolve) => {
+        const modal = createSimpleLogoutModal();
+        const cancelBtn = document.getElementById('simple-cancel-btn');
+        const confirmBtn = document.getElementById('simple-confirm-btn');
+        const btnText = document.getElementById('simple-btn-text');
+
+        // Mostrar modal
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modal.querySelector('div').style.transform = 'scale(1)';
+        }, 10);
+
+        // Função para fechar
+        function closeModal() {
+            modal.style.opacity = '0';
+            modal.querySelector('div').style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                modal.remove();
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Cancelar
+        cancelBtn.onclick = () => {
+            closeModal();
+            resolve(false);
+        };
+
+        // Confirmar
+        confirmBtn.onclick = async () => {
+            confirmBtn.disabled = true;
+            confirmBtn.style.opacity = '0.7';
+            btnText.textContent = 'Saindo...';
+
+            try {
+                await logoutCallback();
+                closeModal();
+                resolve(true);
+            } catch (error) {
+                console.error('Erro no logout:', error);
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = '1';
+                btnText.textContent = 'Sair';
+                resolve(false);
+            }
+        };
+
+        // Fechar com clique fora
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                closeModal();
+                resolve(false);
+            }
+        };
+
+        // Fechar com ESC
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                document.removeEventListener('keydown', escHandler);
+                closeModal();
+                resolve(false);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+
+        document.body.style.overflow = 'hidden';
+    });
+}
+
+(function () {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeSidebar);
     } else {
         initializeSidebar();
     }
+
 
     function initializeSidebar() {
         class SidebarManager {
@@ -280,18 +430,18 @@ import supabase from '/scripts/supabaseClient.js';
                         .sidebar-nav { padding-top: 50px; }
                     }
                 `;
-                
+
                 const styleElement = document.createElement('style');
                 styleElement.innerHTML = css;
 
                 const bootstrapIcons = document.createElement('link');
                 bootstrapIcons.rel = 'stylesheet';
                 bootstrapIcons.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css';
-                
+
                 const lexendDecaFont = document.createElement('link');
                 lexendDecaFont.rel = 'stylesheet';
                 lexendDecaFont.href = 'https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap';
-                
+
                 document.head.appendChild(bootstrapIcons);
                 document.head.appendChild(lexendDecaFont);
                 document.head.appendChild(styleElement);
@@ -367,10 +517,10 @@ import supabase from '/scripts/supabaseClient.js';
                 const sidebarContainer = document.createElement('div');
                 sidebarContainer.id = 'trapp-sidebar-container';
                 sidebarContainer.innerHTML = sidebarHTML;
-                
+
                 document.body.innerHTML = '';
                 document.body.appendChild(sidebarContainer);
-                
+
                 const contentArea = document.getElementById('contentArea');
                 if (contentArea) {
                     contentArea.innerHTML = originalContent;
@@ -385,7 +535,7 @@ import supabase from '/scripts/supabaseClient.js';
                         this.sidebarProfilePhoto = document.getElementById('sidebarProfilePhoto');
                         this.sidebarProfileIcon = document.getElementById('sidebarProfileIcon');
                         this.logoutButton = document.getElementById('sidebarLogoutButton');
-                        
+
                         this.init();
                     }
 
@@ -397,24 +547,31 @@ import supabase from '/scripts/supabaseClient.js';
 
                     bindEvents() {
                         this.sidebarOverlay.addEventListener('click', () => this.closeSidebar());
-                        
+
                         window.addEventListener('resize', () => this.handleResize());
 
-                        if(this.logoutButton) {
+                        if (this.logoutButton) {
                             this.logoutButton.addEventListener('click', async (e) => {
                                 e.preventDefault();
 
-                                window.isLoggingOut = true;
-
                                 console.log("Botão de sair da sidebar clicado.");
-                                const { error } = await supabase.auth.signOut();
-                                if (error) {
-                                    console.error('Erro ao fazer logout:', error.message);
-                                    window.isLoggingOut = false;
-                                    alert('Não foi possível sair. Tente novamente.');
-                                } else {
-                                    // Logout bem-sucedido, redireciona para a página de entrada
-                                    window.location.href = '/entrar';
+
+                                // Mostrar modal de confirmação
+                                const confirmed = await showSimpleLogoutModal(async () => {
+                                    window.isLoggingOut = true;
+
+                                    const { error } = await supabase.auth.signOut();
+                                    if (error) {
+                                        console.error('Erro ao fazer logout:', error.message);
+                                        window.isLoggingOut = false;
+                                        throw error;
+                                    } else {
+                                        window.location.href = '/entrar';
+                                    }
+                                });
+
+                                if (!confirmed) {
+                                    console.log('Logout cancelado pelo usuário');
                                 }
                             });
                         }
@@ -461,7 +618,7 @@ import supabase from '/scripts/supabaseClient.js';
                             this.sidebarProfilePhoto.style.display = 'inline-block';
                             this.sidebarProfileIcon.style.display = 'none';
                         }
-                        
+
                         const headerProfileName = document.querySelector('.profile-button span');
                         if (headerProfileName) {
                             const sidebarProfileName = document.querySelector('.sidebar-profile-name');
@@ -469,11 +626,11 @@ import supabase from '/scripts/supabaseClient.js';
                         }
                     }
                 }
-                
+
                 new SidebarController();
             }
         }
-        
+
         new SidebarManager();
     }
 })();

@@ -185,6 +185,7 @@ class HeaderComponent {
       #doeagora:hover {
         background-color: #caae8d;
         color: #3d2106;
+        transition: .2s;
       }
 
       #doeagora:focus {
