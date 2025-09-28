@@ -40,7 +40,14 @@ class ReportManager {
     toggleLoading(isLoading, message = 'Aguarde...') {
         const loadingOverlay = this.ui.pdfLoading;
         if(loadingOverlay) {
-            loadingOverlay.querySelector('p').textContent = message;
+            // ================== CORREÇÃO AQUI ==================
+            // Agora ele busca pela classe específica, e não por qualquer <p>
+            const textElement = loadingOverlay.querySelector('.loading-text');
+            if (textElement) {
+                textElement.textContent = message;
+            }
+            // ===============================================
+
             if (isLoading) {
                 loadingOverlay.classList.add('show');
             } else {
@@ -49,6 +56,7 @@ class ReportManager {
         }
         this.ui.generateBtn.disabled = isLoading;
     }
+
 
     renderTable() {
         this.ui.tableBody.innerHTML = '';

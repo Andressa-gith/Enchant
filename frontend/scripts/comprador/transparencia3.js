@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let auditIdToDelete = null;
 
     // Funções de controle de UI (loading, lista vazia, etc.)
-    const showLoader = (isLoading) => { ui.loader.style.display = isLoading ? 'flex' : 'none'; };
+    const showLoader = (isLoading) => { ui.loader.style.display = isLoading ? 'block' : 'none'; };
     const showEmptyState = (isEmpty) => { ui.emptyState.style.display = isEmpty ? 'flex' : 'none'; };
     const showAuditsGrid = (shouldShow) => { ui.auditsList.style.display = shouldShow ? 'grid' : 'none'; };
 
