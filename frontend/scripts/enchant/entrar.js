@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('❌ Erro no login:', error.message);
-            showErrorMessage(`Erro: ${error.message}`);
+            showErrorMessage(`E-mail ou senha inválidos.`);
             submitButton.disabled = false;
             submitButton.textContent = 'Entrar';
         }
