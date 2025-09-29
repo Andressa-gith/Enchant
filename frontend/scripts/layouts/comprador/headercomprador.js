@@ -212,6 +212,7 @@ function initializeHeader(session) {
 
                     .profile-button:hover {
                         color: var(--primary-color); /* Efeito hover sutil */
+                        transition: .2s;
                     }
 
                     .profile-photo {
