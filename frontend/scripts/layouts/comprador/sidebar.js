@@ -32,10 +32,9 @@ function createSimpleLogoutModal() {
                 transform: scale(0.9);
                 transition: transform 0.3s ease;
                 overflow: hidden;
-                border-radius: 8px;
             ">
                 <div style="
-                    background: #3d2106;
+                    background: #ee5a52;
                     color: white;
                     padding: 24px;
                     text-align: center;
@@ -63,7 +62,7 @@ function createSimpleLogoutModal() {
                         padding: 12px 24px;
                         border: none;
                         border-radius: 8px;
-                        background: #3d2106;
+                        background: #ee5a52;
                         color: white;
                         cursor: pointer;
                         font-weight: 600;

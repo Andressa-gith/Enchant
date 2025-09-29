@@ -1,7 +1,7 @@
 const SiteLoader = {
     created: false,
-    minDisplayTime: 1500,
 
+    // Criar o HTML e CSS do loader
     create() {
         if (this.created) return;
 
@@ -12,7 +12,7 @@ const SiteLoader = {
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #ecececff 0%, #ffffffff 100%);
+            background: linear-gradient(135deg, #f8f2e8 0%, #e2ccae 100%);
             z-index: 99999;
             display: flex;
             flex-direction: column;
@@ -81,68 +81,29 @@ const SiteLoader = {
             loader.style.display = 'flex';
             loader.classList.remove('loader-fade-out');
             document.body.style.overflow = 'hidden';
-            this.startTime = Date.now(); // Marcar quando começou
         }
     },
 
-    // Esconder loading (com tempo mínimo)
-    hide(force = false) {
+    // Esconder loading
+    hide() {
         const loader = document.getElementById('site-loader');
-        if (!loader) return;
-
-        const elapsed = Date.now() - (this.startTime || 0);
-        const remainingTime = force ? 0 : Math.max(0, this.minDisplayTime - elapsed);
-
-        setTimeout(() => {
+        if (loader) {
             loader.classList.add('loader-fade-out');
             setTimeout(() => {
                 loader.style.display = 'none';
                 document.body.style.overflow = '';
             }, 500);
-        }, remainingTime);
+        }
     },
 
-    // Aguardar que tudo carregue REALMENTE
-    waitForRealLoad() {
-        return new Promise((resolve) => {
-            // Aguardar múltiplos eventos
-            let loadedCount = 0;
-            const requiredLoads = 3;
-
-            const checkLoaded = () => {
-                loadedCount++;
-                if (loadedCount >= requiredLoads) {
-                    resolve();
-                }
-            };
-
-            // 1. DOM completamente carregado
-            if (document.readyState === 'complete') {
-                checkLoaded();
-            } else {
-                window.addEventListener('load', checkLoaded, { once: true });
-            }
-
-            // 2. Aguardar fontes carregarem
-            if (document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(checkLoaded);
-            } else {
-                setTimeout(checkLoaded, 500); // Fallback para navegadores antigos
-            }
-
-            // 3. Aguardar um tempo adicional para recursos assíncronos
-            setTimeout(checkLoaded, 800);
-        });
-    },
-
-    // Auto-hide melhorado para produção
-    async autoHide(extraDelay = 0) {
-        try {
-            await this.waitForRealLoad();
-            setTimeout(() => this.hide(), extraDelay);
-        } catch (error) {
-            console.warn('Erro no carregamento, escondendo loader anyway:', error);
-            setTimeout(() => this.hide(true), 2000); // Force hide após 2s
+    // Auto-hide quando página carregar
+    autoHide(delay = 200) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => this.hide(), delay);
+            });
+        } else {
+            setTimeout(() => this.hide(), delay);
         }
     },
 
@@ -162,21 +123,14 @@ const SiteLoader = {
     }
 };
 
-// Auto-inicialização melhorada para produção
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.body.classList.contains('auto-loader')) {
-            SiteLoader.show();
-            SiteLoader.autoHide(200); // 200ms extra delay
-        }
-    });
-} else {
-    // Se DOM já carregou, verificar imediatamente
-    if (document.body && document.body.classList.contains('auto-loader')) {
+// Auto-inicialização simples
+document.addEventListener('DOMContentLoaded', () => {
+    // Mostrar loading automaticamente se a classe 'auto-loader' existir no body
+    if (document.body.classList.contains('auto-loader')) {
         SiteLoader.show();
-        SiteLoader.autoHide(200);
+        SiteLoader.autoHide();
     }
-}
+});
 
-// Tornar global
+// Tornar global para usar em qualquer lugar
 window.SiteLoader = SiteLoader;
