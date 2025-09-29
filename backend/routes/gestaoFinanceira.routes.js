@@ -1,17 +1,27 @@
 import express from 'express';
-// ADICIONADAS AS NOVAS FUNÇÕES
-import { getFinanceiro, addFinanceiro, updateFinanceiro, updateStatusFinanceiro, deleteFinanceiro } from '../controllers/gestaoFinanceira.controller.js';
+// Importa as funções do nosso controller refeito
+import { 
+    getFinanceiro, 
+    addFinanceiro, 
+    updateFinanceiro, 
+    deleteFinanceiro 
+} from '../controllers/gestaoFinanceira.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const gestaoFinanceiraRouter = express.Router();
 
-// Rotas existentes
+// Rota para buscar todos os lançamentos
 gestaoFinanceiraRouter.get('/', protegerRota, getFinanceiro);
-gestaoFinanceiraRouter.post('/', protegerRota, addFinanceiro);
-gestaoFinanceiraRouter.patch('/:id/status', protegerRota, updateStatusFinanceiro);
 
-// NOVAS ROTAS PARA EDIÇÃO COMPLETA E EXCLUSÃO
-gestaoFinanceiraRouter.patch('/:id', protegerRota, updateFinanceiro); // Rota para o modal de edição
-gestaoFinanceiraRouter.delete('/:id', protegerRota, deleteFinanceiro); // Rota para o botão de excluir
+// Rota para adicionar um novo lançamento (com status automático)
+gestaoFinanceiraRouter.post('/', protegerRota, addFinanceiro);
+
+// Rota para editar um lançamento (recalcula o status automaticamente)
+gestaoFinanceiraRouter.patch('/:id', protegerRota, updateFinanceiro);
+
+// Rota para excluir um lançamento
+gestaoFinanceiraRouter.delete('/:id', protegerRota, deleteFinanceiro);
+
+// A rota PATCH '/:id/status' foi removida pois não é mais necessária.
 
 export default gestaoFinanceiraRouter;

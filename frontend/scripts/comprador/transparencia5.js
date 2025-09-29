@@ -1,15 +1,14 @@
 import supabase from '/scripts/supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // CORRIGIDO: Mapeamento completo e correto de todos os elementos da UI
+    // Mapeamento completo dos elementos da UI, sem o statusSelect
     const ui = {
         form: document.getElementById('finance-form'),
         categoriaInput: document.getElementById('categoria'),
         origemRecursoSelect: document.getElementById('origemRecurso'),
         orcamentoPrevistoInput: document.getElementById('orcamentoPrevisto'),
         valorExecutadoInput: document.getElementById('valorExecutado'),
-        statusSelect: document.getElementById('status'),
-        submitBtn: document.querySelector('#finance-form .upload-btn'), // Seletor específico
+        submitBtn: document.querySelector('#finance-form .upload-btn'),
         tableBody: document.getElementById('budgetTableBody'),
         originChartCanvas: document.getElementById('originChart').getContext('2d'),
         destinationChartCanvas: document.getElementById('destinationChart').getContext('2d'),
@@ -17,8 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alertMessage: document.getElementById('alert-financeiro'),
         loader: document.getElementById('loader'),
         emptyState: document.getElementById('empty-state'),
-        
-        // Modais
         editModal: new bootstrap.Modal(document.getElementById('editModal')),
         editForm: document.getElementById('edit-form'),
         editId: document.getElementById('edit-id'),
@@ -41,11 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const showEmptyState = (isEmpty) => { ui.emptyState.style.display = isEmpty ? 'flex' : 'none'; };
     const showTable = (shouldShow) => { ui.tableBody.closest('.table-wrapper').style.display = shouldShow ? 'block' : 'none'; };
 
-    // --- LÓGICA DOS GRÁFICOS ---
+    // Lógica dos Gráficos (sem alteração)
     const updateCharts = () => {
-        if (allFinancialData.length === 0) {
-            if (originChart) originChart.destroy();
-            if (destinationChart) destinationChart.destroy();
+        if (originChart) originChart.destroy();
+        if (destinationChart) destinationChart.destroy();
+
+        if (!allFinancialData || allFinancialData.length === 0) {
             ui.originChartCanvas.clearRect(0, 0, ui.originChartCanvas.canvas.width, ui.originChartCanvas.canvas.height);
             ui.destinationChartCanvas.clearRect(0, 0, ui.destinationChartCanvas.canvas.width, ui.destinationChartCanvas.canvas.height);
             return;
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
             acc[item.origem_recurso] = (acc[item.origem_recurso] || 0) + parseFloat(item.orcamento_previsto);
             return acc;
         }, {});
-        if (originChart) originChart.destroy();
         originChart = new Chart(ui.originChartCanvas, {
             type: 'pie',
             data: { labels: Object.keys(originData), datasets: [{ data: Object.values(originData), backgroundColor: chartColors, borderColor: '#fff', borderWidth: 2 }] },
@@ -66,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             acc[item.nome_categoria] = (acc[item.nome_categoria] || 0) + parseFloat(item.valor_executado);
             return acc;
         }, {});
-        if (destinationChart) destinationChart.destroy();
         destinationChart = new Chart(ui.destinationChartCanvas, {
             type: 'bar',
             data: { labels: Object.keys(destinationData), datasets: [{ label: 'Valor Executado (R$)', data: Object.values(destinationData), backgroundColor: chartColors[0], borderRadius: 4 }] },
@@ -74,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
-    // --- LÓGICA DA TABELA E FORMATAÇÃO ---
+    // Lógica da Tabela (com alteração no Status)
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
     const renderTable = () => {
@@ -87,12 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showEmptyState(false);
         showTable(true);
 
-        const statusOptions = { 'Planejado': 'Planejado', 'Pendente': 'Pendente', 'Executado': 'Executado' };
         allFinancialData.forEach(item => {
-            let optionsHTML = '';
-            for (const [value, text] of Object.entries(statusOptions)) {
-                optionsHTML += `<option value="${value}" ${value === item.status ? 'selected' : ''}>${text}</option>`;
-            }
             const orcamento = parseFloat(item.orcamento_previsto);
             const executado = parseFloat(item.valor_executado);
             const percentual = orcamento > 0 ? ((executado / orcamento) * 100).toFixed(1) : '0.0';
@@ -104,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${formatCurrency(orcamento)}</td>
                 <td>${formatCurrency(executado)}</td>
                 <td>${percentual}%</td>
-                <td><select class="status-select" data-id="${item.id}">${optionsHTML}</select></td>
+                <td><span class="status-badge status-${item.status}">${item.status}</span></td>
                 <td class="actions-cell">
                     <button class="action-btn edit-btn" data-id="${item.id}" title="Editar"><i class="bi bi-pencil-square"></i></button>
                     <button class="action-btn delete-btn" data-id="${item.id}" title="Excluir"><i class="bi bi-trash-fill"></i></button>
@@ -114,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- FUNÇÕES DE API ---
+    // Funções de API (com alteração no addLancamento)
     const loadFinancialData = async () => {
         showLoader(true);
         showTable(false);
@@ -129,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCharts();
         } catch (error) {
             showAlert(error.message || 'Erro ao carregar os dados.');
-            renderTable([]);
+            renderTable();
             updateCharts();
         } finally {
             showLoader(false);
@@ -143,11 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
             nome_categoria: ui.categoriaInput.value.trim(),
             origem_recurso: ui.origemRecursoSelect.value,
             orcamento_previsto: ui.orcamentoPrevistoInput.value,
-            valor_executado: ui.valorExecutadoInput.value,
-            status: ui.statusSelect.value,
+            valor_executado: ui.valorExecutadoInput.value || 0,
+            // O campo 'status' foi removido daqui
         };
 
-        if (!newLancamento.nome_categoria || !newLancamento.origem_recurso || !newLancamento.orcamento_previsto || !newLancamento.valor_executado || !newLancamento.status) {
+        if (!newLancamento.nome_categoria || !newLancamento.origem_recurso || !newLancamento.orcamento_previsto) {
             showAlert('Todos os campos marcados com * são obrigatórios.');
             return;
         }
@@ -171,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert(error.message);
         } finally {
             ui.submitBtn.disabled = false;
-            ui.submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Adicionar Lançamento';
+            ui.submitBtn.innerHTML = 'Adicionar Lançamento';
         }
     };
 
@@ -191,27 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    const updateStatus = async (id, newStatus) => {
-         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('Sessão expirada.');
-            const response = await fetch(`/api/financeiro/${id}/status`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-                body: JSON.stringify({ status: newStatus })
-            });
-             if (!response.ok) throw new Error('Falha ao atualizar status.');
-            const updatedItem = await response.json();
-            const itemIndex = allFinancialData.findIndex(item => item.id == id);
-            if (itemIndex > -1) allFinancialData[itemIndex].status = updatedItem.data.status;
-            showSuccess('Status atualizado!');
-            updateCharts();
-        } catch (error) {
-            showAlert(error.message);
-            loadFinancialData();
-        }
-    };
-
     const saveEdit = async (id, updatedData) => {
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -244,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             valor_executado: ui.editExecutado.value
         };
         if (!updatedData.nome_categoria || !updatedData.orcamento_previsto || !updatedData.valor_executado) {
-            // Apenas para garantir, uma validação simples no modal
+            showAlert('Todos os campos são obrigatórios na edição.');
             return; 
         }
         saveEdit(id, updatedData);
@@ -276,12 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteItem(itemToDeleteId);
             itemToDeleteId = null;
             ui.confirmDeleteModal.hide();
-        }
-    });
-
-    ui.tableBody.addEventListener('change', (e) => {
-        if (e.target.classList.contains('status-select')) {
-            updateStatus(e.target.dataset.id, e.target.value);
         }
     });
 

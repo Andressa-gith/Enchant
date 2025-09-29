@@ -17,150 +17,141 @@
     <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
     <script src="/scripts/layouts/comprador/headercomprador.js" type="module" defer></script>
     <script src="/scripts/comprador/transparencia5.js" type="module" defer></script>
-    <!--LOADER-->
     <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
 </head>
-<body>
-    <!--LOADER-->
-    <body class="auto-loader">
-    <div class="container">
-        <h1>Gestão Financeira</h1>
-        <p>Monitore e gerencie as finanças da sua organização com transparência e eficiência.</p>
+<body class="auto-loader">
+    <div id="loader-container"></div>
+    <header id="header-container"></header>
+    <aside id="sidebar-container"></aside>
 
-        <div class="upload-section">
-            <div class="validation-info">
-                <h4> <svg id="icon-info" xmlns="http://www.w3.org/2000/svg" fill="#72330f" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
-                    Requisitos para lançamentos financeiros:</h4>
-                <ul>
-                    <li><i class="bi bi-check-circle-fill"></i> Todos os campos marcados com * são obrigatórios.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Os valores de orçamento e executado devem ser em Reais (BRL).</li>
-                    <li><i class="bi bi-check-circle-fill"></i> A categoria deve ser clara e específica (mín. 10 caracteres).</li>
-                    <li><i class="bi bi-check-circle-fill"></i> O status deve refletir a situação atual do lançamento.</li>
-                </ul>
+    <main id="main">
+        <div class="container">
+            <h1>Gestão Financeira</h1>
+            <p>Monitore e gerencie as finanças da sua organização com transparência e eficiência.</p>
+
+            <div class="upload-section">
+                <div class="validation-info">
+                    <h4> <svg id="icon-info" xmlns="http://www.w3.org/2000/svg" fill="#72330f" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
+                        Requisitos para lançamentos financeiros:</h4>
+                    <ul>
+                        <li><i class="bi bi-check-circle-fill"></i> Todos os campos marcados com * são obrigatórios.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Os valores de orçamento e executado devem ser em Reais (BRL).</li>
+                        <li><i class="bi bi-check-circle-fill"></i> A categoria deve ser clara e específica (mín. 10 caracteres).</li>
+                        <li><i class="bi bi-check-circle-fill"></i> O status será calculado automaticamente.</li>
+                    </ul>
+                </div>
+                
+                <div class="success-message" id="success-financeiro"></div>
+                <div class="alert-message" id="alert-financeiro"></div>
+
+                <h2>Adicionar Lançamento</h2>
+                <form id="finance-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="categoria">Categoria *</label>
+                            <input type="text" id="categoria" placeholder="Ex: Educação, Saúde...">
+                        </div>
+                        <div class="form-group">
+                            <label for="origemRecurso">Origem do Recurso *</label>
+                            <select id="origemRecurso">
+                                <option value="">Selecione</option>
+                                <option value="Governo Federal">Governo Federal</option>
+                                <option value="Governo Estadual">Governo Estadual</option>
+                                <option value="Recursos Próprios">Recursos Próprios</option>
+                                <option value="Recursos Privados">Recursos Privados</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="orcamentoPrevisto">Orçamento Previsto (R$) *</label>
+                            <input type="number" id="orcamentoPrevisto" step="0.01" min="0" placeholder="0,00">
+                        </div>
+                        <div class="form-group">
+                            <label for="valorExecutado">Valor Executado (R$) *</label>
+                            <input type="number" id="valorExecutado" step="0.01" min="0" placeholder="0,00">
+                        </div>
+                        </div>
+                    <button type="submit" class="upload-btn">Adicionar Lançamento</button>
+                </form>
             </div>
-            
-            <div class="success-message" id="success-financeiro"></div>
-            <div class="alert-message" id="alert-financeiro"></div>
 
-            <h2>Adicionar Lançamento</h2>
-            <form id="finance-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="categoria">Categoria *</label>
-                        <input type="text" id="categoria" placeholder="Ex: Educação, Saúde...">
-                    </div>
-                    <div class="form-group">
-                        <label for="origemRecurso">Origem do Recurso *</label>
-                        <select id="origemRecurso">
-                            <option value="">Selecione</option>
-                            <option value="Governo Federal">Governo Federal</option>
-                            <option value="Governo Estadual">Governo Estadual</option>
-                            <option value="Recursos Próprios">Recursos Próprios</option>
-                            <option value="Recursos Privados">Recursos Privados</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="orcamentoPrevisto">Orçamento Previsto (R$) *</label>
-                        <input type="number" id="orcamentoPrevisto" step="0.01" min="0" placeholder="0,00">
-                    </div>
-                    <div class="form-group">
-                        <label for="valorExecutado">Valor Executado (R$) *</label>
-                        <input type="number" id="valorExecutado" step="0.01" min="0" placeholder="0,00">
-                    </div>
-                    <div class="form-group">
-                        <label for="status">Status *</label>
-                        <select id="status">
-                            <option value="">Selecione</option>
-                            <option value="Executado">Executado</option>
-                            <option value="Planejado">Planejado</option>
-                            <option value="Pendente">Pendente</option>
-                        </select>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2 class="card-title"><i class="bi bi-pie-chart-fill"></i> Origem dos Recursos</h2>
+                    <p class="card-subtitle">Orçamento total por fonte de recurso</p>
+                    <div class="chart-container">
+                        <canvas id="originChart"></canvas>
                     </div>
                 </div>
-                <button type="submit" class="upload-btn">Adicionar Lançamento</button>
-            </form>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="card">
-                <h2 class="card-title"><i class="bi bi-pie-chart-fill"></i> Origem dos Recursos</h2>
-                <p class="card-subtitle">Orçamento total por fonte de recurso</p>
-                <div class="chart-container">
-                    <canvas id="originChart"></canvas>
+                <div class="card">
+                    <h2 class="card-title"><i class="bi bi-bar-chart-line-fill"></i> Destinação dos Recursos</h2>
+                    <p class="card-subtitle">Valor executado por categoria</p>
+                    <div class="chart-container">
+                        <canvas id="destinationChart"></canvas>
+                    </div>
                 </div>
             </div>
-            <div class="card">
-                <h2 class="card-title"><i class="bi bi-bar-chart-line-fill"></i> Destinação dos Recursos</h2>
-                <p class="card-subtitle">Valor executado por categoria</p>
-                <div class="chart-container">
-                    <canvas id="destinationChart"></canvas>
-                </div>
-            </div>
-        </div>
 
-        <div class="upload-section">
-            <h3>Detalhamento do Orçamento</h3>
-            <div id="list-states-container">
+            <div class="upload-section">
+                <h3>Detalhamento do Orçamento</h3>
                 <div id="loader" class="loader-container"><div class="spinner"></div><p>Carregando dados...</p></div>
                 <div id="empty-state" class="empty-state-container"><i class="bi bi-cloud-slash"></i><h4>Nenhum lançamento por aqui</h4><p>Use o formulário acima para começar.</p></div>
-            </div>
-            <div class="table-wrapper">
-                <table class="budget-table">
-                    <thead>
-                        <tr>
-                            <th>Categoria</th>
-                            <th>Origem</th>
-                            <th>Orçamento Previsto</th>
-                            <th>Valor Executado</th>
-                            <th>% Execução</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="budgetTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Lançamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="edit-form">
-                        <input type="hidden" id="edit-id">
-                        <div class="form-group">
-                            <label for="edit-categoria">Categoria</label>
-                            <input type="text" id="edit-categoria" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-orcamentoPrevisto">Orçamento Previsto (R$)</label>
-                            <input type="number" id="edit-orcamentoPrevisto" class="form-control" step="0.01" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-valorExecutado">Valor Executado (R$)</label>
-                            <input type="number" id="edit-valorExecutado" class="form-control" step="0.01" min="0">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveEditBtn">Salvar Alterações</button>
+                <div class="table-wrapper">
+                    <table class="budget-table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Origem</th>
+                                <th>Orçamento Previsto</th>
+                                <th>Valor Executado</th>
+                                <th>% Execução</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="budgetTableBody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><p>Tem certeza que deseja excluir este lançamento? A ação não pode ser desfeita.</p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-danger" id="confirmDeleteBtn">Sim, Excluir</button></div></div>
+        <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Lançamento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-form">
+                            <input type="hidden" id="edit-id">
+                            <div class="form-group">
+                                <label for="edit-categoria">Categoria</label>
+                                <input type="text" id="edit-categoria" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-orcamentoPrevisto">Orçamento Previsto (R$)</label>
+                                <input type="number" id="edit-orcamentoPrevisto" class="form-control" step="0.01" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-valorExecutado">Valor Executado (R$)</label>
+                                <input type="number" id="edit-valorExecutado" class="form-control" step="0.01" min="0">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveEditBtn">Salvar Alterações</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><p>Tem certeza que deseja excluir este lançamento? A ação não pode ser desfeita.</p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-danger" id="confirmDeleteBtn">Sim, Excluir</button></div></div>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
