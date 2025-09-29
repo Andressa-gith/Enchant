@@ -1,6 +1,6 @@
 const SiteLoader = {
     created: false,
-    minDisplayTime: 1000,
+    minDisplayTime: 1500,
 
     create() {
         if (this.created) return;
