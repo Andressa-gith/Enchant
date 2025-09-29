@@ -1,6 +1,8 @@
 const SiteLoader = {
     created: false,
     minDisplayTime: 1500,
+    maxDisplayTime: 15000,
+    pendingResources: new Set(),
 
     create() {
         if (this.created) return;
@@ -81,14 +83,103 @@ const SiteLoader = {
             loader.style.display = 'flex';
             loader.classList.remove('loader-fade-out');
             document.body.style.overflow = 'hidden';
-            this.startTime = Date.now(); // Marcar quando começou
+            this.startTime = Date.now();
+            
+            // Detectar automaticamente o que precisa carregar
+            this.detectResources();
+            
+            // Timeout de segurança
+            this.safetyTimeout = setTimeout(() => {
+                console.warn('Loader timeout após', this.maxDisplayTime, 'ms');
+                this.hide(true);
+            }, this.maxDisplayTime);
         }
     },
 
-    // Esconder loading (com tempo mínimo)
+    // Detectar recursos que precisam carregar
+    detectResources() {
+        this.pendingResources.clear();
+
+        // Detectar mapa Leaflet
+        if (document.getElementById('mapa')) {
+            this.pendingResources.add('map');
+            this.waitForMap();
+        }
+
+        // Detectar Canvas (Chart.js)
+        if (document.querySelector('canvas')) {
+            this.pendingResources.add('charts');
+            this.waitForCharts();
+        }
+
+        // Se não tiver recursos específicos, só aguardar window.load
+        if (this.pendingResources.size === 0) {
+            this.waitForBasicLoad();
+        }
+    },
+
+    // Aguardar mapa carregar
+    waitForMap() {
+        const checkMap = setInterval(() => {
+            // Verificar se variáveis globais do mapa existem
+            if (window.geojsonLayer && window.dadosDosMunicipios?.size > 0) {
+                clearInterval(checkMap);
+                this.markResourceLoaded('map');
+            }
+        }, 200);
+
+        // Timeout específico para mapa
+        setTimeout(() => {
+            clearInterval(checkMap);
+            this.markResourceLoaded('map');
+        }, 10000);
+    },
+
+    // Aguardar gráficos carregarem
+    waitForCharts() {
+        const checkCharts = setInterval(() => {
+            const canvas = document.querySelector('canvas');
+            if (canvas && window.Chart) {
+                clearInterval(checkCharts);
+                this.markResourceLoaded('charts');
+            }
+        }, 200);
+
+        setTimeout(() => {
+            clearInterval(checkCharts);
+            this.markResourceLoaded('charts');
+        }, 8000);
+    },
+
+    // Aguardar carregamento básico
+    waitForBasicLoad() {
+        if (document.readyState === 'complete') {
+            setTimeout(() => this.hide(), 500);
+        } else {
+            window.addEventListener('load', () => {
+                setTimeout(() => this.hide(), 500);
+            }, { once: true });
+        }
+    },
+
+    // Marcar recurso como carregado
+    markResourceLoaded(resource) {
+        this.pendingResources.delete(resource);
+        console.log(`✅ Recurso carregado: ${resource}, pendentes:`, this.pendingResources.size);
+        
+        // Se todos recursos carregaram, esconder
+        if (this.pendingResources.size === 0) {
+            setTimeout(() => this.hide(), 800);
+        }
+    },
+
     hide(force = false) {
         const loader = document.getElementById('site-loader');
         if (!loader) return;
+
+        if (this.safetyTimeout) {
+            clearTimeout(this.safetyTimeout);
+        }
 
         const elapsed = Date.now() - (this.startTime || 0);
         const remainingTime = force ? 0 : Math.max(0, this.minDisplayTime - elapsed);
@@ -100,83 +191,20 @@ const SiteLoader = {
                 document.body.style.overflow = '';
             }, 500);
         }, remainingTime);
-    },
-
-    // Aguardar que tudo carregue REALMENTE
-    waitForRealLoad() {
-        return new Promise((resolve) => {
-            // Aguardar múltiplos eventos
-            let loadedCount = 0;
-            const requiredLoads = 3;
-
-            const checkLoaded = () => {
-                loadedCount++;
-                if (loadedCount >= requiredLoads) {
-                    resolve();
-                }
-            };
-
-            // 1. DOM completamente carregado
-            if (document.readyState === 'complete') {
-                checkLoaded();
-            } else {
-                window.addEventListener('load', checkLoaded, { once: true });
-            }
-
-            // 2. Aguardar fontes carregarem
-            if (document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(checkLoaded);
-            } else {
-                setTimeout(checkLoaded, 500); // Fallback para navegadores antigos
-            }
-
-            // 3. Aguardar um tempo adicional para recursos assíncronos
-            setTimeout(checkLoaded, 800);
-        });
-    },
-
-    // Auto-hide melhorado para produção
-    async autoHide(extraDelay = 0) {
-        try {
-            await this.waitForRealLoad();
-            setTimeout(() => this.hide(), extraDelay);
-        } catch (error) {
-            console.warn('Erro no carregamento, escondendo loader anyway:', error);
-            setTimeout(() => this.hide(true), 2000); // Force hide após 2s
-        }
-    },
-
-    // Para formulários/AJAX
-    showForAction(asyncAction) {
-        return new Promise(async (resolve, reject) => {
-            this.show();
-            try {
-                const result = await asyncAction();
-                this.hide();
-                resolve(result);
-            } catch (error) {
-                this.hide();
-                reject(error);
-            }
-        });
     }
 };
 
-// Auto-inicialização melhorada para produção
+// Auto-inicialização
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (document.body.classList.contains('auto-loader')) {
+        if (document.body.classList.contains('auto-loader') || document.getElementById('mapa')) {
             SiteLoader.show();
-            SiteLoader.autoHide(200); // 200ms extra delay
         }
     });
 } else {
-    // Se DOM já carregou, verificar imediatamente
-    if (document.body && document.body.classList.contains('auto-loader')) {
+    if (document.body && (document.body.classList.contains('auto-loader') || document.getElementById('mapa'))) {
         SiteLoader.show();
-        SiteLoader.autoHide(200);
     }
 }
 
-// Tornar global
 window.SiteLoader = SiteLoader;
