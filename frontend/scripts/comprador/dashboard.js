@@ -206,4 +206,7 @@ function initializeApp(session) {
     });
 
     handleFilter();
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
 }

@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. FUNÇÕES PARA MOSTRAR MENSAGENS ---
     const messageContainer = document.getElementById('message-container');
 
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
+
     function showErrorMessage(message) {
         clearMessages();
         const errorDiv = document.createElement('div');

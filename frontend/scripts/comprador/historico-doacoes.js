@@ -39,7 +39,7 @@ class ReportManager {
 
     toggleLoading(isLoading, message = 'Aguarde...') {
         const loadingOverlay = this.ui.pdfLoading;
-        if(loadingOverlay) {
+        if (loadingOverlay) {
             // ================== CORREÇÃO AQUI ==================
             // Agora ele busca pela classe específica, e não por qualquer <p>
             const textElement = loadingOverlay.querySelector('.loading-text');
@@ -68,7 +68,7 @@ class ReportManager {
             const row = document.createElement('tr');
             const options = { timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric' };
             const periodo = `${new Date(report.data_inicio_filtro).toLocaleDateString('pt-BR', options)} - ${new Date(report.data_fim_filtro).toLocaleDateString('pt-BR', options)}`;
-            
+
             row.innerHTML = `
                 <td>${report.responsavel}</td>
                 <td class="coluna-periodo">${periodo}</td>
@@ -115,9 +115,13 @@ class ReportManager {
         } catch (error) {
             this.allReports = [];
             this.renderTable();
+        } finally {
+            setTimeout(() => {
+                window.SiteLoader?.hide();
+            }, 500);
         }
     }
-    
+
     async generateReport(e) {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -127,7 +131,7 @@ class ReportManager {
             this.showToast('A data final não pode ser anterior à data inicial.', 'error');
             return;
         }
-        
+
         await this.processPdfGeneration(reportData, true);
     }
 
@@ -160,7 +164,7 @@ class ReportManager {
                 headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
             if (!dataResponse.ok) throw new Error('Falha ao buscar dados para o PDF.');
-            
+
             const { entradas, saidas } = await dataResponse.json();
             if (entradas.length === 0 && saidas.length === 0) {
                 this.showToast('Nenhum dado encontrado para o período.', 'info');
@@ -170,7 +174,7 @@ class ReportManager {
 
             this.toggleLoading(true, 'Gerando PDF...');
             const pdfBlob = this.createPDF(reportData, entradas, saidas);
-            
+
             this.toggleLoading(true, 'Enviando para o Storage...');
             const fileName = `relatorios/${session.user.id}/${uuidv4()}.pdf`;
             const { data: uploadData, error: uploadError } = await supabase.storage.from('donation_report').upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: false });
@@ -227,11 +231,11 @@ class ReportManager {
     createPDF(reportData, entradas, saidas) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
+
         doc.setFontSize(18); doc.text('Relatório de Histórico de Doações', 14, 22);
         doc.setFontSize(11); doc.setTextColor(100);
         doc.text(`Responsável: ${reportData.responsavel}`, 14, 30);
-        doc.text(`Período: ${new Date(reportData.data_inicio_filtro).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} a ${new Date(reportData.data_fim_filtro).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`, 14, 36);
+        doc.text(`Período: ${new Date(reportData.data_inicio_filtro).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} a ${new Date(reportData.data_fim_filtro).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`, 14, 36);
         doc.text(`Categoria: ${reportData.categoria_filtro || 'Geral'}`, 14, 42);
 
         if (entradas && entradas.length > 0) {
@@ -240,12 +244,12 @@ class ReportManager {
                 startY: 60,
                 head: [['Data', 'Categoria', 'Doador', 'Qtd.', 'Detalhes']],
                 body: entradas.map(e => [
-                    new Date(e.data_entrada).toLocaleDateString('pt-BR', {timeZone: 'UTC'}), e.categoria?.nome || 'N/A', e.doador_origem_texto, e.quantidade, this.formatJsonDetails(e.detalhes)
+                    new Date(e.data_entrada).toLocaleDateString('pt-BR', { timeZone: 'UTC' }), e.categoria?.nome || 'N/A', e.doador_origem_texto, e.quantidade, this.formatJsonDetails(e.detalhes)
                 ]),
                 headStyles: { fillColor: [114, 51, 15] },
             });
         }
-        
+
         if (saidas && saidas.length > 0) {
             const startY = (doc.lastAutoTable.finalY || 50) + 15;
             doc.setFontSize(14); doc.text('Doações Retiradas (Saídas)', 14, startY - 5);
@@ -253,22 +257,22 @@ class ReportManager {
                 startY: startY,
                 head: [['Data', 'Categoria', 'Destinatário', 'Qtd.', 'Observação']],
                 body: saidas.map(s => [
-                    new Date(s.data_saida).toLocaleDateString('pt-BR', {timeZone: 'UTC'}), s.entrada?.categoria?.nome || 'N/A', s.destinatario || '-', s.quantidade_retirada, s.observacao || '-'
+                    new Date(s.data_saida).toLocaleDateString('pt-BR', { timeZone: 'UTC' }), s.entrada?.categoria?.nome || 'N/A', s.destinatario || '-', s.quantidade_retirada, s.observacao || '-'
                 ]),
                 headStyles: { fillColor: [114, 51, 15] },
             });
         }
-        
+
         return doc.output('blob');
     }
-    
+
     formatJsonDetails(details) {
         if (!details || typeof details !== 'object' || Object.keys(details).length === 0) return '-';
         return Object.entries(details).map(([key, value]) => `${key}: ${value}`).join('; ');
     }
 }
 
-const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+const uuidv4 = () => ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 
 document.addEventListener('DOMContentLoaded', () => {
     const reportManager = new ReportManager();

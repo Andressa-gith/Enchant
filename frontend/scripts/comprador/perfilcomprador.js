@@ -503,4 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupPasswordToggles();   // Configura os botões de mostrar/esconder senha
     setupLogoUpload();        // Configura a área de arrastar e soltar logo
     conectarEventos();        // Conecta todos os botões às suas funções
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
 });
