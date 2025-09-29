@@ -107,8 +107,8 @@ h1 {
 .empty-state-container h4 { font-size: 1.2rem; color: var(--cor-texto-principal); margin-bottom: 0.5rem; }
 .spinner { width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top: 4px solid var(--cor-secundaria); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.modal-footer .btn-primary { color: #fff; background-color: var(--cor-primaria); border-color: var(--cor-primaria); }
-.modal-footer .btn-primary:hover { background-color: #2e1a00; border-color: #2e1a00; color: #fff;}
+.modal-footer .btn-primary { color: #fff; background-color: var(--cor-secundaria);; border-color: var(--cor-primaria); border: none; }
+.modal-footer .btn-primary:hover { background-color: var(--cor-primaria); color: #fff;}
 
 /* =================================
    6. Estilos Novos (Layout e Badges)
