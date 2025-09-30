@@ -1,335 +1,1158 @@
-/* 
-=================================
-1. Estilos Globais e Layout Principal
-================================= 
-*/
-:root {
-    --cor-primaria: #4A2B00;
-    --cor-secundaria: #72330f;
-    --cor-fundo-pagina: #F8F5F0;
-    --cor-fundo-card: #FFFFFF;
-    --cor-texto-principal: #2C2C2C;
-    --cor-texto-suave: #6A6A6A;
-    --cor-sucesso: #28a745;
-    --cor-erro: #dc3545;
-    --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.08);
-    --borda-padrao: #E0E0E0;
-}
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("../../styles/global.css");
+
 
 body {
-    background-color: var(--cor-fundo-pagina);
-    color: var(--cor-texto-principal);
     font-family: 'Lexend Deca', sans-serif;
-    line-height: 1.6;
+    background-color: #ffffff;
+    color: #333;
+    width: 100vw;
+    overflow-x: hidden;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    max-width: 1200px;
-    margin-top: 0; /* Remove apenas a margem do topo */
-    margin-bottom: 2.5rem; /* Mantém a margem de baixo */
-    margin-left: auto; /* Mantém a centralização */
-    margin-right: auto; /* Mantém a centralização */
-    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    margin: 0 auto;
+    padding-left: 100px;
+    padding-right: 100px;
+    max-width: 1500px;
 }
+
+.aaa {
+    text-decoration: none;
+}
+
 
 h1 {
-    font-family: "Passion One", sans-serif;
-    color: var(--cor-primaria);
-    font-size: 3.2rem;
+    font-family: 'Passion One', cursive;
+    font-size: 32px;
+    color: #693B11;
     text-align: center;
+    margin-bottom: 40px;
+    font-weight: 400;
+    margin-top: 30px;
+}
+
+.nav-tabs {
     display: flex;
     justify-content: center;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#imgheader {
+    margin-top: -1px;
+}
+
+
+.nav-tab {
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+    color: #666;
+    display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 0rem;
-}
+    gap: 8px;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    width: 100%;
 
-p {
-  font-size: 1rem;
-  color: #6c757d;
-  max-width: 550px;
-  margin: 0.5rem auto 0;
-  text-align: center;
-  margin-bottom: 0.3rem;
 }
 
 
+.nav-tab.active {
+    color: #8B4513;
+    border-bottom-color: #8B4513;
+}
 
-/* ... (Seções 2 e 3 do CSS - Dicas e Formulário - continuam iguais ao anterior) ... */
-.validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; margin-bottom: 1.5rem; }
-.validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
-/*.validation-info h4::before { font-family: 'bootstrap-icons'; content: '\f4a1'; font-size: 1.5rem; color: var(--cor-secundaria); }*/
-.validation-info ul { list-style: none; padding-left: 0; margin: 0; }
-.validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: flex-start; gap: 0.5rem; }
-.validation-info li::before { content: none; }
-.validation-info li::after { font-family: 'bootstrap-icons'; content: '\f26a'; color: var(--cor-secundaria); flex-shrink: 0; margin-top: 2px; order: -1; }
-.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem; border: var(--sombra-suave); margin-top: 0rem; }
-.upload-section h2, .uploaded-items h3 { font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--borda-padrao); }
-.form-group { margin-bottom: 1.5rem; }
-.form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1.05rem; }
-.form-group input, .form-group textarea { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; font-family: 'Lexend Deca', sans-serif; transition: all 0.2s ease-in-out; }
-.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--cor-secundaria); border: 0 0 0 3px rgba(218, 165, 32, 0.3); }
-button{ font-family: 'Lexend Deca', sans-serif; }
-.file-upload { display: flex; flex-direction: column; justify-content: center; align-items:center; text-align: center; padding: 2.8rem; border: 2px dashed var(--borda-padrao); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
-.file-upload:hover, .file-upload.dragover { border-color: var(--cor-secundaria); background-color: #FFFDF0; }
-.file-upload svg { display: none; }
-.file-upload::before { font-family: 'bootstrap-icons'; content: '\f3ee'; font-size: 3.5rem; color: var(--cor-primaria); display: block; margin-bottom: 1rem; }
-.file-upload p { margin: 0; font-weight: 600; font-size: 1.2rem;}
-.file-upload small { color: var(--cor-texto-suave); font-size: 0.9rem; }
-.file-upload input { display: none; }
-.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
-.upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); border: 0 6px 12px rgba(0,0,0,0.15); }
-.upload-btn:disabled { background-color: #BDBDBD; cursor: not-allowed; transform: translateY(0); border: none; }
-.success-message, .alert-message { padding: 1.1rem; border-radius: 10px; margin-bottom: 1.8rem; font-weight: 500; display: none; }
-.success-message { background-color: #E6FFED; color: #1E8449; border: 1px solid #A2E0B6; }
-.alert-message { background-color: #FFF3E6; color: #D64545; border: 1px solid #FFBEB8; }
-.error-message { color: var(--cor-erro); font-size: 0.95rem; margin-top: 0.6rem; display: none; font-weight: 500;}
 
-/* =================================
-   4. Lista de Itens Publicados
-   ================================= */
+.nav-tab:hover {
+    color: #8B4513;
+}
+
+
+.icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+
+@media (max-width: 768px) {
+    .nav-tab {
+        padding: 12px 8px;
+        font-size: 0;
+        gap: 0;
+        min-width: 44px;
+        justify-content: center;
+    }
+
+    .nav-tab .icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .nav-tabs {
+        gap: 5px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .nav-tab {
+        padding: 10px 6px;
+        min-width: 40px;
+    }
+
+    .nav-tab .icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .nav-tabs {
+        gap: 3px;
+        margin-bottom: 30px;
+    }
+}
+
+
+
+.page {
+    display: none;
+}
+
+
+.page.active {
+    display: block;
+}
+
+
+/* Formulários de upload */
+.upload-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid #9c9c9c;
+    margin-bottom: 7rem;
+}
+
+
+.upload-section h2 {
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+
+
+
+.form-group.required label::after {
+    content: ' *';
+    color: #dc3545;
+}
+
+
+
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+
+
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #8B4513;
+}
+
+
+
+
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+
+
+
+.form-group input.valid,
+.form-group textarea.valid,
+.form-group select.valid {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+
+
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+
+
+
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+
+
+
+.file-upload {
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+
+
+
+.file-upload:hover {
+    border-color: #8B4513;
+    background-color: #f9f9f9;
+}
+
+
+
+
+.file-upload.dragover {
+    border-color: #8B4513;
+    background-color: #f0e6d2;
+}
+
+
+
+
+.file-upload.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+
+
+
+.file-upload.valid {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+
+
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+#btnn {
+    margin-left: -19px;
+    margin-top: -22px;
+}
+
+#btnn2 {
+    margin-left: -25px;
+}
+
+
+
+
+
+
+
+/* Botão de doação */
+.design-botao {
+
+
+}
+
+.design-botao:hover {
+
+}
+
+
+
+.upload-btn {
+  width: 160px;
+  height: 40px;
+  font-family: 'Lexend Deca', sans-serif;
+  background-color: #e2ccae;
+  border-radius: 10px;
+  border: none;
+  margin: 15px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: bold;
+  color: #3d2106;
+  cursor: pointer;
+  margin-top: auto;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+
+
+
+.upload-btn:hover {
+  background-color: #caae8d;
+  color: #3d2106;
+}
+
+
+
+
+.upload-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+
+
+
+/* Lista de items já enviados */
 .uploaded-items {
-    margin-top: 3.5rem;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
 }
 
-#icon-info {
-    /* Define a largura e altura relativas ao tamanho da fonte do h4 */
-    width: 1.3em; 
-    height: 1.3em;
-    flex-shrink: 0;
+
+
+
+.uploaded-items h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #333;
 }
 
-/* NOVO: Estilos para os estados de carregamento e lista vazia */
-.loader-container {
-    display: none; text-align: center; padding: 3rem; color: var(--cor-texto-suave);
-}
-.spinner {
-    width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top: 4px solid var(--cor-secundaria);
-    border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.empty-state-container {
-    display: none; flex-direction: column; align-items: center; text-align: center;
-    padding: 3rem; background-color: #fafafa; border: 1px dashed var(--borda-padrao);
-    border-radius: 12px; color: var(--cor-texto-suave);
-}
-.empty-state-container i { font-size: 3.5rem; color: var(--borda-padrao); margin-bottom: 1rem; }
-.empty-state-container h4 { font-size: 1.2rem; color: var(--cor-texto-principal); margin-bottom: 0.5rem; }
 
+
+.uploaded-item {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+
+.item-info {
+    flex: 1;
+}
+
+
+
+
+.item-info h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+
+
+
+.item-info p {
+    font-size: 12px;
+    color: #666;
+}
+
+
+
+
+.item-actions {
+    display: flex;
+    gap: 10px;
+}
+
+
+
+
+.edit-btn,
+.delete-btn {
+    font-family: 'Lexend Deca', sans-serif;
+    padding: 12px 25px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+
+
+.edit-btn {
+    background: #6c757d;
+    color: white;
+}
+
+
+
+
+.edit-btn:hover {
+    background: #5a6268;
+}
+
+
+
+
+.delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+
+
+
+.delete-btn:hover {
+    background: #c82333;
+}
+
+
+
+
+/* Status indicator */
+.status-indicator {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 10px;
+}
+
+
+
+
+.status-published {
+    background: #28a745;
+    color: white;
+}
+
+
+
+
+.status-draft {
+    background: #ffc107;
+    color: #333;
+}
+
+
+
+
+/* Audit specific styles */
+.audit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+
+
+
+.audit-form .form-group.full-width {
+    grid-column: span 2;
+}
+
+
+
+
+/* Success and alert messages */
+.success-message {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+
+
+
+.alert-message {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+
+
+
+/* Cards Grid - Responsivo */
 .cards-grid {
-    display: none; /* Começa escondido, o JS controla a exibição */
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.8rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
 }
+
+
+
 
 .card {
-    background-color: var(--cor-fundo-card); border: 1px solid var(--borda-padrao);
-    border-radius: 12px; padding: 1.6rem; display: flex; flex-direction: column;
-    justify-content: space-between; transition: all 0.2s ease-in-out;
-}
-.card:hover {
-    transform: translateY(-5px); border: 0 8px 20px rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-.card-content h3 {
-    font-size: 1.3rem; font-weight: 700; color: var(--cor-primaria);
-    border: none; padding: 0; margin: 0 0 0.5rem 0;
-    /* === CORREÇÃO 2: QUEBRA DE LINHA AUTOMÁTICA === */
-    word-break: break-word;
+
+
+
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+.card h3 {
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
-.card .card-meta {
-    font-size: 0.95rem; color: var(--cor-texto-suave); margin-bottom: 1rem;
-}
-.card .card-actions {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: auto;
-}
-.card-actions .delete-btn {
-    grid-column: 1 / -1; background-color: #FFF1F1; color: #D64545; border-color: #FFBEB8;
-}
-.card-actions .delete-btn:hover {
-    background-color: #D64545; border-color: #D64545; color: white;
-}
-.card-actions button {
-    font-family: 'Lexend Deca', sans-serif; padding: 0.7rem 0.9rem; border-radius: 8px;
-    cursor: pointer; font-weight: 600; border: 1px solid; transition: all 0.2s ease-in-out;
-    display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.95rem;
-}
-.card-actions .download-btn {
-    background-color: var(--cor-secundaria); color: #FFFFFF; border-color: var(--cor-secundaria);
-}
-.card-actions .download-btn:hover {
-    background-color: var(--cor-primaria); border: 0 6px 12px rgba(0,0,0,0.15);
-}
-.card-actions .view-description-btn {
-    background-color: transparent; color: var(--cor-primaria); border-color: var(--borda-padrao);
-}
-.card-actions .view-description-btn:hover {
-    background-color: #F0F0F0; border-color: var(--cor-primaria);
+
+
+
+.card-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-size: 14px;
+    flex-grow: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
-/* =================================
-   5. Modal 
-   ================================= */
-/* === CORREÇÃO 1: MODAL PERFEITO === */
-/* Estilos que garantem que o modal do Bootstrap funcione como um overlay */
-.modal {
-    position: fixed; top: 0; left: 0; z-index: 1055;
-    display: none; width: 100%; height: 100%;
-    overflow-x: hidden; overflow-y: auto; outline: 0;
-}
-.modal.fade { transition: opacity .15s linear; }
-.modal-backdrop {
-    position: fixed; top: 0; left: 0; z-index: 1050;
-    width: 100vw; height: 100vh; background-color: #000;
-}
-.modal-backdrop.fade { opacity: 0; }
-.modal-backdrop.show { opacity: 0.5; }
 
-.modal-dialog {
-    position: relative;
-    width: auto;
-    margin: 1.75rem auto; /* Ajustado para espaçamento superior/inferior */
-    pointer-events: none;
-    z-index: 1060; /* Acima do backdrop */
-    transition: transform .3s ease-out;
-    transform: translateY(-50px); /* Posição inicial para animação */
 
-    /* === CORREÇÃO 1: TAMANHO MÁXIMO DO MODAL === */
-    max-width: 500px; /* Define a largura máxima padrão para o modal */
-    
-    /* === CORREÇÃO 2: CENTRALIZAÇÃO HORIZONTAL EM MODAIS NÃO-CENTERED === */
-    /* Isso garante que ele sempre tente centralizar */
-    margin-left: auto;
-    margin-right: auto;
-}
-.modal.show .modal-dialog {
-    transform: none; /* Posição final da animação */
-    pointer-events: auto;
+
+.card-meta {
+    margin-bottom: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
 }
 
-.modal-dialog-centered {
-    /* === CORREÇÃO 3: CENTRALIZAÇÃO VERTICAL FORÇADA === */
-    /* Garante a centralização vertical perfeita */
+
+
+
+.card-meta div {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+
+
+
+.card-actions {
     display: flex;
-    align-items: center;
-    min-height: calc(100% - 3.5rem); /* Ajusta a altura mínima para o margin de 1.75rem em cima e embaixo */
+    gap: 8px;
+    justify-content: center;
+    align-items: stretch; /* <-- A ÚNICA MUDANÇA ESTÁ AQUI */
+    flex-wrap: wrap;
+    margin-top: auto;
 }
 
-.modal-content {
-    position: relative;
+.download-btn {
+    background: #e2ccae;
+    color: #3d2106;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+    min-width: 100px;
+}
+
+
+
+
+.download-btn:hover {
+  background-color: #caae8d;
+  color: #3d2106;
+}
+
+
+
+
+.view-description-btn {
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+    border: 1px solid #000000;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+    min-width: 100px;
+}
+
+
+
+
+.card-actions .edit-btn,
+.card-actions .delete-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+    min-width: 80px;
+    flex: 0 0 auto;
+}
+
+
+
+
+/* Lista de documentos */
+.documents-list {
+    max-width: 100%;
+    margin: 20px auto 0;
+}
+
+
+
+
+.document-item {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+
+
+
+.document-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+.document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+
+
+
+.document-info {
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+
+.document-info h3 {
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+
+
+
+.document-description {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+
+
+
+.document-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+
+
+
+.document-actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+
+
+.file-size {
+    background: #8B4513;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+
+
+
+/* Estilos para a página de auditoria */
+.audit-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+
+
+
+.audit-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    pointer-events: auto;
-    background-color: var(--cor-fundo-card);
-    background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    outline: 0;
-    border: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    height: 100%;
 }
 
-/* O cabeçalho do modal */
-.modal-header {
+
+
+
+.audit-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+.audit-card h3 {
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.4;
+}
+
+
+
+
+.audit-meta {
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+
+
+
+.audit-date {
+    color: #666;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+
+
+
+.audit-status {
     display: flex;
-    flex-shrink: 0;
     align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem;
-    border-bottom: 1px solid var(--borda-padrao);
-    border-top-left-radius: 11px;
-    border-top-right-radius: 11px;
-}
-
-/* O título do modal (h5) */
-.modal-title {
-    margin-bottom: 0;
-    line-height: 1.5;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--cor-primaria);
-}
-
-/* Botão de fechar (o "X") */
-.modal-header .btn-close {
-    padding: 0.5rem;
-    margin: -0.5rem -0.5rem -0.5rem auto;
-}
-
-/* O corpo (conteúdo principal) do modal */
-.modal-body {
-    position: relative;
-    flex: 1 1 auto;
-    padding: 1.25rem;
-    font-size: 1rem;
-    color: var(--cor-texto-principal);
-}
-.modal-body p {
-    margin-bottom: 0;
-}
-
-
-/* O rodapé, onde ficam os botões */
-.modal-footer {
-    display: flex;
+    gap: 10px;
     flex-wrap: wrap;
-    flex-shrink: 0;
+}
+
+
+
+
+.status-label {
+    color: #666;
+    font-size: 14px;
+}
+
+
+
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+}
+
+
+
+
+.status-badge.approved {
+    background: #8B4513;
+}
+
+
+
+
+.status-badge.pending {
+    background: #6c757d;
+}
+
+
+
+
+.audit-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+
+
+
+.view-report-btn {
+    background: #8B4513;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-end; /* Alinha os botões à direita */
-    padding: 1rem;
-    border-top: 1px solid var(--borda-padrao);
-    border-bottom-right-radius: 11px;
-    border-bottom-left-radius: 11px;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
 }
 
-/* Espaçamento entre os botões no rodapé */
-.modal-footer > * {
-    margin: 0.25rem;
+
+
+
+.view-report-btn:hover {
+    background: #704010;
 }
 
-/* =================================
-   7. VERSÃO FINAL - BOTÕES DO MODAL NO PADRÃO DA PÁGINA
-   ================================= */
 
-/* O Bootstrap agora cuida do ícone "X", nós só ajustamos o foco */
-.modal-header .btn-close:focus {
-    outline: none;
-    border: 0 0 0 3px rgba(218, 165, 32, 0.3);
-}
 
-/* Deixando o botão "Cancelar" com o padrão da página */
-.modal-footer .btn-secondary {
-    color: var(--cor-primaria);
-    background-color: transparent;
-    border-color: var(--borda-padrao);
-}
-.modal-footer .btn-secondary:hover {
-    background-color: #F0F0F0;
-    border-color: var(--cor-primaria);
-    color: var(--cor-primaria);
+
+.audit-download-btn {
+    background: #e2ccae;
+    color: #3d2106;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    gap: 6px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Deixando o botão "Excluir" com o padrão da página */
-.modal-footer .btn-danger {
-    color: #fff;
-    background-color: var(--cor-primaria);
-    border-color: var(--cor-primaria);
-}
-.modal-footer .btn-danger:hover {
-    background-color: #2e1a00;
-    border-color: #2e1a00;
+
+
+
+.audit-download-btn:hover {
+  background-color: #caae8d;
+  color: #3d2106;
 }
 
-@media (max-width: 992px) {
-    .container { display: block; }
+
+
+
+/* Validação visual */
+.validation-info {
+    border: 1px solid #9c9c9c;
+    color: #704010;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
 }
+
+
+
+
+.validation-info h4 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #704010;
+
+}
+
+
+
+
+.validation-info ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+
+
+
+.validation-info li {
+    margin-bottom: 5px;
+}
+
+
+
+
+/* Modal para descrição */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+
+
+
+.modal-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+
+
+
+.modal-header h3 {
+    color: #333;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+
+
+
+
+.modal-body {
+    line-height: 1.6;
+    color: #666;
+    font-size: 14px;
+    word-wrap: break-word;
+}
+
+
+
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: #999;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+
+
+
+.close:hover {
+    color: #333;
+}
+
+
+
+
+@media (max-width: 1200px) {
+    .container {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}
+
 @media (max-width: 768px) {
-    h1 { font-size: 2.8rem; }
-    .container { margin: 1.5rem auto; }
-    .upload-section { padding: 1.8rem; }
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .upload-section {
+        padding: 20px;
+    }
+
+
+
+
+    .card {
+        padding: 20px;
+    }
+
+
+
+
+    .audit-card {
+        padding: 20px;
+    }
+
+
+
+
+    .document-item {
+        padding: 15px;
+    }
+}
+
+
+@media screen and (max-width: 1024px) {
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+}
+
+
+
+
+@media screen and (max-width: 320px) {
+    .container {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+        line-height: 1.2;
+    }
+
+
+    .upload-section {
+        padding: 12px;
+    }
+}
+
+
+@media (min-width: 1025px) {
+    #btnn {
+    margin-left: 30px;
+    margin-top: 0px;
+    }
 }
