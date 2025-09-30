@@ -1,7 +1,7 @@
 import supabase from '/scripts/supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Mapeamento de UI final, sem os elementos de descrição
+    // Mapeamento de UI (sem o modal de exclusão)
     const ui = {
         form: document.getElementById('audits-form'),
         titleInput: document.getElementById('audit-title'),
@@ -10,24 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
         statusSelect: document.getElementById('audit-status'),
         fileInput: document.getElementById('audit-file'),
         fileUploadArea: document.querySelector('.file-upload'),
-        submitBtn: document.querySelector('.upload-btn'),
+        submitBtn: document.querySelector('#audits-form .upload-btn'),
         auditsList: document.getElementById('audits-list'),
         successMessage: document.getElementById('success-audits'),
         alertMessage: document.getElementById('alert-audits'),
-        confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
         loader: document.getElementById('loader'),
         emptyState: document.getElementById('empty-state'),
     };
 
     let selectedFile = null;
-    let auditIdToDelete = null;
 
-    // Funções de controle de UI (loading, lista vazia, etc.)
-    const showLoader = (isLoading) => { ui.loader.style.display = isLoading ? 'block' : 'none'; };
+    // Funções de controle de UI
+    const showLoader = (isLoading) => { ui.loader.style.display = isLoading ? 'flex' : 'none'; };
     const showEmptyState = (isEmpty) => { ui.emptyState.style.display = isEmpty ? 'flex' : 'none'; };
     const showAuditsGrid = (shouldShow) => { ui.auditsList.style.display = shouldShow ? 'grid' : 'none'; };
 
-    // --- LÓGICA DE VALIDAÇÃO (adaptada para Auditorias) ---
+    // --- LÓGICA DE VALIDAÇÃO (sem alteração) ---
     const validateField = (input, condition, errorMsg, errorElementId) => {
         const errorElement = document.getElementById(errorElementId);
         if (condition) {
@@ -64,14 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ].every(isValid => isValid);
     };
 
-    // --- LÓGICA DE UPLOAD DE ARQUIVO ---
+    // --- LÓGICA DE UPLOAD DE ARQUIVO (sem alteração) ---
     const handleFileSelection = (file) => {
         if (!file) return;
         const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        const maxSize = 20 * 1024 * 1024; // 20MB
+        const maxSize = 20 * 1024 * 1024;
         const fileUploadText = ui.fileUploadArea.querySelector('p');
-        const fileNameDisplay = ui.fileUploadArea.querySelector('small');
-
         if (!allowedTypes.includes(file.type)) {
             validateField(ui.fileUploadArea, false, 'Formato inválido. Use PDF ou DOC.', 'audit-file-error');
             selectedFile = null; return;
@@ -85,20 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
         validateField(ui.fileUploadArea, true, '', 'audit-file-error');
     };
     
-    ui.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); ui.fileUploadArea.classList.add('dragover'); });
-    ui.fileUploadArea.addEventListener('dragleave', () => ui.fileUploadArea.classList.remove('dragover'));
-    ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); });
-    ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
+    // --- FUNÇÕES DE API (sem alteração) ---
+    const fetchData = async (url, options = {}) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Sessão expirada.');
+        const headers = { 'Authorization': `Bearer ${session.access_token}`, ...options.headers };
+        if (!(options.body instanceof FormData)) { headers['Content-Type'] = 'application/json'; }
+        const response = await fetch(url, { ...options, headers });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Ocorreu um erro.');
+        return result;
+    };
 
-    // --- FUNÇÕES DE API ---
     const loadAudits = async () => {
         showLoader(true); showAuditsGrid(false); showEmptyState(false);
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('Não autenticado.');
-            const response = await fetch('/api/auditorias', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
-            if (!response.ok) throw new Error('Falha ao carregar auditorias.');
-            const audits = await response.json();
+            const audits = await fetchData('/api/auditorias');
             renderAudits(audits);
         } catch (error) {
             showAlert(error.message || 'Erro ao carregar auditorias.');
@@ -119,15 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('status', ui.statusSelect.value);
         formData.append('arquivo_auditoria', selectedFile);
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('Sessão expirada.');
-            const response = await fetch('/api/auditorias', { method: 'POST', headers: { 'Authorization': `Bearer ${session.access_token}` }, body: formData });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Erro ao enviar.');
-            showSuccess('Auditoria adicionada com sucesso!');
+            const result = await fetchData('/api/auditorias', { method: 'POST', body: formData });
+            showAlert(result.message, false);
             ui.form.reset(); selectedFile = null;
             ui.fileUploadArea.querySelector('p').textContent = 'Clique para selecionar o arquivo ou arraste aqui';
-            ui.fileUploadArea.querySelector('small').textContent = 'PDF, DOC aceitos (máximo 20MB)';
             loadAudits();
         } catch (error) {
             showAlert(error.message);
@@ -138,15 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const deleteAudit = async (auditId) => {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('Sessão expirada.');
-            const response = await fetch(`/api/auditorias/${auditId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${session.access_token}` }
-            });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Erro ao deletar.');
-            showSuccess('Auditoria excluída com sucesso!');
+            const result = await fetchData(`/api/auditorias/${auditId}`, { method: 'DELETE' });
+            showAlert(result.message, false);
             loadAudits();
         } catch (error) {
             showAlert(error.message);
@@ -155,16 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateStatusInAPI = async (id, newStatus) => {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('Sessão expirada.');
-            const response = await fetch(`/api/auditorias/${id}/status`, {
+            const result = await fetchData(`/api/auditorias/${id}/status`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
                 body: JSON.stringify({ status: newStatus })
             });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message || 'Erro ao atualizar status.');
-            showSuccess('Status atualizado com sucesso!');
+            showAlert(result.message, false);
         } catch (error) {
             showAlert(error.message);
             loadAudits();
@@ -172,41 +153,46 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
-    const showAlert = (message) => { ui.alertMessage.textContent = message; ui.alertMessage.style.display = 'block'; setTimeout(() => ui.alertMessage.style.display = 'none', 5000); };
-    const showSuccess = (message) => { ui.successMessage.textContent = message; ui.successMessage.style.display = 'block'; setTimeout(() => ui.successMessage.style.display = 'none', 4000); };
+    const showAlert = (message, isError = true) => { 
+        const el = isError ? ui.alertMessage : ui.successMessage;
+        el.textContent = message; 
+        el.style.display = 'block'; 
+        setTimeout(() => el.style.display = 'none', 5000); 
+    };
     
     const renderAudits = (audits) => {
         ui.auditsList.innerHTML = '';
-        if (audits.length === 0) {
+        if (!audits || audits.length === 0) {
             showEmptyState(true); showAuditsGrid(false); return;
         }
         showEmptyState(false); showAuditsGrid(true);
-        const statusOptions = { 'Aprovado': 'Aprovado', 'Em andamento': 'Em andamento', 'Rejeitado': 'Rejeitado', 'Em revisão': 'Em revisão' };
+        const statusMap = { 'Aprovado': 'Aprovado', 'Em andamento': 'Em andamento', 'Rejeitado': 'Rejeitado', 'Em revisão': 'Em revisão' };
         
         audits.forEach(audit => {
             const date = new Date(audit.data_auditoria).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
             let optionsHTML = '';
-            for (const [value, text] of Object.entries(statusOptions)) {
-                optionsHTML += `<option value="${value}" ${value === audit.status ? 'selected' : ''}>${text}</option>`;
+            for (const value of Object.values(statusMap)) {
+                optionsHTML += `<option value="${value}" ${value === audit.status ? 'selected' : ''}>${value}</option>`;
             }
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'audit-card'; // Usando a classe de card específica se houver
             card.innerHTML = `
-                <div class="card-content">
-                    <h3>${audit.titulo}</h3>
-                    <div class="card-meta">
-                        <span>Data: <strong>${date}</strong></span>
-                        <div class="audit-status-wrapper">
-                            <label for="status-select-${audit.id}" class="status-label">Status:</label>
-                            <select id="status-select-${audit.id}" class="status-select" data-id="${audit.id}">${optionsHTML}</select>
-                        </div>
+                <h3>${audit.titulo}</h3>
+                <div class="audit-meta">
+                    <span class="audit-date">Data: <strong>${date}</strong></span>
+                    
+                    <span class="audit-type">Tipo: <strong>${audit.tipo}</strong></span> 
+                    
+                    <div class="audit-status">
+                        <label for="status-select-${audit.id}" class="status-label">Status:</label>
+                        <select id="status-select-${audit.id}" class="status-select status-badge ${audit.status.toLowerCase().replace(' ', '-')}" data-id="${audit.id}">${optionsHTML}</select>
                     </div>
                 </div>
-                <div class="card-actions">
+                <div class="audit-actions">
                     <button class="download-btn" data-path="${audit.caminho_arquivo}">
-                        <i class="bi bi-download"></i> Baixar
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" fill="currentColor"/></svg> Download
                     </button>
-                    <button class="delete-btn" data-id="${audit.id}">
+                    <button class="delete-btn" data-id="${audit.id}" data-title="${audit.titulo}">
                         <i class="bi bi-trash-fill"></i> Excluir
                     </button>
                 </div>
@@ -222,39 +208,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (downloadBtn) {
             const filePath = downloadBtn.dataset.path;
+            downloadBtn.innerHTML = 'Gerando...';
+            downloadBtn.disabled = true;
             try {
-                const { data, error } = await supabase.storage.from('audit').download(filePath);
-                if (error) throw error;
-                const url = URL.createObjectURL(data);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filePath.split(/-(.+)/)[1] || filePath;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            } catch(error) { showAlert('Erro ao baixar o arquivo.'); }
+                const { data } = supabase.storage.from('audit').getPublicUrl(filePath);
+                if (!data || !data.publicUrl) throw new Error('URL pública não encontrada.');
+                window.open(data.publicUrl, '_blank');
+            } catch(error) { 
+                showAlert('Erro ao baixar o arquivo.'); 
+            } finally {
+                setTimeout(() => {
+                    downloadBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" fill="currentColor"/></svg> Download';
+                    downloadBtn.disabled = false;
+                }, 1500);
+            }
         }
         
+        // LÓGICA DE EXCLUSÃO ALTERADA PARA USAR 'confirm()'
         if (deleteBtn) {
-            auditIdToDelete = deleteBtn.dataset.id;
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmDeleteModal'));
-            modal.show();
+            const auditId = deleteBtn.dataset.id;
+            const auditTitle = deleteBtn.dataset.title;
+            if (confirm(`Tem certeza que deseja excluir a auditoria "${auditTitle}"?`)) {
+                deleteAudit(auditId);
+            }
         }
     });
 
     ui.auditsList.addEventListener('change', (e) => {
         if (e.target.classList.contains('status-select')) {
-            updateStatusInAPI(e.target.dataset.id, e.target.value);
+            const select = e.target;
+            updateStatusInAPI(select.dataset.id, select.value);
+            select.className = 'status-select status-badge'; // Reseta
+            select.classList.add(select.value.toLowerCase().replace(' ', '-'));
         }
     });
 
-    ui.confirmDeleteBtn.addEventListener('click', () => {
-        if (auditIdToDelete) {
-            deleteAudit(auditIdToDelete);
-            auditIdToDelete = null;
-            bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
-        }
-    });
-
+    // Listener do botão de confirmar do modal foi removido
+    
     ui.form.addEventListener('submit', submitForm);
+    
+    ui.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); ui.fileUploadArea.classList.add('dragover'); });
+    ui.fileUploadArea.addEventListener('dragleave', () => ui.fileUploadArea.classList.remove('dragover'));
+    ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); });
+    ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
+
     loadAudits();
 });

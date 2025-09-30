@@ -186,9 +186,6 @@ h1 {
     transition: border-color 0.3s ease;
 }
 
-
-
-
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
@@ -196,8 +193,32 @@ h1 {
     border-color: #8B4513;
 }
 
+.audit-card .status-select {
+    width: auto;
+    padding: 6px 28px 6px 12px; /* Espaço para a seta */
+    border: 1px solid #9c9c9c;
+    border-radius: 6px;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+    color: #333 !important; /* FORÇA a cor do texto a ser escura */
+    background-color: #f8f9fa; /* Um fundo neutro e claro */
+    
+    /* Reseta a aparência padrão para customizar */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 
+    /* Adiciona uma seta customizada que combina com seu design */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 16px 12px;
+}
 
+.audit-card .status-select:focus {
+    outline: none;
+    border-color: #8B4513;
+}
 
 .form-group input.error,
 .form-group textarea.error,
@@ -205,9 +226,6 @@ h1 {
     border-color: #dc3545;
     background-color: #fff5f5;
 }
-
-
-
 
 .form-group input.valid,
 .form-group textarea.valid,
@@ -495,8 +513,15 @@ h1 {
     gap: 20px;
 }
 
+#loader{
+    align-items: center;
+    justify-content: center;
+}
 
-
+#empty-state{
+    align-items: center;
+    justify-content: center;
+}
 
 .audit-form .form-group.full-width {
     grid-column: span 2;
@@ -837,7 +862,7 @@ h1 {
 
 
 
-.audit-date {
+.audit-date, .audit-type {
     color: #666;
     font-size: 14px;
     display: block;
@@ -997,7 +1022,7 @@ h1 {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 1001;
     left: 0;
     top: 0;
     width: 100%;
@@ -1016,6 +1041,7 @@ h1 {
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
+    z-index: 1001;
     overflow-y: auto;
     position: relative;
 }
@@ -1070,7 +1096,9 @@ h1 {
     color: #333;
 }
 
-
+.modal-backdrop.show{
+    z-index: 1000;
+}
 
 
 @media (max-width: 1200px) {
