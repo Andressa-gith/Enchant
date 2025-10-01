@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) {
             el.textContent = message;
             el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 5000);
+            setTimeout(() => { el.style.display = 'none'; }, 7000);
         }
     };
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -98,6 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         ui.orcamentoPrevistoInput.addEventListener('blur', () => {
             validateField(ui.orcamentoPrevistoInput, ui.orcamentoPrevistoInput.value !== '' && parseFloat(ui.orcamentoPrevistoInput.value) >= 0, 'O orçamento previsto é obrigatório.');
+        });
+        ui.valorExecutadoInput.addEventListener('blur', () => {
+            validateField(ui.valorExecutadoInput, ui.valorExecutadoInput.value !== '' && parseFloat(ui.valorExecutadoInput.value) >= 0, 'O valor executado é obrigatório.');
         });
     };
 
