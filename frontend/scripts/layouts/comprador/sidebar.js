@@ -35,8 +35,8 @@ function createSimpleLogoutModal() {
                 border-radius: 8px;
             ">
                 <div style="
-                    background: #3d2106;
-                    color: white;
+                    background: white;
+                    color: #3d2106;
                     padding: 24px;
                     text-align: center;
                 ">
