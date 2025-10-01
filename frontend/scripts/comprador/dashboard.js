@@ -1,4 +1,5 @@
 import supabase from '/scripts/supabaseClient.js';
+import { iniciarTutorial } from '/scripts/enchant/tutorial.js';
 
 // Guarda reativo para inicializar a página após a autenticação
 supabase.auth.onAuthStateChange((event, session) => {
@@ -170,6 +171,9 @@ function initializeApp(session) {
         const endDate = ui.endDateFilter.value;
         if (!startDate || !endDate || new Date(startDate) > new Date(endDate)) { alert("Por favor, selecione um período de datas válido."); return; }
         const data = await fetchDashboardData(startDate, endDate);
+        if (data && data.primeiro_login === true) {
+            iniciarTutorial(session);
+        }
         updateUI(data);
     }
     

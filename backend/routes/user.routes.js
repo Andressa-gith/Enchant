@@ -13,4 +13,6 @@ userRouter.put('/profile', protegerRota, UserProfileController.updateProfile);
 
 userRouter.post('/logout', protegerRota, UserProfileController.logout);
 
+userRouter.post('/tutorial-concluido', protegerRota, UserProfileController.marcarTutorialVisto);
+
 export default userRouter;

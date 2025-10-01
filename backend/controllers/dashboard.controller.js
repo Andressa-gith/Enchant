@@ -26,7 +26,7 @@ export const getDashboardData = async (req, res) => {
             { data: parceriasNoPeriodo }, { data: todasEntradasAteDataFim }, { data: todasSaidasAteDataFim },
             { data: relatoriosRecentes }, { data: todasParcerias }
         ] = await Promise.all([
-            supabase.from('instituicao').select('nome').eq('id', instituicaoId).single(),
+            supabase.from('instituicao').select('nome, primeiro_login').eq('id', instituicaoId).single(),
             supabase.from('doacao_entrada').select('quantidade, doador_origem_texto, data_entrada, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId).gte('data_entrada', dataInicio).lte('data_entrada', dataFim),
             supabase.from('doacao_saida').select('quantidade_retirada, destinatario, data_saida, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId).gte('data_saida', dataInicio).lte('data_saida', dataFim),
             supabase.from('documento_comprobatorio').select('valor, titulo, data_criacao').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Recibo de doação').gte('data_criacao', dataInicio).lte('data_criacao', dataFim),
@@ -108,6 +108,7 @@ export const getDashboardData = async (req, res) => {
         const todasCategoriasPeriodo = new Set([...Object.keys(totaisEntradaPeriodo), ...Object.keys(totaisSaidaPeriodo)]);
         
         const responseData = {
+            primeiro_login: dadosInstituicao.primeiro_login,
             boasVindas: dadosInstituicao.nome, kpis, totaisPorCategoria: estoqueNoPeriodoPorCategoria,
             graficos: {
                 estoqueAtual: { labels: Object.keys(estoqueNoPeriodoPorCategoria), data: Object.values(estoqueNoPeriodoPorCategoria) },

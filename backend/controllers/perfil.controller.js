@@ -7,7 +7,7 @@ class UserProfileController {
 
             const { data, error } = await supabase
                 .from('instituicao') // 1. O nome da sua tabela
-                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado )')    // 2. As colunas que você quer
+                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado ), primeiro_login')    // 2. As colunas que você quer
                 .eq('id', usuarioId)      // 3. A condição (WHERE id = usuarioId)
                 .single();                // 4. Diz que esperamos apenas um resultado
 
@@ -29,6 +29,7 @@ class UserProfileController {
                 email_contato: data.email_contato,
                 email: emailDoUsuarioLogado,
                 cnpj: data.cnpj,
+                primeiro_login: data.primeiro_login,
                 // Extrai a string 'numero' de dentro do array 'telefones'
                 telefone: fone?.numero || null,
                 cidade: end?.cidade || null,
@@ -94,7 +95,7 @@ class UserProfileController {
             // 1. Obter dados da requisição
             const usuarioId = req.user.id;
             // Pegamos os dados que o frontend enviou no 'body'
-            const { nome, email_contato, email, senha, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo } = req.body;
+            const { nome, email_contato, email, senha, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo, primeiro_login } = req.body;
 
             const authUpdateData = {};
 
@@ -119,7 +120,7 @@ class UserProfileController {
                     throw authError;
                 }
             }
-
+            
             // 2. Preparar os objetos de dados para cada tabela
             const instituicaoData = { nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo };
             // Filtra chaves com valores undefined para não sobrescrever com 'nada' no banco
@@ -170,6 +171,27 @@ class UserProfileController {
         } catch (error) {
             console.error("Erro ao atualizar o perfil:", error);
             res.status(500).json({ message: 'Erro interno ao atualizar o perfil.' });
+        }
+    }
+
+    async marcarTutorialVisto(req, res) {
+        try {
+            const usuarioId = req.user.id;
+                        
+            const { error } = await supabase
+                .from('instituicao')
+                .update({ primeiro_login: false })
+                .eq('id', usuarioId);
+
+            if (error) {
+                throw error;
+            }
+
+            res.status(200).json({ message: 'Tutorial marcado como concluído.' });
+
+        } catch (error) {
+            console.error("❌ Erro ao marcar tutorial como visto:", error.message);
+            res.status(500).json({ message: 'Não foi possível atualizar o status do tutorial.' });
         }
     }
 
