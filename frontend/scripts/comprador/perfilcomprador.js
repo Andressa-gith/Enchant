@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
 
-        ui.profileImage.src = userData.url_foto_perfil;
+        ui.profileImage.src = userData.url_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
 
         if (userData.url_logo) {
             // Se tem um logo, esconde o placeholder e mostra a imagem

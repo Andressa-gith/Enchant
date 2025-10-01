@@ -420,7 +420,7 @@ function initializeHeader(session) {
                     } else if (profilePhotoImg) {
                         // Se não houver foto, esconde a imagem para não mostrar um ícone quebrado
                         // Você pode definir um src para uma imagem de placeholder aqui se quiser
-                        profilePhotoImg.style.display = 'none'; 
+                        profilePhotoImg.src = '/assets/imgs/comprador/avatar-padrao.jpg'; 
                     }
                     
                 } catch (error) {
