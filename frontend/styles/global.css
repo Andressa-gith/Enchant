@@ -188,9 +188,55 @@ body .shepherd-button.btn-principal:hover {
 }
 
 body .shepherd-button.btn-secundario:hover {
-   background-color: #61350C;
-   color: white;
+   background-color: #b9b9b9;
+   color: #61350C;
    transition: all 0.3s ease;
+}
+
+.shepherd-element.shepherd-custom {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    max-width: 380px;
+}
+
+.shepherd-custom .shepherd-header {
+    background-color: #61350C !important;
+    padding: 1rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+}
+
+.shepherd-custom .shepherd-title {
+    color: #FFFFFF; 
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.shepherd-custom .shepherd-cancel-icon {
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s ease;
+}
+.shepherd-custom .shepherd-cancel-icon:hover {
+    color: #FFFFFF;
+}
+
+.shepherd-custom .shepherd-text {
+    padding: 1.5rem;
+    color: #333; 
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.shepherd-custom .shepherd-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1.5rem 1rem 1.5rem;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.shepherd-custom .shepherd-button:not(:last-child) {
+    margin-right: 0;
 }
 
 /* ==================MEDIA==================*/
