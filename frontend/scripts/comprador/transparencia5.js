@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmDeleteModal: new bootstrap.Modal(document.getElementById('confirmDeleteModal')),
         confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
     };
-
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
     let originChart, destinationChart;
     let allFinancialData = [];
     let itemToDeleteId = null;

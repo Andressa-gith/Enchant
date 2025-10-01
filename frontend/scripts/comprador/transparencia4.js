@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
         loader: document.getElementById('loader'),
         emptyState: document.getElementById('empty-state'),
     };
-
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
     let selectedFile = null;
 
     const showLoader = (isLoading) => { ui.loader && (ui.loader.style.display = isLoading ? 'flex' : 'none'); };

@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     setupModal();
     addCharacterCounters();
     loadReports();
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
 });
 
 

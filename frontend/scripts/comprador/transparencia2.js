@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTitle: document.getElementById('modal-title'),
         modalDescription: document.getElementById('modal-description'),
     };
-
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
     let selectedFile = null;
 
     // --- FUNÇÕES DE CONTROLE DE UI ---

@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmDeleteModal: new bootstrap.Modal(document.getElementById('confirmDeleteModal')),
         confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
     };
-
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
     let allPartnerships = [];
     let partnerToDeleteId = null;
 
