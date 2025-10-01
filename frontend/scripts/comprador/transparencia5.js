@@ -3,23 +3,19 @@ import supabase from '/scripts/supabaseClient.js';
 document.addEventListener('DOMContentLoaded', () => {
     // --- MAPEAMENTO COMPLETO DA UI ---
     const ui = {
-        // Formulário de Adição
         form: document.getElementById('categoryForm'),
         categoriaSelect: document.getElementById('categoria'),
         origemRecursoSelect: document.getElementById('origemRecurso'),
         orcamentoPrevistoInput: document.getElementById('orcamentoPrevisto'),
         valorExecutadoInput: document.getElementById('valorExecutado'),
         submitBtn: document.querySelector('#categoryForm .primeirinho1'),
-        // Tabela e Gráficos
         tableBody: document.getElementById('budgetTableBody'),
         originChartCanvas: document.getElementById('originChart'),
         destinationChartCanvas: document.getElementById('destinationChart'),
-        // Feedback e Estados
         successMessage: document.getElementById('success-message'),
         alertMessage: document.getElementById('alert-message'),
         loader: document.getElementById('loader'),
-        emptyState: document.getElementById('empty-state'),
-        // Modal de Edição
+        emptyState: document.querySelector('.no-data1'),
         editModal: new bootstrap.Modal(document.getElementById('editModal')),
         editForm: document.getElementById('edit-form'),
         editIdInput: document.getElementById('edit-id'),
@@ -36,15 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNÇÕES DE CONTROLE DE UI ---
     const showAlert = (message, isError = true) => {
         const el = isError ? ui.alertMessage : ui.successMessage;
-        if (el) { el.textContent = message; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 5000); }
+        if (el) {
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
     };
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const showLoader = (isLoading) => { if(ui.loader) ui.loader.style.display = isLoading ? 'block' : 'none'; };
-    const showEmptyState = (isEmpty) => { if(ui.emptyState) ui.emptyState.style.display = isEmpty ? 'block' : 'none'; };
-
+    const showLoader = (isLoading) => {
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = isLoading ? 'block' : 'none';
+    };
+    
     // --- LÓGICA DE VALIDAÇÃO ---
-    const validateField = (input, condition, errorMsg, errorElementId) => {
-        const errorElement = document.getElementById(errorElementId);
+    const validateField = (input, condition, errorMsg) => {
+        const errorElement = input.closest('.form-group1').querySelector('.error-message');
+        
         input.classList.remove('error');
         if (errorElement) errorElement.style.display = 'none';
 
@@ -59,29 +62,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
     };
-
+    
     const validateForm = (isEdit = false) => {
         const categoria = isEdit ? ui.editCategoriaSelect : ui.categoriaSelect;
         const origem = isEdit ? null : ui.origemRecursoSelect;
         const orcamento = isEdit ? ui.editOrcamentoInput : ui.orcamentoPrevistoInput;
+        const executado = isEdit ? ui.editExecutadoInput : ui.valorExecutadoInput; // Adicionado para validação
         const errors = [];
+        
+        // As chamadas são independentes, então todas serão executadas
+        const isCategoriaValid = validateField(categoria, !categoria.querySelector('option[disabled]:checked'), 'A categoria é obrigatória.');
+        const isOrigemValid = isEdit ? true : validateField(origem, !origem.querySelector('option[disabled]:checked'), 'A origem do recurso é obrigatória.');
+        const isOrcamentoValid = validateField(orcamento, orcamento.value !== '' && parseFloat(orcamento.value) >= 0, 'O orçamento previsto é obrigatório.');
+        // VALIDAÇÃO DO VALOR EXECUTADO ADICIONADA AQUI
+        const isExecutadoValid = validateField(executado, executado.value !== '' && parseFloat(executado.value) >= 0, 'O valor executado é obrigatório.');
 
-        // Esta é a forma correta: cada 'if' é avaliado independentemente
-        // e não para a execução se um deles for falso.
-        if (!validateField(categoria, categoria.value !== '', 'A categoria é obrigatória.', isEdit ? 'edit-categoria-error' : 'categoria-error')) {
-            errors.push('Categoria');
-        }
-        if (!isEdit && !validateField(origem, origem.value !== '', 'A origem do recurso é obrigatória.', 'origemRecurso-error')) {
-            errors.push('Origem do Recurso');
-        }
-        if (!validateField(orcamento, orcamento.value !== '' && parseFloat(orcamento.value) >= 0, 'O orçamento previsto é obrigatório.', isEdit ? 'edit-orcamentoPrevisto-error' : 'orcamentoPrevisto-error')) {
-            errors.push('Orçamento Previsto');
-        }
+        if (!isCategoriaValid) errors.push('Categoria');
+        if (!isOrigemValid) errors.push('Origem do Recurso');
+        if (!isOrcamentoValid) errors.push('Orçamento Previsto');
+        if (!isExecutadoValid) errors.push('Valor Executado'); // Adicionado à lista de erros
         
         return { 
             isValid: errors.length === 0, 
             errors: [...new Set(errors)] 
         };
+    };
+
+    // --- NOVA FUNÇÃO DE VALIDAÇÃO EM TEMPO REAL ---
+    const setupRealTimeValidation = () => {
+        ui.categoriaSelect.addEventListener('blur', () => {
+            validateField(ui.categoriaSelect, !ui.categoriaSelect.querySelector('option[disabled]:checked'), 'A categoria é obrigatória.');
+        });
+        ui.origemRecursoSelect.addEventListener('blur', () => {
+            validateField(ui.origemRecursoSelect, !ui.origemRecursoSelect.querySelector('option[disabled]:checked'), 'A origem do recurso é obrigatória.');
+        });
+        ui.orcamentoPrevistoInput.addEventListener('blur', () => {
+            validateField(ui.orcamentoPrevistoInput, ui.orcamentoPrevistoInput.value !== '' && parseFloat(ui.orcamentoPrevistoInput.value) >= 0, 'O orçamento previsto é obrigatório.');
+        });
     };
 
     // --- LÓGICA DE GRÁFICOS E TABELA ---
@@ -104,17 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderTable = () => {
-        const tableWrapper = ui.tableBody.closest('.table-wrapper');
         ui.tableBody.innerHTML = '';
-
         if (allFinancialData.length === 0) {
-            showEmptyState(true);
-            if(tableWrapper) tableWrapper.style.display = 'none';
+            ui.tableBody.innerHTML = `<tr><td colspan="7" class="no-data1">Nenhuma categoria adicionada ainda.</td></tr>`;
             return;
         }
-        
-        showEmptyState(false);
-        if(tableWrapper) tableWrapper.style.display = 'block';
 
         allFinancialData.forEach(item => {
             const orcamento = parseFloat(item.orcamento_previsto);
@@ -234,10 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const populateEditModal = (item) => {
         ui.editIdInput.value = item.id;
-        // Preenche o select da Categoria e seleciona a opção correta
         ui.editCategoriaSelect.innerHTML = ui.categoriaSelect.innerHTML;
         ui.editCategoriaSelect.value = item.nome_categoria;
-        
         ui.editOrcamentoInput.value = item.orcamento_previsto;
         ui.editExecutadoInput.value = item.valor_executado;
         ui.editModal.show();
@@ -249,7 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ui.tableBody.addEventListener('click', (e) => {
         const deleteBtn = e.target.closest('.delete-btn');
         if (deleteBtn) {
-            deleteItem(deleteBtn.dataset.id, deleteBtn.dataset.category);
+            const id = deleteBtn.dataset.id;
+            const category = deleteBtn.dataset.category;
+            deleteItem(id, category);
         }
         const editBtn = e.target.closest('.edit-btn');
         if (editBtn) {
@@ -260,5 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- INICIALIZAÇÃO ---
+    setupRealTimeValidation(); // LIGA A VALIDAÇÃO EM TEMPO REAL
     loadFinancialData();
 });

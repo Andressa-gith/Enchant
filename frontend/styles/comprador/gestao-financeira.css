@@ -506,9 +506,10 @@ form-group1 textarea::placeholder {
     display: none;
 }
 
-.form-group input.error,
-.form-group textarea.error,
-.form-group select.error {
+.form-group1 input.error,
+.form-group1 textarea.error,
+.form-group1 select.error {
+    border: 2px solid;
     border-color: #dc3545;
     background-color: #fff5f5;
 }
