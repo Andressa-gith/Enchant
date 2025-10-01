@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enchant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@700&family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Enchant | Gestão financeira</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Passion+One:wght@700&family=Lexend+Deca:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
@@ -17,90 +20,135 @@
     <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
     <script src="/scripts/layouts/comprador/headercomprador.js" type="module" defer></script>
     <script src="/scripts/comprador/transparencia5.js" type="module" defer></script>
-    <!--LOADER-->
     <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
 </head>
+
 <body>
-    <!--LOADER-->
-    <body class="auto-loader">
-    <div id="loader-container"></div>
-    <header id="header-container"></header>
-    <aside id="sidebar-container"></aside>
+    <div class="container">
+        <h1 class="tite1">Gestão Financeira</h1>
 
-    <main id="main">
-        <div class="container">
-            <h1>Gestão Financeira</h1>
-            <p>Monitore e gerencie as finanças da sua organização com transparência e eficiência.</p>
-
-            <div class="upload-section">
-                <div class="validation-info">
-                    <h4> <svg id="icon-info" xmlns="http://www.w3.org/2000/svg" fill="#72330f" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
-                        Requisitos para lançamentos financeiros:</h4>
-                    <ul>
-                        <li><i class="bi bi-check-circle-fill"></i> Todos os campos marcados com * são obrigatórios.</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Os valores de orçamento e executado devem ser em Reais (BRL).</li>
-                        <li><i class="bi bi-check-circle-fill"></i> A categoria deve ser clara e específica (mín. 10 caracteres).</li>
-                        <li><i class="bi bi-check-circle-fill"></i> O status será calculado automaticamente.</li>
-                    </ul>
-                </div>
-                
-                <div class="success-message" id="success-financeiro"></div>
-                <div class="alert-message" id="alert-financeiro"></div>
-
-                <h2>Adicionar Lançamento</h2>
-                <form id="finance-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="categoria">Categoria *</label>
-                            <input type="text" id="categoria" placeholder="Ex: Educação, Saúde...">
-                        </div>
-                        <div class="form-group">
-                            <label for="origemRecurso">Origem do Recurso *</label>
-                            <select id="origemRecurso">
-                                <option value="">Selecione</option>
-                                <option value="Governo Federal">Governo Federal</option>
-                                <option value="Governo Estadual">Governo Estadual</option>
-                                <option value="Recursos Próprios">Recursos Próprios</option>
-                                <option value="Recursos Privados">Recursos Privados</option>
-                                <option value="Outros">Outros</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="orcamentoPrevisto">Orçamento Previsto (R$) *</label>
-                            <input type="number" id="orcamentoPrevisto" step="0.01" min="0" placeholder="0,00">
-                        </div>
-                        <div class="form-group">
-                            <label for="valorExecutado">Valor Executado (R$) *</label>
-                            <input type="number" id="valorExecutado" step="0.01" min="0" placeholder="0,00">
-                        </div>
-                        </div>
-                    <button type="submit" class="upload-btn">Adicionar Lançamento</button>
-                </form>
+        <div class="form-section1">
+            <div class="validation-info1">
+                <h4>Requisitos para gestão financeira:</h4>
+                <ul>
+                    <li>A Categoria deve ser específica (mínimo 10 caracteres)</li>
+                    <li>Selecione o tipo de parceria (mínimo 20 caracteres)</li>
+                    <li>OPCIONAL: Arquivo em formato PDF, DOC ou XLS (máximo 10MB)</li>
+                    <li>Todos os valores precisam estar convertidos para BRL</li>
+                </ul>
             </div>
 
-            <div class="dashboard-grid">
-                <div class="card">
-                    <h2 class="card-title"><i class="bi bi-pie-chart-fill"></i> Origem dos Recursos</h2>
-                    <p class="card-subtitle">Orçamento total por fonte de recurso</p>
-                    <div class="chart-container">
-                        <canvas id="originChart"></canvas>
+            <div id="success-message" class="success-message" style="display: none;"></div>
+            <div id="alert-message" class="alert-message" style="display: none;"></div>
+
+            <h2 class="card-title1" id="tituloff">
+                Adicionar Nova Categoria
+            </h2>
+            <form id="categoryForm">
+                <div class="form-grid1">
+                    <div class="form-group1">
+                        <label for="categoria">Categoria *</label>
+                        <select id="categoria" name="nome_categoria" class="form-control1">
+                            <option disabled selected>Selecione uma categoria...</option>
+                            <optgroup label="Recursos Humanos">
+                                <option value="Salários e Encargos">Salários e Encargos</option>
+                                <option value="Benefícios">Benefícios</option>
+                                <option value="Treinamento e Capacitação">Treinamento e Capacitação</option>
+                            </optgroup>
+                            <optgroup label="Despesas Administrativas">
+                                <option value="Aluguel e Condomínio">Aluguel e Condomínio</option>
+                                <option value="Contas (Água, Luz, Internet)">Contas (Água, Luz, Internet)</option>
+                                <option value="Material de Escritório">Material de Escritório</option>
+                                <option value="Serviços Contábeis/Jurídicos">Serviços Contábeis/Jurídicos</option>
+                            </optgroup>
+                            <optgroup label="Programas e Projetos">
+                                <option value="Material Didático/Oficinas">Material Didático/Oficinas</option>
+                                <option value="Alimentação (Beneficiários)">Alimentação (Beneficiários)</option>
+                                <option value="Transporte (Beneficiários)">Transporte (Beneficiários)</option>
+                                <option value="Realização de Eventos">Realização de Eventos</option>
+                            </optgroup>
+                            <optgroup label="Comunicação e Captação">
+                                <option value="Marketing e Publicidade">Marketing e Publicidade</option>
+                                <option value="Eventos de Captação">Eventos de Captação</option>
+                                <option value="Material Gráfico">Material Gráfico</option>
+                            </optgroup>
+                            <optgroup label="Infraestrutura e Manutenção">
+                                <option value="Manutenção Predial">Manutenção Predial</option>
+                                <option value="Aquisição de Equipamentos">Aquisição de Equipamentos</option>
+                                <option value="Software e Tecnologia">Software e Tecnologia</option>
+                            </optgroup>
+                            <optgroup label="Outros">
+                                <option value="Taxas e Impostos">Taxas e Impostos</option>
+                                <option value="Despesas de Viagem">Despesas de Viagem</option>
+                                <option value="Outras Despesas">Outras Despesas</option>
+                            </optgroup>
+                        </select>
+                        <div class="error-message" id="categoria-error"></div>
+                    </div>
+                    <div class="form-group1">
+                        <label for="origemRecurso">Origem do Recurso *</label>
+                        <select id="origemRecurso" name="origemRecurso" class="form-control1">
+                            <option disabled selected>Selecione...</option>
+                            <option value="Governo Federal">Governo Federal</option>
+                            <option value="Governo Estadual">Governo Estadual</option>
+                            <option value="Recursos Próprios">Recursos Próprios</option>
+                            <option value="Recursos Privados">Recursos Privados</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                        <div class="error-message" id="categoria-error"></div>
+                    </div>
+                    <div class="form-group1">
+                        <label for="orcamentoPrevisto">Orçamento Previsto (R$) *</label>
+                        <input type="number" id="orcamentoPrevisto" name="orcamentoPrevisto" class="form-control1" step="0.01" min="0" placeholder="0,00">
+                        <div class="error-message" id="categoria-error"></div>
+                    </div>
+                    <div class="form-group1">
+                        <label for="valorExecutado">Valor Executado (R$) *</label>
+                        <input type="number" id="valorExecutado" name="valorExecutado" class="form-control1" step="0.01" min="0" placeholder="0,00">
+                        <div class="error-message" id="categoria-error"></div>
                     </div>
                 </div>
-                <div class="card">
-                    <h2 class="card-title"><i class="bi bi-bar-chart-line-fill"></i> Destinação dos Recursos</h2>
-                    <p class="card-subtitle">Valor executado por categoria</p>
-                    <div class="chart-container">
-                        <canvas id="destinationChart"></canvas>
-                    </div>
+                <div class="bbb1">
+                    <button type="submit" class="primeirinho1">Adicionar</button>
+                </div>
+            </form>
+            <!-- TABELA COM WRAPPER CORRETO -->
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid1">
+                <!-- Origin of Resources -->
+                <div class="card1">
+                    <h2 class="card-title1">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M8 12h8M12 8v8" />
+                        </svg>
+                        Origem dos Recursos
+                    </h2>
+                    <p class="card-subtitle1">Porcentagem de execução por fonte de recurso</p>
+                    <canvas id="originChart" style="height: 200px;"></canvas>
+                </div>
+
+                <!-- Destination of Resources -->
+                <div class="card1">
+                    <h2 class="card-title1">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3v18h18V3H3zm16 16H5V5h14v14z" />
+                            <path d="M7 7h2v2H7zM11 7h2v2h-2zM15 7h2v2h-2z" />
+                        </svg>
+                        Destinação dos Recursos
+                    </h2>
+                    <p class="card-subtitle1">Gastos dos recursos por categoria (valores acumulados)</p>
+                    <canvas id="destinationChart" style="height: 200px;"></canvas>
                 </div>
             </div>
 
-            <div class="upload-section">
-                <h3>Detalhamento do Orçamento</h3>
-                <div id="loader" class="loader-container"><div class="spinner"></div><p>Carregando dados...</p></div>
-                <div id="empty-state" class="empty-state-container"><i class="bi bi-cloud-slash"></i><h4>Nenhum lançamento por aqui</h4><p>Use o formulário acima para começar.</p></div>
+            <div class="card1">
+                <h2 class="card-title1">Detalhamento do Orçamento por Categoria</h2>
+                <p class="card-subtitle1">Execução orçamentária com detalhes por área de atuação</p>
+
+                <!-- WRAPPER ESSENCIAL PARA O SCROLL -->
                 <div class="table-wrapper">
-                    <table class="budget-table">
+                    <table class="budget-table1">
                         <thead>
                             <tr>
                                 <th>Categoria</th>
@@ -112,49 +160,57 @@
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="budgetTableBody"></tbody>
+                        <tbody id="budgetTableBody">
+                            <tr>
+                                <td colspan="7" class="no-data1">Nenhuma categoria adicionada ainda. Use o formulário
+                                    acima
+                                    para adicionar
+                                    dados.</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar Lançamento</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="edit-form">
-                            <input type="hidden" id="edit-id">
-                            <div class="form-group">
-                                <label for="edit-categoria">Categoria</label>
-                                <input type="text" id="edit-categoria" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-orcamentoPrevisto">Orçamento Previsto (R$)</label>
-                                <input type="number" id="edit-orcamentoPrevisto" class="form-control" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-valorExecutado">Valor Executado (R$)</label>
-                                <input type="number" id="edit-valorExecutado" class="form-control" step="0.01" min="0">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="saveEditBtn">Salvar Alterações</button>
-                    </div>
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Lançamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-form">
+                        <input type="hidden" id="edit-id">
+                        <div class="form-group1">
+                            <label for="edit-categoria">Categoria</label>
+                            <select id="edit-categoria" class="form-control1"></select>
+                            <div class="error-message" id="edit-categoria-error"></div>
+                        </div>
+                        <div class="form-group1">
+                            <label for="edit-orcamentoPrevisto">Orçamento Previsto (R$)</label>
+                            <input type="number" id="edit-orcamentoPrevisto" class="form-control1" step="0.01">
+                            <div class="error-message" id="edit-orcamentoPrevisto-error"></div>
+                        </div>
+                        <div class="form-group1">
+                            <label for="edit-valorExecutado">Valor Executado (R$)</label>
+                            <input type="number" id="edit-valorExecutado" class="form-control1" step="0.01">
+                            <div class="error-message" id="edit-valorExecutado-error"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveEditBtn">Salvar Alterações</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><p>Tem certeza que deseja excluir este lançamento? A ação não pode ser desfeita.</p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-danger" id="confirmDeleteBtn">Sim, Excluir</button></div></div>
-            </div>
-        </div>
-    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
+
 </html>

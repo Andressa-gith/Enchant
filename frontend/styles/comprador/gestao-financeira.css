@@ -1,131 +1,662 @@
-/* =================================
-   1. Estilos Globais e Layout
-   ================================= */
-:root {
-    --cor-primaria: #4A2B00; --cor-secundaria: #72330f; --cor-fundo-pagina: #F8F5F0;
-    --cor-fundo-card: #FFFFFF; --cor-texto-principal: #2C2C2C; --cor-texto-suave: #6A6A6A;
-    --cor-sucesso: #28a745; --cor-erro: #dc3545; --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.08);
-    --borda-padrao: #E0E0E0;
-}
-body { background-color: var(--cor-fundo-pagina); color: var(--cor-texto-principal); font-family: 'Lexend Deca', sans-serif; line-height: 1.6; }
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("../../styles/global.css");
+
+/* Otimização do contêiner para melhor responsividade em todas as telas */
 .container {
-    display: flex;
-    flex-direction: column;
-    max-width: 1200px;
     margin: 0 auto;
-    padding: 1rem 1.5rem 2.5rem 1.5rem;
+    max-width: 1500px;
+    padding: 0 100px;
 }
-h1 { 
-    font-family: "Passion One", sans-serif;
-    color: var(--cor-primaria);
-    font-size: 3.2rem;
+
+.validation-info1 {
+    border: 1px solid #9c9c9c;
+    color: #704010;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.validation-info1 h4 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #704010;
+}
+
+.validation-info1 ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.validation-info1 li {
+    margin-bottom: 5px;
+}
+
+.tite1 {
+    font-family: 'Passion One', cursive;
+    font-size: 32px;
+    color: #693B11;
     text-align: center;
+    margin-bottom: 40px;
+    font-weight: 400;
+    margin-top: 30px;
+}
+
+.aaa1 {
+    text-decoration: none;
+}
+
+.hero-image1 {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+input {
+    outline: none;
+}
+
+.corteimg1 {
+    width: 100%;
+    clip-path: inset(80px 50px 700px 10px);
+    margin-top: -70px;
+}
+
+.nav-tabs1 {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0rem;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 40px;
+    margin-top: -20px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
-.container > p {
+
+.nav-tab1 {
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.nav-tab1.active1 {
+    color: #8B4513;
+    border-bottom-color: #8B4513;
+}
+
+.nav-tab1:hover {
+    color: #8B4513;
+}
+
+.icon1 {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.page1 {
+    display: none;
+}
+
+.page1.active1 {
+    display: block;
+}
+
+.page-header1 {
+    margin-bottom: 30px;
+}
+
+.page-subtitle1 {
+    font-size: 16px;
+    color: #000000;
+}
+
+.form-section1 {
+    background: transparent;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #b3b3b3;
+}
+
+#tituloff1 {
+    font-family: 'Lexend Deca', sans-serif;
+    color: #000000;
+    font-size: 16px;
+}
+
+.card-title1 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-grid1 {
+    display: grid;
+    color: white;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-group1 {
+    margin-bottom: 16px;
+}
+
+.form-group1 label {
+    display: block;
+    font-size: 14px;
+    color: #000000;
+    margin-bottom: 6px;
+    font-weight: 400;
+}
+
+.form-control1 {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    outline: none;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.file-upload-info1 {
+    font-size: 12px;
+    color: #ffffff;
+    margin-top: 4px;
+}
+
+.form-group1 input:focus,
+.form-group1 select:focus {
+    outline: none;
+}
+
+.form-group1 input::placeholder,
+.form-group1 select::placeholder,
+form-group1 textarea::placeholder {
+    font-size: 14px;
+}
+
+.primeirinho1 {
+    background-color: rgba(226, 204, 174, 1);
+    color: #000000;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 400;
     font-size: 1rem;
-    color: #6c757d;
-    max-width: 550px;
-    margin: 0.5rem auto;
+    cursor: pointer;
+}
+
+.primeirinho1:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
+.exclusivo1 {
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 14px;
+    background-color: transparent;
+    color: #000000;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: black 1px solid;
+}
+
+.dashboard-grid1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.card1 {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 30px;
+    border: 1px solid #a7a5a5;
+}
+
+.card-subtitle1 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.chart-container1 {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.line-chart-container1 {
+    position: relative;
+    height: 180px;
+    width: 100%;
+}
+
+/* Chart.js canvas styling */
+#originChart,
+#destinationChart {
+    max-height: 200px !important;
+    height: 200px !important;
+    width: 100% !important;
+}
+
+/* ========================================
+   TABELA RESPONSIVA COM ROLAMENTO HORIZONTAL
+   ======================================== */
+
+/* Container da tabela com rolamento horizontal otimizado */
+.table-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    /* Melhora o scroll no mobile */
+    -webkit-overflow-scrolling: touch;
+    /* Scroll mais suave */
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+/* Estilo da barra de rolagem customizada */
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Indicador visual de rolagem para mobile */
+.table-wrapper::after {
+    content: "←→ Role para ver mais";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+/* Tabela principal */
+.budget-table1 {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    min-width: 800px;
+    /* Largura mínima para garantir rolamento */
+    background: white;
+}
+
+.budget-table1 th,
+.budget-table1 td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+    /* Evita quebra de linha */
+    vertical-align: middle;
+}
+
+.budget-table1 th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.budget-table1 td {
+    font-size: 14px;
+    color: #666;
+}
+
+.budget-table1 .category1 {
+    color: #333;
+    font-weight: 500;
+    min-width: 120px;
+    /* Garante largura mínima para categoria */
+}
+
+.status-badge1 {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+    min-width: 80px;
     text-align: center;
 }
 
-/* =================================
-   2. Seções Principais e Dicas
-   ================================= */
-.upload-section { width: 100%; background-color: var(--cor-fundo-card); border-radius: 16px; padding: 1.5rem 2rem;}
-.upload-section h2 { font-size: 1.5rem; font-weight: 700; color: var(--cor-primaria); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--borda-padrao);}
-.upload-section h3, .card-title {
-    font-size: 1.8rem; font-weight: 700; color: var(--cor-primaria);
-    margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;
+.status-executado1 {
+    background-color: #682c01;
+    color: white;
 }
-.card-title{
-    justify-content: center;
+
+.status-planejado1 {
+    background-color: #9e7151;
+    color: #ffffff;
 }
-.upload-section h3 { margin-top: 2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--borda-padrao); padding-bottom: 0.75rem; }
-.card-subtitle { color: var(--cor-texto-suave); margin-top: -0.5rem; margin-bottom: 1.5rem; text-align: center;}
-.validation-info { background-color: #FFFDE7; border: 1px solid #814f31; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; }
-.validation-info h4 { font-weight: 600; color: var(--cor-primaria); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; }
-#icon-info { width: 1.3em; height: 1.3em; flex-shrink: 0; }
-.validation-info ul { list-style: none; padding-left: 0; margin: 0; }
-.validation-info li { margin-bottom: 0.6rem; color: var(--cor-texto-suave); display: flex; align-items: center; gap: 0.75rem; }
-.validation-info li i { color: var(--cor-secundaria); font-size: 1rem; }
 
-/* =================================
-   3. Formulário
-   ================================= */
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
-.form-group { margin-bottom: 0; }
-.form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; font-size: 1rem; }
-.form-group input, .form-group select { width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--borda-padrao); border-radius: 10px; font-size: 1rem; transition: all 0.2s ease-in-out; }
-.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--cor-secundaria); box-shadow: 0 0 0 3px rgba(114, 51, 15, 0.15); }
-.upload-btn { width: 100%; padding: 1.1rem; border: none; border-radius: 10px; background-color: var(--cor-secundaria); color: white; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 1.8rem; transition: all 0.2s ease-in-out; }
-.upload-btn:hover { background-color: var(--cor-primaria); transform: translateY(-3px); }
-
-/* =================================
-   4. Gráficos e Tabela (COM MELHORIAS)
-   ================================= */
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.5rem;}
-.dashboard-grid .card { padding: 1.5rem; } /* Adiciona padding interno aos cards dos gráficos */
-.chart-container { position: relative; height: 250px; }
-.table-wrapper { width: 100%; overflow-x: auto; }
-.budget-table { width: 100%; border-collapse: collapse; }
-.budget-table th, .budget-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--borda-padrao); vertical-align: middle; }
-.budget-table thead th { 
-    font-weight: 600; 
-    color: var(--cor-texto-suave); 
-    font-size: 0.9rem; 
-    text-transform: uppercase;
-    background-color: #f9fafb; /* CABEÇALHO DA TABELA ESTILIZADO */
+.status-pendente1 {
+    background-color: transparent;
+    color: #000000;
+    border: #000000 1px solid;
 }
-.budget-table tbody tr:hover { background-color: #fdfaf5; } /* EFEITO HOVER NA TABELA */
-.action-btn { background: none; border: none; cursor: pointer; color: var(--cor-texto-suave); font-size: 1.2rem; padding: 0.25rem; }
-.action-btn:hover { color: var(--cor-primaria); }
-.actions-cell { display: flex; gap: 0.75rem; }
 
-/* =================================
-   5. Estados (Loading, Vazio) e Modais (COM CORREÇÃO)
-   ================================= */
-.loader-container { 
-    display: none; 
-    padding: 3rem;
-    /* Correção para o alinhamento */
-    flex-direction: column; 
+.actions-cell1 {
+    text-align: center;
+    min-width: 100px;
+}
+
+.bbb1 {
+    margin-top: -20px;
+}
+
+.editinho1 {
+    font-size: 14px;
+    background-color: rgba(226, 204, 174, 1);
+    color: #000000;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.editinho1:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
+.no-data1 {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 40px;
+}
+
+/* Layout de cartões para mobile (backup) */
+.budget-table-mobile {
+    display: none;
+}
+
+.table-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-card .card-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
 }
-.empty-state-container {
-    display: none; flex-direction: column; align-items: center; text-align: center; 
-    padding: 3rem; background-color: #fafafa; border: 1px dashed var(--borda-padrao); 
-    border-radius: 12px; color: var(--cor-texto-suave);
+
+.table-card .category {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
 }
-.empty-state-container i { font-size: 3.5rem; color: var(--borda-padrao); margin-bottom: 1rem; }
-.empty-state-container h4 { font-size: 1.2rem; color: var(--cor-texto-principal); margin-bottom: 0.5rem; }
-.spinner { width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top: 4px solid var(--cor-secundaria); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.modal-footer .btn-primary { color: #fff; background-color: var(--cor-secundaria);; border-color: var(--cor-primaria); border: none; }
-.modal-footer .btn-primary:hover { background-color: var(--cor-primaria); color: #fff;}
 
-/* =================================
-   6. Estilos Novos (Layout e Badges)
-   ================================= */
-.status-badge { padding: 0.35em 0.7em; font-size: 0.8rem; font-weight: 700; text-align: center; white-space: nowrap; border-radius: 8px; display: inline-block; }
-.status-Planejado { color: #0c5460; background-color: #d1ecf1; }
-.status-Pendente { color: #856404; background-color: #fff3cd; }
-.status-Executado { color: #155724; background-color: #d4edda; }
+.table-card .card-body {
+    display: grid;
+    gap: 8px;
+}
 
-.gestao-main-content { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start; margin-top: 2.5rem; }
-.coluna-principal { display: flex; flex-direction: column; gap: 2rem; }
-.form-grid-lateral { display: flex; flex-direction: column; gap: 1rem; }
+.table-card .field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
 
-/* =================================
-   7. Responsividade
-   ================================= */
-@media (max-width: 992px) { 
-    .dashboard-grid { grid-template-columns: 1fr; } 
-    .gestao-main-content { grid-template-columns: 1fr; }
+.table-card .field-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-card .field-value {
+    font-size: 14px;
+    color: #333;
+    font-weight: 400;
+}
+
+.table-card .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.alert-message {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+/* ========================================
+   MEDIA QUERIES RESPONSIVOS
+   ======================================== */
+
+/* Tablets e telas médias */
+@media (max-width: 1200px) {
+    .container {
+        padding: 0 30px;
+    }
+
+    .budget-table1 {
+        min-width: 650px;
+    }
+
+    .table-wrapper::before {
+        opacity: 1;
+    }
+}
+
+/* Tablets pequenos */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 20px;
+    }
+
+
+
+    .nav-tab1 {
+        padding: 12px 8px;
+        font-size: 0;
+        gap: 0;
+        min-width: 44px;
+        justify-content: center;
+    }
+
+    .nav-tab1 .icon1 {
+        width: 24px;
+        height: 24px;
+    }
+
+    .nav-tabs1 {
+        gap: 5px;
+    }
+
+    .dashboard-grid1 {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .form-grid1 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .card1 {
+        padding: 16px;
+    }
+
+    /* Ajustes para tablets */
+    .budget-table1 {
+        min-width: 600px;
+    }
+
+    .budget-table1 th,
+    .budget-table1 td {
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+
+    .table-wrapper::before {
+        opacity: 1;
+        font-size: 10px;
+    }
+}
+
+/* Smartphones */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+        /* IMPORTANTE: Evita overflow horizontal */
+        overflow-x: hidden;
+    }
+
+
+
+    .nav-tab1 {
+        padding: 10px 6px;
+        min-width: 40px;
+    }
+
+    .nav-tab1 .icon1 {
+        width: 22px;
+        height: 22px;
+    }
+
+    .nav-tabs1 {
+        gap: 3px;
+        margin-bottom: 30px;
+    }
+
+    .form-section1 {
+        padding: 16px;
+    }
+
+    /* Tabela compacta para smartphones */
+    .budget-table1 {
+        min-width: 550px;
+    }
+
+    .budget-table1 th,
+    .budget-table1 td {
+        padding: 10px 6px;
+        font-size: 11px;
+    }
+
+    .table-wrapper {
+        margin: 15px 0;
+        border-radius: 6px;
+    }
+
+    .table-wrapper::before {
+        opacity: 1;
+        font-size: 9px;
+        bottom: -20px;
+    }
+
+    .status-badge1 {
+        font-size: 10px;
+        padding: 3px 8px;
+        min-width: 60px;
+    }
+
+    .editinho1 {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+}
+
+/* Para telas muito pequenas */
+@media (max-width: 360px) {
+    .container {
+        padding: 0 10px;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .budget-table1 {
+        min-width: 500px;
+    }
+
+    .budget-table1 th,
+    .budget-table1 td {
+        padding: 8px 4px;
+        font-size: 10px;
+    }
+
+    .table-wrapper {
+        /* Garante que a tabela não saia do container */
+        max-width: calc(100vw - 20px);
+    }
 }
