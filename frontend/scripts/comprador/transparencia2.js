@@ -158,7 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="card-content">
                     <h3>${contract.nome_contrato}</h3>
-                    <div class="card-meta">Ano de Vigência: <strong>${contract.ano_vigencia}</strong></div>
+                </div>
+                <div class="card-meta">
+                    <div>Ano de Vigência: <strong>${contract.ano_vigencia}</strong></div>
                 </div>
                 <div class="card-actions">
                     <button class="download-btn" data-path="${contract.caminho_arquivo}">

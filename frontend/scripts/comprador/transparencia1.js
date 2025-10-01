@@ -154,7 +154,7 @@ function updateReportsList(reports) {
     if (!reports || reports.length === 0) {
         const emptyMessage = document.createElement('p');
         emptyMessage.textContent = 'Nenhum relatório publicado ainda.';
-        emptyMessage.style.cssText = 'color: #666; font-style: italic; text-align: center; padding: 20px;';
+        emptyMessage.style.cssText = 'color: #333; text-align: center; padding: 20px;';
         listContainer.appendChild(emptyMessage);
         return;
     }

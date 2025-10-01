@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
-@import url("../../styles/global.css");
+@import url("/styles/global.css");
 
 
 body {
@@ -521,6 +521,8 @@ h1 {
 #empty-state{
     align-items: center;
     justify-content: center;
+    color: #333333;
+    font-size: 16px;
 }
 
 .audit-form .form-group.full-width {
