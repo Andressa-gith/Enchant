@@ -180,6 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="document-actions">
                     <button class="view-btn" data-path="${doc.caminho_arquivo}"><i class="bi bi-box-arrow-up-right"></i> Visualizar</button>
                     <button class="delete-btn" data-id="${doc.id}" data-title="${doc.titulo}"><i class="bi bi-trash-fill"></i> Apagar</button>
+                    <button class="edit-btn">
+                    <i class="bi bi-pencil-square"></i> Editar </button>
                 </div>
             `;
             ui.documentsContainer.appendChild(card);
