@@ -168,6 +168,31 @@ a:hover {
     font-size: 14px;
 }
 
+/* ==================SHEPERD==================*/
+
+.shepherd-button.btn-principal {
+    background-color: #61350C; /* Marrom escuro */
+    color: white;
+}
+
+.shepherd-button.btn-secundario {
+    background-color: transparent;
+    color: #61350C;
+    border: 1px solid #61350C;
+}
+
+body .shepherd-button.btn-principal:hover {
+    background-color: #3f2206;
+    color: whitesmoke;
+    transition: all 0.3s ease;
+}
+
+body .shepherd-button.btn-secundario:hover {
+   background-color: #61350C;
+   color: white;
+   transition: all 0.3s ease;
+}
+
 /* ==================MEDIA==================*/
 
 @media (max-width: 768px){
