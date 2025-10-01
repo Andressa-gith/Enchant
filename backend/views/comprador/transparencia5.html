@@ -32,8 +32,7 @@
                 <h4>Requisitos para gestão financeira:</h4>
                 <ul>
                     <li>A Categoria deve ser específica (mínimo 10 caracteres)</li>
-                    <li>Selecione o tipo de parceria (mínimo 20 caracteres)</li>
-                    <li>OPCIONAL: Arquivo em formato PDF, DOC ou XLS (máximo 10MB)</li>
+                    <li>Selecione o tipo da origem do recurso</li>
                     <li>Todos os valores precisam estar convertidos para BRL</li>
                 </ul>
             </div>
@@ -47,7 +46,7 @@
             <form id="categoryForm">
                 <div class="form-grid1">
                     <div class="form-group1">
-                        <label for="categoria">Categoria *</label>
+                        <label for="categoria">Categoria</label>
                         <select id="categoria" name="nome_categoria" class="form-control1">
                             <option disabled selected>Selecione uma categoria...</option>
                             <optgroup label="Recursos Humanos">
@@ -86,7 +85,7 @@
                         <div class="error-message" id="categoria-error"></div>
                     </div>
                     <div class="form-group1">
-                        <label for="origemRecurso">Origem do Recurso *</label>
+                        <label for="origemRecurso">Origem do Recurso</label>
                         <select id="origemRecurso" name="origemRecurso" class="form-control1">
                             <option disabled selected>Selecione...</option>
                             <option value="Governo Federal">Governo Federal</option>
@@ -98,12 +97,12 @@
                         <div class="error-message" id="categoria-error"></div>
                     </div>
                     <div class="form-group1">
-                        <label for="orcamentoPrevisto">Orçamento Previsto (R$) *</label>
+                        <label for="orcamentoPrevisto">Orçamento Previsto (R$)</label>
                         <input type="number" id="orcamentoPrevisto" name="orcamentoPrevisto" class="form-control1" step="0.01" min="0" placeholder="0,00">
                         <div class="error-message" id="categoria-error"></div>
                     </div>
                     <div class="form-group1">
-                        <label for="valorExecutado">Valor Executado (R$) *</label>
+                        <label for="valorExecutado">Valor Executado (R$)</label>
                         <input type="number" id="valorExecutado" name="valorExecutado" class="form-control1" step="0.01" min="0" placeholder="0,00">
                         <div class="error-message" id="categoria-error"></div>
                     </div>

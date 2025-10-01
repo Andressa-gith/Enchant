@@ -136,14 +136,21 @@ input {
 }
 
 .card-title1 {
-    font-size: 1.2rem;
-    font-weight: 400;
-    color: #333;
-    margin-bottom: 15px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 20px;
 }
+
+.form-group1 label::after {
+    content: ' *';
+    color: #dc3545;
+}
+
 
 .form-grid1 {
     display: grid;
@@ -493,6 +500,23 @@ form-group1 textarea::placeholder {
     background: #f8d7da;
     border: 1px solid #f5c6cb;
     color: #721c24;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.success-message {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
     padding: 12px;
     border-radius: 6px;
     margin-bottom: 20px;

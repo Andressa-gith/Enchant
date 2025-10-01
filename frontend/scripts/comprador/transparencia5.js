@@ -65,7 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const origem = isEdit ? null : ui.origemRecursoSelect;
         const orcamento = isEdit ? ui.editOrcamentoInput : ui.orcamentoPrevistoInput;
         const errors = [];
-        
+
+        // Esta é a forma correta: cada 'if' é avaliado independentemente
+        // e não para a execução se um deles for falso.
         if (!validateField(categoria, categoria.value !== '', 'A categoria é obrigatória.', isEdit ? 'edit-categoria-error' : 'categoria-error')) {
             errors.push('Categoria');
         }
@@ -76,7 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             errors.push('Orçamento Previsto');
         }
         
-        return { isValid: errors.length === 0, errors: [...new Set(errors)] };
+        return { 
+            isValid: errors.length === 0, 
+            errors: [...new Set(errors)] 
+        };
     };
 
     // --- LÓGICA DE GRÁFICOS E TABELA ---
