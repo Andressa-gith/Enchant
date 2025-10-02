@@ -59,6 +59,23 @@ h1 {
     display: none;
 }
 
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.alert-message {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: none;
+}
+
 .subtitle {
     color: #000000;
     margin-bottom: 10px;
@@ -155,11 +172,11 @@ h1 {
 }
 
 .form-title {
-    font-size: 16px;
-    color: #000000;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
     margin-bottom: 20px;
-    display: flex;
-    font-weight: 400;
 }
 
 .form-grid {

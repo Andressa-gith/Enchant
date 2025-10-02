@@ -38,6 +38,7 @@ export const addParceria = async (req, res) => {
         if (error) throw error;
         res.status(201).json({ message: 'Parceria adicionada com sucesso!', data });
     } catch (error) {
+        console.error('ERRO DETALHADO DO SUPABASE:', error);
         res.status(500).json({ message: 'Erro ao adicionar parceria.', error: error.message });
     }
 };
