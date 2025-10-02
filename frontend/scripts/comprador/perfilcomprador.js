@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!file) return;
         // Validações (pode adicionar mais se quiser)
         if (!file.type.startsWith('image/')) {
+            closeModal(ui.photoModal);
             return showNotification('Por favor, selecione um ficheiro de imagem.', 'danger');
         }
         photoPreviewFile = file; // Armazena o ficheiro selecionado
@@ -179,6 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function saveProfilePhoto() {
         if (!photoPreviewFile) {
+            closeModal(ui.photoModal);
             return showNotification('Nenhuma nova foto selecionada.', 'info');
         }
 
@@ -199,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 2. Verifica se o upload falhou
         if (uploadError) {
             console.error('Erro no upload da foto:', uploadError);
+            closeModal(ui.photoModal);
             return showNotification('Erro ao enviar a sua foto.', 'danger');
         }
         
@@ -213,19 +216,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 body: JSON.stringify({ caminho_foto_perfil: uploadData.path })
             });
 
+            closeModal(ui.photoModal);
             showNotification('Foto de perfil atualizada!', 'success');
             await fetchUserProfile(); // Re-busca tudo para atualizar a UI com a nova imagem
-            closeModal(ui.photoModal);
             photoPreviewFile = null; // Limpa a seleção
         
         } catch (dbError) {
             console.error('Erro ao salvar caminho no DB:', dbError);
+            closeModal(ui.photoModal);
             showNotification('A foto foi enviada, mas houve um erro ao salvar a referência.', 'danger');
         }
     }
 
     async function saveOrganizationLogo() {
         if (!logoPreviewFile) {
+            closeModal(ui.logoModal);
             return showNotification('Nenhum novo logo selecionado.', 'info');
         }
 
@@ -262,9 +267,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 body: JSON.stringify({ caminho_logo: uploadData.path })
             });
 
+            closeModal(ui.logoModal);
             showNotification('Logo atualizado com sucesso!', 'success');
             await fetchUserProfile(); // Re-busca os dados para obter a nova URL assinada
-            closeModal(ui.logoModal);
             logoPreviewFile = null; // Limpa a seleção
 
         } catch (dbError) {
@@ -403,9 +408,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleLogoFile(file) {
         const tiposPermitidos = ['image/jpeg', 'image/png', 'image/svg+xml'];
         if (!tiposPermitidos.includes(file.type)) {
+            closeModal(ui.logoModal);
             return showNotification('Formato não permitido. Use JPG, PNG ou SVG.', 'danger');
         }
         if (file.size > 2 * 1024 * 1024) { // 2MB
+            closeModal(ui.logoModal);
             return showNotification('Arquivo muito grande (máx. 2MB).', 'danger');
         }
         

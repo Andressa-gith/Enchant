@@ -23,6 +23,8 @@ export function iniciarTutorial(session) {
         text: 'Aqui na barra lateral você encontra todas as seções do seu painel. Em telas de computador, passe o mouse sobre ela para expandir.',
         attachTo: { element: '#sidebar', on: 'right' }, // Aponta para a sua sidebar
 
+        canClickTarget: false,
+
         popperOptions: {
             modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
         },
@@ -36,6 +38,8 @@ export function iniciarTutorial(session) {
         title: 'Seu Perfil',
         text: 'O primeiro passo é completar o seu perfil. Clique aqui para adicionar sua logo, foto e verificar suas informações.',
         attachTo: { element: 'a[href="/perfil"]', on: 'right' }, // Aponta para o link de Perfil no header
+
+        canClickTarget: false,
 
         popperOptions: {
             modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
@@ -51,6 +55,8 @@ export function iniciarTutorial(session) {
         text: 'Nesta seção, você pode registrar todas as doações que sua ONG recebe e também as distribuições que realiza, mantendo um controle de estoque preciso.',
         attachTo: { element: 'a[href="/doacao"]', on: 'right' }, // Aponta para o link de Doação na sidebar
 
+        canClickTarget: false,
+
         popperOptions: {
             modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
         },
@@ -58,7 +64,7 @@ export function iniciarTutorial(session) {
         buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
     });
 
-    // PASSO 5: Transparência
+    // PASSO 5:
     tour.addStep({
         id: 'transparencia',
         title: 'Portal da Transparência',

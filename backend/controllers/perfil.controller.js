@@ -114,7 +114,7 @@ class UserProfileController {
                 );
 
                 if (authError) {
-                    if (authError.message.includes('unique constraint')) {
+                    if (authError.message.includes('unique constraint') || authError.code === 'unexpected_failure') {
                         return res.status(409).json({ message: 'Este e-mail já está em uso.' });
                     }
                     throw authError;
