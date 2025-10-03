@@ -1,20 +1,24 @@
 import express from 'express';
 import multer from 'multer';
-import { getContratos, addContrato, deleteContrato } from '../controllers/contrato.controller.js';
+import { 
+    getContratos, 
+    addContrato, 
+    deleteContrato 
+} from '../controllers/contrato.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const contratoRouter = express.Router();
 
-// Configuração do Multer para o upload
+// Configuração do Multer
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 15 * 1024 * 1024 }, // Limite de 15MB
+    limits: { fileSize: 15 * 1024 * 1024 },
 });
 
 // Rotas
 contratoRouter.get('/', protegerRota, getContratos);
-// O 'arquivo_contrato' deve ser o mesmo nome usado no FormData do frontend
+
 contratoRouter.post('/', protegerRota, upload.single('arquivo_contrato'), addContrato);
 
 contratoRouter.delete('/:id', protegerRota, deleteContrato);

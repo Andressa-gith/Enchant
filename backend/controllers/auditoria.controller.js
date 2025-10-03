@@ -1,10 +1,17 @@
 import supabase from '../db/supabaseClient.js';
 import { v4 as uuidv4 } from 'uuid';
+import logger from '../utils/logger.js';
 
-// Função para buscar todas as auditorias da instituição logada
+/**
+ * Busca todas as auditorias da instituição logada.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const getAuditorias = async (req, res) => {
+    logger.info('Iniciando busca de auditorias...');
     try {
         const instituicaoId = req.user.id;
+        logger.debug(`Buscando auditorias para a instituição ID: ${instituicaoId}`);
 
         const { data, error } = await supabase
             .from('nota_auditoria')
@@ -14,36 +21,49 @@ export const getAuditorias = async (req, res) => {
 
         if (error) throw error;
 
+        logger.info(`Busca de auditorias bem-sucedida. ${data.length} registros encontrados.`);
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar auditorias.', error: error.message });
+        logger.error('Erro ao buscar auditorias.', error);
+        res.status(500).json({ message: 'Erro ao buscar auditorias.' });
     }
 };
 
-// Função para adicionar uma nova auditoria
+/**
+ * Adiciona uma nova auditoria, incluindo o upload do arquivo.
+ * @param {object} req - Objeto de requisição do Express (com req.body e req.file).
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const addAuditoria = async (req, res) => {
+    logger.info('Iniciando processo de adição de nova auditoria...');
     try {
         const instituicaoId = req.user.id;
         const { titulo, data_auditoria, tipo, status } = req.body;
+        
+        logger.debug('Dados recebidos para nova auditoria:', { titulo, tipo, status });
 
         if (!req.file) {
+            logger.warn('Tentativa de adicionar auditoria sem arquivo.');
             return res.status(400).json({ message: 'Nenhum arquivo de auditoria foi enviado.' });
         }
 
-        // 1. Faz o upload do arquivo para o Supabase Storage
+        // 1. Upload do arquivo
         const file = req.file;
         const filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;
+        logger.info(`Fazendo upload do arquivo para o Storage em: ${filePath}`);
 
         const { error: uploadError } = await supabase.storage
-            .from('audit') // Nome do novo bucket
+            .from('audit')
             .upload(filePath, file.buffer, {
                 contentType: file.mimetype,
                 upsert: false,
             });
 
         if (uploadError) throw uploadError;
+        logger.info('Upload do arquivo realizado com sucesso.');
 
-        // 2. Insere os dados na tabela 'nota_auditoria'
+        // 2. Inserção no banco de dados
+        logger.info('Inserindo metadados da auditoria no banco de dados...');
         const { data: auditoriaData, error: insertError } = await supabase
             .from('nota_auditoria')
             .insert({
@@ -58,26 +78,37 @@ export const addAuditoria = async (req, res) => {
             .single();
 
         if (insertError) {
-            // Se der erro no banco, remove o arquivo do Storage
+            logger.warn('Erro ao inserir no banco. Iniciando rollback do arquivo no Storage...');
             await supabase.storage.from('audit').remove([filePath]);
+            logger.info('Arquivo de rollback removido do Storage.');
             throw insertError;
         }
 
+        logger.info('Auditoria adicionada com sucesso!', { id: auditoriaData.id });
         res.status(201).json({ message: 'Auditoria adicionada com sucesso!', data: auditoriaData });
 
     } catch (error) {
-        console.error("Erro ao adicionar auditoria:", error);
-        res.status(500).json({ message: 'Erro interno ao adicionar auditoria.', error: error.message });
+        logger.error('Erro no processo de adicionar auditoria.', error);
+        res.status(500).json({ message: 'Erro interno ao adicionar auditoria.' });
     }
 };
 
+/**
+ * Atualiza o status de uma auditoria específica.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const updateAuditoriaStatus = async (req, res) => {
+    logger.info('Iniciando atualização de status de auditoria...');
     try {
         const instituicaoId = req.user.id;
         const { id } = req.params;
         const { status } = req.body;
+        
+        logger.debug(`Tentando atualizar auditoria ID: ${id} para o status: ${status}`);
 
         if (!status) {
+            logger.warn(`Tentativa de atualização sem fornecer status para auditoria ID: ${id}`);
             return res.status(400).json({ message: 'Novo status não fornecido.' });
         }
 
@@ -85,33 +116,43 @@ export const updateAuditoriaStatus = async (req, res) => {
             .from('nota_auditoria')
             .update({ status: status })
             .eq('id', id)
-            .eq('instituicao_id', instituicaoId) // Garante que o usuário só pode alterar seus próprios registros
+            .eq('instituicao_id', instituicaoId)
             .select()
             .single();
 
         if (error) {
-            if (error.code === 'PGRST116') { // Erro quando nenhum registro é encontrado
+            if (error.code === 'PGRST116') {
+                logger.warn(`Auditoria não encontrada ou sem permissão para alteração. ID: ${id}`);
                 return res.status(404).json({ message: 'Auditoria não encontrada ou você não tem permissão para alterá-la.' });
             }
             throw error;
         }
 
+        logger.info(`Status da auditoria ID: ${id} atualizado com sucesso.`);
         res.status(200).json({ message: 'Status atualizado com sucesso!', data });
 
     } catch (error) {
-        console.error("Erro ao atualizar status da auditoria:", error);
-        res.status(500).json({ message: 'Erro interno ao atualizar status.', error: error.message });
+        logger.error('Erro ao atualizar status da auditoria.', error);
+        res.status(500).json({ message: 'Erro interno ao atualizar status.' });
     }
 };
 
+/**
+ * Deleta uma auditoria e seu arquivo associado no Storage.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const deleteAuditoria = async (req, res) => {
+    logger.info('Iniciando processo de exclusão de auditoria...');
     try {
         const instituicaoId = req.user.id;
         const { id } = req.params;
+        logger.debug(`Tentando deletar auditoria ID: ${id}`);
 
-        // 1. Busca o caminho do arquivo na tabela correta: 'nota_auditoria'
+        // 1. Busca o caminho do arquivo
+        logger.info(`Buscando informações da auditoria ID: ${id} para exclusão.`);
         const { data: auditoria, error: fetchError } = await supabase
-            .from('nota_auditoria') // <-- NOME CORRETO DA TABELA
+            .from('nota_auditoria')
             .select('caminho_arquivo')
             .eq('id', id)
             .eq('instituicao_id', instituicaoId)
@@ -121,26 +162,31 @@ export const deleteAuditoria = async (req, res) => {
             throw new Error('Nota de auditoria não encontrada ou você não tem permissão.');
         }
 
-        // 2. Deleta o registro da tabela 'nota_auditoria'
+        // 2. Deleta o registro do banco
+        logger.info(`Deletando registro da auditoria ID: ${id} do banco de dados.`);
         const { error: deleteDbError } = await supabase
-            .from('nota_auditoria') // <-- NOME CORRETO DA TABELA
+            .from('nota_auditoria')
             .delete()
             .eq('id', id);
 
         if (deleteDbError) throw deleteDbError;
         
-        // 3. Deleta o arquivo do bucket 'audit'
+        // 3. Deleta o arquivo do Storage
+        logger.info(`Deletando arquivo do Storage: ${auditoria.caminho_arquivo}`);
         const { error: deleteStorageError } = await supabase.storage
-            .from('audit') // Bucket correto
+            .from('audit')
             .remove([auditoria.caminho_arquivo]);
             
         if (deleteStorageError) {
-            console.warn("Aviso: Registro deletado, mas falha ao remover arquivo do Storage:", deleteStorageError.message);
+            // Não paramos a execução, mas avisamos que o arquivo ficou órfão
+            logger.warn(`Registro da auditoria ID: ${id} deletado, mas falha ao remover arquivo do Storage.`, deleteStorageError);
         }
 
+        logger.info(`Auditoria ID: ${id} deletada com sucesso.`);
         res.status(200).json({ message: 'Nota de auditoria deletada com sucesso!' });
 
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao deletar nota de auditoria.', error: error.message });
+        logger.error('Erro ao deletar nota de auditoria.', error);
+        res.status(500).json({ message: 'Erro ao deletar nota de auditoria.' });
     }
 }

@@ -6,6 +6,7 @@ import {
 
 const authRouter = express.Router();
 
+// Rotas
 authRouter.post('/login', loginInstituicao);
 
 authRouter.post('/esqueci-senha', enviarEmailResetSenha);

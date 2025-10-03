@@ -55,5 +55,5 @@ app.use('/api/relatorios-doacao', relatorioDoacaoRoutes);
 app.use('/api/historico-doacoes', historicoRoutes);
 
 app.listen(PORT, () => {
-    console.log(`✅  Server is running in http://localhost:${PORT}`);
+    console.log(`✅  Server is running in http://localhost:${PORT}\n`);
 })
