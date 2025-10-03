@@ -56,7 +56,6 @@ export const getDashboardData = async (req, res) => {
         
         const totaisEntradaPeriodo = entradasNoPeriodo.reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
         
-        // ===== CORREÇÃO DA LÓGICA DA CATEGORIA PRINCIPAL =====
         let principalCategoria = '--';
         if (Object.keys(totaisEntradaPeriodo).length > 0) {
             const maxVal = Math.max(...Object.values(totaisEntradaPeriodo));
@@ -65,7 +64,6 @@ export const getDashboardData = async (req, res) => {
                 principalCategoria = topCategorias[0];
             }
         }
-        // =======================================================
         
         const kpis = {
             totalItensEstoque: Object.values(estoqueNoPeriodoPorCategoria).reduce((acc, val) => acc + val, 0),
@@ -81,15 +79,24 @@ export const getDashboardData = async (req, res) => {
             ...transferencias.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Transferência realizada para <b>${i.titulo}</b>` })),
             ...gastosProprios.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Gasto com recursos próprios: <b>${i.nome_categoria}</b>` })),
             ...parceriasNoPeriodo.map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
-        ].sort((a, b) => b.data - a.data); // .slice(0, 5) removido para a melhoria de scroll
+        ].sort((a, b) => b.data - a.data);
 
+        // ===== LÓGICA DE ALERTAS ATUALIZADA =====
         const parceriasAExpirar = todasParcerias.filter(p => {
             if (p.status !== 'Ativo' || !p.data_fim) return false;
             const dataFimParceria = new Date(p.data_fim);
             const diffDias = (dataFimParceria - hoje) / (1000 * 60 * 60 * 24);
             return diffDias >= 0 && diffDias <= 30;
         });
+        
+        const parceriasExpiradas = todasParcerias.filter(p => {
+            if (p.status !== 'Ativo' || !p.data_fim) return false;
+            const dataFimParceria = new Date(p.data_fim);
+            return dataFimParceria < hoje;
+        });
+
         const estoqueBaixo = Object.entries(estoqueNoPeriodoPorCategoria).filter(([_, qtd]) => qtd > 0 && qtd <= 10).map(([cat, _]) => cat);
+        // ==========================================
         
         const fluxoFinanceiroDiario = {};
         const d1 = new Date(startDate);
@@ -131,7 +138,8 @@ export const getDashboardData = async (req, res) => {
                     ]
                 }
             },
-            atividades, relatoriosRecentes, alertas: { parceriasAExpirar, estoqueBaixo }
+            atividades, relatoriosRecentes, 
+            alertas: { parceriasAExpirar, parceriasExpiradas, estoqueBaixo } // Objeto de alertas atualizado
         };
         res.status(200).json(responseData);
     } catch (error) {
@@ -143,15 +151,9 @@ export const getDashboardData = async (req, res) => {
 export const getAllActivities = async (req, res) => {
     try {
         const instituicaoId = req.user.id;
-
-        // 1. Busca os dados de todas as tabelas que geram atividades
         const [
-            { data: entradas },
-            { data: saidas },
-            { data: recibos },
-            { data: transferencias },
-            { data: gastosProprios },
-            { data: parcerias }
+            { data: entradas }, { data: saidas }, { data: recibos },
+            { data: transferencias }, { data: gastosProprios }, { data: parcerias }
         ] = await Promise.all([
             supabase.from('doacao_entrada').select('doador_origem_texto, data_entrada').eq('instituicao_id', instituicaoId),
             supabase.from('doacao_saida').select('destinatario, data_saida').eq('instituicao_id', instituicaoId),
@@ -160,8 +162,6 @@ export const getAllActivities = async (req, res) => {
             supabase.from('gestao_financeira').select('nome_categoria, data_criacao').eq('instituicao_id', instituicaoId).eq('origem_recurso', 'Recursos Próprios'),
             supabase.from('parceiro').select('nome, data_criacao').eq('instituicao_id', instituicaoId)
         ]);
-
-        // 2. Formata e junta tudo em uma única lista
         const todasAtividades = [
             ...(entradas || []).map(i => ({ data: new Date(i.data_entrada), tipo: 'entrada', desc: `Doação recebida de <b>${i.doador_origem_texto}</b>` })),
             ...(saidas || []).map(i => ({ data: new Date(i.data_saida), tipo: 'saida', desc: `Doação retirada para <b>${i.destinatario || 'beneficiário'}</b>` })),
@@ -170,15 +170,64 @@ export const getAllActivities = async (req, res) => {
             ...(gastosProprios || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Gasto com recursos próprios: <b>${i.nome_categoria}</b>` })),
             ...(parcerias || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
         ];
-
-        // 3. Ordena pela data mais recente
         const atividadesOrdenadas = todasAtividades.sort((a, b) => b.data - a.data);
-
-        console.log(`[DEBUG] Total de atividades encontradas: ${atividadesOrdenadas.length}`);
         res.status(200).json(atividadesOrdenadas);
-
     } catch (error) {
         console.error("❌ Erro ao buscar todas as atividades:", error);
         res.status(500).json({ message: "Erro interno ao buscar lista de atividades." });
     }
-}
+};
+
+export const getAllAlerts = async (req, res) => {
+    try {
+        const instituicaoId = req.user.id;
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        const [
+            { data: todasParcerias },
+            { data: todasEntradas },
+            { data: todasSaidas }
+        ] = await Promise.all([
+            supabase.from('parceiro').select('nome, status, data_fim').eq('instituicao_id', instituicaoId),
+            supabase.from('doacao_entrada').select('quantidade, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId),
+            supabase.from('doacao_saida').select('quantidade_retirada, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId)
+        ]);
+
+        const estoqueAtualPorCategoria = {};
+        const totaisEntrada = (todasEntradas || []).reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
+        const totaisSaida = (todasSaidas || []).reduce((acc, item) => { if (item.entrada?.categoria) { const n = item.entrada.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade_retirada); } return acc; }, {});
+        new Set([...Object.keys(totaisEntrada), ...Object.keys(totaisSaida)]).forEach(cat => { estoqueAtualPorCategoria[cat] = (totaisEntrada[cat] || 0) - (totaisSaida[cat] || 0); });
+
+        const parceriasAExpirar = (todasParcerias || []).filter(p => {
+            if (p.status !== 'Ativo' || !p.data_fim) return false;
+            const dataFimParceria = new Date(p.data_fim);
+            const diffDias = (dataFimParceria - hoje) / (1000 * 60 * 60 * 24);
+            return diffDias >= 0 && diffDias <= 30;
+        }).map(p => ({
+            tipo: 'parceria',
+            texto: `Parceria com <b>${p.nome}</b> expira em breve.`
+        }));
+
+        const parceriasExpiradas = (todasParcerias || []).filter(p => {
+            if (p.status !== 'Ativo' || !p.data_fim) return false;
+            const dataFimParceria = new Date(p.data_fim);
+            return dataFimParceria < hoje;
+        }).map(p => ({
+            tipo: 'parceria-expirada',
+            texto: `Parceria com <b>${p.nome}</b> está expirada. Atualize o status.`
+        }));
+
+        const estoqueBaixo = Object.entries(estoqueAtualPorCategoria).filter(([_, qtd]) => qtd > 0 && qtd <= 10).map(([cat, qtd]) => ({
+            tipo: 'estoque',
+            texto: `Estoque de <b>${cat}</b> está baixo (${qtd}).`
+        }));
+        
+        const todosAlertas = [...parceriasExpiradas, ...parceriasAExpirar, ...estoqueBaixo];
+
+        res.status(200).json(todosAlertas);
+    } catch (error) {
+        console.error("❌ Erro ao buscar todos os alertas:", error);
+        res.status(500).json({ message: "Erro interno ao buscar lista de alertas." });
+    }
+};

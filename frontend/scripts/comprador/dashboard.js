@@ -135,9 +135,26 @@ function initializeApp(session) {
     function renderAlerts(alertas, estoque) {
         ui.alertsPanel.innerHTML = '';
         let hasAlerts = false;
-        (alertas.parceriasAExpirar || []).forEach(p => { hasAlerts = true; ui.alertsPanel.innerHTML += `<div class="alert-item"><i class="bi bi-calendar-x-fill alert-icon text-warning"></i><div class="alert-text">Parceria com <b>${p.nome}</b> expira em breve.</div></div>`; });
-        (alertas.estoqueBaixo || []).forEach(cat => { hasAlerts = true; ui.alertsPanel.innerHTML += `<div class="alert-item"><i class="bi bi-box-seam alert-icon text-danger"></i><div class="alert-text">Estoque de <b>${cat}</b> está baixo (${estoque[cat] || 0}).</div></div>`; });
-        if (!hasAlerts) { ui.alertsPanel.innerHTML = `<p class="text-muted small p-2">Nenhum alerta no momento.</p>`; }
+        
+        // NOVO: Adiciona os alertas de parcerias expiradas
+        (alertas.parceriasExpiradas || []).forEach(p => { 
+            hasAlerts = true; 
+            ui.alertsPanel.innerHTML += `<div class="alert-item"><i class="bi bi-exclamation-octagon-fill alert-icon icon-parceria-expirada"></i><div class="alert-text">Parceria com <b>${p.nome}</b> está expirada.</div></div>`; 
+        });
+
+        // Alertas que já existiam
+        (alertas.parceriasAExpirar || []).forEach(p => { 
+            hasAlerts = true; 
+            ui.alertsPanel.innerHTML += `<div class="alert-item"><i class="bi bi-calendar-x-fill alert-icon icon-parceria"></i><div class="alert-text">Parceria com <b>${p.nome}</b> expira em breve.</div></div>`; 
+        });
+        (alertas.estoqueBaixo || []).forEach(cat => { 
+            hasAlerts = true; 
+            ui.alertsPanel.innerHTML += `<div class="alert-item"><i class="bi bi-box-seam alert-icon icon-estoque"></i><div class="alert-text">Estoque de <b>${cat}</b> está baixo (${estoque[cat] || 0}).</div></div>`; 
+        });
+        
+        if (!hasAlerts) { 
+            ui.alertsPanel.innerHTML = `<p class="text-muted small p-2">Nenhum alerta no momento.</p>`; 
+        }
     }
 
     function renderReports(relatorios) {
@@ -153,11 +170,9 @@ function initializeApp(session) {
     function renderActivityFeed(atividades) {
         if (atividades.length > 0) {
             ui.atividadesRecentes.innerHTML = atividades.map(item => {
-                // ===== CORREÇÃO DA DATA/HORA =====
                 const dataObj = new Date(item.data);
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
                 const horaFormatada = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                // ===================================
 
                 let iconClass = 'bi-info-circle';
                 if (item.tipo === 'entrada') iconClass = 'bi-box-arrow-in-down text-success';

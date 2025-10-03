@@ -97,6 +97,18 @@ body {
     cursor: pointer;
 }
 
+.icon-parceria-expirada {
+    color: #6c757d; /* Cinza */
+}
+
+/* Ajustes nos ícones antigos para consistência (se ainda não tiver) */
+.icon-parceria {
+    color: #ffc107; /* Amarelo/Laranja */
+}
+.icon-estoque {
+    color: #dc3545; /* Vermelho */
+}
+
 .btn-filter:hover {
     background-color: var(--primary-dark);
 }

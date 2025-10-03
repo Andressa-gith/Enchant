@@ -1,0 +1,120 @@
+@import url("/styles/global.css");
+
+:root {
+    --primary-color: #72330f;
+    --primary-dark: #4A2B00;
+    --text-color: #333;
+    --text-light: #694E4E;
+    --border-color: #DCD0C0;
+    --card-bg: #ffffff;
+}
+
+#main {
+    padding-top: 2rem;
+}
+
+.container-alertas {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-family: "Passion One", sans-serif;
+    color: var(--primary-dark);
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.btn-voltar {
+    background-color: rgba(226, 204, 174, 1);;
+    color: #000;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.icon-parceria-expirada {
+    color: #6c757d; /* Cinza */
+}
+
+/* Ajustes nos ícones antigos para consistência (se ainda não tiver) */
+.icon-parceria {
+    color: #ffc107; /* Amarelo/Laranja */
+}
+.icon-estoque {
+    color: #dc3545; /* Vermelho */
+}
+
+.btn-voltar:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
+.lista-container {
+    position: relative;
+    min-height: 300px;
+}
+
+/* Estilos para os itens de alerta (reaproveitados do dashboard) */
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+}
+
+.alert-text {
+    color: var(--text-light);
+    flex-grow: 1;
+}
+
+.alert-text b {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Loader e Empty State */
+.loader-container, .empty-state-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #aaa;
+}
+
+.empty-state-container i {
+    font-size: 3rem;
+    color: #6c757d; /* Verde para o "check" */
+}
