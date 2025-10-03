@@ -149,8 +149,7 @@ export const deleteAuditoria = async (req, res) => {
         const { id } = req.params;
         logger.debug(`Tentando deletar auditoria ID: ${id}`);
 
-        // 1. Busca o caminho do arquivo
-        logger.info(`Buscando informações da auditoria ID: ${id} para exclusão.`);
+        // 1. Busca o caminho do arquivo para garantir que o item existe
         const { data: auditoria, error: fetchError } = await supabase
             .from('nota_auditoria')
             .select('caminho_arquivo')
@@ -158,28 +157,26 @@ export const deleteAuditoria = async (req, res) => {
             .eq('instituicao_id', instituicaoId)
             .single();
 
+        // SE NÃO ACHOU, RETORNA 404 AQUI!
         if (fetchError || !auditoria) {
-            throw new Error('Nota de auditoria não encontrada ou você não tem permissão.');
+            logger.warn(`Auditoria ID: ${id} não encontrada para exclusão ou usuário sem permissão.`);
+            return res.status(404).json({ message: 'Nota de auditoria não encontrada ou você não tem permissão.' });
         }
 
         // 2. Deleta o registro do banco
-        logger.info(`Deletando registro da auditoria ID: ${id} do banco de dados.`);
         const { error: deleteDbError } = await supabase
             .from('nota_auditoria')
             .delete()
             .eq('id', id);
-
         if (deleteDbError) throw deleteDbError;
-        
+        logger.info(`Registro da auditoria ID: ${id} deletado do banco de dados.`);
+
         // 3. Deleta o arquivo do Storage
-        logger.info(`Deletando arquivo do Storage: ${auditoria.caminho_arquivo}`);
         const { error: deleteStorageError } = await supabase.storage
             .from('audit')
             .remove([auditoria.caminho_arquivo]);
-            
         if (deleteStorageError) {
-            // Não paramos a execução, mas avisamos que o arquivo ficou órfão
-            logger.warn(`Registro da auditoria ID: ${id} deletado, mas falha ao remover arquivo do Storage.`, deleteStorageError);
+            logger.warn(`Falha ao remover arquivo do Storage para auditoria ID: ${id}.`, deleteStorageError);
         }
 
         logger.info(`Auditoria ID: ${id} deletada com sucesso.`);

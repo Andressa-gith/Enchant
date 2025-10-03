@@ -109,8 +109,7 @@ export const deleteContrato = async (req, res) => {
         const { id } = req.params;
         logger.debug(`Tentando deletar contrato ID: ${id}`);
 
-        // 1. Busca o caminho do arquivo
-        logger.info(`Buscando informações do contrato ID: ${id} para exclusão.`);
+        // 1. Busca o caminho do arquivo para garantir que o item existe
         const { data: contrato, error: fetchError } = await supabase
             .from('contrato')
             .select('caminho_arquivo')
@@ -118,28 +117,26 @@ export const deleteContrato = async (req, res) => {
             .eq('instituicao_id', instituicaoId)
             .single();
 
+        // SE NÃO ACHOU, RETORNA 404 AQUI!
         if (fetchError || !contrato) {
-            logger.warn(`Contrato ID: ${id} não encontrado ou usuário sem permissão.`);
-            throw new Error('Contrato não encontrado ou você não tem permissão para excluí-lo.');
+            logger.warn(`Contrato ID: ${id} não encontrado para exclusão ou usuário sem permissão.`);
+            return res.status(404).json({ message: 'Contrato não encontrado ou você não tem permissão para excluí-lo.' });
         }
 
         // 2. Deleta o registro do banco
-        logger.info(`Deletando registro do contrato ID: ${id} do banco de dados.`);
         const { error: deleteDbError } = await supabase
             .from('contrato')
             .delete()
             .eq('id', id);
-
         if (deleteDbError) throw deleteDbError;
+        logger.info(`Registro do contrato ID: ${id} deletado do banco de dados.`);
         
         // 3. Deleta o arquivo do Storage
-        logger.info(`Deletando arquivo do Storage: ${contrato.caminho_arquivo}`);
         const { error: deleteStorageError } = await supabase.storage
             .from('contracts')
             .remove([contrato.caminho_arquivo]);
-            
         if (deleteStorageError) {
-            logger.warn(`Registro do contrato ID: ${id} deletado, mas falha ao remover arquivo do Storage.`, deleteStorageError);
+            logger.warn(`Falha ao remover arquivo do Storage para contrato ID: ${id}.`, deleteStorageError);
         }
 
         logger.info(`Contrato ID: ${id} deletado com sucesso.`);
