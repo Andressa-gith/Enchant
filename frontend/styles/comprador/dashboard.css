@@ -84,17 +84,17 @@ body {
 }
 
 .btn-filter {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--secondary-color);
+    color: #000;
     border: none;
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
-    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.4rem;
     transition: background-color 0.2s;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .icon-parceria-expirada {
@@ -110,7 +110,8 @@ body {
 }
 
 .btn-filter:hover {
-    background-color: var(--primary-dark);
+    background-color: #caae8d;
+    color: #3d2106;
 }
 
 .btn-reset {
@@ -274,7 +275,7 @@ body {
 
 .chart-view-toggle .btn-view-filter {
     background-color: #f8f9fa;
-    color: var(--text-color);
+    color: #000;
     border: 1px solid #dee2e6;
     padding: 0.5rem 1rem;
     border-radius: 8px;
@@ -286,9 +287,9 @@ body {
 
 .chart-view-toggle .btn-view-filter.active,
 .chart-view-toggle .btn-view-filter:hover {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+    background-color: var(--secondary-color);
+    color: #3d2106;
+    border-color: var(--secondary-color);
 }
 
 #mainChart,
@@ -336,13 +337,12 @@ body {
 }
 
 .report-download-btn {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--secondary-color);
+    color: #000;
     text-decoration: none;
     padding: 0.3rem 0.6rem;
     border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 14px;
     margin-left: auto;
     transition: all 0.2s;
     display: inline-flex;
@@ -351,8 +351,8 @@ body {
 }
 
 .report-download-btn:hover {
-    background-color: var(--primary-dark);
-    color: white;
+    background-color: #caae8d;
+    color: #3d2106;
 }
 
 .atividade-data {
