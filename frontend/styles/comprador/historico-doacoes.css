@@ -27,19 +27,23 @@ body {
 }
 
 .relatorio-header h1 {
-    font-family: "Passion One", sans-serif;
-    color: #4A2B00;
-    font-size: 3.2rem;
+    font-family: 'Passion One', cursive;
+    font-size: 32px;
+    color: #693B11;
     text-align: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 40px;
+    font-weight: 400;
+    margin-top: 30px;
 }
 
 .relatorio-header p {
-    font-size: 1rem;
-    color: #6c757d;
-    max-width: 600px;
-    margin: 0 auto 2rem auto;
+    font-family: "Lexend Deca";
+    font-size: 14px;
+    color: #666;
+    max-width: 550px;
+    margin: 0.5rem auto 0;
     text-align: center;
+    margin-top: -20px;
 }
 
 .relatorio-main-content {
@@ -60,6 +64,7 @@ body {
     font-weight: 600;
     margin-bottom: 1.5rem;
     color: #343a40;
+    font-family: 'Lexend Deca', sans-serif;
 }
 
 /* ==========================================================================
@@ -82,6 +87,7 @@ body {
     text-align: left;
     vertical-align: middle;
     font-size: 0.875rem;
+    font-family: 'Lexend Deca', sans-serif;
 }
 
 .history-table thead {
@@ -119,8 +125,9 @@ body {
 
 /* Botão de PDF na tabela */
 .pdf-btn {
-    background: #72330f;
-    color: white;
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #e2ccae;
+    color: #3d2106;
     border: none;
     padding: 0.5rem 0.75rem;
     border-radius: 6px;
@@ -133,7 +140,8 @@ body {
     font-weight: 500;
 }
 .pdf-btn:hover {
-    background: #4A2B00;
+    background-color: #caae8d;
+    color: #3d2106;
     transform: translateY(-2px);
 }
 
@@ -165,7 +173,7 @@ body {
    4. Formulário de Geração
    ========================================================================== */
 .card-form {
-    background: #4A2B00;
+    background: #693B11;
     color: white;
 }
 

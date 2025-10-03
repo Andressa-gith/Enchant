@@ -472,8 +472,8 @@ function showSimpleLogoutModal(logoutCallback) {
                                 <i class="bi bi-file-earmark-text"></i>
                                 <span>Relatórios</span>
                             </a>
-                            <a href="/transparencia/contratos" style="display:flex; gap: 10px">
-                                <i class="bi bi-paperclip me-2"></i>
+                            <a href="/transparencia/contratos">
+                                <i class="bi bi-paperclip"></i>
                                 <span>Contratos</span>
                             </a>
                             <a href="/transparencia/notas-auditoria">

@@ -96,6 +96,7 @@ p {
 }
 
 
+
 @media (max-width: 768px) {
     .nav-tab {
         padding: 12px 8px;
@@ -275,6 +276,7 @@ p {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    
 }
 
 
@@ -316,6 +318,10 @@ p {
     display: none;
 }
 
+.file-upload .icon {
+    transform: translateY(-12px); /* Move o ícone 15 pixels para cima */
+}
+
 #btnn {
     margin-left: -19px;
     margin-top: -22px;
@@ -323,22 +329,6 @@ p {
 
 #btnn2 {
     margin-left: -25px;
-}
-
-
-
-
-
-
-
-/* Botão de doação */
-.design-botao {
-
-
-}
-
-.design-botao:hover {
-
 }
 
 
