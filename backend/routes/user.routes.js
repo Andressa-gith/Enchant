@@ -5,6 +5,7 @@ import UserProfileController from '../controllers/perfil.controller.js';
 
 const userRouter = express.Router();
 
+// Rotas
 userRouter.post('/cadastro', cadastrarInstituicao);
 
 userRouter.get('/profile', protegerRota, UserProfileController.getProfile);
