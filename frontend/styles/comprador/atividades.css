@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+@import url("/styles/global.css");
+
+:root {
+    --primary-color: #72330f;
+    --primary-dark: #4A2B00;
+    --text-color: #333;
+    --text-light: #694E4E;
+    --border-color: #DCD0C0;
+    --card-bg: #ffffff;
+}
+
+#main {
+    padding-top: 2rem;
+}
+
+.container-atividades {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-family: "Passion One", sans-serif;
+    color: var(--primary-dark);
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.btn-voltar {
+    background-color: rgba(226, 204, 174, 1);;
+    color: #000;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-voltar:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
+.lista-container {
+    position: relative;
+    min-height: 300px; /* Altura mínima para mostrar o loader */
+}
+
+/* Reutilizando estilos do dashboard para consistência */
+.atividade-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.atividade-item:last-child {
+    border-bottom: none;
+}
+
+.atividade-icon {
+    font-size: 1.5rem;
+}
+
+.atividade-texto {
+    color: var(--text-light);
+    flex-grow: 1;
+}
+
+.atividade-texto b {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.atividade-data {
+    font-size: 0.8rem;
+    color: #aaa;
+    white-space: nowrap;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+
+/* Loader e Empty State */
+.loader-container, .empty-state-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #aaa;
+}
+
+.empty-state-container i {
+    font-size: 3rem;
+}

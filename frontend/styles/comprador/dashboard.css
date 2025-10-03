@@ -225,6 +225,26 @@ body {
     color: var(--primary-dark);
 }
 
+.view-all-link {
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+    white-space: nowrap;
+    top: 5px;
+}
+
+.view-all-link:hover {
+    color: var(--primary-dark);
+}
+
+.widget-title-div{
+    display: flex;
+    justify-content: space-between;
+}
+
 .chart-container {
     position: relative;
     width: 100%;

@@ -139,3 +139,46 @@ export const getDashboardData = async (req, res) => {
         res.status(500).json({ message: "Erro interno ao buscar dados do dashboard." });
     }
 };
+
+export const getAllActivities = async (req, res) => {
+    try {
+        const instituicaoId = req.user.id;
+
+        // 1. Busca os dados de todas as tabelas que geram atividades
+        const [
+            { data: entradas },
+            { data: saidas },
+            { data: recibos },
+            { data: transferencias },
+            { data: gastosProprios },
+            { data: parcerias }
+        ] = await Promise.all([
+            supabase.from('doacao_entrada').select('doador_origem_texto, data_entrada').eq('instituicao_id', instituicaoId),
+            supabase.from('doacao_saida').select('destinatario, data_saida').eq('instituicao_id', instituicaoId),
+            supabase.from('documento_comprobatorio').select('titulo, data_criacao').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Recibo de doação'),
+            supabase.from('documento_comprobatorio').select('titulo, data_criacao').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Comprovante de transferência'),
+            supabase.from('gestao_financeira').select('nome_categoria, data_criacao').eq('instituicao_id', instituicaoId).eq('origem_recurso', 'Recursos Próprios'),
+            supabase.from('parceiro').select('nome, data_criacao').eq('instituicao_id', instituicaoId)
+        ]);
+
+        // 2. Formata e junta tudo em uma única lista
+        const todasAtividades = [
+            ...(entradas || []).map(i => ({ data: new Date(i.data_entrada), tipo: 'entrada', desc: `Doação recebida de <b>${i.doador_origem_texto}</b>` })),
+            ...(saidas || []).map(i => ({ data: new Date(i.data_saida), tipo: 'saida', desc: `Doação retirada para <b>${i.destinatario || 'beneficiário'}</b>` })),
+            ...(recibos || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'entrada-financeira', desc: `Recibo de doação emitido: <b>${i.titulo}</b>` })),
+            ...(transferencias || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Transferência realizada para <b>${i.titulo}</b>` })),
+            ...(gastosProprios || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Gasto com recursos próprios: <b>${i.nome_categoria}</b>` })),
+            ...(parcerias || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
+        ];
+
+        // 3. Ordena pela data mais recente
+        const atividadesOrdenadas = todasAtividades.sort((a, b) => b.data - a.data);
+
+        console.log(`[DEBUG] Total de atividades encontradas: ${atividadesOrdenadas.length}`);
+        res.status(200).json(atividadesOrdenadas);
+
+    } catch (error) {
+        console.error("❌ Erro ao buscar todas as atividades:", error);
+        res.status(500).json({ message: "Erro interno ao buscar lista de atividades." });
+    }
+}
