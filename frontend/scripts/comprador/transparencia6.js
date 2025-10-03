@@ -146,18 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const displayStatus = isExpired ? 'Expirado' : partner.status;
             
             const card = document.createElement('div');
-            card.className = 'partnership-card';
+            card.className = 'partnership-item';
             card.innerHTML = `
                 <div class="partnership-header">
                     <span class="partnership-name">${partner.nome}</span>
                     <span class="status-badge status-${displayStatus.toLowerCase().replace(/ /g, '-').replace('ç', 'c')}">${displayStatus}</span>
                 </div>
-                <p class="partnership-objective">${partner.objetivos || 'Sem objetivos definidos.'}</p>
                 <div class="partnership-details">
-                    <div class="detail-item"><span class="detail-label">Tipo</span><span class="detail-value">${partner.tipo_setor}</span></div>
+                    <div class="detail-item"><span class="detail-label">Tipo</span><span class="detail-value"><span class="type-badge type-${partner.tipo_setor == "Público" ? "public" : "private"}">${partner.tipo_setor}</span></span></div>
                     <div class="detail-item"><span class="detail-label">Valor Total</span><span class="detail-value">${formatCurrency(partner.valor_total_parceria)}</span></div>
                     <div class="detail-item"><span class="detail-label">Início</span><span class="detail-value">${formatDate(partner.data_inicio)}</span></div>
                     <div class="detail-item"><span class="detail-label">Fim</span><span class="detail-value">${formatDate(partner.data_fim)}</span></div>
+                    <div class="detail-item" style="grid-column: 1 / -1;"><span class="detail-label">Objetivo:</span><span class="detail-value">${partner.objetivos || 'Sem objetivos definidos.'}</span></div>
+                    
                 </div>
                 <div class="action-buttons">
                     ${!isExpired ? `<button class="edit-btn" data-id="${partner.id}"><i class="bi bi-pencil-square"></i> Editar</button>` : ''}

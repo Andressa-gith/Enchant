@@ -405,22 +405,31 @@ textarea {
 }
 
 
-.status-active {
+.status-ativo {
     background: #A67545;
     color: white;
 }
 
+.status-inativo {
+    background: #7a410b;
+    color: white;
+}
 
-.status-renewal {
+.status-finalizado {
     background: #3d2106;
     color: white;
 }
 
+.status-expirado {
+    background: #fff5f5;
+    color: #dc3545;
+}
 
 .partnership-details {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 15px;
     margin-top: 15px;
 }
 
@@ -458,13 +467,6 @@ textarea {
     color: white;
 }
 
-
-.type-ong {
-    background: #8d5e32;
-    color: #ffffff;
-}
-
-
 .type-private {
     background: #ffffff;
     border: 1px solid #000000;
@@ -495,7 +497,7 @@ textarea {
 }
 
 
-.edit {
+.edit-btn {
     font-family: 'Lexend Deca', sans-serif;
     background-color: rgba(226, 204, 174, 1);
     color: #000000;
@@ -509,7 +511,7 @@ textarea {
     /* ← ADICIONAR */
 }
 
-.delet {
+.delete-btn {
     font-family: 'Lexend Deca', sans-serif;
     background-color: rgb(255, 255, 255);
     color: #000000;
@@ -541,7 +543,7 @@ textarea {
     color: #3d2106;
 }
 
-.edit:hover {
+.edit-btn:hover {
     background-color: #caae8d;
     color: #3d2106;
 }
@@ -549,7 +551,6 @@ textarea {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
@@ -567,6 +568,7 @@ textarea {
     max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
+    z-index: 1200;
 }
 
 
