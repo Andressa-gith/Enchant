@@ -40,7 +40,17 @@
     text-align: center;
     margin-bottom: 40px;
     font-weight: 400;
-    margin-top: 30px;
+    margin-top: 30px; /* Já está correto */
+}
+
+p {
+  font-family: "Lexend Deca";
+  font-size: 14px;
+  color: #666;
+  max-width: 450px;
+  margin: 0.5rem auto 0;
+  text-align: center;
+  margin-top: -20px; /* Já está correto */
 }
 
 .aaa1 {
@@ -127,6 +137,7 @@ input {
     padding: 24px;
     margin-bottom: 20px;
     border: 1px solid #b3b3b3;
+    margin-top: 40px;
 }
 
 #tituloff1 {
@@ -244,6 +255,7 @@ form-group1 textarea::placeholder {
     font-size: 14px;
     color: #666;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .chart-container1 {

@@ -16,9 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loader: document.getElementById('loader'),
         emptyState: document.getElementById('empty-state'),
     };
+    
     setTimeout(() => {
         window.SiteLoader?.hide();
     }, 500);
+    
     let selectedFile = null;
 
     const showLoader = (isLoading) => { ui.loader && (ui.loader.style.display = isLoading ? 'flex' : 'none'); };
@@ -155,33 +157,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const editDocument = (docId) => {
+        console.log('Editando documento:', docId);
+        showAlert('Função de edição em desenvolvimento', true);
+    };
+
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    const renderDocuments = (docs) => {
-        if (!ui.documentsContainer) return;
-        ui.documentsContainer.innerHTML = '';
-        if (!docs || docs.length === 0) {
-            showEmptyState(true);
-            showGrid(false);
-            return;
-        }
-        showEmptyState(false);
-        showGrid(true);
-        docs.forEach(doc => {
-            const card = document.createElement('div');
-            card.className = 'document-card';
-            card.innerHTML = `
-                <i class="bi bi-file-earmark-text document-icon"></i>
-                <div class="document-details">
+const renderDocuments = (docs) => {
+    if (!ui.documentsContainer) return;
+    ui.documentsContainer.innerHTML = '';
+    if (!docs || docs.length === 0) {
+        showEmptyState(true);
+        showGrid(false);
+        return;
+    }
+    showEmptyState(false);
+    showGrid(true);
+    docs.forEach(doc => {
+        const card = document.createElement('div');
+        card.className = 'uploaded-item';
+        card.innerHTML = `
+            <div class="document-header">
+                <div style="flex: 1;">
                     <h3 class="document-title">${doc.titulo}</h3>
-                    <p class="document-company">Tipo: ${doc.tipo_documento}</p>
+                    <p class="document-company">${doc.tipo_documento}</p>
                 </div>
-                <div class="document-value">${formatCurrency(doc.valor)}</div>
-                <div class="document-actions">
-                    <button class="view-btn" data-path="${doc.caminho_arquivo}"><i class="bi bi-box-arrow-up-right"></i> Visualizar</button>
-                    <button class="delete-btn" data-id="${doc.id}" data-title="${doc.titulo}"><i class="bi bi-trash-fill"></i> Apagar</button>
-                    <button class="edit-btn">
-                    <i class="bi bi-pencil-square"></i> Editar </button>
+                <button class="edit-btn-round" data-id="${doc.id}">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                    </svg>
+                </button>
+            </div>
+            <p class="document-value">${formatCurrency(doc.valor)}</p>
+            <div class="document-actions">
+                <button class="view-btn" data-path="${doc.caminho_arquivo}">
+                    <i class="bi bi-box-arrow-up-right"></i> Visualizar
+                </button>
+                <button class="delete" data-id="${doc.id}" data-title="${doc.titulo}">
+                    <i class="bi bi-trash-fill"></i> Excluir
+                </button>
                 </div>
             `;
             ui.documentsContainer.appendChild(card);
@@ -193,9 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ui.fileUploadArea.addEventListener('dragleave', () => { ui.fileUploadArea.classList.remove('dragover'); });
     ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); ui.fileInput.files = e.dataTransfer.files; });
     ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
+    
     ui.documentsContainer.addEventListener('click', (e) => {
         const viewBtn = e.target.closest('.view-btn');
-        const deleteBtn = e.target.closest('.delete-btn');
+        const deleteBtn = e.target.closest('.delete');
+        const editBtn = e.target.closest('.edit-btn-round');
+        
         if (viewBtn) {
             const filePath = viewBtn.dataset.path;
             try {
@@ -206,10 +224,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 showAlert('Não foi possível gerar a URL do arquivo.');
             }
         }
+        
         if (deleteBtn) {
             const docId = deleteBtn.dataset.id;
             const docTitle = deleteBtn.dataset.title;
             deleteDocument(docId, docTitle);
+        }
+        
+        if (editBtn) {
+            const docId = editBtn.dataset.id;
+            editDocument(docId);
         }
     });
 

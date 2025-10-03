@@ -23,7 +23,8 @@ body {
 }
 
 
-h1 {
+/* Para títulos principais - use a classe ou tag apropriada */
+h1, .tite, .tite1, .title {
     font-family: 'Passion One', cursive;
     font-size: 32px;
     color: #693B11;
@@ -31,6 +32,17 @@ h1 {
     margin-bottom: 40px;
     font-weight: 400;
     margin-top: 30px;
+}
+
+/* Para parágrafos descritivos abaixo do título */
+p {
+    font-family: "Lexend Deca";
+    font-size: 14px;
+    color: #666;
+    max-width: 550px;
+    margin: 0.5rem auto 0;
+    text-align: center;
+    margin-top: -20px;
 }
 
 .nav-tabs {
@@ -140,6 +152,7 @@ h1 {
     padding: 30px;
     border: 1px solid #9c9c9c;
     margin-bottom: 7rem;
+    margin-top: 40px;
 }
 
 
