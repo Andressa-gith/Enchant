@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const validation = validateForm();
         if (!validation.isValid) {
-            showAlert(`Corrija os campos: ${validation.errors.join(', ')}`);
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
             return;
         }
         
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveEdit = async () => {
         const validation = validateForm(true);
         if (!validation.isValid) {
-            showAlert(`Corrija os campos na janela de edição: ${validation.errors.join(', ')}`);
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
             return;
         }
         const id = ui.editIdInput.value;

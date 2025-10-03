@@ -109,8 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.partnerNameInput.addEventListener('blur', () => validateField(ui.partnerNameInput, ui.partnerNameInput.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.'));
         ui.partnershipValueInput.addEventListener('blur', () => validateField(ui.partnershipValueInput, ui.partnershipValueInput.value !== '' && parseFloat(ui.partnershipValueInput.value) >= 0, 'O valor é obrigatório.'));
         ui.objectiveTextarea.addEventListener('blur', () => validateField(ui.objectiveTextarea, ui.objectiveTextarea.value.trim().length >= 10, 'O objetivo deve ter no mínimo 10 caracteres.'));
-
-        // Validações para campos de data (no evento 'blur')
         ui.startDateInput.addEventListener('blur', () => validateField(ui.startDateInput, ui.startDateInput.value !== '', 'A data de início é obrigatória.'));
         ui.endDateInput.addEventListener('blur', () => {
             const isNotEmpty = validateField(ui.endDateInput, ui.endDateInput.value !== '', 'A data de término é obrigatória.');
@@ -209,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const validation = validateForm();
         if (!validation.isValid) {
-            showAlert(`Corrija os campos: ${validation.errors.join(', ')}`);
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
             return;
         }
         
@@ -234,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveEdit = async () => {
         const validation = validateForm(true);
         if (!validation.isValid) {
-            showAlert(`Corrija os campos: ${validation.errors.join(', ')}`);
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
             return;
         }
         

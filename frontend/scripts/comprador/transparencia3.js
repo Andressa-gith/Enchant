@@ -1,7 +1,7 @@
 import supabase from '/scripts/supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Mapeamento de UI (sem o modal de exclusão)
+    // --- MAPEAMENTO DOS ELEMENTOS DA UI ---
     const ui = {
         form: document.getElementById('audits-form'),
         titleInput: document.getElementById('audit-title'),
@@ -17,32 +17,41 @@ document.addEventListener('DOMContentLoaded', () => {
         loader: document.getElementById('loader'),
         emptyState: document.getElementById('empty-state'),
     };
+
+    let selectedFile = null;
+
+    // --- CÓDIGO PARA DESLIGAR O LOADER GLOBAL ---
     setTimeout(() => {
         window.SiteLoader?.hide();
     }, 500);
 
-    let selectedFile = null;
+    // --- FUNÇÕES DE CONTROLE DE UI ---
+    const showLoader = (isLoading) => { if (ui.loader) ui.loader.style.display = isLoading ? 'flex' : 'none'; };
+    const showEmptyState = (isEmpty) => { if (ui.emptyState) ui.emptyState.style.display = isEmpty ? 'flex' : 'none'; };
+    const showAuditsGrid = (shouldShow) => { if (ui.auditsList) ui.auditsList.style.display = shouldShow ? 'grid' : 'none'; };
+    const showAlert = (message, isError = true) => {
+        const el = isError ? ui.alertMessage : ui.successMessage;
+        if (el) {
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+    };
 
-    // Funções de controle de UI
-    const showLoader = (isLoading) => { ui.loader.style.display = isLoading ? 'flex' : 'none'; };
-    const showEmptyState = (isEmpty) => { ui.emptyState.style.display = isEmpty ? 'flex' : 'none'; };
-    const showAuditsGrid = (shouldShow) => { ui.auditsList.style.display = shouldShow ? 'grid' : 'none'; };
-
-    // --- LÓGICA DE VALIDAÇÃO (sem alteração) ---
-    const validateField = (input, condition, errorMsg, errorElementId) => {
-        const errorElement = document.getElementById(errorElementId);
+    // --- LÓGICA DE VALIDAÇÃO PADRONIZADA ---
+    const validateField = (input, condition, errorMsg) => {
+        const errorElement = input.closest('.form-group, .file-upload').querySelector('.error-message');
         if (condition) {
             input.classList.remove('error');
-            errorElement.style.display = 'none';
+            if (errorElement) errorElement.style.display = 'none';
             return true;
         } else {
             input.classList.add('error');
-            errorElement.textContent = errorMsg;
-            errorElement.style.display = 'block';
+            if (errorElement) { errorElement.textContent = errorMsg; errorElement.style.display = 'block'; }
             return false;
         }
     };
-    
+
     const validateDate = () => {
         const inputDate = new Date(ui.dateInput.value);
         const today = new Date();
@@ -51,40 +60,59 @@ document.addEventListener('DOMContentLoaded', () => {
         inputDate.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
         fiveYearsAgo.setHours(0, 0, 0, 0);
-        const isValid = ui.dateInput.value !== '' && inputDate <= today && inputDate >= fiveYearsAgo;
-        return validateField(ui.dateInput, isValid, 'A data deve ser válida, não futura e de no máximo 5 anos atrás.', 'audit-date-error');
-    };
 
+        if (ui.dateInput.value === '') return validateField(ui.dateInput, false, 'A data é obrigatória.');
+        return validateField(ui.dateInput, inputDate <= today && inputDate >= fiveYearsAgo, 'A data deve ser válida, não futura e de no máximo 5 anos atrás.');
+    };
+    
     const validateForm = () => {
-        return [
-            validateField(ui.titleInput, ui.titleInput.value.length >= 10, 'O título deve ter no mínimo 10 caracteres.', 'audit-title-error'),
-            validateDate(),
-            validateField(ui.typeSelect, ui.typeSelect.value !== '', 'Por favor, selecione um tipo.', 'audit-type-error'),
-            validateField(ui.statusSelect, ui.statusSelect.value !== '', 'Por favor, selecione um status.', 'audit-status-error'),
-            validateField(ui.fileUploadArea, selectedFile !== null, 'Por favor, selecione um arquivo.', 'audit-file-error')
-        ].every(isValid => isValid);
+        const errors = [];
+        if (!validateField(ui.titleInput, ui.titleInput.value.trim().length >= 10, 'O título deve ter no mínimo 10 caracteres.')) errors.push('Título');
+        if (!validateDate()) errors.push('Data');
+        if (!validateField(ui.typeSelect, ui.typeSelect.selectedIndex !== 0, 'Por favor, selecione um tipo.')) errors.push('Tipo');
+        if (!validateField(ui.statusSelect, ui.statusSelect.selectedIndex !== 0, 'Por favor, selecione um status.')) errors.push('Status');
+        if (!validateField(ui.fileUploadArea, selectedFile !== null, 'Por favor, selecione um arquivo.')) errors.push('Arquivo');
+        
+        return { 
+            isValid: errors.length === 0, 
+            errors: [...new Set(errors)] 
+        };
     };
 
-    // --- LÓGICA DE UPLOAD DE ARQUIVO (sem alteração) ---
+    const setupRealTimeValidation = () => {
+        ui.titleInput.addEventListener('blur', () => validateField(ui.titleInput, ui.titleInput.value.trim().length >= 10, 'O título deve ter no mínimo 10 caracteres.'));
+        ui.dateInput.addEventListener('blur', validateDate);
+        ui.typeSelect.addEventListener('blur', () => validateField(ui.typeSelect, ui.typeSelect.selectedIndex !== 0, 'Por favor, selecione um tipo.'));
+        ui.statusSelect.addEventListener('blur', () => validateField(ui.statusSelect, ui.statusSelect.selectedIndex !== 0, 'Por favor, selecione um status.'));
+    };
+
+    // --- LÓGICA DE UPLOAD DE ARQUIVO ---
     const handleFileSelection = (file) => {
-        if (!file) return;
+        validateField(ui.fileUploadArea, true, '');
+        const fileUploadText = ui.fileUploadArea.querySelector('p');
+        if (!file) {
+            selectedFile = null;
+            fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
+            return;
+        }
         const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         const maxSize = 20 * 1024 * 1024;
-        const fileUploadText = ui.fileUploadArea.querySelector('p');
+
         if (!allowedTypes.includes(file.type)) {
-            validateField(ui.fileUploadArea, false, 'Formato inválido. Use PDF ou DOC.', 'audit-file-error');
+            validateField(ui.fileUploadArea, false, 'Formato inválido. Use PDF ou DOC.');
             selectedFile = null; return;
         }
         if (file.size > maxSize) {
-            validateField(ui.fileUploadArea, false, 'O arquivo é muito grande (máximo 20MB).', 'audit-file-error');
+            validateField(ui.fileUploadArea, false, 'O arquivo é muito grande (máximo 20MB).');
             selectedFile = null; return;
         }
+        
         selectedFile = file;
         fileUploadText.textContent = `Arquivo: ${file.name}`;
-        validateField(ui.fileUploadArea, true, '', 'audit-file-error');
+        validateField(ui.fileUploadArea, true, '');
     };
     
-    // --- FUNÇÕES DE API (sem alteração) ---
+    // --- FUNÇÕES DE API ---
     const fetchData = async (url, options = {}) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) throw new Error('Sessão expirada.');
@@ -111,7 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const submitForm = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        const validation = validateForm();
+        if (!validation.isValid) {
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+            return;
+        }
+
         ui.submitBtn.disabled = true; ui.submitBtn.textContent = 'Enviando...';
         const formData = new FormData();
         formData.append('titulo', ui.titleInput.value);
@@ -119,26 +152,31 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('tipo', ui.typeSelect.value);
         formData.append('status', ui.statusSelect.value);
         formData.append('arquivo_auditoria', selectedFile);
+
         try {
             const result = await fetchData('/api/auditorias', { method: 'POST', body: formData });
             showAlert(result.message, false);
-            ui.form.reset(); selectedFile = null;
+            ui.form.reset(); 
+            selectedFile = null;
             ui.fileUploadArea.querySelector('p').textContent = 'Clique para selecionar o arquivo ou arraste aqui';
             loadAudits();
         } catch (error) {
             showAlert(error.message);
         } finally {
-            ui.submitBtn.disabled = false; ui.submitBtn.textContent = 'Adicionar auditoria';
+            ui.submitBtn.disabled = false; 
+            ui.submitBtn.textContent = 'Adicionar auditoria';
         }
     };
 
-    const deleteAudit = async (auditId) => {
-        try {
-            const result = await fetchData(`/api/auditorias/${auditId}`, { method: 'DELETE' });
-            showAlert(result.message, false);
-            loadAudits();
-        } catch (error) {
-            showAlert(error.message);
+    const deleteAudit = async (auditId, auditTitle) => {
+        if (confirm(`Tem certeza que deseja excluir a auditoria "${auditTitle}"?`)) {
+            try {
+                const result = await fetchData(`/api/auditorias/${auditId}`, { method: 'DELETE' });
+                showAlert(result.message, false);
+                loadAudits();
+            } catch (error) {
+                showAlert(error.message);
+            }
         }
     };
 
@@ -155,14 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
-    const showAlert = (message, isError = true) => { 
-        const el = isError ? ui.alertMessage : ui.successMessage;
-        el.textContent = message; 
-        el.style.display = 'block'; 
-        setTimeout(() => el.style.display = 'none', 5000); 
-    };
-    
+    // --- RENDERIZAÇÃO E UI ---
     const renderAudits = (audits) => {
         ui.auditsList.innerHTML = '';
         if (!audits || audits.length === 0) {
@@ -178,14 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 optionsHTML += `<option value="${value}" ${value === audit.status ? 'selected' : ''}>${value}</option>`;
             }
             const card = document.createElement('div');
-            card.className = 'audit-card'; // Usando a classe de card específica se houver
+            card.className = 'audit-card';
             card.innerHTML = `
                 <h3>${audit.titulo}</h3>
                 <div class="audit-meta">
                     <span class="audit-date">Data: <strong>${date}</strong></span>
-                    
                     <span class="audit-type">Tipo: <strong>${audit.tipo}</strong></span> 
-                    
                     <div class="audit-status">
                         <label for="status-select-${audit.id}" class="status-label">Status:</label>
                         <select id="status-select-${audit.id}" class="status-select status-badge ${audit.status.toLowerCase().replace(' ', '-')}" data-id="${audit.id}">${optionsHTML}</select>
@@ -227,13 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // LÓGICA DE EXCLUSÃO ALTERADA PARA USAR 'confirm()'
         if (deleteBtn) {
             const auditId = deleteBtn.dataset.id;
             const auditTitle = deleteBtn.dataset.title;
-            if (confirm(`Tem certeza que deseja excluir a auditoria "${auditTitle}"?`)) {
-                deleteAudit(auditId);
-            }
+            deleteAudit(auditId, auditTitle);
         }
     });
 
@@ -241,12 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('status-select')) {
             const select = e.target;
             updateStatusInAPI(select.dataset.id, select.value);
-            select.className = 'status-select status-badge'; // Reseta
+            select.className = 'status-select status-badge';
             select.classList.add(select.value.toLowerCase().replace(' ', '-'));
         }
     });
-
-    // Listener do botão de confirmar do modal foi removido
     
     ui.form.addEventListener('submit', submitForm);
     
@@ -255,5 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); });
     ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
 
+    // --- INICIALIZAÇÃO ---
+    setupRealTimeValidation();
     loadAudits();
 });
