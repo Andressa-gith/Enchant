@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveEditBtn: document.getElementById('saveEditBtn'),
     };
 
+    // --- CÓDIGO PARA DESLIGAR O LOADER GLOBAL ---
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
+    
     let allFinancialData = [];
     let originChart, destinationChart;
     const chartColors = ['#8B4513', '#A0522D', '#D2B48C', '#DAA520', '#704010'];

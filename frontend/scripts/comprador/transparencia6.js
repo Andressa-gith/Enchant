@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveEditBtn: document.getElementById('saveEditBtn'),
     };
 
+    // --- CÓDIGO PARA DESLIGAR O LOADER GLOBAL ---
+    setTimeout(() => {
+        window.SiteLoader?.hide();
+    }, 500);
+
     let allPartnerships = [];
 
     // --- FUNÇÕES DE CONTROLE DE UI ---
