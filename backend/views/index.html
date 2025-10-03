@@ -5,23 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enchant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <link rel="stylesheet" href="/styles/enchant/index.css">
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/layouts/enchant/header.css">
     <link rel="stylesheet" href="/styles/layouts/enchant/footer.css">
-    
+
     <script src="/scripts/layouts/enchant/headerenchant.js"></script>
     <script src="/scripts/layouts/enchant/footerenchant.js"></script>
     <script src="/scripts/enchant/index.js"></script>
-    
+
 </head>
 
 <body>
@@ -35,19 +38,22 @@
             <div class="container">
                 <div class="hero-text">
                     <h1 style="color: #693B11;">Transforme vidas com tecnologia e impacto social</h1>
-                    <p>O Enchant é uma plataforma completa que une ferramentas intuitivas para doações online, transparência
+                    <p>O Enchant é uma plataforma completa que une ferramentas intuitivas para doações online,
+                        transparência
                         total e engajamento comunitário.</p>
                     <a href="#plans" class="cta-button" style="color: #693B11;">Quero adquirir</a>
                 </div>
                 <div class="hero-mockup-area">
 
-                    <div class="problem-bubble problem-1">"Organizar minha ONG é um caos, nunca sei onde está cada coisa."
+                    <div class="problem-bubble problem-1">"Organizar minha ONG é um caos, nunca sei onde está cada
+                        coisa."
                     </div>
                     <div class="problem-bubble problem-2">"Não consigo mostrar como usamos as doações."</div>
                     <div class="problem-bubble problem-3">"Fico sem dados claros sobre quem realmente precisa de ajuda."
                     </div>
 
-                    <svg id="mockup-dashboard" class="svg-mockup" viewBox="0 0 350 220" xmlns="http://www.w3.org/2000/svg">
+                    <svg id="mockup-dashboard" class="svg-mockup" viewBox="0 0 350 220"
+                        xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                                 <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
@@ -95,7 +101,8 @@
                             <circle cx="18" cy="18" r="5" fill="#f87171" />
                             <circle cx="35" cy="18" r="5" fill="#fbbd23" />
                             <circle cx="52" cy="18" r="5" fill="#34d399" />
-                            <text x="20" y="60" font-size="12" font-weight="500" fill="#333">Destinação de Recursos</text>
+                            <text x="20" y="60" font-size="12" font-weight="500" fill="#333">Destinação de
+                                Recursos</text>
                             <text x="20" y="80" font-size="10" fill="#888">Saúde</text>
                             <rect x="20" y="90" width="260" height="8" rx="4" fill="#e0e0e0" />
                             <rect x="20" y="90" width="200" height="8" rx="4" fill="#8c5a46" />
@@ -130,7 +137,8 @@
                         </g>
                     </svg>
 
-                    <svg id="mockup-historico" class="svg-mockup" viewBox="0 0 250 180" xmlns="http://www.w3.org/2000/svg">
+                    <svg id="mockup-historico" class="svg-mockup" viewBox="0 0 250 180"
+                        xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <filter id="shadow5" x="-20%" y="-20%" width="140%" height="140%">
                                 <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
@@ -190,7 +198,8 @@
                     </div>
                 </div>
                 <div class="stats-source">
-                    <p>Esses dados têm como fonte oficial o Atlas Digital de Desastres, portal atualizado anualmente pela
+                    <p>Esses dados têm como fonte oficial o Atlas Digital de Desastres, portal atualizado anualmente
+                        pela
                         Secretaria Nacional de Proteção e Defesa Civil (Sedec).</p>
                 </div>
             </div>
@@ -201,27 +210,61 @@
                 <h1 style="font-weight: 400;">Pensando em doar? Veja nossas ONGs parceiras</h1>
                 <p>Doe para ONGs parceiras e ajude a transformar vidas. Pesquise por nome ou área de atuação.</p>
             </header>
-    
+
             <div class="area-busca">
-                <input type="text" id="input-busca" placeholder="Pesquisar por crianças, animais, idosos..." style="font-size: 14px; font-weight: 400;">
+                <input type="text" id="input-busca" placeholder="Pesquisar por crianças, animais, idosos..."
+                    style="font-size: 14px; font-weight: 400;">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
-    
+
             <div id="ongs-grid">
-                </div>
-    
+                <p>Carregando organizações...</p>
+            </div>
+
             <div class="mensagem-vazia" id="mensagem-vazia">
                 <h3>Nenhuma ONG encontrada.</h3>
                 <p>Tente usar termos de busca diferentes.</p>
             </div>
-    
+
             <nav id="paginacao-container">
-                </nav>
+            </nav>
         </section>
+
+        <div class="modal fade" id="doacaoModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Doar para <span id="modal-ong-nome"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form-doacao">
+                            <input type="hidden" id="doacao-ong-id" name="ongId">
+                            <div class="mb-3">
+                                <label for="doacao-nome" class="form-label">Seu nome*</label>
+                                <input type="text" class="form-control" id="doacao-nome" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="doacao-email" class="form-label">Seu e-mail (opcional)</label>
+                                <input type="email" class="form-control" id="doacao-email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="doacao-valor" class="form-label">Valor (R$)*</label>
+                                <input type="number" class="form-control" id="doacao-valor" step="0.01" min="1"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Confirmar Doação (Simulado)</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <section class="features" id="features">
             <div class="container">
                 <h2 class="section-title">Principais recursos</h2>
-                <p class="section-subtitle">Descubra como nossa plataforma revoluciona o gerenciamento de desastres naturais
+                <p class="section-subtitle">Descubra como nossa plataforma revoluciona o gerenciamento de desastres
+                    naturais
                     com tecnologia de ponta</p>
 
                 <div class="features-container">
@@ -232,7 +275,8 @@
                             <div class="feature-content">
                                 <div class="feature-text">
                                     <h3>Dashboard Inteligente</h3>
-                                    <p>Tenha uma visão completa do impacto: doações recebidas, doadores engajados, pontos de
+                                    <p>Tenha uma visão completa do impacto: doações recebidas, doadores engajados,
+                                        pontos de
                                         coleta mais ativos e resultados alcançados em um só painel.</p>
                                 </div>
                                 <div class="feature-visual" style="padding: 0;">
@@ -250,7 +294,8 @@
                                                 <div>
                                                     <div
                                                         style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-                                                        <h3 style="font-size: 18px; margin-bottom: 20px;">Arrecadação por
+                                                        <h3 style="font-size: 18px; margin-bottom: 20px;">Arrecadação
+                                                            por
                                                             Categoria</h3>
                                                         <div
                                                             style="display: flex; justify-content: space-around; align-items: flex-end; height: 150px;">
@@ -268,10 +313,12 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                                    <div
+                                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                                         <div
                                                             style="background: var(--bg-highlight-card); padding: 15px; border-radius: 12px;">
-                                                            <div style="font-size: 14px; color: var(--text-light);">Total
+                                                            <div style="font-size: 14px; color: var(--text-light);">
+                                                                Total
                                                                 Arrecadado</div>
                                                             <div
                                                                 style="font-size: 28px; font-weight: 600; color: var(--text-dark);">
@@ -279,7 +326,8 @@
                                                         </div>
                                                         <div
                                                             style="background: var(--bg-highlight-card); padding: 15px; border-radius: 12px;">
-                                                            <div style="font-size: 14px; color: var(--text-light);">Doadores
+                                                            <div style="font-size: 14px; color: var(--text-light);">
+                                                                Doadores
                                                                 Ativos</div>
                                                             <div
                                                                 style="font-size: 28px; font-weight: 600; color: var(--text-dark);">
@@ -302,7 +350,8 @@
                                                             <div>Supermercado Central</div>
                                                             <div style="font-weight: 600;">+180 kg</div>
                                                         </div>
-                                                        <h3 style="font-size: 18px; margin-top: 20px; margin-bottom: 10px;">
+                                                        <h3
+                                                            style="font-size: 18px; margin-top: 20px; margin-bottom: 10px;">
                                                             Itens Prioritários</h3>
                                                         <div><span
                                                                 style="background: #e0f2fe; color: #0284c7; padding: 4px 8px; border-radius: 12px; font-size: 12px;">Água
@@ -314,7 +363,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
 
                         <div class="feature-item">
@@ -334,7 +383,8 @@
                                                 style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; margin-bottom: 25px;">
                                                 <div
                                                     style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                                    <h3 style="font-size: 18px; margin-bottom: 15px;">Origem dos Recursos
+                                                    <h3 style="font-size: 18px; margin-bottom: 15px;">Origem dos
+                                                        Recursos
                                                     </h3>
                                                     <div style="position: relative; width: 120px; height: 120px;">
                                                         <svg width="120" height="120" viewBox="0 0 120 120">
@@ -360,7 +410,8 @@
                                                     <div>
                                                         <div
                                                             style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
-                                                            <span>Saúde</span><span>80%</span></div>
+                                                            <span>Saúde</span><span>80%</span>
+                                                        </div>
                                                         <div
                                                             style="background: #f0f0f0; border-radius: 5px; height: 10px; margin-bottom: 15px;">
                                                             <div
@@ -371,7 +422,8 @@
                                                     <div>
                                                         <div
                                                             style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
-                                                            <span>Educação</span><span>75%</span></div>
+                                                            <span>Educação</span><span>75%</span>
+                                                        </div>
                                                         <div
                                                             style="background: #f0f0f0; border-radius: 5px; height: 10px; margin-bottom: 15px;">
                                                             <div
@@ -382,8 +434,10 @@
                                                     <div>
                                                         <div
                                                             style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
-                                                            <span>Infraestrutura</span><span>55%</span></div>
-                                                        <div style="background: #f0f0f0; border-radius: 5px; height: 10px;">
+                                                            <span>Infraestrutura</span><span>55%</span>
+                                                        </div>
+                                                        <div
+                                                            style="background: #f0f0f0; border-radius: 5px; height: 10px;">
                                                             <div
                                                                 style="width: 55%; background: var(--chart-brown); height: 10px; border-radius: 5px;">
                                                             </div>
@@ -393,7 +447,8 @@
                                             </div>
                                             <div
                                                 style="background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                                                <h3 style="font-size: 18px; margin-bottom: 15px;">Detalhamento do Orçamento
+                                                <h3 style="font-size: 18px; margin-bottom: 15px;">Detalhamento do
+                                                    Orçamento
                                                 </h3>
                                                 <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                                                     <thead
@@ -444,7 +499,8 @@
                             <div class="feature-content">
                                 <div class="feature-text">
                                     <h3>Mapa Interativo</h3>
-                                    <p>Visualize em tempo real onde estão os riscos, as demandas e como sua instituição pode
+                                    <p>Visualize em tempo real onde estão os riscos, as demandas e como sua instituição
+                                        pode
                                         ajudar da melhor forma, com um mapa dinâmico que facilita decisões rápidas.</p>
                                 </div>
                                 <div class="feature-visual" style="padding: 0;">
@@ -460,24 +516,29 @@
                                                     style="width: 100%; height: auto; display: block; border-radius: 8px;">
                                                 <div
                                                     style="position: absolute; top: 20px; left: 20px; background: var(--bg-card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 220px;">
-                                                    <h3 style="font-size: 16px; margin-bottom: 15px;">Controle do Mapa</h3>
+                                                    <h3 style="font-size: 16px; margin-bottom: 15px;">Controle do Mapa
+                                                    </h3>
                                                     <input type="text" placeholder="Buscar endereço..."
                                                         style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; font-size: 12px;">
-                                                    <h4 style="font-size: 14px; margin-bottom: 10px;">Alertas Recentes</h4>
+                                                    <h4 style="font-size: 14px; margin-bottom: 10px;">Alertas Recentes
+                                                    </h4>
                                                     <div style="font-size: 12px;">
                                                         <div
                                                             style="border-left: 3px solid var(--risk-high); padding-left: 8px; margin-bottom: 8px;">
-                                                            <strong>Risco Alto:</strong> Bairro Central</div>
+                                                            <strong>Risco Alto:</strong> Bairro Central
+                                                        </div>
                                                         <div
                                                             style="border-left: 3px solid var(--risk-medium); padding-left: 8px;">
-                                                            <strong>Risco Médio:</strong> Região Sul</div>
+                                                            <strong>Risco Médio:</strong> Região Sul
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div
                                                     style="position: absolute; top: 100px; left: 300px; background: var(--bg-card); padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                                                     <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">
                                                         Bairro Central</div>
-                                                    <div style="font-size: 12px; color: var(--risk-high);">Nível de Risco:
+                                                    <div style="font-size: 12px; color: var(--risk-high);">Nível de
+                                                        Risco:
                                                         Elevado</div>
                                                 </div>
                                                 <div
@@ -501,94 +562,102 @@
                                 <div class="timeline-node"></div>
                             </div>
 
-                        <div class="feature-item">
-                            <div class="feature-content">
-                                <div class="feature-text">
-                                    <h3>Pontos de Abrigo</h3>
-                                    <p>Disponibilize rapidamente abrigos parceiros para que as pessoas em situação de risco
-                                        possam encontrar acolhimento seguro.
-                                    </p>
-                                </div>
-                                <div class="feature-visual" style="padding: 0;">
-                                    <div class="detailed-mockup-wrapper">
-                                        <div class="detailed-mockup-content form-mockup-content abrigo-mockup-content">
-                                            <h1>Pontos de Abrigo</h1>
-                                            <div class="add-form-container">
-                                                <div class="image-uploader">Adicionar foto</div>
-                                                <div class="form-fields">
-                                                    <label for="nome-local-2">Nome do Local:</label>
-                                                    <input type="text" id="nome-local-2"
-                                                        placeholder="Digite o nome do local..." disabled>
-                                                    <div class="time-inputs">
-                                                        <div>
-                                                            <label for="horario-abre">Horário de abertura:</label>
-                                                            <input type="text" id="horario-abre" placeholder="--:--"
-                                                                disabled>
-                                                        </div>
-                                                        <div>
-                                                            <label for="horario-fecha">Horário de fechamento:</label>
-                                                            <input type="text" id="horario-fecha" placeholder="--:--"
-                                                                disabled>
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <div class="feature-text">
+                                        <h3>Pontos de Abrigo</h3>
+                                        <p>Disponibilize rapidamente abrigos parceiros para que as pessoas em situação
+                                            de risco
+                                            possam encontrar acolhimento seguro.
+                                        </p>
+                                    </div>
+                                    <div class="feature-visual" style="padding: 0;">
+                                        <div class="detailed-mockup-wrapper">
+                                            <div
+                                                class="detailed-mockup-content form-mockup-content abrigo-mockup-content">
+                                                <h1>Pontos de Abrigo</h1>
+                                                <div class="add-form-container">
+                                                    <div class="image-uploader">Adicionar foto</div>
+                                                    <div class="form-fields">
+                                                        <label for="nome-local-2">Nome do Local:</label>
+                                                        <input type="text" id="nome-local-2"
+                                                            placeholder="Digite o nome do local..." disabled>
+                                                        <div class="time-inputs">
+                                                            <div>
+                                                                <label for="horario-abre">Horário de abertura:</label>
+                                                                <input type="text" id="horario-abre" placeholder="--:--"
+                                                                    disabled>
+                                                            </div>
+                                                            <div>
+                                                                <label for="horario-fecha">Horário de
+                                                                    fechamento:</label>
+                                                                <input type="text" id="horario-fecha"
+                                                                    placeholder="--:--" disabled>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="button-wrapper" style="text-align: center; margin-top: 1rem;">
-                                                <button disabled>Adicionar Abrigo</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="timeline-node"></div>
-                        </div>
-
-
-                        <div class="feature-item">
-                            <div class="feature-content">
-                                <div class="feature-text">
-                                    <h3>Pontos de Coleta</h3>
-                                    <p>Adicione seus parceiros e ajude os doadores a encontrar facilmente onde doar
-                                        alimentos, roupas e itens essenciais, tornando a solidariedade prática e próxima de
-                                        quem precisa.
-                                    </p>
-                                </div>
-                                <div class="feature-visual" style="padding: 0; position: relative;">
-                                    <div class="detailed-mockup-wrapper">
-                                        <div class="detailed-mockup-content form-mockup-content coleta-mockup-content">
-                                            <h1>Pontos de Coleta</h1>
-                                            <div class="collection-point-card">
-                                                <div class="image-uploader">Adicionar foto</div>
-                                                <div class="card-details">
-                                                    <p><strong>Local:</strong> Centro de Saúde</p>
-                                                    <p><strong>Horário:</strong> 08:00 - 18:00</p>
-                                                    <p><strong>Endereço:</strong> Av. Central, 123</p>
-                                                </div>
-                                                <div class="card-actions">
-                                                    <button class="qr-btn" onclick="openModal()">Ver QR Code</button>
-                                                    <button class="edit-btn" disabled>Editar</button>
-                                                    <button class="delete-btn" disabled>Excluir</button>
-                                                </div>
-                                            </div>
-                                            <div id="qrModal" class="modal-overlay-local">
-                                                <div class="modal-content-local">
-                                                    <span class="close-btn" onclick="closeModal()">&times;</span>
-                                                    <h2>Ponto de Coleta</h2>
-                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CentroDeSaude"
-                                                        alt="QR Code" class="qr-code">
-                                                    <p><strong>Local:</strong> Centro de Saúde</p>
-                                                    <button class="close-modal-btn" onclick="closeModal()">Fechar</button>
+                                                <div class="button-wrapper"
+                                                    style="text-align: center; margin-top: 1rem;">
+                                                    <button disabled>Adicionar Abrigo</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="timeline-node"></div>
                             </div>
-                            <div class="timeline-node"></div>
+
+
+                            <div class="feature-item">
+                                <div class="feature-content">
+                                    <div class="feature-text">
+                                        <h3>Pontos de Coleta</h3>
+                                        <p>Adicione seus parceiros e ajude os doadores a encontrar facilmente onde doar
+                                            alimentos, roupas e itens essenciais, tornando a solidariedade prática e
+                                            próxima de
+                                            quem precisa.
+                                        </p>
+                                    </div>
+                                    <div class="feature-visual" style="padding: 0; position: relative;">
+                                        <div class="detailed-mockup-wrapper">
+                                            <div
+                                                class="detailed-mockup-content form-mockup-content coleta-mockup-content">
+                                                <h1>Pontos de Coleta</h1>
+                                                <div class="collection-point-card">
+                                                    <div class="image-uploader">Adicionar foto</div>
+                                                    <div class="card-details">
+                                                        <p><strong>Local:</strong> Centro de Saúde</p>
+                                                        <p><strong>Horário:</strong> 08:00 - 18:00</p>
+                                                        <p><strong>Endereço:</strong> Av. Central, 123</p>
+                                                    </div>
+                                                    <div class="card-actions">
+                                                        <button class="qr-btn" onclick="openModal()">Ver QR
+                                                            Code</button>
+                                                        <button class="edit-btn" disabled>Editar</button>
+                                                        <button class="delete-btn" disabled>Excluir</button>
+                                                    </div>
+                                                </div>
+                                                <div id="qrModal" class="modal-overlay-local">
+                                                    <div class="modal-content-local">
+                                                        <span class="close-btn" onclick="closeModal()">&times;</span>
+                                                        <h2>Ponto de Coleta</h2>
+                                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CentroDeSaude"
+                                                            alt="QR Code" class="qr-code">
+                                                        <p><strong>Local:</strong> Centro de Saúde</p>
+                                                        <button class="close-modal-btn"
+                                                            onclick="closeModal()">Fechar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-node"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </section>
         <section class="benefits">
             <div class="container">
@@ -608,7 +677,8 @@
                                 diversity_1
                             </span></div>
                         <h3 class="benefit-title">Mais perto da comunidade</h3>
-                        <p>Com mapas, pontos de coleta e abrigos, sua ONG se conecta de verdade com quem precisa e com quem
+                        <p>Com mapas, pontos de coleta e abrigos, sua ONG se conecta de verdade com quem precisa e com
+                            quem
                             quer ajudar. É solidariedade sem barreiras.</p>
                     </div>
 
@@ -617,7 +687,8 @@
                                 handshake
                             </span></div>
                         <h3 class="benefit-title">Confiança que inspira apoio</h3>
-                        <p>Transparência é a base de qualquer projeto. Mostre relatórios, contas e conquistas de forma clara
+                        <p>Transparência é a base de qualquer projeto. Mostre relatórios, contas e conquistas de forma
+                            clara
                             e conquiste ainda mais doadores e parceiros.</p>
                     </div>
 
@@ -779,15 +850,16 @@
         <section class="alianca-section">
             <div class="main-container">
                 <h1 class="main-title" style="color: #693B11; font-weight: 400;">
-                    Enchant <span class="acolhe" style="font-weight: 600;">acolhe</span>, impulsiona e <span class="realiza"
-                        style="font-weight: 600;">realiza</span>!
+                    Enchant <span class="acolhe" style="font-weight: 600;">acolhe</span>, impulsiona e <span
+                        class="realiza" style="font-weight: 600;">realiza</span>!
                 </h1>
 
                 <div class="page-layout">
 
                     <div class="side-text left-text" style="text-align: left; color: black;">
                         <p style="font-weight: 400;">
-                            Acreditamos que boas ideias não podem ser limitadas pela falta de recursos. Se sua ONG ainda não
+                            Acreditamos que boas ideias não podem ser limitadas pela falta de recursos. Se sua ONG ainda
+                            não
                             tem renda suficiente, você pode solicitar nosso plano gratuito.
                         </p>
                     </div>
@@ -833,7 +905,8 @@
                                         <span>O poder de agir, sem limites financeiros</span>
                                     </li>
                                 </ul>
-                                <a href="/src/views/enchant/requisicao.html" class="btn btn-premium" >Fazer requisição</a>
+                                <a href="/src/views/enchant/requisicao.html" class="btn btn-premium">Fazer
+                                    requisição</a>
                             </div>
                         </div>
                     </div>
@@ -853,7 +926,8 @@
                 <div class="faq-content">
                     <div class="faq-intro fade-in">
                         <h2>Saiba mais sobre o Enchant</h2>
-                        <p>Entenda como nossa plataforma funciona e como você pode fazer a diferença na vida de milhares de
+                        <p>Entenda como nossa plataforma funciona e como você pode fazer a diferença na vida de milhares
+                            de
                             pessoas através da tecnologia e solidariedade.</p>
                         <a href="/saiba-mais" class="cta-button">Saiba Mais</a>
                     </div>
@@ -984,131 +1058,6 @@
 
     </script>
 
-    <script>
-        // Este array simula os dados que viriam do seu banco de dados.
-const ongsDatabase = [
-    { id: 1, nome: "Anjos da Noite", descricao: "Ajudamos pessoas em situação de rua, oferecendo alimento, roupas e apoio psicossocial. Focamos em reintegrar indivíduos à sociedade.", imagem: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=400&q=80", url: "#" },
-    { id: 2, nome: "Cães Felizes", descricao: "Resgatamos, cuidamos e encontramos lares para animais abandonados. Nossa missão é garantir uma vida digna para todos os cães.", imagem: "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=400&q=80", url: "#" },
-    { id: 3, nome: "Futuro Brilhante", descricao: "Oferecemos reforço escolar e atividades culturais para crianças em comunidades carentes, focando na educação como ferramenta de transformação.", imagem: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400&q=80", url: "#" },
-    { id: 4, nome: "Mundo Melhor", descricao: "Trabalhamos com a distribuição de alimentos e roupas para famílias em situação de vulnerabilidade, além de promover campanhas de conscientização social.", imagem: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80", url: "#" },
-    { id: 5, nome: "Mãos Solidárias", descricao: "Promovemos a inclusão social de pessoas com deficiência através de oficinas de capacitação profissional e atividades recreativas.", imagem: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&q=80", url: "#" },
-    { id: 6, nome: "Verde Vida", descricao: "Nos dedicamos à preservação ambiental, realizando mutirões de limpeza, plantio de árvores e educação ambiental em escolas e comunidades.", imagem: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&q=80", url: "#" },
-    { id: 7, nome: "Ponte da Esperança", descricao: "Especializada no apoio psicossocial a vítimas de desastres, ajudando crianças e adultos a superarem o trauma através de terapia e suporte comunitário.", imagem: "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&q=80", url: "#" },
-    { id: 8, nome: "Gatos de Rua", descricao: "Cuidamos de colônias de gatos de rua, oferecendo castração, alimentação e cuidados veterinários para controlar a população.", imagem: "https://images.unsplash.com/photo-1570824104453-508955ab713e?w=400&q=80", url: "#" },
-    { id: 9, nome: "Educar para Transformar", descricao: "Promovemos a educação integral para crianças e adolescentes em situação de vulnerabilidade, com foco em habilidades socioemocionais e cidadania.", imagem: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80", url: "#" },
-    { id: 10, nome: "Arte Liberta", descricao: "Usamos a arte como forma de expressão e terapia para crianças e adolescentes em situação de vulnerabilidade social.", imagem: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&q=80", url: "#" },
-    { id: 11, nome: "Saúde para Todos", descricao: "Levamos atendimento médico e odontológico gratuito para comunidades ribeirinhas e isoladas. A saúde é um direito.", imagem: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&q=80", url: "#" }
-];
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const estado = {
-                paginaAtual: 1,
-                itensPorPagina: 6,
-                termoBusca: '',
-                ongsExibidas: ongsDatabase
-            };
-
-            const grade = document.getElementById('ongs-grid');
-            const paginacaoContainer = document.getElementById('paginacao-container');
-            const inputBusca = document.getElementById('input-busca');
-            const mensagemVazia = document.getElementById('mensagem-vazia');
-
-            function renderizarGrade() {
-                grade.innerHTML = '';
-                
-                if(estado.ongsExibidas.length === 0) {
-                    mensagemVazia.style.display = 'block';
-                    grade.style.display = 'none';
-                } else {
-                    mensagemVazia.style.display = 'none';
-                    grade.style.display = 'grid';
-                }
-
-                const inicio = (estado.paginaAtual - 1) * estado.itensPorPagina;
-                const fim = inicio + estado.itensPorPagina;
-                const ongsDaPagina = estado.ongsExibidas.slice(inicio, fim);
-
-                for (const ong of ongsDaPagina) {
-                    const card = document.createElement('div');
-                    card.className = 'card-ong';
-                    card.innerHTML = `
-                        <img src="${ong.imagem}" alt="Imagem da ONG ${ong.nome}" class="card-ong-imagem">
-                        <div class="card-ong-conteudo">
-                            <h3>${ong.nome}</h3>
-                            <p>${ong.descricao}</p>
-                            <a href="${ong.url}" class="card-ong-link" target="_blank">Acessar e doar</a>
-                        </div>
-                    `;
-                    grade.appendChild(card);
-                }
-            }
-
-            function renderizarPaginacao() {
-                paginacaoContainer.innerHTML = '';
-                const totalPaginas = Math.ceil(estado.ongsExibidas.length / estado.itensPorPagina);
-
-                if (totalPaginas <= 1) return;
-
-                const btnAnterior = document.createElement('button');
-                btnAnterior.innerHTML = `<i class="fa-solid fa-chevron-left"></i>`;
-                btnAnterior.className = 'btn-pagina';
-                btnAnterior.disabled = estado.paginaAtual === 1;
-                btnAnterior.addEventListener('click', () => {
-                    if (estado.paginaAtual > 1) {
-                        estado.paginaAtual--;
-                        atualizarTudo();
-                    }
-                });
-                paginacaoContainer.appendChild(btnAnterior);
-
-                for (let i = 1; i <= totalPaginas; i++) {
-                    const btnPagina = document.createElement('button');
-                    btnPagina.innerText = i;
-                    btnPagina.className = 'btn-pagina';
-                    if (i === estado.paginaAtual) {
-                        btnPagina.classList.add('active');
-                    }
-                    btnPagina.addEventListener('click', () => {
-                        estado.paginaAtual = i;
-                        atualizarTudo();
-                    });
-                    paginacaoContainer.appendChild(btnPagina);
-                }
-
-                const btnProximo = document.createElement('button');
-                btnProximo.innerHTML = `<i class="fa-solid fa-chevron-right"></i>`;
-                btnProximo.className = 'btn-pagina';
-                btnProximo.disabled = estado.paginaAtual === totalPaginas;
-                btnProximo.addEventListener('click', () => {
-                    if (estado.paginaAtual < totalPaginas) {
-                        estado.paginaAtual++;
-                        atualizarTudo();
-                    }
-                });
-                paginacaoContainer.appendChild(btnProximo);
-            }
-            
-            inputBusca.addEventListener('keyup', () => {
-                const termo = inputBusca.value.toLowerCase();
-                estado.termoBusca = termo;
-
-                estado.ongsExibidas = ongsDatabase.filter(ong => 
-                    ong.nome.toLowerCase().includes(termo) || 
-                    ong.descricao.toLowerCase().includes(termo)
-                );
-                
-                estado.paginaAtual = 1;
-                atualizarTudo();
-            });
-
-            function atualizarTudo() {
-                renderizarGrade();
-                renderizarPaginacao();
-            }
-            
-            atualizarTudo();
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Carregar Bootstrap e FontAwesome automaticamente
