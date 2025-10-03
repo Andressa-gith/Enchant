@@ -21,7 +21,7 @@ function initializeApp(session) {
     let mainChart = null;
     let stockDoughnutChart = null;
     let originalChartData = null;
-    let activeChartView = 'financeiro'; // Visão inicial do gráfico principal
+    let activeChartView = 'financeiro';
 
     const ui = {
         boasVindas: document.getElementById('boas-vindas'),
@@ -153,17 +153,24 @@ function initializeApp(session) {
     function renderActivityFeed(atividades) {
         if (atividades.length > 0) {
             ui.atividadesRecentes.innerHTML = atividades.map(item => {
-                const dataFormatada = new Date(item.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-                const horaFormatada = new Date(item.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                // ===== CORREÇÃO DA DATA/HORA =====
+                const dataObj = new Date(item.data);
+                const dataFormatada = dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                const horaFormatada = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                // ===================================
+
                 let iconClass = 'bi-info-circle';
                 if (item.tipo === 'entrada') iconClass = 'bi-box-arrow-in-down text-success';
                 if (item.tipo === 'saida') iconClass = 'bi-box-arrow-up text-danger';
                 if (item.tipo === 'parceria') iconClass = 'bi-people-fill text-primary';
                 if (item.tipo === 'entrada-financeira') iconClass = 'bi-cash-stack text-success';
                 if (item.tipo === 'saida-financeira') iconClass = 'bi-credit-card-2-front text-danger';
+                
                 return `<div class="atividade-item"><i class="bi ${iconClass} atividade-icon"></i><div class="atividade-texto">${item.desc}</div><div class="atividade-data"><span>${dataFormatada}</span><span>${horaFormatada}</span></div></div>`;
             }).join('');
-        } else { ui.atividadesRecentes.innerHTML = `<p class="text-muted small p-2">Nenhuma atividade no período.</p>`; }
+        } else { 
+            ui.atividadesRecentes.innerHTML = `<p class="text-muted small p-2">Nenhuma atividade no período.</p>`; 
+        }
     }
 
     async function handleFilter() {
@@ -202,7 +209,7 @@ function initializeApp(session) {
         if (downloadBtn) {
             e.preventDefault();
             const filePath = downloadBtn.dataset.path;
-            const { data } = supabase.storage.from('donation_report').getPublicUrl(filePath); // Atenção: o nome do bucket é 'relatorios_doacao'
+            const { data } = supabase.storage.from('donation_report').getPublicUrl(filePath);
             if (data && data.publicUrl) {
                 window.open(data.publicUrl, '_blank');
             } else { alert('Não foi possível obter a URL do arquivo.'); }

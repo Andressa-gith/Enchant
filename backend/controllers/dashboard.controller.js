@@ -32,7 +32,7 @@ export const getDashboardData = async (req, res) => {
             supabase.from('documento_comprobatorio').select('valor, titulo, data_criacao').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Recibo de doação').gte('data_criacao', dataInicio).lte('data_criacao', dataFim),
             supabase.from('documento_comprobatorio').select('valor, titulo, data_criacao').eq('instituicao_id', instituicaoId).eq('tipo_documento', 'Comprovante de transferência').gte('data_criacao', dataInicio).lte('data_criacao', dataFim),
             supabase.from('gestao_financeira').select('valor_executado, nome_categoria, data_criacao').eq('instituicao_id', instituicaoId).eq('origem_recurso', 'Recursos Próprios').gte('data_criacao', dataInicio).lte('data_criacao', dataFim),
-            supabase.from('parceiro').select('valor_total_parceria, nome, data_inicio, status, data_fim').eq('instituicao_id', instituicaoId).gte('data_inicio', dataInicio).lte('data_inicio', dataFim),
+            supabase.from('parceiro').select('valor_total_parceria, nome, data_inicio, status, data_fim, data_criacao').eq('instituicao_id', instituicaoId).gte('data_criacao', dataInicio).lte('data_criacao', dataFim),
             supabase.from('doacao_entrada').select('quantidade, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId).lte('data_entrada', dataFim),
             supabase.from('doacao_saida').select('quantidade_retirada, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId).lte('data_saida', dataFim),
             supabase.from('relatorio_doacao').select('id, data_geracao, caminho_arquivo_pdf, data_inicio_filtro, data_fim_filtro').eq('instituicao_id', instituicaoId).order('data_geracao', { ascending: false }).limit(3),
@@ -55,11 +55,23 @@ export const getDashboardData = async (req, res) => {
         const saldoFinanceiro = (totalReceitasRecibos + totalReceitasParcerias) - (totalDespesasTransferencias + totalDespesasGastosProprios);
         
         const totaisEntradaPeriodo = entradasNoPeriodo.reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
+        
+        // ===== CORREÇÃO DA LÓGICA DA CATEGORIA PRINCIPAL =====
+        let principalCategoria = '--';
+        if (Object.keys(totaisEntradaPeriodo).length > 0) {
+            const maxVal = Math.max(...Object.values(totaisEntradaPeriodo));
+            const topCategorias = Object.keys(totaisEntradaPeriodo).filter(key => totaisEntradaPeriodo[key] === maxVal);
+            if (topCategorias.length === 1) {
+                principalCategoria = topCategorias[0];
+            }
+        }
+        // =======================================================
+        
         const kpis = {
             totalItensEstoque: Object.values(estoqueNoPeriodoPorCategoria).reduce((acc, val) => acc + val, 0),
             totalFinanceiro: saldoFinanceiro,
             doadoresUnicos: new Set(entradasNoPeriodo.map(d => d.doador_origem_texto).filter(d => d && d.toLowerCase() !== 'anônimo')).size,
-            principalCategoria: Object.keys(totaisEntradaPeriodo).length > 0 ? Object.keys(totaisEntradaPeriodo).reduce((a, b) => totaisEntradaPeriodo[a] > totaisEntradaPeriodo[b] ? a : b) : '--',
+            principalCategoria: principalCategoria,
         };
 
         const atividades = [
@@ -68,8 +80,8 @@ export const getDashboardData = async (req, res) => {
             ...recibos.map(i => ({ data: new Date(i.data_criacao), tipo: 'entrada-financeira', desc: `Recibo de doação emitido: <b>${i.titulo}</b>` })),
             ...transferencias.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Transferência realizada para <b>${i.titulo}</b>` })),
             ...gastosProprios.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Gasto com recursos próprios: <b>${i.nome_categoria}</b>` })),
-            ...parceriasNoPeriodo.map(i => ({ data: new Date(i.data_inicio), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
-        ].sort((a, b) => b.data - a.data).slice(0, 5);
+            ...parceriasNoPeriodo.map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
+        ].sort((a, b) => b.data - a.data); // .slice(0, 5) removido para a melhoria de scroll
 
         const parceriasAExpirar = todasParcerias.filter(p => {
             if (p.status !== 'Ativo' || !p.data_fim) return false;
@@ -79,7 +91,6 @@ export const getDashboardData = async (req, res) => {
         });
         const estoqueBaixo = Object.entries(estoqueNoPeriodoPorCategoria).filter(([_, qtd]) => qtd > 0 && qtd <= 10).map(([cat, _]) => cat);
         
-        // --- DADOS PARA O GRÁFICO FINANCEIRO ---
         const fluxoFinanceiroDiario = {};
         const d1 = new Date(startDate);
         const d2 = new Date(endDate);
@@ -87,9 +98,6 @@ export const getDashboardData = async (req, res) => {
             fluxoFinanceiroDiario[d.toISOString().split('T')[0]] = { receita: 0, despesa: 0 };
         }
         
-        // ================== CORREÇÃO AQUI ==================
-        // Envolvemos a data em new Date() para converter a string do banco
-        // em um objeto de data antes de formatar.
         [...recibos, ...parceriasAtivasValidas].forEach(item => {
             const data = new Date(item.data_criacao || item.data_inicio).toISOString().split('T')[0];
             if (fluxoFinanceiroDiario[data]) {
@@ -102,7 +110,6 @@ export const getDashboardData = async (req, res) => {
                 fluxoFinanceiroDiario[data].despesa += Number(item.valor || item.valor_executado);
             }
         });
-        // ===================================================
 
         const totaisSaidaPeriodo = saidasNoPeriodo.reduce((acc, item) => { if (item.entrada?.categoria) { const n = item.entrada.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade_retirada); } return acc; }, {});
         const todasCategoriasPeriodo = new Set([...Object.keys(totaisEntradaPeriodo), ...Object.keys(totaisSaidaPeriodo)]);
