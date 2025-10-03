@@ -32,6 +32,35 @@ export function iniciarTutorial(session) {
         buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
     });
 
+    tour.addStep({
+        id: 'dashboard',
+        title: 'Seu Dashboard',
+        text: 'Esta é a sua tela principal. Aqui você tem uma visão geral de suas doações, estoque e atividades recentes.',
+        attachTo: { element: 'a[href="/dashboard"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'mapa',
+        title: 'Mapa Interativo',
+        text: 'Explore o mapa para visualizar dados de risco e vulnerabilidade de desastres naturais em todo o Brasil.',
+        attachTo: { element: 'a[href="/mapa"]', on: 'right' },
+
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
     // PASSO 3: Perfil da ONG
     tour.addStep({
         id: 'perfil',
@@ -64,17 +93,101 @@ export function iniciarTutorial(session) {
         buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
     });
 
-    // PASSO 5:
     tour.addStep({
-        id: 'transparencia',
-        title: 'Portal da Transparência',
-        text: 'Esta é a área mais importante! Aqui você pode fazer o upload de relatórios, contratos e outros documentos para prestar contas aos seus doadores e parceiros.',
-        attachTo: { element: 'a[href="/transparencia/relatorios"]', on: 'right' },
+        id: 'historico',
+        title: 'Histórico de Doações',
+        text: 'Consulte e gere o extrato completo de todas as entradas e saídas de doações registradas na plataforma.',
+        attachTo: { element: 'a[href="/historico-doacoes"]', on: 'right' },
+        canClickTarget: false,
 
         popperOptions: {
             modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
         },
-        
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'relatorios',
+        title: 'Relatórios',
+        text: 'Aqui você pode gerar e baixar relatórios para prestar contas aos seus doadores.',
+        attachTo: { element: 'a[href="/transparencia/relatorios"]', on: 'right' }, // Usando '*=' para flexibilidade
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'contratos',
+        title: 'Contratos',
+        text: 'Gerencie os contratos com seus parceiros e fornecedores, mantendo tudo organizado em um só lugar.',
+        attachTo: { element: 'a[href="/transparencia/contratos"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'auditoria',
+        title: 'Notas de Auditoria',
+        text: 'Anexe e gerencie os pareceres e notas de auditorias internas ou externas.',
+        attachTo: { element: 'a[href="/transparencia/notas-auditoria"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'documentos',
+        title: 'Documentos Comprobatórios',
+        text: 'Faça o upload de outros documentos importantes, como notas fiscais e recibos.',
+        attachTo: { element: 'a[href="/transparencia/documentos-comprobatorios"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'financeiro',
+        title: 'Gestão Financeira',
+        text: 'Controle as entradas e saídas financeiras da sua organização.',
+        attachTo: { element: 'a[href="/transparencia/gestao-financeira"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
+        id: 'parcerias',
+        title: 'Gestão de Parcerias',
+        text: 'Cadastre e acompanhe o status de todas as parcerias da sua ONG.',
+        attachTo: { element: 'a[href="/transparencia/parcerias"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
         buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
     });
 
