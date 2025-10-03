@@ -71,25 +71,32 @@ document.addEventListener('DOMContentLoaded', () => {
             status: isEdit ? ui.editStatusSelect : ui.statusSelect,
             objective: isEdit ? ui.editObjectiveTextarea : ui.objectiveTextarea
         };
-    
+
         const errors = [];
-    
-        const nameIsValid = validateField(elements.name, elements.name.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.');
-        const valueIsValid = validateField(elements.value, elements.value.value !== '' && parseFloat(elements.value.value) >= 0, 'O valor é obrigatório.');
-        const startIsValid = validateField(elements.start, elements.start.value !== '', 'A data de início é obrigatória.');
-        const endIsValid = validateField(elements.end, !elements.start.value || !elements.end.value || new Date(elements.end.value) >= new Date(elements.start.value), 'A data de término deve ser igual ou após a data de início.');
-        // CONDIÇÃO CORRIGIDA PARA OS SELECTS
-        const typeIsValid = validateField(elements.type, elements.type.value !== 'Selecione...' && elements.type.value !== '', 'O tipo de parceiro é obrigatório.');
-        const statusIsValid = validateField(elements.status, elements.status.value !== 'Selecione...' && elements.status.value !== '', 'O status é obrigatório.');
-        const objectiveIsValid = validateField(elements.objective, elements.objective.value.trim().length >= 10, 'O objetivo deve ter no mínimo 10 caracteres.');
-    
-        if (!nameIsValid) errors.push('Nome');
-        if (!valueIsValid) errors.push('Valor');
-        if (!startIsValid) errors.push('Data de Início');
-        if (!endIsValid) errors.push('Data de Término');
-        if (!typeIsValid) errors.push('Tipo de Parceiro');
-        if (!statusIsValid) errors.push('Status');
-        if (!objectiveIsValid) errors.push('Objetivo');
+
+        // Validações que já funcionavam
+        if (!validateField(elements.name, elements.name.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.')) errors.push('Nome');
+        if (!validateField(elements.value, elements.value.value !== '' && parseFloat(elements.value.value) >= 0, 'O valor é obrigatório.')) errors.push('Valor');
+        if (!validateField(elements.start, elements.start.value !== '', 'A data de início é obrigatória.')) errors.push('Data de Início');
+        if (!validateField(elements.objective, elements.objective.value.trim().length >= 10, 'O objetivo deve ter no mínimo 10 caracteres.')) errors.push('Objetivo');
+        
+        // ===== CORREÇÃO PARA OS CAMPOS FALTANTES =====
+
+        // 1. Data de Término: agora é obrigatória e precisa ser depois da data de início
+        if (!validateField(elements.end, elements.end.value !== '', 'A data de término é obrigatória.')) {
+            errors.push('Data de Término');
+        } else if (elements.start.value && !validateField(elements.end, new Date(elements.end.value) >= new Date(elements.start.value), 'A data de término deve ser igual ou após a de início.')) {
+            errors.push('Data de Término');
+        }
+
+        // 2. Tipo de Parceiro e Status: validação robusta para select
+        // Checa se o item selecionado não é o primeiro (que é o "Selecione...")
+        if (!validateField(elements.type, elements.type.selectedIndex !== 0, 'O tipo de parceiro é obrigatório.')) {
+            errors.push('Tipo de Parceiro');
+        }
+        if (!validateField(elements.status, elements.status.selectedIndex !== 0, 'O status é obrigatório.')) {
+            errors.push('Status');
+        }
         
         return { 
             isValid: errors.length === 0, 
@@ -98,18 +105,23 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const setupRealTimeValidation = () => {
+        // Validações para campos de texto, número e textarea (no evento 'blur')
         ui.partnerNameInput.addEventListener('blur', () => validateField(ui.partnerNameInput, ui.partnerNameInput.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.'));
         ui.partnershipValueInput.addEventListener('blur', () => validateField(ui.partnershipValueInput, ui.partnershipValueInput.value !== '' && parseFloat(ui.partnershipValueInput.value) >= 0, 'O valor é obrigatório.'));
         ui.objectiveTextarea.addEventListener('blur', () => validateField(ui.objectiveTextarea, ui.objectiveTextarea.value.trim().length >= 10, 'O objetivo deve ter no mínimo 10 caracteres.'));
+
+        // Validações para campos de data (no evento 'blur')
         ui.startDateInput.addEventListener('blur', () => validateField(ui.startDateInput, ui.startDateInput.value !== '', 'A data de início é obrigatória.'));
         ui.endDateInput.addEventListener('blur', () => {
-            const startDate = ui.startDateInput.value;
-            const endDate = ui.endDateInput.value;
-            validateField(ui.endDateInput, !startDate || !endDate || new Date(endDate) >= new Date(startDate), 'A data de término deve ser igual ou após a data de início.');
+            const isNotEmpty = validateField(ui.endDateInput, ui.endDateInput.value !== '', 'A data de término é obrigatória.');
+            if (isNotEmpty && ui.startDateInput.value) {
+                validateField(ui.endDateInput, new Date(ui.endDateInput.value) >= new Date(ui.startDateInput.value), 'A data de término deve ser igual ou após a de início.');
+            }
         });
-        // CONDIÇÃO CORRIGIDA PARA OS SELECTS
-        ui.partnerTypeSelect.addEventListener('change', () => validateField(ui.partnerTypeSelect, ui.partnerTypeSelect.value !== 'Selecione...' && ui.partnerTypeSelect.value !== '', 'O tipo de parceiro é obrigatório.'));
-        ui.statusSelect.addEventListener('change', () => validateField(ui.statusSelect, ui.statusSelect.value !== 'Selecione...' && ui.statusSelect.value !== '', 'O status é obrigatório.'));
+
+        // ===== CORREÇÃO FINAL: Usar o evento 'blur' também para os selects =====
+        ui.partnerTypeSelect.addEventListener('blur', () => validateField(ui.partnerTypeSelect, ui.partnerTypeSelect.selectedIndex !== 0, 'O tipo de parceiro é obrigatório.'));
+        ui.statusSelect.addEventListener('blur', () => validateField(ui.statusSelect, ui.statusSelect.selectedIndex !== 0, 'O status é obrigatório.'));
     };
     
     // --- LÓGICA DE DASHBOARD (KPIs) E RENDERIZAÇÃO ---
