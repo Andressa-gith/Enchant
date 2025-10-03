@@ -1,15 +1,21 @@
 import express from 'express';
 import multer from 'multer';
-import { getDocumentos, addDocumento, deleteDocumento } from '../controllers/documento.controller.js';
+import { 
+    getDocumentos, 
+    addDocumento, 
+    deleteDocumento 
+} from '../controllers/documento.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const documentoRouter = express.Router();
 
+// Configuração do Multer
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }, // Limite de 10MB
+    limits: { fileSize: 10 * 1024 * 1024 },
 });
 
+// Rotas
 documentoRouter.get('/', protegerRota, getDocumentos);
 
 documentoRouter.post('/', protegerRota, upload.single('arquivo_documento'), addDocumento);

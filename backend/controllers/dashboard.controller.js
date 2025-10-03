@@ -1,10 +1,27 @@
-// backend/controllers/dashboard.controller.js
 import supabase from '../db/supabaseClient.js';
+import logger from '../utils/logger.js'; // <-- Logger importado
 
+/**
+ * Converte uma string de data (YYYY-MM-DD) para o formato ISO no início do dia (UTC).
+ * @param {string} dateStr - A data no formato 'YYYY-MM-DD'.
+ * @returns {string} A data completa em formato ISO String (UTC).
+ */
 const getStartOfDay = (dateStr) => new Date(dateStr).toISOString();
+
+/**
+ * Converte uma string de data (YYYY-MM-DD) para o formato ISO no final do dia (UTC).
+ * @param {string} dateStr - A data no formato 'YYYY-MM-DD'.
+ * @returns {string} A data completa em formato ISO String (UTC).
+ */
 const getEndOfDay = (dateStr) => new Date(`${dateStr}T23:59:59.999Z`).toISOString();
 
+/**
+ * Busca e processa todos os dados consolidados para o dashboard principal.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const getDashboardData = async (req, res) => {
+    logger.info('Iniciando busca de dados para o dashboard...');
     try {
         const instituicaoId = req.user.id;
         const hoje = new Date();
@@ -19,7 +36,9 @@ export const getDashboardData = async (req, res) => {
 
         const dataInicio = getStartOfDay(startDate);
         const dataFim = getEndOfDay(endDate);
+        logger.debug(`Período de busca definido: ${startDate} a ${endDate}`);
 
+        logger.info('Executando todas as consultas ao banco de dados...');
         const [
             { data: dadosInstituicao }, { data: entradasNoPeriodo }, { data: saidasNoPeriodo },
             { data: recibos }, { data: transferencias }, { data: gastosProprios },
@@ -41,6 +60,7 @@ export const getDashboardData = async (req, res) => {
         
         const anyError = [dadosInstituicao, entradasNoPeriodo, saidasNoPeriodo, recibos, transferencias, gastosProprios, parceriasNoPeriodo, todasEntradasAteDataFim, todasSaidasAteDataFim, relatoriosRecentes, todasParcerias].find(result => result && result.error);
         if (anyError) throw anyError.error;
+        logger.info('Consultas ao banco finalizadas com sucesso. Iniciando processamento dos dados.');
 
         const estoqueNoPeriodoPorCategoria = {};
         const totaisEntradaGeral = todasEntradasAteDataFim.reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
@@ -81,7 +101,6 @@ export const getDashboardData = async (req, res) => {
             ...parceriasNoPeriodo.map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
         ].sort((a, b) => b.data - a.data);
 
-        // ===== LÓGICA DE ALERTAS ATUALIZADA =====
         const parceriasAExpirar = todasParcerias.filter(p => {
             if (p.status !== 'Ativo' || !p.data_fim) return false;
             const dataFimParceria = new Date(p.data_fim);
@@ -96,7 +115,6 @@ export const getDashboardData = async (req, res) => {
         });
 
         const estoqueBaixo = Object.entries(estoqueNoPeriodoPorCategoria).filter(([_, qtd]) => qtd > 0 && qtd <= 10).map(([cat, _]) => cat);
-        // ==========================================
         
         const fluxoFinanceiroDiario = {};
         const d1 = new Date(startDate);
@@ -121,6 +139,7 @@ export const getDashboardData = async (req, res) => {
         const totaisSaidaPeriodo = saidasNoPeriodo.reduce((acc, item) => { if (item.entrada?.categoria) { const n = item.entrada.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade_retirada); } return acc; }, {});
         const todasCategoriasPeriodo = new Set([...Object.keys(totaisEntradaPeriodo), ...Object.keys(totaisSaidaPeriodo)]);
         
+        logger.info('Processamento de dados finalizado. Montando objeto de resposta.');
         const responseData = {
             primeiro_login: dadosInstituicao.primeiro_login,
             boasVindas: dadosInstituicao.nome, kpis, totaisPorCategoria: estoqueNoPeriodoPorCategoria,
@@ -139,18 +158,27 @@ export const getDashboardData = async (req, res) => {
                 }
             },
             atividades, relatoriosRecentes, 
-            alertas: { parceriasAExpirar, parceriasExpiradas, estoqueBaixo } // Objeto de alertas atualizado
+            alertas: { parceriasAExpirar, parceriasExpiradas, estoqueBaixo }
         };
+        
+        logger.info('Enviando resposta do dashboard para o cliente.');
         res.status(200).json(responseData);
     } catch (error) {
-        console.error("❌ Erro ao buscar dados do dashboard:", error);
-        res.status(500).json({ message: "Erro interno ao buscar dados do dashboard." });
+        logger.error('Erro catastrófico ao buscar dados do dashboard.', error);
+        res.status(500).json({ message: 'Erro interno ao buscar dados do dashboard.' });
     }
 };
 
+/**
+ * Busca a lista completa de atividades da instituição.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const getAllActivities = async (req, res) => {
+    logger.info('Iniciando busca de TODAS as atividades...');
     try {
         const instituicaoId = req.user.id;
+        logger.debug(`Buscando atividades para instituição ID: ${instituicaoId}`);
         const [
             { data: entradas }, { data: saidas }, { data: recibos },
             { data: transferencias }, { data: gastosProprios }, { data: parcerias }
@@ -171,14 +199,21 @@ export const getAllActivities = async (req, res) => {
             ...(parcerias || []).map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
         ];
         const atividadesOrdenadas = todasAtividades.sort((a, b) => b.data - a.data);
+        logger.info(`Busca de todas as atividades bem-sucedida. ${atividadesOrdenadas.length} registros encontrados.`);
         res.status(200).json(atividadesOrdenadas);
     } catch (error) {
-        console.error("❌ Erro ao buscar todas as atividades:", error);
-        res.status(500).json({ message: "Erro interno ao buscar lista de atividades." });
+        logger.error('Erro ao buscar a lista completa de atividades.', error);
+        res.status(500).json({ message: 'Erro interno ao buscar lista de atividades.' });
     }
 };
 
+/**
+ * Busca a lista completa de alertas da instituição.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const getAllAlerts = async (req, res) => {
+    logger.info('Iniciando busca de TODOS os alertas...');
     try {
         const instituicaoId = req.user.id;
         const hoje = new Date();
@@ -198,36 +233,17 @@ export const getAllAlerts = async (req, res) => {
         const totaisEntrada = (todasEntradas || []).reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
         const totaisSaida = (todasSaidas || []).reduce((acc, item) => { if (item.entrada?.categoria) { const n = item.entrada.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade_retirada); } return acc; }, {});
         new Set([...Object.keys(totaisEntrada), ...Object.keys(totaisSaida)]).forEach(cat => { estoqueAtualPorCategoria[cat] = (totaisEntrada[cat] || 0) - (totaisSaida[cat] || 0); });
-
-        const parceriasAExpirar = (todasParcerias || []).filter(p => {
-            if (p.status !== 'Ativo' || !p.data_fim) return false;
-            const dataFimParceria = new Date(p.data_fim);
-            const diffDias = (dataFimParceria - hoje) / (1000 * 60 * 60 * 24);
-            return diffDias >= 0 && diffDias <= 30;
-        }).map(p => ({
-            tipo: 'parceria',
-            texto: `Parceria com <b>${p.nome}</b> expira em breve.`
-        }));
-
-        const parceriasExpiradas = (todasParcerias || []).filter(p => {
-            if (p.status !== 'Ativo' || !p.data_fim) return false;
-            const dataFimParceria = new Date(p.data_fim);
-            return dataFimParceria < hoje;
-        }).map(p => ({
-            tipo: 'parceria-expirada',
-            texto: `Parceria com <b>${p.nome}</b> está expirada. Atualize o status.`
-        }));
-
-        const estoqueBaixo = Object.entries(estoqueAtualPorCategoria).filter(([_, qtd]) => qtd > 0 && qtd <= 10).map(([cat, qtd]) => ({
-            tipo: 'estoque',
-            texto: `Estoque de <b>${cat}</b> está baixo (${qtd}).`
-        }));
+        
+        const parceriasAExpirar = (todasParcerias || []).filter(p => { if (p.status !== 'Ativo' || !p.data_fim) return false; const dataFimParceria = new Date(p.data_fim); const diffDias = (dataFimParceria - hoje) / (1000 * 60 * 60 * 24); return diffDias >= 0 && diffDias <= 30; }).map(p => ({ tipo: 'parceria', texto: `Parceria com <b>${p.nome}</b> expira em breve.` }));
+        const parceriasExpiradas = (todasParcerias || []).filter(p => { if (p.status !== 'Ativo' || !p.data_fim) return false; const dataFimParceria = new Date(p.data_fim); return dataFimParceria < hoje; }).map(p => ({ tipo: 'parceria-expirada', texto: `Parceria com <b>${p.nome}</b> está expirada. Atualize o status.` }));
+        const estoqueBaixo = Object.entries(estoqueAtualPorCategoria).filter(([_, qtd]) => qtd > 0 && qtd <= 10).map(([cat, qtd]) => ({ tipo: 'estoque', texto: `Estoque de <b>${cat}</b> está baixo (${qtd}).` }));
         
         const todosAlertas = [...parceriasExpiradas, ...parceriasAExpirar, ...estoqueBaixo];
-
+        
+        logger.info(`Busca de todos os alertas bem-sucedida. ${todosAlertas.length} alertas encontrados.`);
         res.status(200).json(todosAlertas);
     } catch (error) {
-        console.error("❌ Erro ao buscar todos os alertas:", error);
-        res.status(500).json({ message: "Erro interno ao buscar lista de alertas." });
+        logger.error('Erro ao buscar a lista completa de alertas.', error);
+        res.status(500).json({ message: 'Erro interno ao buscar lista de alertas.' });
     }
 };

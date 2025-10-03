@@ -1,74 +1,77 @@
 import supabase from '../db/supabaseClient.js';
+import logger from '../utils/logger.js';
 
+/**
+ * Registra uma nova doação (entrada) no estoque.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const registrarDoacaoController = async (req, res) => {
+    logger.info('Iniciando registro de nova doação de entrada...');
     try {
-        // 1. DADOS DA REQUISIÇÃO
-        // O middleware 'protegerRota' já validou o token e nos deu o 'req.user'
-        const instituicao_id = req.user.id; 
+        const instituicao_id = req.user.id;
         const dadosDoFormulario = req.body;
+        logger.debug('Dados recebidos do formulário de doação:', dadosDoFormulario);
 
-        // 2. VALIDAÇÃO SIMPLES (BOA PRÁTICA)
-        // Verifica se os campos essenciais que o frontend DEVE enviar vieram na requisição
         if (!dadosDoFormulario.categoria_id || !dadosDoFormulario.quantidade) {
+            logger.warn('Tentativa de registrar doação com dados incompletos.', { body: req.body });
             return res.status(400).json({ message: 'Dados incompletos. Categoria e quantidade são obrigatórios.' });
         }
 
-        // 3. MONTAR O OBJETO FINAL PARA O BANCO
-        // O frontend já fez 90% do trabalho! Só precisamos adicionar o ID da instituição.
         const novaDoacao = {
-            ...dadosDoFormulario,      // Pega tudo que o frontend mandou (categoria_id, quantidade, qualidade, doador_origem_texto, detalhes)
-            instituicao_id: instituicao_id, // Adiciona o ID do usuário logado
+            ...dadosDoFormulario,
+            instituicao_id: instituicao_id,
         };
         
-        // 4. INSERIR NO BANCO DE DADOS
+        logger.info('Inserindo nova doação no banco de dados...');
         const { data, error } = await supabase
             .from('doacao_entrada')
             .insert(novaDoacao)
-            .select() // .select() faz com que o Supabase retorne o dado que acabou de ser inserido
-            .single(); // .single() para pegar o objeto direto, em vez de um array com um item só
+            .select()
+            .single();
 
-        if (error) {
-            // Se der erro no Supabase, joga o erro para o bloco catch
-            throw error;
-        }
+        if (error) throw error;
 
-        // 5. ENVIAR RESPOSTA DE SUCESSO
-        // Retorna o status 201 (Created) e a doação que foi criada
+        logger.info(`Doação de entrada registrada com sucesso! ID: ${data.id}`);
         res.status(201).json(data);
 
     } catch (error) {
-        console.error('Erro ao registrar doação:', error);
-        // Retorna um erro genérico para o frontend
+        logger.error('Erro ao registrar doação de entrada.', error);
         res.status(500).json({ message: 'Erro interno no servidor ao registrar a doação.' });
     }
 };
 
+/**
+ * Registra uma nova retirada (saída) de um item do estoque.
+ * Inclui validação para garantir que a retirada não exceda o estoque disponível.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
 export const registrarRetiradaController = async (req, res) => {
+    logger.info('Iniciando registro de nova retirada de doação...');
     try {
-        // 1. RECEBER OS DADOS
         const instituicao_id = req.user.id;
         const { entrada_id, quantidade_retirada, destinatario, observacao } = req.body;
+        logger.debug('Dados recebidos para retirada:', { entrada_id, quantidade_retirada, destinatario });
 
         if (!entrada_id || !quantidade_retirada || Number(quantidade_retirada) <= 0) {
+            logger.warn('Tentativa de registrar retirada com dados incompletos.', { body: req.body });
             return res.status(400).json({ message: 'Item do estoque e quantidade (maior que zero) são obrigatórios.' });
         }
 
-        // 2. VALIDAÇÃO DE ESTOQUE NO BACKEND (COM AJUSTES DE SEGURANÇA E ANTI-BUG)
+        logger.info(`Validando estoque para o item de entrada ID: ${entrada_id}`);
         const { data: entrada, error: erroEntrada } = await supabase
             .from('doacao_entrada')
             .select('quantidade')
             .eq('id', entrada_id)
-            // <-- AJUSTE DE SEGURANÇA: Garante que o item pertence à instituição logada
             .eq('instituicao_id', instituicao_id) 
             .single();
 
-        // <-- AJUSTE CONTRA BUGS: Verifica se o item foi encontrado
         if (erroEntrada || !entrada) {
-            // Se 'entrada' for nulo, significa que o item não existe ou não pertence a esta instituição
+            logger.warn(`Item de estoque (ID: ${entrada_id}) não encontrado ou sem permissão para a instituição ID: ${instituicao_id}`);
             return res.status(404).json({ message: `Item do estoque (ID: ${entrada_id}) não encontrado ou não pertence à sua instituição.` });
         }
 
-        // Esta parte do código continua igual, mas agora está segura
         const { data: saidas, error: erroSaidas } = await supabase
             .from('doacao_saida')
             .select('quantidade_retirada')
@@ -78,12 +81,13 @@ export const registrarRetiradaController = async (req, res) => {
 
         const totalJaRetirado = saidas.reduce((acc, item) => acc + Number(item.quantidade_retirada), 0);
         const quantidadeDisponivel = Number(entrada.quantidade) - totalJaRetirado;
+        logger.debug(`Validação de estoque para ID ${entrada_id}: Disponível=${quantidadeDisponivel}, Solicitado=${quantidade_retirada}`);
 
         if (Number(quantidade_retirada) > quantidadeDisponivel) {
+            logger.warn(`Tentativa de retirada maior que o estoque para o item ID: ${entrada_id}.`);
             return res.status(400).json({ message: `A quantidade solicitada (${quantidade_retirada}) é maior que o estoque disponível (${quantidadeDisponivel}).` });
         }
 
-        // 3. MONTAR O OBJETO FINAL PARA INSERÇÃO
         const novaRetirada = {
             instituicao_id,
             entrada_id,
@@ -92,7 +96,7 @@ export const registrarRetiradaController = async (req, res) => {
             observacao
         };
 
-        // 4. INSERIR NA TABELA 'doacao_saida'
+        logger.info('Inserindo nova retirada no banco de dados...');
         const { data, error } = await supabase
             .from('doacao_saida')
             .insert(novaRetirada)
@@ -101,11 +105,11 @@ export const registrarRetiradaController = async (req, res) => {
 
         if (error) throw error;
 
-        // 5. ENVIAR RESPOSTA DE SUCESSO
+        logger.info(`Retirada registrada com sucesso! ID da saída: ${data.id}`);
         res.status(201).json(data);
 
     } catch (error) {
-        console.error('Erro ao registrar retirada:', error);
+        logger.error('Erro ao registrar retirada de doação.', error);
         res.status(500).json({ message: 'Erro interno no servidor ao registrar a retirada.' });
     }
 };
