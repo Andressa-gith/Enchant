@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="detail-item"><span class="detail-label">Valor Total</span><span class="detail-value">${formatCurrency(partner.valor_total_parceria)}</span></div>
                     <div class="detail-item"><span class="detail-label">Início</span><span class="detail-value">${formatDate(partner.data_inicio)}</span></div>
                     <div class="detail-item"><span class="detail-label">Fim</span><span class="detail-value">${formatDate(partner.data_fim)}</span></div>
-                    <div class="detail-item" style="grid-column: 1 / -1;"><span class="detail-label">Objetivo:</span><span class="detail-value">${partner.objetivos || 'Sem objetivos definidos.'}</span></div>
+                    <div class="detail-item detail-item-full"><span class="detail-label">Objetivo:</span><span class="detail-value">${partner.objetivos || 'Sem objetivos definidos.'}</span></div>
                     
                 </div>
                 <div class="action-buttons">
