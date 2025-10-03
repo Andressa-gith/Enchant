@@ -136,9 +136,9 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 }
 
 .botaozinho {
-    background-color:  #72330f; 
-    color: #FFFFFF; 
-    border-color:  #72330f;
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #e2ccae;
+    color: #3d2106;
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
@@ -150,7 +150,8 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 }
 
 .botaozinho:hover {
-    background-color: #4A2B00; 
+    background-color: #caae8d;
+    color: #3d2106;
     border: 0 6px 12px rgba(0,0,0,0.15);     
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -166,8 +167,9 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 
 /* Estilo adicional para o botão voltar quando for um link */
 .botaosem {
-    background-color:  #72330f; 
-    color: #FFFFFF; 
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #e2ccae;
+    color: #3d2106;
     border-color:  #72330f;
     padding: 10px 20px;
     border-radius: 10px;
@@ -183,7 +185,8 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 
 
 .botaosem:hover {
-    background-color: #4A2B00; 
+    background-color: #caae8d;
+    color: #3d2106;
     border: 0 6px 12px rgba(0,0,0,0.15);     
     transform: translateY(-2px);
 }
