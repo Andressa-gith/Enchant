@@ -86,17 +86,18 @@ export const updateParceria = async (req, res) => {
             .eq('id', id)
             .eq('instituicao_id', instituicaoId)
             .select()
-            .single();
 
         if (error) throw error;
         
-        if (!data) {
-            logger.warn(`Parceria ID: ${id} não encontrada ou usuário sem permissão.`);
+        if (!data || data.length === 0) {
+            logger.warn(`Parceria ID: ${id} não encontrada para atualização ou usuário sem permissão.`);
             return res.status(404).json({ message: 'Parceria não encontrada ou você não tem permissão para alterá-la.' });
         }
 
+        const updatedData = data[0];
+
         logger.info(`Parceria ID: ${id} atualizada com sucesso.`);
-        res.status(200).json({ message: 'Parceria atualizada com sucesso!', data });
+        res.status(200).json({ message: 'Parceria atualizada com sucesso!', data: updatedData });
     } catch (error) {
         logger.error('Erro ao atualizar parceria.', error);
         res.status(500).json({ message: 'Erro ao atualizar parceria.' });

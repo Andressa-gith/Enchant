@@ -99,8 +99,6 @@ export const updateFinanceiro = async (req, res) => {
         const { id } = req.params;
         const { nome_categoria, orcamento_previsto, valor_executado } = req.body;
 
-        logger.debug(`Tentando atualizar lançamento ID: ${id} com os dados:`, req.body);
-
         if (nome_categoria === undefined || orcamento_previsto === undefined || valor_executado === undefined) {
             logger.warn(`Tentativa de atualização do lançamento ID: ${id} com dados inválidos.`);
             return res.status(400).json({ message: 'Dados para atualização inválidos.' });
@@ -115,16 +113,19 @@ export const updateFinanceiro = async (req, res) => {
             .eq('id', id)
             .eq('instituicao_id', instituicaoId)
             .select()
-            .single();
-        
+
         if (error) throw error;
-        if (!data) {
-            logger.warn(`Lançamento ID: ${id} não encontrado ou usuário sem permissão.`);
+
+        if (!data || data.length === 0) {
+            logger.warn(`Lançamento ID: ${id} não encontrado para atualização ou usuário sem permissão.`);
             return res.status(404).json({ message: 'Registro não encontrado ou sem permissão.' });
         }
 
+        const updatedData = data[0];
+
         logger.info(`Lançamento ID: ${id} atualizado com sucesso.`);
-        res.status(200).json({ message: 'Lançamento atualizado com sucesso!', data });
+        res.status(200).json({ message: 'Lançamento atualizado com sucesso!', data: updatedData });
+
     } catch (error) {
         logger.error('Erro ao atualizar lançamento financeiro.', error);
         res.status(500).json({ message: 'Erro interno ao atualizar lançamento.' });

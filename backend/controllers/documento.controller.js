@@ -103,8 +103,7 @@ export const deleteDocumento = async (req, res) => {
         const { id } = req.params;
         logger.debug(`Tentando deletar documento ID: ${id}`);
 
-        // 1. Busca o caminho do arquivo
-        logger.info(`Buscando informações do documento ID: ${id} para exclusão.`);
+        // 1. Busca o caminho do arquivo para garantir que o item existe
         const { data: doc, error: fetchError } = await supabase
             .from('documento_comprobatorio')
             .select('caminho_arquivo')
@@ -112,28 +111,26 @@ export const deleteDocumento = async (req, res) => {
             .eq('instituicao_id', instituicaoId)
             .single();
 
+        // SE NÃO ACHOU, RETORNA 404 AQUI!
         if (fetchError || !doc) {
-            logger.warn(`Documento ID: ${id} não encontrado ou usuário sem permissão.`);
-            throw new Error('Documento não encontrado ou permissão negada.');
+            logger.warn(`Documento ID: ${id} não encontrado para exclusão ou usuário sem permissão.`);
+            return res.status(404).json({ message: 'Documento não encontrado ou você não tem permissão.' });
         }
 
         // 2. Deleta o registro do banco
-        logger.info(`Deletando registro do documento ID: ${id} do banco de dados.`);
         const { error: deleteDbError } = await supabase
             .from('documento_comprobatorio')
             .delete()
             .eq('id', id);
-
         if (deleteDbError) throw deleteDbError;
+        logger.info(`Registro do documento ID: ${id} deletado do banco de dados.`);
         
         // 3. Deleta o arquivo do Storage
-        logger.info(`Deletando arquivo do Storage: ${doc.caminho_arquivo}`);
         const { error: deleteStorageError } = await supabase.storage
             .from('comprovantes')
             .remove([doc.caminho_arquivo]);
-            
         if (deleteStorageError) {
-            logger.warn(`Registro do documento ID: ${id} deletado, mas falha ao remover arquivo do Storage.`, deleteStorageError);
+            logger.warn(`Falha ao remover arquivo do Storage para documento ID: ${id}.`, deleteStorageError);
         }
 
         logger.info(`Documento ID: ${id} deletado com sucesso.`);

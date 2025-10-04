@@ -1,5 +1,5 @@
 /**
- * @file Testes de integração para a API de Doações (/api/doacoes).
+ * @file Testes de integração para a API de Doações (/api/doacao).
  * @description Testa os endpoints de registro de entrada e saída de doações.
  */
 
