@@ -29,6 +29,84 @@ export const getDocumentos = async (req, res) => {
     }
 };
 
+
+/**
+ * Atualiza um documento comprobatório.
+ * Se um novo arquivo for enviado, ele substitui o antigo no Storage.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
+export const updateDocumento = async (req, res) => {
+    logger.info('Iniciando processo de atualização de documento...');
+    const { id } = req.params;
+    const instituicaoId = req.user.id;
+
+    try {
+        const { titulo, valor, tipo_documento } = req.body;
+        let updateData = { titulo, valor: parseFloat(valor) };
+
+        if (titulo !== undefined) updateData.titulo = titulo;
+        if (valor !== undefined) updateData.valor = parseFloat(valor);
+        if (tipo_documento !== undefined) updateData.tipo_documento = tipo_documento;
+
+        // Se um novo arquivo foi enviado, a lógica é mais complexa.
+        if (req.file) {
+            logger.info(`Novo arquivo recebido para o documento ID: ${id}. Substituindo o antigo.`);
+            
+            // 1. Pega o caminho do arquivo antigo para deletar depois.
+            const { data: docAntigo, error: fetchError } = await supabase
+                .from('documento_comprobatorio')
+                .select('caminho_arquivo')
+                .match({ id: id, instituicao_id: instituicaoId })
+                .single();
+            
+            if (fetchError || !docAntigo) {
+                return res.status(404).json({ message: 'Documento não encontrado ou sem permissão.' });
+            }
+            const caminhoArquivoAntigo = docAntigo.caminho_arquivo;
+
+            // 2. Faz upload do novo arquivo.
+            const novoFilePath = `${instituicaoId}/${uuidv4()}-${req.file.originalname}`;
+            const { error: uploadError } = await supabase.storage
+                .from('comprovantes')
+                .upload(novoFilePath, req.file.buffer, { contentType: req.file.mimetype });
+
+            if (uploadError) throw uploadError;
+            logger.info(`Novo arquivo enviado para: ${novoFilePath}`);
+            updateData.caminho_arquivo = novoFilePath;
+
+            // 3. Deleta o arquivo antigo do Storage (depois que o novo já subiu).
+            if (caminhoArquivoAntigo) {
+                await supabase.storage.from('comprovantes').remove([caminhoArquivoAntigo]);
+                logger.info(`Arquivo antigo (${caminhoArquivoAntigo}) deletado do Storage.`);
+            }
+        }
+        
+        // 4. Atualiza o registro no banco de dados.
+        const { data, error } = await supabase
+            .from('documento_comprobatorio')
+            .update(updateData)
+            .match({ id: id, instituicao_id: instituicaoId })
+            .select();
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            logger.warn(`Documento ID: ${id} não encontrado para atualização.`);
+            return res.status(404).json({ message: 'Documento não encontrado ou sem permissão.' });
+        }
+        
+        const updatedData = data[0];
+
+        logger.info(`Documento ID: ${id} atualizado com sucesso.`);
+        res.status(200).json({ message: 'Documento atualizado com sucesso!', data: updateData });
+
+    } catch (error) {
+        logger.error(`Erro ao atualizar documento ID: ${id}.`, error);
+        res.status(500).json({ message: 'Erro interno ao atualizar documento.' });
+    }
+};
+
 /**
  * Adiciona um novo documento comprobatório, incluindo o upload do arquivo.
  * @param {object} req - Objeto de requisição do Express.
@@ -90,6 +168,7 @@ export const addDocumento = async (req, res) => {
         res.status(500).json({ message: 'Erro ao adicionar documento.' });
     }
 };
+
 
 /**
  * Deleta um documento comprobatório e seu arquivo associado no Storage.

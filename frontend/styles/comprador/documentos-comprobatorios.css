@@ -324,11 +324,56 @@ p {
     flex: 1;
 }
 
+.form-group1 input::placeholder,
+.form-group1 select::placeholder,
+.form-group1 textarea::placeholder {
+    font-size: 14px;
+}
+
+.form-group1 input:focus,
+.form-group1 select:focus {
+    outline: none;
+}
+
+.form-group1 label {
+    display: block;
+    font-size: 14px;
+    color: #000000;
+    margin-bottom: 6px;
+    font-weight: 400;
+}
+
+.form-group1 {
+    margin-bottom: 16px;
+}
+
+.form-control1 {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    outline: none;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
 .form-group input.error,
 .form-group textarea.error,
 .form-group select.error {
     border-color: #dc3545;
     background-color: #fff5f5;
+}
+
+.form-group1 input.error,
+.form-group1 textarea.error,
+.form-group1 select.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.form-group1 label::after {
+    content: ' *';
+    color: #dc3545;
 }
 
 .error-message {

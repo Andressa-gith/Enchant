@@ -78,6 +78,47 @@ describe('Testes da API de Documentos', () => {
     });
 
     /**
+     * @describe Testes para a rota PUT /:id (Atualização de Documento).
+     */
+    describe('PUT /:id', () => {
+        it('deve atualizar apenas o título e o valor de um documento (sem enviar novo arquivo)', async () => {
+            const response = await request(app)
+                .put(`${API_PREFIX}/${newDocumentoId}`)
+                .set('Authorization', `Bearer ${token}`)
+                .field('titulo', 'Título Atualizado (Texto)')
+                .field('valor', 200.50);
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body.data.titulo).toBe('Título Atualizado (Texto)');
+            expect(response.body.data.valor).toBe(200.50);
+        });
+
+        it('deve atualizar o título e substituir o arquivo de um documento', async () => {
+            const response = await request(app)
+                .put(`${API_PREFIX}/${newDocumentoId}`)
+                .set('Authorization', `Bearer ${token}`)
+                .field('titulo', 'Título Atualizado (Com Arquivo)')
+                .field('valor', 300.00)
+                .attach('arquivo_documento', Buffer.from('novo conteudo'), 'arquivo-novo.pdf');
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body.data.titulo).toBe('Título Atualizado (Com Arquivo)');
+            // Verifica se o caminho do arquivo foi atualizado para o novo nome
+            expect(response.body.data.caminho_arquivo).toContain('arquivo-novo.pdf');
+        });
+
+        it('deve retornar um erro 404 ao tentar atualizar um documento que não existe', async () => {
+            const response = await request(app)
+                .put(`${API_PREFIX}/999999`)
+                .set('Authorization', `Bearer ${token}`)
+                .field('titulo', 'Documento Fantasma')
+                .field('valor', 0);
+            
+            expect(response.statusCode).toBe(404);
+        });
+    });
+
+    /**
      * @describe Testes para a rota DELETE /:id (Exclusão de Documento).
      */
     describe('DELETE /:id', () => {

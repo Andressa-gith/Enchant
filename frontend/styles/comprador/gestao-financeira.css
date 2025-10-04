@@ -206,7 +206,7 @@ input {
 
 .form-group1 input::placeholder,
 .form-group1 select::placeholder,
-form-group1 textarea::placeholder {
+.form-group1 textarea::placeholder {
     font-size: 14px;
 }
 

@@ -8,26 +8,36 @@ document.addEventListener('DOMContentLoaded', () => {
         documentTypeSelect: document.getElementById('documentType'),
         documentValueInput: document.getElementById('documentValue'),
         fileInput: document.getElementById('documentFile'),
-        fileUploadArea: document.querySelector('.file-upload'),
-        fileUploadText: document.querySelector('.file-upload p'),
+        fileUploadArea: document.querySelector('#documentForm .file-upload'),
+        fileUploadText: document.querySelector('#documentForm .file-upload p'),
         submitBtn: document.querySelector('#documentForm .add-btn'),
         documentsContainer: document.getElementById('documents-list'),
         successMessage: document.getElementById('success-message'),
         alertMessage: document.getElementById('alert-message'),
         loader: document.getElementById('loader'),
         emptyState: document.getElementById('empty-state'),
+        // Elementos do Modal de Edição
+        editModal: document.getElementById('editModal'),
+        editForm: document.getElementById('edit-form'),
+        editIdInput: document.getElementById('edit-id'),
+        editCompanyNameInput: document.getElementById('edit-companyName'),
+        editDocumentTypeSelect: document.getElementById('edit-documentType'),
+        editDocumentValueInput: document.getElementById('edit-documentValue'),
+        editFileInput: document.getElementById('edit-documentFile'),
+        editFileUploadText: document.getElementById('edit-fileUploadText'),
+        saveEditBtn: document.getElementById('saveEditBtn'),
     };
-    
-    // --- CÓDIGO PARA DESLIGAR O LOADER GLOBAL ---
-    setTimeout(() => {
-        window.SiteLoader?.hide();
-    }, 500);
-    
+
     let selectedFile = null;
+    let editSelectedFile = null;
+    let allDocuments = [];
+    let editModalInstance = null;
+
+    setTimeout(() => { window.SiteLoader?.hide(); }, 500);
 
     // --- FUNÇÕES DE CONTROLE DE UI ---
-    const showLoader = (isLoading) => { ui.loader && (ui.loader.style.display = isLoading ? 'flex' : 'none'); };
-    const showEmptyState = (isEmpty) => { ui.emptyState && (ui.emptyState.style.display = isEmpty ? 'flex' : 'none'); };
+    const showLoader = (isLoading) => { ui.loader && (ui.loader.style.display = isLoading ? 'block' : 'none'); };
+    const showEmptyState = (isEmpty) => { ui.emptyState && (ui.emptyState.style.display = isEmpty ? 'block' : 'none'); };
     const showGrid = (shouldShow) => { ui.documentsContainer && (ui.documentsContainer.style.display = shouldShow ? 'grid' : 'none'); };
     const showAlert = (message, isError = true) => {
         const alertElement = isError ? ui.alertMessage : ui.successMessage;
@@ -38,46 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    // --- LÓGICA DE VALIDAÇÃO PADRONIZADA ---
-    const validateField = (input, condition, errorMsg) => {
-        const errorElement = input.closest('.form-group, .file-upload').querySelector('.error-message');
-        if (condition) {
-            input.classList.remove('error');
-            if (errorElement) errorElement.style.display = 'none';
-            return true;
-        } else {
-            input.classList.add('error');
-            if (errorElement) { errorElement.textContent = errorMsg; errorElement.style.display = 'block'; }
-            return false;
-        }
-    };
-    
-    const validateForm = () => {
-        const errors = [];
-        if (!validateField(ui.companyNameInput, ui.companyNameInput.value.trim().length >= 10, 'O nome deve ter no mínimo 10 caracteres.')) errors.push('Nome do Documento');
-        if (!validateField(ui.documentTypeSelect, ui.documentTypeSelect.selectedIndex !== 0, 'Por favor, selecione um tipo.')) errors.push('Tipo de Documento');
-        if (!validateField(ui.documentValueInput, ui.documentValueInput.value > 0, 'O valor deve ser maior que zero.')) errors.push('Valor');
-        if (!validateField(ui.fileUploadArea, selectedFile !== null, 'Por favor, selecione um arquivo.')) errors.push('Arquivo');
-        
-        return { 
-            isValid: errors.length === 0, 
-            errors: [...new Set(errors)] 
-        };
-    };
-
-    const setupRealTimeValidation = () => {
-        ui.companyNameInput.addEventListener('blur', () => validateField(ui.companyNameInput, ui.companyNameInput.value.trim().length >= 10, 'O nome deve ter no mínimo 10 caracteres.'));
-        ui.documentTypeSelect.addEventListener('blur', () => validateField(ui.documentTypeSelect, ui.documentTypeSelect.selectedIndex !== 0, 'Por favor, selecione um tipo.'));
-        ui.documentValueInput.addEventListener('blur', () => validateField(ui.documentValueInput, ui.documentValueInput.value > 0, 'O valor deve ser maior que zero.'));
-    };
-
     // --- LÓGICA DE UPLOAD DE ARQUIVO ---
     const handleFileSelection = (file) => {
-        validateField(ui.fileUploadArea, true, '');
         selectedFile = file;
         if (file) {
             ui.fileUploadText.textContent = `Arquivo: ${file.name}`;
-            validateField(ui.fileUploadArea, true, ''); // Confirma que a validação passou
         } else {
             ui.fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
         }
@@ -86,22 +61,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNÇÕES DE API ---
     const fetchData = async (url, options = {}) => {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error('Sessão expirada.');
+        if (!session) {
+            window.location.href = '/login';
+            throw new Error('Sessão expirada.');
+        }
         const headers = { 'Authorization': `Bearer ${session.access_token}`, ...options.headers };
-        if (!(options.body instanceof FormData)) { headers['Content-Type'] = 'application/json'; }
+        if (!(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
         const response = await fetch(url, { ...options, headers });
         const result = await response.json();
-        if (!response.ok) throw new Error(result.message || 'Ocorreu um erro.');
+        if (!response.ok) {
+            throw new Error(result.message || 'Ocorreu um erro na comunicação com o servidor.');
+        }
         return result;
     };
 
+    // --- LÓGICA PRINCIPAL ---
     const loadDocuments = async () => {
         showLoader(true);
         showGrid(false);
         showEmptyState(false);
         try {
-            const documents = await fetchData('/api/documentos');
-            renderDocuments(documents);
+            allDocuments = await fetchData('/api/documentos');
+            renderDocuments(allDocuments);
         } catch (error) {
             showAlert(error.message);
             renderDocuments([]);
@@ -112,9 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const submitForm = async (e) => {
         e.preventDefault();
-        const validation = validateForm();
-        if (!validation.isValid) {
-            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+        if (!selectedFile || !ui.companyNameInput.value || !ui.documentValueInput.value || ui.documentTypeSelect.selectedIndex === 0) {
+            showAlert('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
 
@@ -125,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('tipo_documento', ui.documentTypeSelect.value);
         formData.append('valor', ui.documentValueInput.value);
         formData.append('arquivo_documento', selectedFile);
+
         try {
             const result = await fetchData('/api/documentos', { method: 'POST', body: formData });
             showAlert(result.message, false);
@@ -151,9 +134,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const editDocument = (docId) => {
-        console.log('Editando documento:', docId);
-        showAlert('Função de edição em desenvolvimento', true);
+    const openEditModal = (docId) => {
+        const doc = allDocuments.find(d => d.id == docId);
+        if (!doc) {
+            showAlert('Documento não encontrado para edição.');
+            return;
+        }
+
+        ui.editIdInput.value = doc.id;
+        ui.editCompanyNameInput.value = doc.titulo;
+        ui.editDocumentValueInput.value = doc.valor;
+        ui.editDocumentTypeSelect.value = doc.tipo_documento;
+
+        ui.editFileInput.value = '';
+        editSelectedFile = null;
+        ui.editFileUploadText.textContent = 'Clique para selecionar um novo arquivo (opcional)';
+        
+        if (!editModalInstance) {
+            editModalInstance = new bootstrap.Modal(ui.editModal);
+        }
+        editModalInstance.show();
+    };
+
+    const handleSaveChanges = async () => {
+        const docId = ui.editIdInput.value;
+        const formData = new FormData();
+        formData.append('titulo', ui.editCompanyNameInput.value);
+        formData.append('valor', ui.editDocumentValueInput.value);
+        formData.append('tipo_documento', ui.editDocumentTypeSelect.value);
+
+        if (editSelectedFile) {
+            formData.append('arquivo_documento', editSelectedFile);
+        }
+        
+        ui.saveEditBtn.disabled = true;
+        ui.saveEditBtn.textContent = 'Salvando...';
+
+        try {
+            const result = await fetchData(`/api/documentos/${docId}`, { method: 'PUT', body: formData });
+            showAlert(result.message, false);
+            editModalInstance.hide();
+            loadDocuments();
+        } catch (error) {
+            showAlert(error.message);
+        } finally {
+            ui.saveEditBtn.disabled = false;
+            ui.saveEditBtn.textContent = 'Salvar Alterações';
+        }
     };
 
     // --- RENDERIZAÇÃO ---
@@ -192,10 +219,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- EVENT LISTENERS ---
     ui.form.addEventListener('submit', submitForm);
-    ui.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); ui.fileUploadArea.classList.add('dragover'); });
-    ui.fileUploadArea.addEventListener('dragleave', () => { ui.fileUploadArea.classList.remove('dragover'); });
-    ui.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); ui.fileUploadArea.classList.remove('dragover'); handleFileSelection(e.dataTransfer.files[0]); ui.fileInput.files = e.dataTransfer.files; });
     ui.fileInput.addEventListener('change', () => handleFileSelection(ui.fileInput.files[0]));
+
+    ui.saveEditBtn.addEventListener('click', handleSaveChanges);
+    ui.editFileInput.addEventListener('change', (e) => {
+        editSelectedFile = e.target.files[0];
+        ui.editFileUploadText.textContent = editSelectedFile ? `Novo arquivo: ${editSelectedFile.name}` : 'Clique para selecionar um novo arquivo (opcional)';
+    });
     
     ui.documentsContainer.addEventListener('click', (e) => {
         const viewBtn = e.target.closest('.view-btn');
@@ -214,18 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (deleteBtn) {
-            const docId = deleteBtn.dataset.id;
-            const docTitle = deleteBtn.dataset.title;
-            deleteDocument(docId, docTitle);
+            deleteDocument(deleteBtn.dataset.id, deleteBtn.dataset.title);
         }
         
         if (editBtn) {
-            const docId = editBtn.dataset.id;
-            editDocument(docId);
+            openEditModal(editBtn.dataset.id);
         }
     });
 
     // --- INICIALIZAÇÃO ---
-    setupRealTimeValidation();
     loadDocuments();
 });

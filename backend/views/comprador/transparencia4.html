@@ -26,84 +26,140 @@
 
 <body>
     <!--LOADER-->
+
     <body class="auto-loader">
-    <header id="header-container"></header>
-    <aside id="sidebar-container"></aside>
+        <header id="header-container"></header>
+        <aside id="sidebar-container"></aside>
 
-    <main id="main">
-        <div class="container">
-            <h1 class="title">Documentos Comprobatórios</h1>
-            <p>Gerencie e publique documentos comprobatórios para garantir a transparência e a conformidade com as regulamentações.</p>
-            <div class="form-section upload-section">
-                <div class="validation-info">
-                    <h4>Requisitos para os documentos:</h4>
-                    <ul>
-                        <li>Todos os campos são obrigatórios.</li>
-                        <li>O nome da empresa será usado como título do documento.</li>
-                        <li>Formatos aceitos: PDF, DOC, JPG, PNG (máximo 10MB).</li>
-                    </ul>
-                </div>
+        <main id="main">
+            <div class="container">
+                <h1 class="title">Documentos Comprobatórios</h1>
+                <p>Gerencie e publique documentos comprobatórios para garantir a transparência e a conformidade com as
+                    regulamentações.</p>
+                <div class="form-section upload-section">
+                    <div class="validation-info">
+                        <h4>Requisitos para os documentos:</h4>
+                        <ul>
+                            <li>Todos os campos são obrigatórios.</li>
+                            <li>O nome da empresa será usado como título do documento.</li>
+                            <li>Formatos aceitos: PDF, DOC, JPG, PNG (máximo 10MB).</li>
+                        </ul>
+                    </div>
 
-                <div id="success-message" class="success-message" style="display: none;"></div>
-                <div id="alert-message" class="alert-message" style="display: none;"></div>
+                    <div id="success-message" class="success-message" style="display: none;"></div>
+                    <div id="alert-message" class="alert-message" style="display: none;"></div>
 
-                <h2 class="form-title">Adicionar Novo Documento</h2>
-                <form id="documentForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="companyName">Nome do documento</label>
-                            <input type="text" id="companyName" name="titulo" placeholder="Ex: Empresa XYZ Ltda">
-                            <div class="error-message" id="companyName-error"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="documentType">Tipo de Documento</label>
-                            <select id="documentType" name="tipo_documento">
-                                <option value="">Selecione o tipo</option>
-                                <option value="Recibo de doação">Recibo de doação</option>
-                                <option value="Nota fiscal">Nota fiscal</option>
-                                <option value="Comprovante de transferência">Comprovante de transferência</option>
-                                <option value="Orçamento">Orçamento</option>
-                                <option value="Outros">Outros</option>
-                            </select>
-                            <div class="error-message" id="documentType-error"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="documentValue">Valor (R$)</label>
-                            <input type="number" id="documentValue" name="valor" step="0.01" placeholder="0,00">
-                            <div class="error-message" id="documentValue-error"></div>
-                        </div>
-                        <div class="form-group required file-upload-group">
-                            <label>Arquivo do Documento</label>
-                            <div class="file-upload" onclick="document.getElementById('documentFile').click()">
-                                <svg class="icon" viewBox="0 0 24 24"
-                                    style="width: 48px; height: 48px; margin-bottom: 10px;">
-                                    <path
-                                        d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                                </svg>
-                                <p>Clique para selecionar o arquivo ou arraste aqui</p>
-                                <small>PDF, DOC, JPG, PNG aceitos (máximo 10MB)</small>
-                                <input type="file" id="documentFile" name="arquivo_documento"
-                                    accept=".pdf,.doc,.docx,.jpg,.png" style="display: none;">
+                    <h2 class="form-title">Adicionar Novo Documento</h2>
+                    <form id="documentForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="companyName">Nome do documento</label>
+                                <input type="text" id="companyName" name="titulo" placeholder="Ex: Empresa XYZ Ltda">
+                                <div class="error-message" id="companyName-error"></div>
                             </div>
-                            <div class="error-message" id="documentFile-error"></div>
+                            <div class="form-group">
+                                <label for="documentType">Tipo de Documento</label>
+                                <select id="documentType" name="tipo_documento">
+                                    <option disabled selected>Selecione o tipo</option>
+                                    <option value="Recibo de doação">Recibo de doação</option>
+                                    <option value="Nota fiscal">Nota fiscal</option>
+                                    <option value="Comprovante de transferência">Comprovante de transferência</option>
+                                    <option value="Orçamento">Orçamento</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                                <div class="error-message" id="documentType-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="documentValue">Valor (R$)</label>
+                                <input type="number" id="documentValue" name="valor" step="0.01" placeholder="0,00">
+                                <div class="error-message" id="documentValue-error"></div>
+                            </div>
+                            <div class="form-group required file-upload-group">
+                                <label>Arquivo do Documento</label>
+                                <div class="file-upload" onclick="document.getElementById('documentFile').click()">
+                                    <svg class="icon" viewBox="0 0 24 24"
+                                        style="width: 48px; height: 48px; margin-bottom: 10px;">
+                                        <path
+                                            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                    </svg>
+                                    <p>Clique para selecionar o arquivo ou arraste aqui</p>
+                                    <small>PDF, DOC, JPG, PNG aceitos (máximo 10MB)</small>
+                                    <input type="file" id="documentFile" name="arquivo_documento"
+                                        accept=".pdf,.doc,.docx,.jpg,.png" style="display: none;">
+                                </div>
+                                <div class="error-message" id="documentFile-error"></div>
+                            </div>
                         </div>
+                        <div class="bbb">
+                            <button type="submit" class="add-btn">Adicionar Documento</button>
+                        </div>
+                    </form>
+                    <div class="uploaded-items">
+                        <h3>Documentos adicionados</h3>
+                        <div id="loader" style="display: none; text-align: center; padding: 2rem;">
+                            <div class="spinner"></div> Carregando...
+                        </div>
+                        <div id="empty-state" style="display: none; text-align: center; padding: 2rem;">Nenhum documento
+                            adicionado ainda.</div>
+                        <div class="documents-cards" id="documents-list"></div>
                     </div>
-                    <div class="bbb">
-                        <button type="submit" class="add-btn">Adicionar Documento</button>
-                    </div>
-                </form>
-                <div class="uploaded-items">
-                    <h3>Documentos adicionados</h3>
-                    <div id="loader" style="display: none; text-align: center; padding: 2rem;">
-                        <div class="spinner"></div> Carregando...
-                    </div>
-                    <div id="empty-state" style="display: none; text-align: center; padding: 2rem;">Nenhum documento
-                        adicionado ainda.</div>
-                    <div class="documents-cards" id="documents-list"></div>
                 </div>
             </div>
-        </div>
-    </main>
-</body>
+            <div class="modal fade" id="editModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar Documento</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="edit-form">
+                                <input type="hidden" id="edit-id">
+                                <div class="form-group1">
+                                    <label for="edit-companyName">Nome do documento</label>
+                                    <input type="text" id="edit-companyName" name="titulo"
+                                        placeholder="Ex: Empresa XYZ Ltda" class="form-control1">
+                                    <div class="error-message" id="edit-companyName-error"></div>
+                                </div>
+                                <div class="form-group1">
+                                    <label for="edit-documentType">Tipo de Documento</label>
+                                    <select id="edit-documentType" name="tipo_documento" class="form-control1">
+                                        <option disabled selected>Selecione o tipo</option>
+                                        <option value="Recibo de doação">Recibo de doação</option>
+                                        <option value="Nota fiscal">Nota fiscal</option>
+                                        <option value="Comprovante de transferência">Comprovante de transferência
+                                        </option>
+                                        <option value="Orçamento">Orçamento</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                    <div class="error-message" id="edit-documentType-error"></div>
+                                </div>
+                                <div class="form-group1">
+                                    <label for="edit-documentValue">Valor (R$)</label>
+                                    <input type="number" id="edit-documentValue" name="valor" step="0.01"
+                                        placeholder="0,00" class="form-control1">
+                                    <div class="error-message" id="edit-documentValue-error"></div>
+                                </div>
+                                <div class="form-group1 file-upload-group">
+                                    <label>Trocar Arquivo (opcional)</label>
+                                    <div class="file-upload"
+                                        onclick="document.getElementById('edit-documentFile').click()">
+                                        <p id="edit-fileUploadText">Clique para selecionar um novo arquivo</p>
+                                        <small>Se nenhum arquivo for selecionado, o atual será mantido.</small>
+                                        <input type="file" id="edit-documentFile" name="arquivo_documento"
+                                            accept=".pdf,.doc,.docx,.jpg,.png" style="display: none;">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="saveEditBtn">Salvar Alterações</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
 
 </html>
