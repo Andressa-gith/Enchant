@@ -1,6 +1,8 @@
 import express from 'express';
 import { 
-    getRelatoriosGerados, gerarRelatorio } from '../controllers/relatorioDoacao.controller.js';
+    getRelatoriosGerados,
+    gerarRelatorio 
+} from '../controllers/relatorioDoacao.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const relatorioDoacaoRouter = express.Router();

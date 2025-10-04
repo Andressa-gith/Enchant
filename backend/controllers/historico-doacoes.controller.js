@@ -1,5 +1,5 @@
 import supabase from '../db/supabaseClient.js';
-import logger from '../utils/logger.js'; // <-- 1. Importamos o nosso logger
+import logger from '../utils/logger.js';
 
 /**
  * Busca a lista de relatórios de doação já salvos para a instituição logada.

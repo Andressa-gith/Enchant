@@ -13,7 +13,6 @@ import auditoriaRoutes from './routes/auditoria.routes.js';
 import gestaoFinanceiraRoutes from './routes/gestaoFinanceira.routes.js';
 import parceriaRoutes from './routes/parceria.routes.js';
 import documentoRoutes from './routes/documento.routes.js';
-import relatorioDoacaoRoutes from './routes/relatorioDoacao.routes.js';
 import historicoRoutes from './routes/historico-doacoes.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
@@ -50,8 +49,6 @@ app.use('/api/financeiro', gestaoFinanceiraRoutes);
 app.use('/api/parcerias', parceriaRoutes);
 
 app.use('/api/documentos', documentoRoutes);
-
-app.use('/api/relatorios-doacao', relatorioDoacaoRoutes);
 
 app.use('/api/historico-doacoes', historicoRoutes);
 

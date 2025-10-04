@@ -115,12 +115,13 @@ export const deleteRelatorio = async (req, res) => {
             .single();
 
         if (fetchError || !relatorio) {
-            logger.warn(`Relatório ID: ${id} não encontrado ou usuário sem permissão.`);
-            throw new Error('Relatório não encontrado ou você não tem permissão.');
+            logger.warn(`Relatório ID: ${id} não encontrado para exclusão ou usuário sem permissão.`);
+            return res.status(404).json({ message: 'Relatório não encontrado ou você não tem permissão.' });
         }
 
         // 2. Deleta o registro do banco
-        logger.info(`Deletando registro do relatório ID: ${id} do banco de dados.`);
+        logger.info(`Registro do relatório ID: ${id} deletado do banco de dados.`);
+
         const { error: deleteDbError } = await supabase
             .from('relatorio')
             .delete()
@@ -135,7 +136,7 @@ export const deleteRelatorio = async (req, res) => {
             .remove([relatorio.caminho_arquivo]);
             
         if (deleteStorageError) {
-            logger.warn(`Registro do relatório ID: ${id} deletado, mas falha ao remover arquivo do Storage.`, deleteStorageError);
+            logger.warn(`Falha ao remover arquivo do Storage para relatório ID: ${id}.`, deleteStorageError);
         }
 
         logger.info(`Relatório ID: ${id} deletado com sucesso.`);
