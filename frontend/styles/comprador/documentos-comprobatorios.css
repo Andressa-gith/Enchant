@@ -585,6 +585,10 @@ p {
     align-items: center;
 }
 
+.document-linked-to{
+    margin-top: 1px;
+}
+
 .file-upload:hover {
     border-color: #8B4513;
     background-color: #f9f9f9;
