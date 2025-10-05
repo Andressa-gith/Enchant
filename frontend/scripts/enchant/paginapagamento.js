@@ -306,10 +306,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultado = await response.json();
             if (!response.ok) throw new Error(resultado.message || 'Ocorreu um erro no servidor.');
 
-            showModalAviso('Cadastro realizado com sucesso! Redirecionando...', 'sucesso');
+            showModalAviso('Cadastro realizado com sucesso!', 'sucesso');
             setTimeout(() => {
                 window.location.href = '/entrar'; 
-            }, 2000);
+            }, 1500);
             
         } catch (error) {
             console.error('Erro na submissão:', error);

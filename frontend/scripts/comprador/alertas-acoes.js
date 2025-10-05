@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (item.tipo === 'estoque') {
                 iconClass = 'bi-box-seam';
                 specificIconClass = 'icon-estoque';
-            } else if (item.tipo === 'parceria-expirada') { // <-- MUDANÇA AQUI
+            } else if (item.tipo === 'parceria-expirada') {
                 iconClass = 'bi-exclamation-octagon-fill';
                 specificIconClass = 'icon-parceria-expirada';
             }
