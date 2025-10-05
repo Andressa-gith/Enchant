@@ -27,94 +27,97 @@
 
 <body>
     <!--LOADER-->
+
     <body class="auto-loader">
-    <header id="header-container"></header>
-    <aside id="sidebar-container"></aside>
+        <header id="header-container"></header>
+        <aside id="sidebar-container"></aside>
 
-    <main id="main">
-        <div class="container">
-            <h1>Contratos</h1>
+        <main id="main">
+            <div class="container">
+                <h1>Contratos</h1>
 
-            <p>Gerencie e publique contratos para garantir a transparência e a conformidade com as regulamentações.</p>
+                <p>Gerencie e publique contratos para garantir a transparência e a conformidade com as regulamentações.
+                </p>
 
-            <div class="upload-section">
-                <div class="validation-info">
-                    <h4>Requisitos para contratos:</h4>
-                    <ul>
-                        <li>Nome do contrato deve ser específico (mínimo 10 caracteres)</li>
-                        <li>Descrição deve incluir informações relevantes (mínimo 20 caracteres)</li>
-                        <li>Ano deve corresponder ao período de vigência</li>
-                        <li>Arquivo em formato PDF ou DOC (máximo 15MB)</li>
-                    </ul>
-                </div>
-
-                <div class="success-message" id="success-contracts"></div>
-                <div class="alert-message" id="alert-contracts"></div>
-
-                <h2>Adicionar contratos</h2>
-                <form id="contracts-form">
-                    <div class="form-group required">
-                        <label for="contract-title">Nome do contrato</label>
-                        <input type="text" id="contract-title"
-                            placeholder="Ex: Prestação de Serviços Educacionais - Empresa ABC">
-                        <div class="error-message" id="contract-title-error"></div>
+                <div class="upload-section">
+                    <div class="validation-info">
+                        <h4>Requisitos para contratos:</h4>
+                        <ul>
+                            <li>Nome do contrato deve ser específico (mínimo 10 caracteres)</li>
+                            <li>Descrição deve incluir informações relevantes (mínimo 20 caracteres)</li>
+                            <li>Ano deve corresponder ao período de vigência</li>
+                            <li>Arquivo em formato PDF ou DOC (máximo 15MB)</li>
+                        </ul>
                     </div>
-                    <div class="form-group required">
-                        <label for="contract-description">Descrição</label>
-                        <textarea id="contract-description" placeholder="Descreva o contrato brevemente"></textarea>
-                        <div class="error-message" id="contract-description-error"></div>
-                    </div>
-                    <div class="form-group required">
-                        <label for="contract-year">Ano de vigência</label>
-                        <select id="contract-year">
-                            <option disabled selected>Selecione o ano</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                        </select>
-                        <div class="error-message" id="contract-year-error"></div>
-                    </div>
-                    <div class="form-group required">
-                        <label>Arquivo do contrato</label>
-                        <div class="file-upload" onclick="document.getElementById('contract-file').click()">
-                            <svg class="icon" viewBox="0 0 24 24"
-                                style="width: 48px; height: 48px; margin-bottom: 10px;">
-                                <path
-                                    d="M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M19,21H8V7H19V21Z" />
-                            </svg>
-                            <p>Clique para selecionar o arquivo ou arraste aqui</p>
-                            <small>PDF, DOC aceitos (máximo 15MB)</small>
-                            <input type="file" id="contract-file" accept=".pdf,.doc,.docx">
+
+                    <div class="success-message" id="success-contracts"></div>
+                    <div class="alert-message" id="alert-contracts"></div>
+
+                    <h2>Adicionar contratos</h2>
+                    <form id="contracts-form">
+                        <div class="form-group required">
+                            <label for="contract-title">Nome do contrato</label>
+                            <input type="text" id="contract-title"
+                                placeholder="Ex: Prestação de Serviços Educacionais - Empresa ABC">
+                            <div class="error-message" id="contract-title-error"></div>
                         </div>
-                        <div class="error-message" id="contract-file-error"></div>
-                    </div>
-                    <button type="submit" class="upload-btn">Adicionar contrato</button>
-                </form>
-                <div class="uploaded-items">
-                    <h3>Contratos publicados</h3>
-                    <div id="loader" style="display: none; text-align: center; padding: 2rem;">
-                        <div class="spinner"></div> Carregando...
-                    </div>
-                    <div id="empty-state" style="display: none; text-align: center; padding: 2rem;">Nenhum contrato publicado ainda.</div>
-                    <div class="cards-grid" id="contracts-list">
+                        <div class="form-group required">
+                            <label for="contract-description">Descrição</label>
+                            <textarea id="contract-description" placeholder="Descreva o contrato brevemente"></textarea>
+                            <div class="error-message" id="contract-description-error"></div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="contract-year">Ano de vigência</label>
+                            <select id="contract-year">
+                                <option disabled selected>Selecione o ano</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                            </select>
+                            <div class="error-message" id="contract-year-error"></div>
+                        </div>
+                        <div class="form-group required">
+                            <label>Arquivo do contrato</label>
+                            <div class="file-upload" onclick="document.getElementById('contract-file').click()">
+                                <svg class="icon" viewBox="0 0 24 24"
+                                    style="width: 48px; height: 48px; margin-bottom: 10px;">
+                                    <path
+                                        d="M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M19,21H8V7H19V21Z" />
+                                </svg>
+                                <p>Clique para selecionar o arquivo ou arraste aqui</p>
+                                <small>PDF, DOC aceitos (máximo 15MB)</small>
+                                <input type="file" id="contract-file" accept=".pdf,.doc,.docx">
+                            </div>
+                            <div class="error-message" id="contract-file-error"></div>
+                        </div>
+                        <button type="submit" class="upload-btn">Adicionar contrato</button>
+                    </form>
+                    <div class="uploaded-items">
+                        <h3>Contratos publicados</h3>
+                        <div id="loader" style="display: none; text-align: center; padding: 2rem;">
+                            <div class="spinner"></div> Carregando...
+                        </div>
+                        <div id="empty-state" style="display: none; text-align: center; padding: 2rem;">Nenhum contrato
+                            publicado ainda.</div>
+                        <div class="cards-grid" id="contracts-list">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <div id="descriptionModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h3 id="modal-title"></h3>
-            </div>
-            <div class="modal-body">
-                <p id="modal-description"></p>
+        <div id="descriptionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h3 id="modal-title"></h3>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-description"></p>
+                </div>
             </div>
         </div>
-    </div>
-</body>
+    </body>
 
 </html>

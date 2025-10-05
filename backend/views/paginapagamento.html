@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
     <title>Enchant</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
     <link rel="stylesheet" href="/styles/enchant/paginapagamento.css">
     <link rel="stylesheet" href="/styles/global.css">
 
@@ -16,6 +18,7 @@
     <script src="/scripts/layouts/enchant/footerenchant.js"></script>
 
 </head>
+
 <body>
     <section>
         <div id="header-container"></div>
@@ -29,15 +32,18 @@
             <section class="container">
                 <div class="recomendações">
                     <p>
-                        Recomendamos atenção total ao preencher os dados nos campos solicitados. É fundamental que as informações sejam inseridas de forma responsável, a fim de evitar fraudes.
+                        Recomendamos atenção total ao preencher os dados nos campos solicitados. É fundamental que as
+                        informações sejam inseridas de forma responsável, a fim de evitar fraudes.
                     </p>
                 </div>
                 <form id="dados-form" method="POST" action="/cadastro" novalidate>
                     <div class="form-row">
-                        
+
                         <div class="form-group col-12">
-                            <label for="nome_instituicao">Nome da Instituição/ONG: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="nome_instituicao" id="nome_instituicao" class="form-control" autocomplete="off" placeholder="ex: Nome da Instituição">
+                            <label for="nome_instituicao">Nome da Instituição/ONG: <b
+                                    style="color: #FF0404;">*</b></label>
+                            <input type="text" name="nome_instituicao" id="nome_instituicao" class="form-control"
+                                autocomplete="off" placeholder="ex: Nome da Instituição">
                             <div class="error-message"></div>
                         </div>
 
@@ -55,25 +61,29 @@
 
                         <div class="form-group col-md-6">
                             <label for="cnpj">CNPJ: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="cnpj" id="cnpj" class="form-control" autocomplete="off" placeholder="ex: XX.XXX.XXX/0001-XX">
+                            <input type="text" name="cnpj" id="cnpj" class="form-control" autocomplete="off"
+                                placeholder="ex: XX.XXX.XXX/0001-XX">
                             <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="email">Email: <b style="color: #FF0404;">*</b></label>
-                            <input type="email" name="email_contato" id="email" class="form-control" autocomplete="off" placeholder="ex: example@gmail.com">
+                            <input type="email" name="email_contato" id="email" class="form-control" autocomplete="off"
+                                placeholder="ex: example@gmail.com">
                             <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="tel">Telefone: <b style="color: #FF0404;">*</b></label>
-                            <input type="tel" name="numero" id="tel" class="form-control" autocomplete="off" placeholder="ex: (XX) XXXXX-XXXX">
+                            <input type="tel" name="numero" id="tel" class="form-control" autocomplete="off"
+                                placeholder="ex: (XX) XXXXX-XXXX">
                             <div class="error-message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
                             <label for="cep">CEP: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="cep" id="cep" class="form-control" autocomplete="off" placeholder="ex: 00000-000" maxlength="9">
+                            <input type="text" name="cep" id="cep" class="form-control" autocomplete="off"
+                                placeholder="ex: 00000-000" maxlength="9">
                             <div class="error-message"></div>
                         </div>
 
@@ -92,10 +102,11 @@
                             </select>
                             <div class="error-message"></div>
                         </div>
-                        
+
                         <div class="form-group col-12">
                             <label for="bairro">Bairro: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="bairro" id="bairro" class="form-control" autocomplete="off" placeholder="ex: Centro">
+                            <input type="text" name="bairro" id="bairro" class="form-control" autocomplete="off"
+                                placeholder="ex: Centro">
                             <div class="error-message"></div>
                         </div>
 
@@ -104,12 +115,14 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="senha">Senha: <b style="color: #FF0404;">*</b></label>
-                            <input type="password" name="senha" id="senha" class="form-control" placeholder="ex: Senha@123">
+                            <input type="password" name="senha" id="senha" class="form-control"
+                                placeholder="ex: Senha@123">
                             <div class="error-message"></div>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="confirmarsenha">Confirme a senha: <b style="color: #FF0404;">*</b></label>
-                            <input type="password" name="confirmarsenha" id="confirmarsenha" class="form-control" placeholder="ex: Senha@123">
+                            <input type="password" name="confirmarsenha" id="confirmarsenha" class="form-control"
+                                placeholder="ex: Senha@123">
                             <div class="error-message"></div>
                         </div>
                     </div>
@@ -134,7 +147,8 @@
                 <h2 class="pagamento">Finalizar Pagamento</h2>
             </div>
             <section class="pagamento-container">
-                <div class="asd"> <div class="detalhes-container">
+                <div class="asd">
+                    <div class="detalhes-container">
                         <div class="titulo">
                             <h4 id="subtitulo">Detalhes do cliente</h4>
                         </div>
@@ -162,45 +176,79 @@
                                 <div class="escolher-pagamento">
                                     <input type="radio" name="opcao" value="1" id="opcao-credito" checked>
                                     <label for="opcao-credito">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
+                                            width="24px">
+                                            <path
+                                                d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z" />
+                                        </svg>
                                         Cartão de crédito
                                     </label>
-                                    
+
                                     <input type="radio" name="opcao" value="2" id="opcao-debito">
                                     <label for="opcao-debito">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
+                                            width="24px">
+                                            <path
+                                                d="M880-720v480q0 33-23.5 56.5T800-160H160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720Zm-720 80h640v-80H160v80Zm0 160v240h640v-240H160Zm0 240v-480 480Z" />
+                                        </svg>
                                         Cartão de débito
                                     </label>
-                                    
+
                                     <input type="radio" name="opcao" value="3" id="opcao-pix">
                                     <label for="opcao-pix">
                                         <i class="fa-brands fa-pix"></i>
                                         Pix
                                     </label>
                                 </div>
-                                
+
                                 <div class="cartao-credito">
                                     <div class="form-row">
                                         <div class="form-group col-12">
-                                            <label for="numerocartao">Número do cartão: <b style="color: #FF0404;">*</b></label>
-                                            <input type="text" name="numerocartao" id="numerocartao" class="form-control" placeholder="ex: 0000 0000 0000 0000" autocomplete="off">
+                                            <label for="numerocartao">Número do cartão: <b
+                                                    style="color: #FF0404;">*</b></label>
+                                            <input type="text" name="numerocartao" id="numerocartao"
+                                                class="form-control" placeholder="ex: 0000 0000 0000 0000"
+                                                autocomplete="off">
                                         </div>
                                         <div class="form-group col-md-5">
                                             <label for="mes">Data de expiração: <b style="color: #FF0404;">*</b></label>
                                             <select name="mes" id="mes" class="form-control">
                                                 <option value="" disabled hidden selected>Mês</option>
-                                                <option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                                <option value="1">01</option>
+                                                <option value="2">02</option>
+                                                <option value="3">03</option>
+                                                <option value="4">04</option>
+                                                <option value="5">05</option>
+                                                <option value="6">06</option>
+                                                <option value="7">07</option>
+                                                <option value="8">08</option>
+                                                <option value="9">09</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-4">
-                                            <label for="ano" style="visibility: hidden;">Ano</label> <select name="ano" id="ano" class="form-control">
+                                            <label for="ano" style="visibility: hidden;">Ano</label> <select name="ano"
+                                                id="ano" class="form-control">
                                                 <option value="" disabled hidden selected>Ano</option>
-                                                <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2026">2026</option>
+                                                <option value="2027">2027</option>
+                                                <option value="2028">2028</option>
+                                                <option value="2029">2029</option>
+                                                <option value="2030">2030</option>
+                                                <option value="2031">2031</option>
+                                                <option value="2032">2032</option>
+                                                <option value="2033">2033</option>
+                                                <option value="2034">2034</option>
+                                                <option value="2035">2035</option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label for="cvv">CVV: <b style="color: #FF0404;">*</b></label>
-                                            <input type="text" name="cvv" id="cvv" class="form-control" autocomplete="off" minlength="3" maxlength="4">
+                                            <input type="text" name="cvv" id="cvv" class="form-control"
+                                                autocomplete="off" minlength="3" maxlength="4">
                                         </div>
                                     </div>
                                 </div>
@@ -208,26 +256,52 @@
                                 <div class="cartao-debito">
                                     <div class="form-row">
                                         <div class="form-group col-12">
-                                            <label for="numerocartaodebito">Número do cartão: <b style="color: #FF0404;">*</b></label>
-                                            <input type="text" name="numerocartaodebito" id="numerocartaodebito" class="form-control" placeholder="ex: 0000 0000 0000 0000" autocomplete="off">
+                                            <label for="numerocartaodebito">Número do cartão: <b
+                                                    style="color: #FF0404;">*</b></label>
+                                            <input type="text" name="numerocartaodebito" id="numerocartaodebito"
+                                                class="form-control" placeholder="ex: 0000 0000 0000 0000"
+                                                autocomplete="off">
                                         </div>
                                         <div class="form-group col-md-5">
-                                            <label for="mesdebito">Data de expiração: <b style="color: #FF0404;">*</b></label>
+                                            <label for="mesdebito">Data de expiração: <b
+                                                    style="color: #FF0404;">*</b></label>
                                             <select name="mesdebito" id="mesdebito" class="form-control">
                                                 <option value="" disabled hidden selected>Mês</option>
-                                                <option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                                <option value="1">01</option>
+                                                <option value="2">02</option>
+                                                <option value="3">03</option>
+                                                <option value="4">04</option>
+                                                <option value="5">05</option>
+                                                <option value="6">06</option>
+                                                <option value="7">07</option>
+                                                <option value="8">08</option>
+                                                <option value="9">09</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-4">
                                             <label for="anodebito" style="visibility: hidden;">Ano</label>
                                             <select name="anodebito" id="anodebito" class="form-control">
                                                 <option value="" disabled hidden selected>Ano</option>
-                                                <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2026">2026</option>
+                                                <option value="2027">2027</option>
+                                                <option value="2028">2028</option>
+                                                <option value="2029">2029</option>
+                                                <option value="2030">2030</option>
+                                                <option value="2031">2031</option>
+                                                <option value="2032">2032</option>
+                                                <option value="2033">2033</option>
+                                                <option value="2034">2034</option>
+                                                <option value="2035">2035</option>
                                             </select>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label for="cvvdebito">CVV: <b style="color: #FF0404;">*</b></label>
-                                            <input type="text" name="cvvdebito" id="cvvdebito" class="form-control" autocomplete="off" minlength="3" maxlength="4">
+                                            <input type="text" name="cvvdebito" id="cvvdebito" class="form-control"
+                                                autocomplete="off" minlength="3" maxlength="4">
                                         </div>
                                     </div>
                                 </div>
@@ -235,12 +309,15 @@
                                 <div class="pix">
                                     <div class="form-row">
                                         <div class="form-group col-12">
-                                            <label for="nomecompleto">Nome completo: <b style="color: #FF0404;">*</b></label>
-                                            <input type="text" name="nomecompleto" id="nomecompleto" class="form-control" autocomplete="off">
+                                            <label for="nomecompleto">Nome completo: <b
+                                                    style="color: #FF0404;">*</b></label>
+                                            <input type="text" name="nomecompleto" id="nomecompleto"
+                                                class="form-control" autocomplete="off">
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="cpf">CPF: <b style="color: #FF0404;">*</b></label>
-                                            <input type="text" name="cpf" id="cpf" class="form-control" autocomplete="off">
+                                            <input type="text" name="cpf" id="cpf" class="form-control"
+                                                autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -273,11 +350,12 @@
                 </div>
             </section>
         </div>
-        
-        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header" id="avisoModalHeader"> 
+                    <div class="modal-header" id="avisoModalHeader">
                         <h5 class="modal-title" id="avisoModalLabel">Erro de Validação</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -294,9 +372,15 @@
 
     <div id="enchant-footer"></div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -304,4 +388,5 @@
         });
     </script>
 </body>
+
 </html>

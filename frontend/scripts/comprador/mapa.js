@@ -85,7 +85,7 @@ Promise.all([
   });
 }).catch(error => {
   console.error("Erro ao carregar os arquivos de dados do mapa:", error);
-  alert("Não foi possível carregar os dados do mapa. Verifique o console.");
+  //alert("Não foi possível carregar os dados do mapa. Verifique o console.");
   setTimeout(() => {
         window.SiteLoader?.hide();
   }, 500);

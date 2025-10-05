@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,11 +22,11 @@
     <h1 class="h1sub">Esqueceu a senha?</h1>
     <p class="psub">Digite o e-mail cadastrado para receber um código de confirmação:</p>
   </section>
-  
+
   <section>
     <div class="circle"></div>
   </section>
-  
+
   <section>
     <form class="containersubsub" id="formSenha" action="/forgotPassword" method="POST">
       <input type="email" name="email" id="email" placeholder="xxxxxxx@xxxx.xxx.xx" required>
@@ -55,19 +56,19 @@
   </div>
 
   <section>
-        <div id="enchant-footer"></div>
+    <div id="enchant-footer"></div>
     <script src="../../scripts/layouts/enchant/footerenchant.js"></script>
 
 
     <script>
       // AQUI É ONDE VOCÊ INICIALIZA O HEADER!
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         // Carregar Bootstrap e FontAwesome automaticamente
         HeaderComponent.loadDependencies();
-        
+
         // Renderizar o header no container
         initializeHeader('header-container');
-        
+
         // OU se quiser customizar os caminhos:
         // initializeHeader('header-container', {
         //   home: '../index.html',

@@ -7,6 +7,10 @@ const __dirname = path.dirname(__filename);
 
 const pageRouter = express.Router();
 
+// ====================
+// Rotas antes do Login
+// ====================
+
 pageRouter.get('/', (req, res) => {
     console.log(`\n⬆️  Rota / acessada.`);
     res.sendFile(path.join(__dirname, '..', 'views', 'index.html'));
@@ -52,6 +56,10 @@ pageRouter.get('/redefinir-senha', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'redefinirsenha.html'));
 });
 
+// ===============
+// Rotas pós Login
+// ===============
+
 pageRouter.get('/dashboard', (req, res) => {
     console.log(`\n⬆️  Rota /dashboard acessada.\n`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'dashboard.html'));
@@ -77,12 +85,12 @@ pageRouter.get('/doacao', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'doacao.html'));
 });
 
-pageRouter.get('/registrar-doacao', (req, res) => {
-    console.log(`\n⬆️  Rota /registrar-doacao acessada.\n`);
+pageRouter.get('/doacao/registrar-doacao', (req, res) => {
+    console.log(`\n⬆️  Rota /doacao/registrar-doacao acessada.\n`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-doacao.html'));
 });
-pageRouter.get('/retirar-doacao', (req, res) => {
-    console.log(`\n⬆️  Rota /retirar-doacao acessada.\n`);
+pageRouter.get('/doacao/retirar-doacao', (req, res) => {
+    console.log(`\n⬆️  Rota /doacao/retirar-doacao acessada.\n`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'registrar-retirada.html'));
 });
 

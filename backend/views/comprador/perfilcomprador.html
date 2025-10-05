@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enchant</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+    <title>Enchant | Perfil</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
     <link rel="stylesheet" href="/styles/comprador/perfilcomprador.css">
     <link rel="stylesheet" href="/styles/global.css">
-    
-    <!--FAZER A HEADER E O SUPABASE FUNFAR-->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="/scripts/supabaseClient.js" type="module" defer></script>
     <script src="/scripts/authGuard.js" type="module" defer></script>
@@ -23,208 +24,215 @@
     <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
 
 </head>
+
 <body>
     <!--LOADER-->
+
     <body class="auto-loader">
 
-    <div class="container1">
-        <h1 class=titulo>Meu Perfil</h1>
-        
-        <div class="profile-card1">
-            <div class="profile-header1">
-                <div class="profile-pic1" id="profile-pic">
-                    <img src="/assets/imgs/comprador/avatar-padrao.jpg" alt="Foto de perfil" id="profile-image">
-                    <div class="edit-overlay1" id="btn-open-photo-modal">Editar</div>
+        <div class="container1">
+            <h1 class=titulo>Meu Perfil</h1>
+
+            <div class="profile-card1">
+                <div class="profile-header1">
+                    <div class="profile-pic1" id="profile-pic">
+                        <img src="/assets/imgs/comprador/avatar-padrao.jpg" alt="Foto de perfil" id="profile-image">
+                        <div class="edit-overlay1" id="btn-open-photo-modal">Editar</div>
+                    </div>
+                    <div class="profile-name1">
+                        <h2 id="org-name">Carregando...</h2>
+                    </div>
                 </div>
-                <div class="profile-name1">
-                    <h2 id="org-name">Carregando...</h2>
+            </div>
+
+            <!-- Logo Section -->
+            <div class="profile-card1">
+                <div class="section-title1">
+                    <span>Logo da Organização</span>
+                    <button class="edit-button1" id="btn-open-logo-modal">Editar Logo</button>
+                </div>
+
+                <div class="logo-display">
+                    <div class="logo-image" id="logo-display">
+                        <div class="logo-placeholder" id="logo-placeholder">
+                            <i class="bi bi-image"></i><br>
+                        </div>
+                        <img id="current-logo" style="display: none;" alt="Logo da organização">
+                    </div>
+                    <div class="logo-info">
+                        <h4>Logo da sua organização</h4>
+                        <p>Adicione ou edite sua logo para identificar melhor sua organização. Formatos aceitos: JPG,
+                            PNG, SVG (máx. 2MB)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card1">
+                <div class="section-title1">
+                    <span>Informações pessoais</span>
+                    <button class="edit-button1" id="btn-open-edit-modal">Editar</button>
+                </div>
+
+                <div class="info-grid1">
+                    <div class="info-column1">
+                        <div class="info-item1">
+                            <div class="info-label1">Nome do comprador:</div>
+                            <div class="info-value1" id="institution-name">Carregando...</div>
+                        </div>
+
+                        <div class="info-item1">
+                            <div class="info-label1">E-mail:</div>
+                            <div class="info-value1" id="email">Carregando...</div>
+                        </div>
+                        <div class="info-item1">
+                            <div class="info-label1">Estado:</div>
+                            <div class="info-value1" id="estado">Carregando...</div>
+                        </div>
+
+                    </div>
+
+                    <div class="info-column1">
+                        <div class="info-item1">
+                            <div class="info-label1">Cadastro Nacional de Pessoa Jurídica (CNPJ):</div>
+                            <div class="info-value1" id="cnpj">Carregando...</div>
+                        </div>
+                        <div class="info-item1">
+                            <div class="info-label1">Telefone:</div>
+                            <div class="info-value1" id="phone">Carregando...</div>
+                        </div>
+                        <div class="info-item1">
+                            <div class="info-label1">Cidade:</div>
+                            <div class="info-value1" id="cidade">Carregando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal de erro/sucesso -->
+        <div class="modal fade" id="erroSenhaModal" tabindex="-1" aria-labelledby="erroSenhaModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="erroSenhaModalLabel">Atenção</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body" id="erroSenhaModalBody">
+                        <!-- Mensagem será inserida aqui -->
+                    </div>
+                    <div class="modal-footer justify-content-end">
+                        <button id="botao-validar" type="button" class="btn btn-primary"
+                            data-bs-dismiss="modal">Entendi</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Logo Section -->
-        <div class="profile-card1">
-            <div class="section-title1">
-                <span>Logo da Organização</span>
-                <button class="edit-button1" id="btn-open-logo-modal">Editar Logo</button>
-            </div>
-            
-            <div class="logo-display">
-                <div class="logo-image" id="logo-display">
-                    <div class="logo-placeholder" id="logo-placeholder">
-                        <i class="bi bi-image"></i><br>
-                    </div>
-                    <img id="current-logo" style="display: none;" alt="Logo da organização">
+        <!-- Modal de edição de informações -->
+        <div class="modal1" id="edit-modal">
+            <div class="modal-content1">
+                <div class="modal-header1">
+                    <h3>Editar informações</h3>
+                    <button class="close-modal1" id="btn-close-edit-modal-x">&times;</button>
                 </div>
-                <div class="logo-info">
-                    <h4>Logo da sua organização</h4>
-                    <p>Adicione ou edite sua logo para identificar melhor sua organização. Formatos aceitos: JPG, PNG, SVG (máx. 2MB)</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="profile-card1">
-            <div class="section-title1">
-                <span>Informações pessoais</span>
-                <button class="edit-button1" id="btn-open-edit-modal">Editar</button>
-            </div>
-            
-            <div class="info-grid1">
-                <div class="info-column1">
-                    <div class="info-item1">
-                        <div class="info-label1">Nome do comprador:</div>
-                        <div class="info-value1" id="institution-name">Carregando...</div>
-                    </div>
-                    
-                    <div class="info-item1">
-                        <div class="info-label1">E-mail:</div>
-                        <div class="info-value1" id="email">Carregando...</div>
-                    </div>
-                    <div class="info-item1">
-                        <div class="info-label1">Estado:</div>
-                        <div class="info-value1" id="estado">Carregando...</div>
-                    </div>
-                    
+                <div class="form-group1">
+                    <label for="edit-institution-name">Nome da ONG</label>
+                    <input type="text" id="edit-institution-name">
                 </div>
 
-                <div class="info-column1">
-                    <div class="info-item1">
-                        <div class="info-label1">Cadastro Nacional de Pessoa Jurídica (CNPJ):</div>
-                        <div class="info-value1" id="cnpj">Carregando...</div>
+                <div class="form-group1">
+                    <label for="edit-email">E-mail</label>
+                    <input type="email" id="edit-email">
+                </div>
+
+                <div class="form-group1">
+                    <label for="edit-password">Senha</label>
+                    <div class="password-field1">
+                        <input type="password" id="edit-password">
+                        <button type="button" class="show-password1" id="toggle-edit-password">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     </div>
-                    <div class="info-item1">
-                        <div class="info-label1">Telefone:</div>
-                        <div class="info-value1" id="phone">Carregando...</div>
-                    </div>
-                    <div class="info-item1">
-                        <div class="info-label1">Cidade:</div>
-                        <div class="info-value1" id="cidade">Carregando...</div>
-                    </div>
+                    <ul id="password-checklist"
+                        style="font-size: 13px; color: #666666; padding-left: 20px; margin-top: 5px;">
+                        <li id="check-length">Mínimo de 8 caracteres</li>
+                        <li id="check-uppercase">Uma letra maiúscula</li>
+                        <li id="check-number">Um número</li>
+                        <li id="check-special">Um caractere especial (!@#$...)</li>
+                    </ul>
+                </div>
+
+                <div class="form-group1">
+                    <label for="edit-cnpj">CNPJ</label>
+                    <input type="text" id="edit-cnpj">
+                </div>
+
+                <div class="form-group1">
+                    <label for="edit-phone">Telefone</label>
+                    <input type="text" id="edit-phone">
+                </div>
+                <div class="form-group1">
+                    <label for="edit-estado">Estado</label>
+                    <input type="text" id="edit-estado">
+                </div>
+                <div class="form-group1">
+                    <label for="edit-cidade">Cidade</label>
+                    <input type="text" id="edit-cidade">
+                </div>
+                <div class="modal-footer1">
+                    <button type="button" class="cancel-button1" id="btn-cancel-edit-modal">Cancelar</button>
+                    <button type="button" class="save-button1" id="btn-save-changes">Salvar</button>
                 </div>
             </div>
         </div>
 
-    </div>
-  
-    <!-- Modal de erro/sucesso -->
-    <div class="modal fade" id="erroSenhaModal" tabindex="-1" aria-labelledby="erroSenhaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="erroSenhaModalLabel">Atenção</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        <!-- Modal de edição de foto -->
+        <div class="modal1" id="photo-modal">
+            <div class="modal-content1">
+                <div class="modal-header1">
+                    <h3>Alterar foto</h3>
+                    <button class="close-modal1" id="btn-close-photo-modal-x">&times;</button>
                 </div>
-                <div class="modal-body" id="erroSenhaModalBody">
-                    <!-- Mensagem será inserida aqui -->
+
+                <div class="form-group1">
+                    <label for="photo-upload">Escolha uma nova foto</label>
+                    <input type="file" id="photo-upload" accept="image/*">
                 </div>
-                <div class="modal-footer justify-content-end">
-                    <button id="botao-validar" type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendi</button>
+
+                <div class="modal-footer1">
+                    <button type="button" class="cancel-button1" id="btn-cancel-photo-modal">Cancelar</button>
+                    <button type="button" class="save-button1" id="btn-save-photo">Salvar</button>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Modal de edição de informações -->
-    <div class="modal1" id="edit-modal">
-        <div class="modal-content1">
-            <div class="modal-header1">
-                <h3>Editar informações</h3>
-                <button class="close-modal1" id="btn-close-edit-modal-x">&times;</button>
-            </div>
-            <div class="form-group1">
-                <label for="edit-institution-name">Nome da ONG</label>
-                <input type="text" id="edit-institution-name">
-            </div>
-            
-            <div class="form-group1">
-                <label for="edit-email">E-mail</label>
-                <input type="email" id="edit-email">
-            </div>
-            
-            <div class="form-group1">
-                <label for="edit-password">Senha</label>
-                <div class="password-field1">
-                    <input type="password" id="edit-password">
-                    <button type="button" class="show-password1" id="toggle-edit-password">
-                        <i class="bi bi-eye"></i>
-                    </button>
+
+        <!-- Modal de edição de logo -->
+        <div class="modal1" id="logo-modal">
+            <div class="modal-content1">
+                <div class="modal-header1">
+                    <h3>Alterar Logo</h3>
+                    <button class="close-modal1" id="btn-close-logo-modal-x">&times;</button>
                 </div>
-                <ul id="password-checklist" style="font-size: 13px; color: #666666; padding-left: 20px; margin-top: 5px;">
-                    <li id="check-length">Mínimo de 8 caracteres</li>
-                    <li id="check-uppercase">Uma letra maiúscula</li>
-                    <li id="check-number">Um número</li>
-                    <li id="check-special">Um caractere especial (!@#$...)</li>
-                </ul>
-            </div>
-            
-            <div class="form-group1">
-                <label for="edit-cnpj">CNPJ</label>
-                <input type="text" id="edit-cnpj">
-            </div>
-            
-            <div class="form-group1">
-                <label for="edit-phone">Telefone</label>
-                <input type="text" id="edit-phone">
-            </div>
-            <div class="form-group1">
-                <label for="edit-estado">Estado</label>
-                <input type="text" id="edit-estado">
-            </div>
-            <div class="form-group1">
-                <label for="edit-cidade">Cidade</label>
-                <input type="text" id="edit-cidade">
-            </div>
-            <div class="modal-footer1">
-                <button type="button" class="cancel-button1" id="btn-cancel-edit-modal">Cancelar</button>
-                <button type="button" class="save-button1" id="btn-save-changes">Salvar</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal de edição de foto -->
-    <div class="modal1" id="photo-modal">
-        <div class="modal-content1">
-            <div class="modal-header1">
-                <h3>Alterar foto</h3>
-                <button class="close-modal1" id="btn-close-photo-modal-x">&times;</button>
-            </div>
-            
-            <div class="form-group1">
-                <label for="photo-upload">Escolha uma nova foto</label>
-                <input type="file" id="photo-upload" accept="image/*">
-            </div>
-
-            <div class="modal-footer1">
-                <button type="button" class="cancel-button1" id="btn-cancel-photo-modal">Cancelar</button>
-                <button type="button" class="save-button1" id="btn-save-photo">Salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de edição de logo -->
-    <div class="modal1" id="logo-modal">
-        <div class="modal-content1">
-            <div class="modal-header1">
-                <h3>Alterar Logo</h3>
-                <button class="close-modal1" id="btn-close-logo-modal-x">&times;</button>
-            </div>
-            
-            <div class="form-group1">
-                <label>Logo da Organização</label>
-                <div class="logo-upload-area" id="logo-upload-area">
-                    <div class="logo-preview" id="logo-preview">
-                        <i class="bi bi-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
-                        <p>Clique ou arraste uma imagem aqui</p>
-                        <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>
+                <div class="form-group1">
+                    <label>Logo da Organização</label>
+                    <div class="logo-upload-area" id="logo-upload-area">
+                        <div class="logo-preview" id="logo-preview">
+                            <i class="bi bi-cloud-upload"
+                                style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
+                            <p>Clique ou arraste uma imagem aqui</p>
+                            <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>
+                        </div>
                     </div>
+                    <input type="file" id="logo-upload" accept="image/*" style="display: none;">
                 </div>
-                <input type="file" id="logo-upload" accept="image/*" style="display: none;">
-            </div>
 
-            <div class="modal-footer1">
-                <button type="button" class="cancel-button1" id="btn-cancel-logo-modal">Cancelar</button>
-                <button type="button" class="save-button1" id="btn-save-logo">Salvar</button>
+                <div class="modal-footer1">
+                    <button type="button" class="cancel-button1" id="btn-cancel-logo-modal">Cancelar</button>
+                    <button type="button" class="save-button1" id="btn-save-logo">Salvar</button>
+                </div>
             </div>
         </div>
-    </div>                
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

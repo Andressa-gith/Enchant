@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enchant</title>
+    <title>Enchant | Histórico de Doações</title>
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
     <link rel="stylesheet" href="/styles/global.css">
-    <link rel="stylesheet" href="/styles/comprador/historico-doacoes.css"> 
-    
+    <link rel="stylesheet" href="/styles/comprador/historico-doacoes.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/scripts/authGuard.js" type="module" defer></script>
     <script src="/scripts/layouts/comprador/sidebar.js" type="module" defer></script>
@@ -22,88 +23,93 @@
     <!--LOADER-->
     <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
 </head>
+
 <body>
     <!--LOADER-->
-    <body class="auto-loader">
-    <header id="header-container"></header>
-    <aside id="sidebar-container"></aside>
 
-    <div class="relatorio-container">
-        <header class="relatorio-header">
-            <h1>Histórico de Doações</h1>
-            <p>Consulte o histórico e gere novos relatórios em PDF sobre as entradas e saídas de doações.</p>
-        </header>
-    
-        <main class="relatorio-main-content">
-            <div class="historico-coluna">
-                <div class="card">
-                    <h2 class="card-title">Relatórios Gerados</h2>
-                    <div class="table-wrapper">
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Responsável</th>
-                                    <th>Período</th>
-                                    <th>Frequência</th>
-                                    <th>Categoria</th>
-                                    <th>Data</th>
-                                    <th>Ações</th> </tr>
-                            </thead>
-                            <tbody id="tableBody">
+    <body class="auto-loader">
+        <header id="header-container"></header>
+        <aside id="sidebar-container"></aside>
+
+        <div class="relatorio-container">
+            <header class="relatorio-header">
+                <h1>Histórico de Doações</h1>
+                <p>Consulte o histórico e gere novos relatórios em PDF sobre as entradas e saídas de doações.</p>
+            </header>
+
+            <main class="relatorio-main-content">
+                <div class="historico-coluna">
+                    <div class="card">
+                        <h2 class="card-title">Relatórios Gerados</h2>
+                        <div class="table-wrapper">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Responsável</th>
+                                        <th>Período</th>
+                                        <th>Frequência</th>
+                                        <th>Categoria</th>
+                                        <th>Data</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
                                 </tbody>
-                        </table>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <aside class="gerador-coluna">
-                <div class="card card-form">
-                    <h2 class="card-title">Gerar Novo Relatório</h2>
-                    <form id="reportForm">
-                        <div class="form-group">
-                            <label for="responsavel">Responsável</label>
-                            <input type="text" id="responsavel" name="responsavel" required placeholder="Seu nome completo">
-                        </div>
-                        <div class="form-group">
-                            <label for="data_inicio_filtro">Data Inicial</label>
-                            <input type="date" id="data_inicio_filtro" name="data_inicio_filtro" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="data_fim_filtro">Data Final</label>
-                            <input type="date" id="data_fim_filtro" name="data_fim_filtro" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="frequencia_filtro">Frequência</label>
-                            <select id="frequencia_filtro" name="frequencia_filtro" required>
-                                <option value="Pontual">Pontual</option>
-                                <option value="Semanal">Semanal</option>
-                                <option value="Mensal">Mensal</option>
-                                <option value="Semestral">Semestral</option>
-                                <option value="Anual">Anual</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoria_filtro">Categoria</label>
-                            <select id="categoria_filtro" name="categoria_filtro" required>
-                                <option value="Geral">Todas as Categorias</option>
-                            </select>
-                        </div>
-                        <button type="submit" id="generateReportBtn" class="generate-btn">
-                            <i class="fas fa-file-pdf"></i> Gerar e Salvar
-                        </button>
-                    </form>
+                <aside class="gerador-coluna">
+                    <div class="card card-form">
+                        <h2 class="card-title">Gerar Novo Relatório</h2>
+                        <form id="reportForm">
+                            <div class="form-group">
+                                <label for="responsavel">Responsável</label>
+                                <input type="text" id="responsavel" name="responsavel" required
+                                    placeholder="Seu nome completo">
+                            </div>
+                            <div class="form-group">
+                                <label for="data_inicio_filtro">Data Inicial</label>
+                                <input type="date" id="data_inicio_filtro" name="data_inicio_filtro" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="data_fim_filtro">Data Final</label>
+                                <input type="date" id="data_fim_filtro" name="data_fim_filtro" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="frequencia_filtro">Frequência</label>
+                                <select id="frequencia_filtro" name="frequencia_filtro" required>
+                                    <option value="Pontual">Pontual</option>
+                                    <option value="Semanal">Semanal</option>
+                                    <option value="Mensal">Mensal</option>
+                                    <option value="Semestral">Semestral</option>
+                                    <option value="Anual">Anual</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoria_filtro">Categoria</label>
+                                <select id="categoria_filtro" name="categoria_filtro" required>
+                                    <option value="Geral">Todas as Categorias</option>
+                                </select>
+                            </div>
+                            <button type="submit" id="generateReportBtn" class="generate-btn">
+                                <i class="fas fa-file-pdf"></i> Gerar e Salvar
+                            </button>
+                        </form>
+                    </div>
+                </aside>
+            </main>
+
+            <div id="pdfLoading">
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Aguarde...</p>
                 </div>
-            </aside>
-        </main>
-
-        <div id="pdfLoading">
-            <div class="loading-box">
-                <div class="spinner"></div>
-                <p class="loading-text">Aguarde...</p>
             </div>
+            <div id="toastContainer" class="toast-container"></div>
         </div>
-        <div id="toastContainer" class="toast-container"></div>
-    </div>
 
-</body>
+    </body>
+
 </html>

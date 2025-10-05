@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchData = async (url, options = {}) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-            window.location.href = '/login';
+            window.location.href = '/entrar';
             throw new Error('Sessão expirada.');
         }
         const headers = { 'Authorization': `Bearer ${session.access_token}`, ...options.headers };

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="/scripts/authGuard.js"></script>
 
@@ -19,15 +20,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/scripts/supabaseClient.js" type="module"></script>
     <!--FAZER A HEADER E O SUPABASE FUNFAR-->
-    
+
     <link rel="stylesheet" href="/styles/global.css">
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        body{
+
+        body {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -35,12 +37,14 @@
             height: 100vh;
             overflow-y: hidden;
         }
-        #main{
+
+        #main {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 95.083vh;
         }
+
         .doacoes-container {
             max-width: 900px;
             margin: 2rem auto;
@@ -48,6 +52,7 @@
             background-color: #fff;
             border-radius: 12px;
         }
+
         .page-title {
             font-family: 'Passion One', cursive;
             font-size: 32px;
@@ -58,20 +63,23 @@
             align-items: center;
             gap: 1rem;
         }
+
         #subtitulo {
             font-family: "Lexend Deca";
             font-size: 14px;
-            color: #666; 
-            max-width: 550px; 
+            color: #666;
+            max-width: 550px;
             text-align: center;
-            margin: 0.5rem auto 2rem; 
+            margin: 0.5rem auto 2rem;
             margin-bottom: 200px;
         }
+
         .action-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
         }
+
         .action-card {
             display: flex;
             flex-direction: column;
@@ -85,20 +93,24 @@
             transition: all 0.2s ease-in-out;
             text-align: center;
         }
+
         .action-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
             border-color: #693B11;
         }
+
         .action-card i {
             font-size: 2.4rem;
             color: #693B11;
             margin-bottom: 1rem;
         }
+
         .action-card h2 {
             font-size: 1.15rem;
             margin-bottom: 0.5rem;
         }
+
         .action-card p {
             font-family: "Lexend Deca";
             font-size: 14px;
@@ -110,26 +122,28 @@
     <script src="/scripts/layouts/comprador/sidebar.js" defer></script>
     <!--LOADER-->
 </head>
+
 <body>
-        
+
     <header id="header-container"></header>
     <aside id="sidebar-container"></aside>
 
     <main id="main">
         <div class="doacoes-container">
             <div style="margin-top: -60px;">
-            <h1 class="page-title">Gestão de Doações</h1>
-            <p id="subtitulo">
-                Gerencie as doações de sua instituição de forma eficiente. Registre entradas e saídas para manter o controle do estoque e garantir que as doações cheguem a quem mais precisa.
+                <h1 class="page-title">Gestão de Doações</h1>
+                <p id="subtitulo">
+                    Gerencie as doações de sua instituição de forma eficiente. Registre entradas e saídas para manter o
+                    controle do estoque e garantir que as doações cheguem a quem mais precisa.
             </div>
             <div class="action-buttons" style="margin-top: -150px;">
-                <a href="/registrar-doacao" class="action-card">
+                <a href="/doacao/registrar-doacao" class="action-card">
                     <i class="bi bi-box-arrow-in-down"></i>
                     <h2>Registrar Entrada</h2>
                     <p>Cadastre as doações recebidas pela sua instituição.</p>
                 </a>
-                
-                <a href="/retirar-doacao" class="action-card">
+
+                <a href="/doacao/retirar-doacao" class="action-card">
                     <i class="bi bi-box-arrow-up-right"></i>
                     <h2>Registrar Saída</h2>
                     <p>Controle a retirada de doações do estoque para seus destinatários.</p>
@@ -138,4 +152,5 @@
         </div>
     </main>
 </body>
+
 </html>
