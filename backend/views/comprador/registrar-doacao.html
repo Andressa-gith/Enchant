@@ -43,48 +43,54 @@
 
                 <div class="form-card-wrapper">
                     <div class="section-card">
-                        <form id="doacao-form">
-                            <div class="form-group">
-                                <label class="form-label" for="categoria-doacao">Tipo de Doação</label>
-                                <select id="categoria-doacao" name="categoria_id" class="form-control" required>
-                                    <option value="" disabled selected>Carregando categorias...</option>
-                                </select>
+                        <div class="doacao-grid-layout">
+                            
+                            <div class="form-column">
+                                <form id="doacao-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="categoria-doacao">Tipo de Doação</label>
+                                        <select id="categoria-doacao" name="categoria_id" class="form-control" required>
+                                            <option value="" disabled selected>Carregando categorias...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="quantidade">Quantidade</label>
+                                        <input type="number" id="quantidade" name="quantidade" placeholder="Digite..." min="1"
+                                            class="form-control" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="doador">Doador / Origem</label>
+                                        <input type="text" id="doador" name="doador_origem_texto" value="Anônimo"
+                                            class="form-control" required>
+                                    </div>
+
+                                    <div id="campos-especificos-container"></div>
+
+                                    <div class="button-container">
+                                        <button type="button" class="botaosem" onclick="window.location.href='/doacao'">
+                                            <i class="bi bi-arrow-left"></i> Voltar
+                                        </button>
+                                        <button type="submit" class="botaozinho">
+                                            <i class="bi bi-box-seam"></i> Adicionar item
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="quantidade">Quantidade</label>
-                                <input type="number" id="quantidade" name="quantidade" placeholder="Digite..." min="1"
-                                    class="form-control" required>
+                            <div class="caixa-column">
+                                <h2 class="column-title"><i class="bi bi-archive-fill"></i> Caixa de Doação</h2>
+                                <div id="caixa-lista-itens">
+                                    <p class="caixa-vazia-mensagem">Sua caixa de doações está vazia.</p>
+                                </div>
+                                <div class="button-container-final">
+                                    <button type="button" id="btn-registrar-caixa" class="botao-final" disabled>
+                                        Registrar Todas as Doações
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="doador">Doador / Origem</label>
-                                <input type="text" id="doador" name="doador_origem_texto" value="Anônimo"
-                                    class="form-control" required>
-                            </div>
-
-                            <div id="campos-especificos-container"></div>
-
-                            <div class="button-container">
-                                <button type="button" class="botaosem" onclick="window.location.href='/doacao'">
-                                    <i class="bi bi-arrow-left"></i> Voltar
-                                </button>
-                                <button type="submit" class="botaozinho">
-                                    <i class="bi bi-box-seam"></i> Adicionar item na Caixa
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="section-card" id="caixa-de-doacoes-container">
-                        <h2><i class="bi bi-archive-fill"></i> Itens na Caixa de Doação</h2>
-                        <div id="caixa-lista-itens">
-                            <p class="caixa-vazia-mensagem">Sua caixa de doações está vazia.</p>
-                        </div>
-                        <div class="button-container-final">
-                            <button type="button" id="btn-registrar-caixa" class="botao-final" disabled>
-                                Registrar Todas as Doações da Caixa
-                            </button>
                         </div>
                     </div>
                 </div>

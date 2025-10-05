@@ -1,10 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
-@import url("/styles/global.css"); /* Importa seu CSS global */
+@import url("/styles/global.css");
 
 /* Reset básico e fontes */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px; background-color: #f5f5f5; color: #4e3629; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Lexend Deca', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    background-color: #f5f5f5;
+    color: #4e3629;
+}
 
 /* Container principal da página */
 .main-container {
@@ -12,11 +23,11 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza horizontalmente */
+    align-items: center;
     position: relative;
     overflow-x: hidden;
-    padding-top: 20px; /* Bem menos espaço do topo */
-    justify-content: flex-start; /* Remove a centralização vertical */
+    padding-top: 20px;
+    justify-content: flex-start;
 }
 
 /* Título da página */
@@ -30,10 +41,9 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     align-items: center;
     gap: 1rem;
     z-index: 2;
-    margin-top: 0.5rem; /* Quase sem margem superior */
-    padding: 1rem; /* Padding menor */
+    margin-top: 0.5rem;
+    padding: 1rem;
 }
-
 
 /* Wrapper para o conteúdo (imagem + formulário) */
 .content-wrapper {
@@ -42,60 +52,82 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     flex-direction: column;
     width: 100%;
     align-items: center;
-    justify-content: center; /* Centraliza verticalmente o conteúdo */
-    flex-grow: 1; /* Permite que o wrapper ocupe o espaço restante */
-    margin-top: -1rem; /* Move o conteúdo para cima */
+    justify-content: center;
+    flex-grow: 1;
+    margin-top: -1rem;
 }
 
-/* Container da imagem de fundo (a caixa de papelão) */
+/* Container da imagem de fundo */
 .background-container {
     position: absolute;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center; /* Centraliza a imagem na tela */
+    align-items: center;
     overflow: hidden;
     z-index: 1;
 }
 
 .background-image {
-    max-height: 90vh; /* A caixa pode ser grande, mas sem exagerar */
+    max-height: 90vh;
     max-width: 90vw;
     margin-left: 30px;
     width: auto;
     height: auto;
     object-fit: contain;
-    margin-top: -70px; /* Sobe ainda mais a imagem */
-    opacity: 0.8; /* Um pouco transparente para o formulário se destacar */
+    margin-top: -70px;
+    opacity: 0.8;
 }
 
-/* Wrapper para o card do formulário (para centralizá-lo dentro da imagem) */
+/* Wrapper do card principal */
 .form-card-wrapper {
-    position: relative; /* Para ficar acima da imagem */
+    position: relative;
     z-index: 2;
     width: 90%;
-    max-width: 550px; /* Ajustado para um tamanho bom */
+    max-width: 950px;
+    /* Aumentamos a largura para caber as duas colunas */
     margin: 2rem 0;
     margin-top: 50px;
 }
 
-/* Estilo do card do formulário (que é a parte transparente da caixa) */
+/* Estilo do card principal (agora único) */
 .section-card {
-    background-color: rgba(179, 132, 88, 0.75); /* Cor da caixa interna com transparência */
+    background-color: rgba(179, 132, 88, 0.75);
     padding: 2.5rem;
-    border-radius: 10px;
+    border-radius: 15px;
     width: 100%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Títulos de seção dentro do formulário */
-.section-title {
-    font-size: 26px;
+/* --- NOVO LAYOUT DE GRID PARA AS COLUNAS --- */
+.doacao-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Duas colunas de tamanho igual */
+    gap: 2.5rem;
+}
+
+.column-title {
+    font-family: 'Lexend Deca', cursive;
+    font-size: 1.8rem;
     color: #fff;
-    margin-bottom: 1.5rem;
-    font-weight: 400;
     text-align: center;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.form-column {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-right: 2.5rem;
+}
+
+/* Ajusta o último grupo de formulário para não ter margem embaixo */
+.form-column .form-group:last-of-type {
+    margin-bottom: 0;
 }
 
 /* Grupos de formulário */
@@ -103,7 +135,6 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     margin-bottom: 1.5rem;
 }
 
-/* Labels dos campos */
 .form-label {
     display: block;
     color: #f5f5f5;
@@ -111,30 +142,29 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     font-size: 1rem;
 }
 
-/* Controles de formulário (inputs, selects) */
 .form-control {
     width: 100%;
-    padding: 0.75rem 1rem; /* Padding maior */
+    padding: 0.75rem 1rem;
     border: none;
     border-radius: 5px;
     font-size: 1rem;
     font-family: 'Lexend Deca', sans-serif;
     background-color: #fff;
     color: #333;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna para profundidade */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .form-control::placeholder {
     color: #999;
 }
 
-/* Botões */
+/* Botões do formulário */
 .button-container {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
     margin-top: 2rem;
-    gap: 1rem; 
+    gap: 1rem;
 }
 
 .botaozinho {
@@ -151,121 +181,65 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 
 .botaozinho:hover {
     background-color: #caae8d;
-    color: #3d2106;
-    border: 0 6px 12px rgba(0,0,0,0.15);     
 }
 
 .botaosem {
     font-family: 'Lexend Deca', sans-serif;
     background-color: #e2ccae;
     color: #3d2106;
-    border-color:  #72330f;
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    gap: 0.5rem;
 }
 
 .botaosem:hover {
     background-color: #caae8d;
-    color: #3d2106;
-    border: 0 6px 12px rgba(0,0,0,0.15);     
 }
 
-/* Estilos para os modais */
-.modal-content { border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); }
-.modal-header { border-bottom: none; }
-.modal-title { color: rgba(97, 53, 12, 1); font-size: 1.5rem; font-weight: 700; }
-.modal-body { padding: 1.5rem; color: black; font-family: 'Lexend Deca', sans-serif; }
-.modal-footer { border-top: none; }
-
-/* Media Queries para Responsividade */
-@media (max-width: 768px) {
-    .title { font-size: 2rem; margin-top: 1.5rem; }
-    .form-card-wrapper { max-width: 95%; margin: 1rem 0; }
-    .section-card { padding: 1.5rem; }
-    .form-label { font-size: 0.9rem; }
-    .form-control { padding: 0.6rem 0.8rem; font-size: 0.9rem; }
-    .botaozinho, .botaosem { padding: 8px 15px; font-size: 0.9rem; }
-    .background-image { margin-top: 0; }
-}
-
-@media (max-width: 576px) {
-    .title { font-size: 1.8rem; padding: 1rem; }
-    .section-card { padding: 1rem; }
-    .background-image { max-height: 80vh; }
-}
-
-/* === ESTILOS ESPECÍFICOS PARA A CAIXA DE DOAÇÕES === */
-
-#caixa-de-doacoes-container {
-    margin-top: 2rem; /* Espaço entre o card do formulário e o da caixa */
-}
-
-#caixa-de-doacoes-container h2 {
-    font-size: 1.5rem;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 1.5rem;
+/* --- ESTILOS DA CAIXA (COLUNA DIREITA) --- */
+.caixa-column {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-family: 'Passion One', cursive;
+    flex-direction: column;
 }
 
 #caixa-lista-itens {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-height: 50px;
+    min-height: 200px;
     margin-bottom: 1.5rem;
-    max-height: 200px;
+    max-height: 350px;
     overflow-y: auto;
-    padding-right: 10px;
+    padding: 5px;
+    flex-grow: 1;
+    /* Faz a lista ocupar o espaço disponível */
 }
 
 .item-na-caixa {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
     padding: 10px 15px;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #f0e6d5;
+    color: #fff;
     font-size: 0.95rem;
     animation: fadeIn 0.3s ease-in-out;
 }
 
-.item-na-caixa > span{
-    color: #fff;
-}
-
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 
-.botao-final{
-    font-family: 'Lexend Deca', sans-serif;
-    background-color: #e2ccae;
-    color: #3d2106;
-    width: 100%;
-    padding: 10px 0;
-    border-radius: 10px;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.botao-final:hover {
-    background-color: #caae8d;
-    color: #3d2106;
-    border: 0 6px 12px rgba(0,0,0,0.15);     
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .btn-remover-item {
@@ -276,7 +250,9 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     border: none;
     color: #dc3545;
     font-size: 1.5rem;
+    line-height: 1;
     cursor: pointer;
+    padding: 0 5px;
     transition: color 0.2s;
 }
 
@@ -293,7 +269,25 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 
 .button-container-final {
     text-align: center;
-    margin-top: 1rem;
+    margin-top: auto;
+    /* Empurra o botão final para baixo */
+}
+
+.botao-final {
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #e2ccae;
+    color: #3d2106;
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.botao-final:hover {
+    background-color: #caae8d;
 }
 
 .botao-final:disabled {
@@ -302,4 +296,69 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     opacity: 0.6;
     transform: none;
     box-shadow: none;
+}
+
+/* Estilos para os modais */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-title {
+    color: rgba(97, 53, 12, 1);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: black;
+    font-family: 'Lexend Deca', sans-serif;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 992px) {
+    .form-card-wrapper {
+        max-width: 550px;
+        /* Volta a ser mais estreito */
+    }
+
+    .doacao-grid-layout {
+        grid-template-columns: 1fr;
+        /* Uma coluna só */
+        gap: 2rem;
+    }
+
+    .form-column {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-card {
+        padding: 1.5rem;
+    }
+
+    .doacao-grid-layout {
+        gap: 1.5rem;
+    }
+
+    .form-column {
+        padding-bottom: 1.5rem;
+    }
+
+    .column-title {
+        font-size: 1.5rem;
+    }
 }

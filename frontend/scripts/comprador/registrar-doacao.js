@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
     
-    /**
-     * Desenha os itens do array 'caixaDeDoacoes' na tela.
-     */
     const renderCaixa = () => {
         if (caixaDeDoacoes.length === 0) {
             caixaListaItens.innerHTML = '<p class="caixa-vazia-mensagem">Sua caixa de doações está vazia.</p>';
@@ -27,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         caixaListaItens.innerHTML = caixaDeDoacoes.map((item, index) => {
-            // Pega o nome da categoria para mostrar na tela
             const categoriaOption = selectCategoria.querySelector(`option[value="${item.categoria_id}"]`);
             const nomeCategoria = categoriaOption ? categoriaOption.textContent : 'Categoria';
             
@@ -41,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="item-na-caixa">
                     <span>${detalhesPrincipais} (Doador: ${item.doador_origem_texto})</span>
-                    <button type="button" class="btn-remover-item" data-index="${index}" title="Remover item"><i class="bi bi-x"></i></button>
+                    <button type="button" class="btn-remover-item" data-index="${index}" title="Remover item">&times;</button>
                 </div>
             `;
         }).join('');
@@ -50,9 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- FUNÇÕES DE LÓGICA ---
 
-    /**
-     * Adiciona o item do formulário ao array 'caixaDeDoacoes'.
-     */
     const adicionarItemNaCaixa = (event) => {
         event.preventDefault();
         const formData = new FormData(form);
@@ -60,11 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const detalhes = {};
         const camposPrincipais = ['categoria_id', 'quantidade', 'doador_origem_texto', 'qualidade'];
 
+        let formIsValid = true;
         for (const [key, value] of formData.entries()) {
             if (!value) {
-                alert('Por favor, preencha todos os campos do item antes de adicionar à caixa.');
-                return;
+                // Pula campos que podem ser opcionais (se houver)
+                const input = form.elements[key];
+                if (input && input.required) {
+                    formIsValid = false;
+                    break;
+                }
             }
+        }
+
+        if (!formIsValid) {
+            alert('Por favor, preencha todos os campos obrigatórios do item antes de adicionar à caixa.');
+            return;
+        }
+        
+        for (const [key, value] of formData.entries()) {
             if (camposPrincipais.includes(key)) {
                 doacaoParaApi[key] = value;
             } else {
@@ -76,28 +82,25 @@ document.addEventListener('DOMContentLoaded', () => {
         caixaDeDoacoes.push(doacaoParaApi);
         renderCaixa();
         
-        // Limpa o formulário para o próximo item
         const categoriaId = form.elements.categoria_id.value;
         const doador = form.elements.doador_origem_texto.value;
-        form.reset();
+        const quantidadeInput = form.elements.quantidade;
+
+        // Limpa apenas os campos dinâmicos e de quantidade
         camposEspecificosContainer.innerHTML = '';
+        quantidadeInput.value = '';
+
         form.elements.categoria_id.value = categoriaId;
         form.elements.doador_origem_texto.value = doador;
-        selectCategoria.dispatchEvent(new Event('change')); // Mantém os campos dinâmicos visíveis
-        form.elements.quantidade.focus();
+        selectCategoria.dispatchEvent(new Event('change'));
+        quantidadeInput.focus();
     };
 
-    /**
-     * Remove um item do array 'caixaDeDoacoes' pelo seu índice.
-     */
     const removerItemDaCaixa = (index) => {
         caixaDeDoacoes.splice(index, 1);
         renderCaixa();
     };
 
-    /**
-     * Envia todos os itens da 'caixaDeDoacoes' para o novo endpoint do backend.
-     */
     const registrarTodaCaixa = async () => {
         if (caixaDeDoacoes.length === 0) {
             alert('A caixa de doações está vazia!');
@@ -142,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- CÓDIGO ORIGINAL (CARREGAR CATEGORIAS E CAMPOS DINÂMICOS) ---
+    // --- FUNÇÕES DE CRIAÇÃO DE HTML E CARREGAMENTO DE DADOS ---
     const criarCampoHTML = (id, name, label, inputHTML, required = true) => {
         return `
             <div class="form-group">
@@ -153,25 +156,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     async function carregarCategorias() {
-        const { data, error } = await supabaseClient
-            .from('categoria')
-            .select('id, nome')
-            .order('nome', { ascending: true });
+        try {
+            const { data, error } = await supabaseClient
+                .from('categoria')
+                .select('id, nome')
+                .order('nome', { ascending: true });
 
-        if (error) {
+            if (error) throw error;
+
+            selectCategoria.innerHTML = '<option value="" disabled selected>Selecione a categoria...</option>';
+            data.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria.id;
+                option.textContent = categoria.nome;
+                option.dataset.nome = categoria.nome;
+                selectCategoria.appendChild(option);
+            });
+        } catch(error) {
             console.error('Erro ao carregar categorias:', error);
             selectCategoria.innerHTML = '<option value="">Erro ao carregar</option>';
-            return;
         }
-
-        selectCategoria.innerHTML = '<option value="" disabled selected>Selecione a categoria...</option>';
-        data.forEach(categoria => {
-            const option = document.createElement('option');
-            option.value = categoria.id;
-            option.textContent = categoria.nome;
-            option.dataset.nome = categoria.nome;
-            selectCategoria.appendChild(option);
-        });
     }
 
     selectCategoria.addEventListener('change', (event) => {
@@ -182,18 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let camposHTML = '';
 
         const campoQualidade = criarCampoHTML('qualidade', 'qualidade', 'Qualidade', 
-            `<select>
-                <option value="" disabled selected>Selecione...</option>
-                <option value="Novo">Novo</option>
-                <option value="Usado - Bom estado">Usado - Bom estado</option>
-                <option value="Usado - Regular">Usado - Regular</option>
-            </select>`
+            `<select><option value="" disabled selected>Selecione...</option><option value="Novo">Novo</option><option value="Usado - Bom estado">Usado - Bom estado</option><option value="Usado - Regular">Usado - Regular</option></select>`
         );
         const campoPrecisaReparo = criarCampoHTML('precisa_reparo', 'precisa_reparo', 'Precisa de reparo?',
-            `<select>
-                <option value="true">Sim</option>
-                <option value="false" selected>Não</option>
-            </select>`
+            `<select><option value="true">Sim</option><option value="false" selected>Não</option></select>`
         );
 
         switch (nomeCategoria) {
@@ -248,8 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRegistrarCaixa.addEventListener('click', registrarTodaCaixa);
 
     caixaListaItens.addEventListener('click', (event) => {
-        if (event.target.classList.contains('btn-remover-item')) {
-            removerItemDaCaixa(event.target.dataset.index);
+        // CORREÇÃO APLICADA AQUI:
+        const removeButton = event.target.closest('.btn-remover-item');
+        if (removeButton) {
+            removerItemDaCaixa(removeButton.dataset.index);
         }
     });
 
