@@ -42,6 +42,46 @@ export const registrarDoacaoController = async (req, res) => {
 };
 
 /**
+ * Registra múltiplas doações (entradas) de uma vez só (formato de "carrinho").
+ * @param {object} req - Objeto de requisição do Express. O body deve ser um array de doações.
+ * @param {object} res - Objeto de resposta do Express.
+ */
+export const registrarMultiplasDoacoesController = async (req, res) => {
+    logger.info('Iniciando registro de múltiplas doações de entrada...');
+    try {
+        const instituicao_id = req.user.id;
+        const listaDeDoacoes = req.body; // Esperamos um array
+        logger.debug(`Recebida uma lista com ${listaDeDoacoes.length} doações para registro.`);
+
+        if (!Array.isArray(listaDeDoacoes) || listaDeDoacoes.length === 0) {
+            logger.warn('Tentativa de registrar múltiplas doações com dados inválidos ou lista vazia.');
+            return res.status(400).json({ message: 'Dados inválidos. É esperado um array de doações.' });
+        }
+
+        // Adiciona o ID da instituição a cada doação da lista
+        const doacoesParaSalvar = listaDeDoacoes.map(doacao => ({
+            ...doacao,
+            instituicao_id: instituicao_id,
+        }));
+        
+        logger.info(`Inserindo ${doacoesParaSalvar.length} novas doações no banco de dados...`);
+        const { data, error } = await supabase
+            .from('doacao_entrada')
+            .insert(doacoesParaSalvar)
+            .select();
+
+        if (error) throw error;
+
+        logger.info(`${data.length} doações de entrada registradas com sucesso!`);
+        res.status(201).json({ message: `${data.length} doações registradas com sucesso!`, data });
+
+    } catch (error) {
+        logger.error('Erro ao registrar múltiplas doações de entrada.', error);
+        res.status(500).json({ message: 'Erro interno no servidor ao registrar as doações.' });
+    }
+};
+
+/**
  * Registra uma nova retirada (saída) de um item do estoque.
  * Inclui validação para garantir que a retirada não exceda o estoque disponível.
  * @param {object} req - Objeto de requisição do Express.

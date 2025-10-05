@@ -6,10 +6,143 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('doacao-form');
     const selectCategoria = document.getElementById('categoria-doacao');
     const camposEspecificosContainer = document.getElementById('campos-especificos-container');
+    const caixaListaItens = document.getElementById('caixa-lista-itens');
+    const btnRegistrarCaixa = document.getElementById('btn-registrar-caixa');
     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
 
-    // --- Função Auxiliar para criar campos HTML de forma limpa ---
+    // Onde guardamos os itens antes de salvar
+    let caixaDeDoacoes = [];
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO E UI ---
+    
+    /**
+     * Desenha os itens do array 'caixaDeDoacoes' na tela.
+     */
+    const renderCaixa = () => {
+        if (caixaDeDoacoes.length === 0) {
+            caixaListaItens.innerHTML = '<p class="caixa-vazia-mensagem">Sua caixa de doações está vazia.</p>';
+            btnRegistrarCaixa.disabled = true;
+            return;
+        }
+
+        caixaListaItens.innerHTML = caixaDeDoacoes.map((item, index) => {
+            // Pega o nome da categoria para mostrar na tela
+            const categoriaOption = selectCategoria.querySelector(`option[value="${item.categoria_id}"]`);
+            const nomeCategoria = categoriaOption ? categoriaOption.textContent : 'Categoria';
+            
+            let detalhesPrincipais = `${item.quantidade}x ${nomeCategoria}`;
+            if (item.detalhes && item.detalhes.especificacao) {
+                detalhesPrincipais += ` - ${item.detalhes.especificacao}`;
+            } else if (item.detalhes && item.detalhes.tipo) {
+                detalhesPrincipais += ` - ${item.detalhes.tipo}`;
+            }
+
+            return `
+                <div class="item-na-caixa">
+                    <span>${detalhesPrincipais} (Doador: ${item.doador_origem_texto})</span>
+                    <button type="button" class="btn-remover-item" data-index="${index}" title="Remover item"><i class="bi bi-x"></i></button>
+                </div>
+            `;
+        }).join('');
+        btnRegistrarCaixa.disabled = false;
+    };
+    
+    // --- FUNÇÕES DE LÓGICA ---
+
+    /**
+     * Adiciona o item do formulário ao array 'caixaDeDoacoes'.
+     */
+    const adicionarItemNaCaixa = (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const doacaoParaApi = {};
+        const detalhes = {};
+        const camposPrincipais = ['categoria_id', 'quantidade', 'doador_origem_texto', 'qualidade'];
+
+        for (const [key, value] of formData.entries()) {
+            if (!value) {
+                alert('Por favor, preencha todos os campos do item antes de adicionar à caixa.');
+                return;
+            }
+            if (camposPrincipais.includes(key)) {
+                doacaoParaApi[key] = value;
+            } else {
+                detalhes[key] = value;
+            }
+        }
+        doacaoParaApi.detalhes = detalhes;
+        
+        caixaDeDoacoes.push(doacaoParaApi);
+        renderCaixa();
+        
+        // Limpa o formulário para o próximo item
+        const categoriaId = form.elements.categoria_id.value;
+        const doador = form.elements.doador_origem_texto.value;
+        form.reset();
+        camposEspecificosContainer.innerHTML = '';
+        form.elements.categoria_id.value = categoriaId;
+        form.elements.doador_origem_texto.value = doador;
+        selectCategoria.dispatchEvent(new Event('change')); // Mantém os campos dinâmicos visíveis
+        form.elements.quantidade.focus();
+    };
+
+    /**
+     * Remove um item do array 'caixaDeDoacoes' pelo seu índice.
+     */
+    const removerItemDaCaixa = (index) => {
+        caixaDeDoacoes.splice(index, 1);
+        renderCaixa();
+    };
+
+    /**
+     * Envia todos os itens da 'caixaDeDoacoes' para o novo endpoint do backend.
+     */
+    const registrarTodaCaixa = async () => {
+        if (caixaDeDoacoes.length === 0) {
+            alert('A caixa de doações está vazia!');
+            return;
+        }
+
+        btnRegistrarCaixa.disabled = true;
+        btnRegistrarCaixa.textContent = 'Registrando...';
+
+        try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const response = await fetch('/api/doacao/registrar-multiplas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify(caixaDeDoacoes)
+            });
+
+            if (!response.ok) {
+                const erro = await response.json();
+                throw new Error(erro.message || 'Erro no servidor');
+            }
+            
+            const resultado = await response.json();
+            document.getElementById('successModalBody').textContent = resultado.message;
+            successModal.show();
+            
+            caixaDeDoacoes = [];
+            renderCaixa();
+            form.reset();
+            camposEspecificosContainer.innerHTML = '';
+
+        } catch (error) {
+            console.error("Erro ao enviar doações:", error);
+            document.getElementById('errorModalBody').textContent = `Falha ao registrar: ${error.message}`;
+            errorModal.show();
+        } finally {
+            btnRegistrarCaixa.disabled = false;
+            btnRegistrarCaixa.textContent = 'Registrar Todas as Doações da Caixa';
+        }
+    };
+    
+    // --- CÓDIGO ORIGINAL (CARREGAR CATEGORIAS E CAMPOS DINÂMICOS) ---
     const criarCampoHTML = (id, name, label, inputHTML, required = true) => {
         return `
             <div class="form-group">
@@ -18,8 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     };
-
-    // --- Passo 1: Carregar as categorias do banco de dados ---
+    
     async function carregarCategorias() {
         const { data, error } = await supabaseClient
             .from('categoria')
@@ -37,20 +169,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const option = document.createElement('option');
             option.value = categoria.id;
             option.textContent = categoria.nome;
-            option.dataset.nome = categoria.nome; // Guarda o nome para o switch
+            option.dataset.nome = categoria.nome;
             selectCategoria.appendChild(option);
         });
     }
 
-    // --- Passo 2 e 3: "Ouvir" a seleção e gerar os campos dinâmicos ---
     selectCategoria.addEventListener('change', (event) => {
         const selectedOption = event.target.options[event.target.selectedIndex];
         const nomeCategoria = selectedOption.dataset.nome;
         
-        camposEspecificosContainer.innerHTML = ''; // Limpa os campos antigos
+        camposEspecificosContainer.innerHTML = '';
         let camposHTML = '';
 
-        // Snippets de campos reutilizáveis
         const campoQualidade = criarCampoHTML('qualidade', 'qualidade', 'Qualidade', 
             `<select>
                 <option value="" disabled selected>Selecione...</option>
@@ -59,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <option value="Usado - Regular">Usado - Regular</option>
             </select>`
         );
-
         const campoPrecisaReparo = criarCampoHTML('precisa_reparo', 'precisa_reparo', 'Precisa de reparo?',
             `<select>
                 <option value="true">Sim</option>
@@ -88,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 camposHTML += criarCampoHTML('especificacao', 'especificacao', 'Especifique', `<input type="text" placeholder="Sabonete, pasta de dente...">`);
                 camposHTML += criarCampoHTML('restricao', 'restricao', 'Restrição/Recomendação', `<input type="text" placeholder="Sem fragrância, infantil...">`, false);
                 break;
-            // <<<< NOVO CASE ADICIONADO AQUI >>>>
             case 'Produtos de Limpeza':
                 camposHTML += criarCampoHTML('especificacao', 'especificacao', 'Especifique', `<input type="text" placeholder="Luva, esponja...">`);
                 camposHTML += criarCampoHTML('tamanho', 'tamanho', 'Tamanho/Volume', `<input type="text" placeholder="500ML, 1L...">`);
@@ -106,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'Cobertores':
                 camposHTML += campoQualidade;
                 break;
-            // <<<< CASE ATUALIZADO AQUI >>>>
             case 'Ração para animais':
                 camposHTML += criarCampoHTML('tamanho_animal', 'tamanho_animal', 'Tamanho do Animal', `<select><option value="Pequeno">Pequeno</option><option value="Médio">Médio</option><option value="Grande">Grande</option></select>`);
                 camposHTML += criarCampoHTML('tipo_racao', 'tipo_racao', 'Tipo', `<select><option value="Seca">Seca</option><option value="Úmida">Úmida</option></select>`);
@@ -116,59 +243,16 @@ document.addEventListener('DOMContentLoaded', () => {
         camposEspecificosContainer.innerHTML = camposHTML;
     });
 
-    // --- Passo 4: Preparar dados para o backend ao enviar o formulário ---
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Impede o recarregamento da página
+    // --- EVENT LISTENERS ---
+    form.addEventListener('submit', adicionarItemNaCaixa);
+    btnRegistrarCaixa.addEventListener('click', registrarTodaCaixa);
 
-        const formData = new FormData(form);
-        
-        const doacaoParaApi = {};
-        const detalhes = {};
-
-        // Lista de campos que são colunas diretas na tabela `doacao_entrada`
-        const camposPrincipais = ['categoria_id', 'quantidade', 'doador_origem_texto', 'qualidade'];
-
-        // Separa os dados: o que é principal e o que vai para o JSON `detalhes`
-        for (const [key, value] of formData.entries()) {
-            if (camposPrincipais.includes(key)) {
-                doacaoParaApi[key] = value;
-            } else {
-                detalhes[key] = value;
-            }
-        }
-        
-        // Adiciona o objeto de detalhes ao payload final
-        doacaoParaApi.detalhes = detalhes;
-
-        try {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            const token = session.access_token;
-
-            const response = await fetch('/api/doacao/registrar-doacao', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(doacaoParaApi)
-            });
-
-            if (!response.ok) {
-                const erro = await response.json();
-                throw new Error(erro.message || 'Erro no servidor');
-            }
-
-            document.getElementById('successModalBody').textContent = 'Doação registrada com sucesso!';
-            successModal.show();
-            form.reset();
-            camposEspecificosContainer.innerHTML = '';
-
-        } catch (error) {
-            console.error("Erro ao enviar doação:", error);
-            document.getElementById('errorModalBody').textContent = `Falha ao registrar: ${error.message}`;
-            errorModal.show();
+    caixaListaItens.addEventListener('click', (event) => {
+        if (event.target.classList.contains('btn-remover-item')) {
+            removerItemDaCaixa(event.target.dataset.index);
         }
     });
 
+    // --- INICIALIZAÇÃO ---
     carregarCategorias();
 });

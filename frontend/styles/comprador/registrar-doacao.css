@@ -131,8 +131,10 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 /* Botões */
 .button-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between; 
+    align-items: center;
     margin-top: 2rem;
+    gap: 1rem; 
 }
 
 .botaozinho {
@@ -142,30 +144,17 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
-    font-weight: 600; /* Mais negrito */
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .botaozinho:hover {
     background-color: #caae8d;
     color: #3d2106;
     border: 0 6px 12px rgba(0,0,0,0.15);     
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.button-container {
-    display: flex;
-    justify-content: space-between; /* Muda de flex-end para space-between */
-    align-items: center;
-    margin-top: 2rem;
-    gap: 1rem; /* Adiciona espaçamento entre os botões */
-}
-
-/* Estilo adicional para o botão voltar quando for um link */
 .botaosem {
     font-family: 'Lexend Deca', sans-serif;
     background-color: #e2ccae;
@@ -174,23 +163,17 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
-    font-weight: 600; /* Mais negrito */
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    gap: 0.5rem; /* Espaço entre o ícone e o texto */
+    gap: 0.5rem;
 }
-
-
 
 .botaosem:hover {
     background-color: #caae8d;
     color: #3d2106;
     border: 0 6px 12px rgba(0,0,0,0.15);     
-    transform: translateY(-2px);
 }
-
 
 /* Estilos para os modais */
 .modal-content { border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); }
@@ -213,5 +196,110 @@ body { font-family: 'Lexend Deca', sans-serif; font-weight: 400; font-size: 16px
 @media (max-width: 576px) {
     .title { font-size: 1.8rem; padding: 1rem; }
     .section-card { padding: 1rem; }
-    .background-image { max-height: 80vh; } /* Reduz a altura da imagem em telas pequenas */
+    .background-image { max-height: 80vh; }
+}
+
+/* === ESTILOS ESPECÍFICOS PARA A CAIXA DE DOAÇÕES === */
+
+#caixa-de-doacoes-container {
+    margin-top: 2rem; /* Espaço entre o card do formulário e o da caixa */
+}
+
+#caixa-de-doacoes-container h2 {
+    font-size: 1.5rem;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Passion One', cursive;
+}
+
+#caixa-lista-itens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 50px;
+    margin-bottom: 1.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.item-na-caixa {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f0e6d5;
+    font-size: 0.95rem;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.item-na-caixa > span{
+    color: #fff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.botao-final{
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #e2ccae;
+    color: #3d2106;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.botao-final:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+    border: 0 6px 12px rgba(0,0,0,0.15);     
+}
+
+.btn-remover-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-remover-item:hover {
+    color: #c82333;
+}
+
+.caixa-vazia-mensagem {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 1rem;
+    font-style: italic;
+}
+
+.button-container-final {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.botao-final:disabled {
+    background-color: #a0937d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
 }
