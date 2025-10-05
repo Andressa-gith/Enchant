@@ -14,8 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         destinationChartCanvas: document.getElementById('destinationChart'),
         successMessage: document.getElementById('success-message'),
         alertMessage: document.getElementById('alert-message'),
-        loader: document.getElementById('loader'),
-        emptyState: document.querySelector('.no-data1'),
         // Modal de Edição
         editModal: new bootstrap.Modal(document.getElementById('editModal')),
         editForm: document.getElementById('edit-form'),
@@ -24,9 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         editOrcamentoInput: document.getElementById('edit-orcamentoPrevisto'),
         editExecutadoInput: document.getElementById('edit-valorExecutado'),
         saveEditBtn: document.getElementById('saveEditBtn'),
-        // Modal de Anexo
-        attachReceiptModal: new bootstrap.Modal(document.getElementById('attachReceiptModal')),
-        attachModalTitle: document.getElementById('attachModalTitle'),
+        // Modal Gerenciador de Anexos
+        manageAttachmentsModal: new bootstrap.Modal(document.getElementById('manageAttachmentsModal')),
+        manageAttachmentsTitle: document.getElementById('manageAttachmentsTitle'),
+        existingAttachmentsList: document.getElementById('existing-attachments-list'),
+        // Formulário dentro do novo modal
         attachGestaoId: document.getElementById('attach-gestao-id'),
         attachValorInput: document.getElementById('attach-valor'),
         attachTituloInput: document.getElementById('attach-titulo'),
@@ -49,15 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) {
             el.textContent = message;
             el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 7000);
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
         }
     };
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const showLoader = (isLoading) => {
-        if (ui.loader) ui.loader.style.display = isLoading ? 'block' : 'none';
-        const tableWrapper = ui.tableBody.closest('.table-wrapper');
-        if(tableWrapper) tableWrapper.style.display = isLoading ? 'none' : 'block';
-    };
     
     // --- FUNÇÕES DE API (CRUD) ---
     const fetchData = async (url, options = {}) => {
@@ -66,12 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = '/login';
             throw new Error('Sessão expirada.');
         }
-
         const headers = { 'Authorization': `Bearer ${session.access_token}`, ...options.headers };
         if (!(options.body instanceof FormData)) {
             headers['Content-Type'] = 'application/json';
         }
-        
         const response = await fetch(url, { ...options, headers });
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Ocorreu um erro.');
@@ -79,43 +72,33 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const loadFinancialData = async () => {
-        showLoader(true);
         try {
             allFinancialData = await fetchData('/api/financeiro');
             renderTable();
             updateCharts();
         } catch (error) {
             showAlert(error.message);
-            allFinancialData = [];
-            renderTable();
-            updateCharts();
-        } finally {
-            showLoader(false);
         }
     };
 
     const addLancamento = async (e) => {
         e.preventDefault();
-        
         ui.submitBtn.disabled = true;
         ui.submitBtn.textContent = 'Enviando...';
-
         const newLancamento = {
             nome_categoria: ui.categoriaSelect.value,
             origem_recurso: ui.origemRecursoSelect.value,
             orcamento_previsto: ui.orcamentoPrevistoInput.value,
             valor_executado: ui.valorExecutadoInput.value || 0,
         };
-
         try {
             const result = await fetchData('/api/financeiro', { method: 'POST', body: JSON.stringify(newLancamento) });
             showAlert(result.message, false);
             ui.form.reset();
-            
-            promptToAttachReceipt(result.data); 
-
+            loadFinancialData();
         } catch (error) {
             showAlert(error.message);
+        } finally {
             ui.submitBtn.disabled = false;
             ui.submitBtn.textContent = 'Adicionar';
         }
@@ -128,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
             orcamento_previsto: ui.editOrcamentoInput.value,
             valor_executado: ui.editExecutadoInput.value || 0
         };
-        
         try {
             const result = await fetchData(`/api/financeiro/${id}`, { method: 'PATCH', body: JSON.stringify(updatedData) });
             showAlert(result.message, false);
@@ -150,56 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
-
-    const promptToAttachReceipt = (lancamento) => {
-        if (confirm(`Lançamento "${lancamento.nome_categoria}" salvo com sucesso!\nDeseja anexar um comprovante agora?`)) {
-            openAttachModal(lancamento);
-        } else {
-            loadFinancialData();
-        }
-    };
-
-    const openAttachModal = (lancamento) => {
-        ui.attachModalTitle.textContent = lancamento.nome_categoria;
-        ui.attachGestaoId.value = lancamento.id;
-        ui.attachTituloInput.value = `Comprovante - ${lancamento.nome_categoria}`;
-        ui.attachValorInput.value = lancamento.valor_executado;
-        
-        attachedFile = null;
-        ui.attachFileInput.value = '';
-        ui.attachFileText.textContent = 'Clique para selecionar o arquivo';
-        
-        ui.attachReceiptModal.show();
-    };
-
-    const handleSaveAttachment = async () => {
-        if (!attachedFile) {
-            showAlert('Por favor, selecione um arquivo de comprovante.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('titulo', ui.attachTituloInput.value);
-        formData.append('tipo_documento', ui.attachTipoSelect.value);
-        formData.append('valor', ui.attachValorInput.value);
-        formData.append('arquivo_documento', attachedFile);
-        formData.append('gestao_financeira_id', ui.attachGestaoId.value);
-
-        ui.saveAttachmentBtn.disabled = true;
-        ui.saveAttachmentBtn.textContent = 'Enviando...';
-
-        try {
-            const result = await fetchData('/api/documentos', { method: 'POST', body: formData });
-            showAlert('Comprovante anexado com sucesso!', false);
-            ui.attachReceiptModal.hide();
-        } catch (error) {
-            showAlert(error.message);
-        } finally {
-            ui.saveAttachmentBtn.disabled = false;
-            ui.saveAttachmentBtn.textContent = 'Salvar Anexo';
-            loadFinancialData();
-        }
-    };
     
     const populateEditModal = (item) => {
         ui.editIdInput.value = item.id;
@@ -210,17 +142,86 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.editModal.show();
     };
 
+    const openManageAttachmentsModal = (item) => {
+        ui.manageAttachmentsTitle.textContent = item.nome_categoria;
+        ui.attachGestaoId.value = item.id;
+        ui.attachValorInput.value = item.valor_executado; // Corrigido para passar o valor
+        
+        renderExistingAttachments(item.documento_comprobatorio || []);
+
+        ui.attachTituloInput.value = `Comprovante - ${item.nome_categoria}`;
+        attachedFile = null;
+        ui.attachFileInput.value = '';
+        ui.attachFileText.textContent = 'Clique para selecionar o arquivo';
+        
+        ui.manageAttachmentsModal.show();
+    };
+
+    const renderExistingAttachments = (attachments) => {
+        if (attachments.length === 0) {
+            ui.existingAttachmentsList.innerHTML = '<p class="text-muted">Nenhum comprovante anexado ainda.</p>';
+            return;
+        }
+        ui.existingAttachmentsList.innerHTML = attachments.map(doc => `
+            <div class="existing-attachment-item">
+                <span title="${doc.titulo}">${doc.titulo}</span>
+                <div class="actions">
+                    <button class="btn btn-sm btn-outline-secondary view-attachment-btn" data-path="${doc.caminho_arquivo}">Ver</button>
+                    <button class="btn btn-sm btn-outline-danger delete-attachment-btn" data-doc-id="${doc.id}"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    const handleAddNewAttachment = async () => {
+        if (!attachedFile || !ui.attachTituloInput.value) {
+            showAlert('Por favor, preencha o título e selecione um arquivo.');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('titulo', ui.attachTituloInput.value);
+        formData.append('tipo_documento', ui.attachTipoSelect.value);
+        formData.append('valor', ui.attachValorInput.value); // Corrigido para usar o valor correto
+        formData.append('arquivo_documento', attachedFile);
+        formData.append('gestao_financeira_id', ui.attachGestaoId.value);
+
+        ui.saveAttachmentBtn.disabled = true;
+        ui.saveAttachmentBtn.textContent = 'Enviando...';
+        try {
+            await fetchData('/api/documentos', { method: 'POST', body: formData });
+            showAlert('Comprovante anexado com sucesso!', false);
+            ui.manageAttachmentsModal.hide();
+            loadFinancialData();
+        } catch (error) {
+            showAlert(error.message);
+        } finally {
+            ui.saveAttachmentBtn.disabled = false;
+            ui.saveAttachmentBtn.textContent = 'Salvar Novo Anexo';
+        }
+    };
+    
+    const handleDeleteAttachment = async (docId) => {
+        if (confirm('Tem certeza que deseja excluir este anexo?')) {
+            try {
+                await fetchData(`/api/documentos/${docId}`, { method: 'DELETE' });
+                showAlert('Anexo excluído com sucesso.', false);
+                ui.manageAttachmentsModal.hide();
+                loadFinancialData();
+            } catch (error) {
+                showAlert(error.message);
+            }
+        }
+    };
+
     const updateCharts = () => {
         if (originChart) originChart.destroy();
         if (destinationChart) destinationChart.destroy();
         if (!allFinancialData || allFinancialData.length === 0) return;
-
         const originData = allFinancialData.reduce((acc, item) => {
             acc[item.origem_recurso] = (acc[item.origem_recurso] || 0) + parseFloat(item.orcamento_previsto);
             return acc;
         }, {});
         originChart = new Chart(ui.originChartCanvas, { type: 'pie', data: { labels: Object.keys(originData), datasets: [{ data: Object.values(originData), backgroundColor: chartColors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
-
         const destinationData = allFinancialData.reduce((acc, item) => {
             acc[item.nome_categoria] = (acc[item.nome_categoria] || 0) + parseFloat(item.valor_executado);
             return acc;
@@ -230,29 +231,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderTable = () => {
         ui.tableBody.innerHTML = '';
-        if (allFinancialData.length === 0) {
+        if (!allFinancialData || allFinancialData.length === 0) {
             ui.tableBody.innerHTML = `<tr><td colspan="7" class="no-data1">Nenhuma categoria adicionada ainda.</td></tr>`;
             return;
         }
-
         allFinancialData.forEach(item => {
-            const orcamento = parseFloat(item.orcamento_previsto);
-            const executado = parseFloat(item.valor_executado);
-            const percentual = orcamento > 0 ? ((executado / orcamento) * 100) : 0;
+            const row = document.createElement('tr');
+            const attachments = item.documento_comprobatorio || [];
+            const attachmentCount = attachments.length;
             const statusClass = item.status ? item.status.toLowerCase().replace(' ', '-') + '1' : '';
             
-            const hasAttachment = item.documento_comprobatorio && item.documento_comprobatorio.length > 0;
-            const attachmentButtonHtml = hasAttachment
-                ? `<button class="btn-icon view-attachment-btn" data-path="${item.documento_comprobatorio[0].caminho_arquivo}" title="Ver Comprovante Anexado"><i class="bi bi-paperclip"></i></button>`
-                : '';
-
-            const row = document.createElement('tr');
+            const attachmentButtonHtml = `
+                <button class="btn-icon manage-attachments-btn" data-id="${item.id}" title="Gerenciar Anexos">
+                    <i class="bi bi-paperclip"></i>
+                    ${attachmentCount > 0 ? `<span class="attachment-badge">${attachmentCount}</span>` : ''}
+                </button>
+            `;
             row.innerHTML = `
                 <td>${item.nome_categoria}</td>
                 <td>${item.origem_recurso}</td>
-                <td>${formatCurrency(orcamento)}</td>
-                <td>${formatCurrency(executado)}</td>
-                <td>${percentual.toFixed(1)}%</td>
+                <td>${formatCurrency(item.orcamento_previsto)}</td>
+                <td>${formatCurrency(item.valor_executado)}</td>
+                <td>${(item.orcamento_previsto > 0 ? (item.valor_executado / item.orcamento_previsto) * 100 : 0).toFixed(1)}%</td>
                 <td><span class="status-badge1 status-${statusClass}">${item.status}</span></td>
                 <td class="actions-cell1">
                     ${attachmentButtonHtml}
@@ -264,17 +264,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // --- EVENT LISTENERS ---
     ui.form.addEventListener('submit', addLancamento);
     ui.saveEditBtn.addEventListener('click', saveEdit);
-    ui.saveAttachmentBtn.addEventListener('click', handleSaveAttachment);
+    ui.saveAttachmentBtn.addEventListener('click', handleAddNewAttachment);
     ui.attachFileInput.addEventListener('change', (e) => {
         attachedFile = e.target.files[0];
-        if (attachedFile) {
-            ui.attachFileText.textContent = `Arquivo: ${attachedFile.name}`;
-        }
+        if (attachedFile) ui.attachFileText.textContent = `Arquivo: ${attachedFile.name}`;
     });
 
     ui.tableBody.addEventListener('click', (e) => {
+        const manageBtn = e.target.closest('.manage-attachments-btn');
+        if (manageBtn) {
+            const item = allFinancialData.find(d => d.id == manageBtn.dataset.id);
+            if (item) openManageAttachmentsModal(item);
+        }
         const deleteBtn = e.target.closest('.delete-btn');
         if (deleteBtn) {
             deleteItem(deleteBtn.dataset.id, deleteBtn.dataset.category);
@@ -284,18 +288,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = allFinancialData.find(d => d.id == editBtn.dataset.id);
             if (item) populateEditModal(item);
         }
-        const viewAttachmentBtn = e.target.closest('.view-attachment-btn');
-        if (viewAttachmentBtn) {
-            const filePath = viewAttachmentBtn.dataset.path;
-            try {
-                const { data } = supabase.storage.from('comprovantes').getPublicUrl(filePath);
-                if (!data || !data.publicUrl) throw new Error('URL pública não encontrada.');
-                window.open(data.publicUrl, '_blank');
-            } catch (error) {
-                showAlert('Não foi possível gerar a URL do comprovante.');
-            }
+    });
+
+    document.getElementById('manageAttachmentsModal').addEventListener('click', (e) => {
+        const viewBtn = e.target.closest('.view-attachment-btn');
+        if (viewBtn) {
+            const filePath = viewBtn.dataset.path;
+            const { data } = supabase.storage.from('comprovantes').getPublicUrl(filePath);
+            window.open(data.publicUrl, '_blank');
+        }
+
+        const deleteBtn = e.target.closest('.delete-attachment-btn');
+        if (deleteBtn) {
+            handleDeleteAttachment(deleteBtn.dataset.docId);
         }
     });
 
+    // --- INICIALIZAÇÃO ---
     loadFinancialData();
 });

@@ -117,8 +117,8 @@ export const addDocumento = async (req, res) => {
     let filePath; // Variável para guardar o caminho do arquivo para possível rollback
     try {
         const instituicaoId = req.user.id;
-        const { titulo, tipo_documento, valor } = req.body;
-        logger.debug('Dados recebidos para novo documento:', { titulo, tipo_documento, valor });
+        const { titulo, tipo_documento, valor, gestao_financeira_id } = req.body;
+        logger.debug('Dados recebidos para novo documento:', { titulo, tipo_documento, valor, gestao_financeira_id });
 
         if (!req.file) {
             logger.warn('Tentativa de adicionar documento sem arquivo.');
@@ -147,6 +147,7 @@ export const addDocumento = async (req, res) => {
                 tipo_documento,
                 valor: parseFloat(valor),
                 caminho_arquivo: filePath,
+                gestao_financeira_id: gestao_financeira_id || null, // MUDANÇA AQUI: Salvamos o "grampo"
             })
             .select()
             .single();
@@ -168,7 +169,6 @@ export const addDocumento = async (req, res) => {
         res.status(500).json({ message: 'Erro ao adicionar documento.' });
     }
 };
-
 
 /**
  * Deleta um documento comprobatório e seu arquivo associado no Storage.

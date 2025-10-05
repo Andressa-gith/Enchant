@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
-@import url("../../styles/global.css");
+@import url("/styles/global.css");
 
 /* Otimização do contêiner para melhor responsividade em todas as telas */
 .container {
@@ -228,6 +228,10 @@ input {
     background-color: #fff5f5;
 }
 
+.text-muted{
+    margin-top: 7px;
+}
+
 .file-upload.valid {
     border-color: #28a745;
     background-color: #f8fff9;
@@ -274,16 +278,6 @@ input {
 .primeirinho1:hover {
     background-color: #caae8d;
     color: #3d2106;
-}
-
-.exclusivo1 {
-    font-family: "Lexend Deca", sans-serif;
-    font-size: 14px;
-    background-color: transparent;
-    color: #000000;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: black 1px solid;
 }
 
 .dashboard-grid1 {
@@ -347,6 +341,10 @@ input {
     position: relative;
 }
 
+.modal-body h6{
+    margin-bottom: 25px;
+}
+
 /* Estilo da barra de rolagem customizada */
 .table-wrapper::-webkit-scrollbar {
     height: 8px;
@@ -393,6 +391,16 @@ input {
     min-width: 800px;
     /* Largura mínima para garantir rolamento */
     background: white;
+}
+
+.btn-icon{
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 14px;
+    padding: 8px;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
 }
 
 .budget-table1 th,
@@ -454,7 +462,69 @@ input {
     border: #000000 1px solid;
 }
 
+.exclusivo1 {
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+    width: 80px;
+    padding: 8px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+}
+
+.exclusivo1:hover{
+    color: white;
+    background-color: #c82333;
+}
+
+.delete-attachment-btn{
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+}
+
+.delete-attachment-btn:hover{
+    color: white;
+    background-color: #c82333;
+}
+
+.view-attachment-btn{
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 14px;
+    padding: 6px 15px;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
+}
+
+.view-attachment-btn:hover{
+    color: #000000;
+    background-color: transparent;
+    border: black 1px solid;
+}
+
+.existing-attachment-item{
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid #00000041;
+}
+
 .actions-cell1 {
+    display: flex;
+    gap: 5px;
     text-align: center;
     min-width: 100px;
 }
