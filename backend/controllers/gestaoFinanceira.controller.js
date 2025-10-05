@@ -33,7 +33,7 @@ export const getFinanceiro = async (req, res) => {
 
         const { data, error } = await supabase
             .from('gestao_financeira')
-            .select('*')
+            .select('*, documento_comprobatorio(id, caminho_arquivo)')
             .eq('instituicao_id', instituicaoId)
             .order('data_criacao', { ascending: true });
 

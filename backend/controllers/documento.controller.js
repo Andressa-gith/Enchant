@@ -15,7 +15,7 @@ export const getDocumentos = async (req, res) => {
 
         const { data, error } = await supabase
             .from('documento_comprobatorio')
-            .select('*')
+            .select('*, gestao_financeira(nome_categoria)')
             .eq('instituicao_id', instituicaoId)
             .order('data_criacao', { ascending: false });
 

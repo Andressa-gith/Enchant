@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.editFileInput.value = '';
         editSelectedFile = null;
         ui.editFileUploadText.textContent = 'Clique para selecionar um novo arquivo (opcional)';
-        
+
         if (!editModalInstance) {
             editModalInstance = new bootstrap.Modal(ui.editModal);
         }
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (editSelectedFile) {
             formData.append('arquivo_documento', editSelectedFile);
         }
-        
+
         ui.saveEditBtn.disabled = true;
         ui.saveEditBtn.textContent = 'Salvando...';
 
@@ -197,22 +197,29 @@ document.addEventListener('DOMContentLoaded', () => {
         docs.forEach(doc => {
             const card = document.createElement('div');
             card.className = 'uploaded-item';
+
+            // MUDANÇA AQUI: Adiciona a informação do vínculo se existir
+            const linkedToHtml = doc.gestao_financeira
+                ? `<p class="document-linked-to"><i class="bi bi-link-45deg"></i> Vinculado a: ${doc.gestao_financeira.nome_categoria}</p>`
+                : '';
+
             card.innerHTML = `
-                <div class="document-header">
-                    <div style="flex: 1;">
-                        <h3 class="document-title">${doc.titulo}</h3>
-                        <p class="document-company">${doc.tipo_documento}</p>
-                    </div>
-                    <button class="edit-btn-round" data-id="${doc.id}">
-                        <svg viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>
-                    </button>
+            <div class="document-header">
+                <div style="flex: 1;">
+                    <h3 class="document-title">${doc.titulo}</h3>
+                    <p class="document-company">${doc.tipo_documento}</p>
                 </div>
-                <p class="document-value">${formatCurrency(doc.valor)}</p>
-                <div class="document-actions">
-                    <button class="view-btn" data-path="${doc.caminho_arquivo}"><i class="bi bi-box-arrow-up-right"></i> Visualizar</button>
-                    <button class="delete" data-id="${doc.id}" data-title="${doc.titulo}"><i class="bi bi-trash-fill"></i> Excluir</button>
-                </div>
-            `;
+                <button class="edit-btn-round" data-id="${doc.id}">
+                    <svg viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>
+                </button>
+            </div>
+            ${linkedToHtml} 
+            <p class="document-value">${formatCurrency(doc.valor)}</p>
+            <div class="document-actions">
+                <button class="view-btn" data-path="${doc.caminho_arquivo}"><i class="bi bi-box-arrow-up-right"></i> Visualizar</button>
+                <button class="delete" data-id="${doc.id}" data-title="${doc.titulo}"><i class="bi bi-trash-fill"></i> Excluir</button>
+            </div>
+        `;
             ui.documentsContainer.appendChild(card);
         });
     };
@@ -226,12 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
         editSelectedFile = e.target.files[0];
         ui.editFileUploadText.textContent = editSelectedFile ? `Novo arquivo: ${editSelectedFile.name}` : 'Clique para selecionar um novo arquivo (opcional)';
     });
-    
+
     ui.documentsContainer.addEventListener('click', (e) => {
         const viewBtn = e.target.closest('.view-btn');
         const deleteBtn = e.target.closest('.delete');
         const editBtn = e.target.closest('.edit-btn-round');
-        
+
         if (viewBtn) {
             const filePath = viewBtn.dataset.path;
             try {
@@ -242,11 +249,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 showAlert('Não foi possível gerar a URL do arquivo.');
             }
         }
-        
+
         if (deleteBtn) {
             deleteDocument(deleteBtn.dataset.id, deleteBtn.dataset.title);
         }
-        
+
         if (editBtn) {
             openEditModal(editBtn.dataset.id);
         }

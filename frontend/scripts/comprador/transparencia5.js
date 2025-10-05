@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alertMessage: document.getElementById('alert-message'),
         loader: document.getElementById('loader'),
         emptyState: document.querySelector('.no-data1'),
+        // Modal de Edição
         editModal: new bootstrap.Modal(document.getElementById('editModal')),
         editForm: document.getElementById('edit-form'),
         editIdInput: document.getElementById('edit-id'),
@@ -23,15 +24,23 @@ document.addEventListener('DOMContentLoaded', () => {
         editOrcamentoInput: document.getElementById('edit-orcamentoPrevisto'),
         editExecutadoInput: document.getElementById('edit-valorExecutado'),
         saveEditBtn: document.getElementById('saveEditBtn'),
+        // Modal de Anexo
+        attachReceiptModal: new bootstrap.Modal(document.getElementById('attachReceiptModal')),
+        attachModalTitle: document.getElementById('attachModalTitle'),
+        attachGestaoId: document.getElementById('attach-gestao-id'),
+        attachValorInput: document.getElementById('attach-valor'),
+        attachTituloInput: document.getElementById('attach-titulo'),
+        attachTipoSelect: document.getElementById('attach-tipo'),
+        attachFileInput: document.getElementById('attach-file'),
+        attachFileText: document.getElementById('attach-file-text'),
+        saveAttachmentBtn: document.getElementById('saveAttachmentBtn'),
     };
 
-    // --- CÓDIGO PARA DESLIGAR O LOADER GLOBAL ---
-    setTimeout(() => {
-        window.SiteLoader?.hide();
-    }, 500);
+    setTimeout(() => { window.SiteLoader?.hide(); }, 500);
     
     let allFinancialData = [];
     let originChart, destinationChart;
+    let attachedFile = null;
     const chartColors = ['#8B4513', '#A0522D', '#D2B48C', '#DAA520', '#704010'];
 
     // --- FUNÇÕES DE CONTROLE DE UI ---
@@ -45,71 +54,162 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const showLoader = (isLoading) => {
-        const loader = document.getElementById('loader');
-        if (loader) loader.style.display = isLoading ? 'block' : 'none';
+        if (ui.loader) ui.loader.style.display = isLoading ? 'block' : 'none';
+        const tableWrapper = ui.tableBody.closest('.table-wrapper');
+        if(tableWrapper) tableWrapper.style.display = isLoading ? 'none' : 'block';
     };
     
-    // --- LÓGICA DE VALIDAÇÃO ---
-    const validateField = (input, condition, errorMsg) => {
-        const errorElement = input.closest('.form-group1').querySelector('.error-message');
-        
-        input.classList.remove('error');
-        if (errorElement) errorElement.style.display = 'none';
+    // --- FUNÇÕES DE API (CRUD) ---
+    const fetchData = async (url, options = {}) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.href = '/login';
+            throw new Error('Sessão expirada.');
+        }
 
-        if (condition) {
-            return true;
-        } else {
-            input.classList.add('error');
-            if (errorElement) {
-                errorElement.textContent = errorMsg;
-                errorElement.style.display = 'block';
+        const headers = { 'Authorization': `Bearer ${session.access_token}`, ...options.headers };
+        if (!(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+        
+        const response = await fetch(url, { ...options, headers });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Ocorreu um erro.');
+        return result;
+    };
+    
+    const loadFinancialData = async () => {
+        showLoader(true);
+        try {
+            allFinancialData = await fetchData('/api/financeiro');
+            renderTable();
+            updateCharts();
+        } catch (error) {
+            showAlert(error.message);
+            allFinancialData = [];
+            renderTable();
+            updateCharts();
+        } finally {
+            showLoader(false);
+        }
+    };
+
+    const addLancamento = async (e) => {
+        e.preventDefault();
+        
+        ui.submitBtn.disabled = true;
+        ui.submitBtn.textContent = 'Enviando...';
+
+        const newLancamento = {
+            nome_categoria: ui.categoriaSelect.value,
+            origem_recurso: ui.origemRecursoSelect.value,
+            orcamento_previsto: ui.orcamentoPrevistoInput.value,
+            valor_executado: ui.valorExecutadoInput.value || 0,
+        };
+
+        try {
+            const result = await fetchData('/api/financeiro', { method: 'POST', body: JSON.stringify(newLancamento) });
+            showAlert(result.message, false);
+            ui.form.reset();
+            
+            promptToAttachReceipt(result.data); 
+
+        } catch (error) {
+            showAlert(error.message);
+            ui.submitBtn.disabled = false;
+            ui.submitBtn.textContent = 'Adicionar';
+        }
+    };
+
+    const saveEdit = async () => {
+        const id = ui.editIdInput.value;
+        const updatedData = {
+            nome_categoria: ui.editCategoriaSelect.value,
+            orcamento_previsto: ui.editOrcamentoInput.value,
+            valor_executado: ui.editExecutadoInput.value || 0
+        };
+        
+        try {
+            const result = await fetchData(`/api/financeiro/${id}`, { method: 'PATCH', body: JSON.stringify(updatedData) });
+            showAlert(result.message, false);
+            ui.editModal.hide();
+            loadFinancialData();
+        } catch (error) {
+            showAlert(error.message);
+        }
+    };
+
+    const deleteItem = async (id, category) => {
+        if (confirm(`Tem certeza que deseja excluir o lançamento "${category}"?`)) {
+            try {
+                const result = await fetchData(`/api/financeiro/${id}`, { method: 'DELETE' });
+                showAlert(result.message, false);
+                loadFinancialData();
+            } catch (error) {
+                showAlert(error.message);
             }
-            return false;
+        }
+    };
+
+    const promptToAttachReceipt = (lancamento) => {
+        if (confirm(`Lançamento "${lancamento.nome_categoria}" salvo com sucesso!\nDeseja anexar um comprovante agora?`)) {
+            openAttachModal(lancamento);
+        } else {
+            loadFinancialData();
+        }
+    };
+
+    const openAttachModal = (lancamento) => {
+        ui.attachModalTitle.textContent = lancamento.nome_categoria;
+        ui.attachGestaoId.value = lancamento.id;
+        ui.attachTituloInput.value = `Comprovante - ${lancamento.nome_categoria}`;
+        ui.attachValorInput.value = lancamento.valor_executado;
+        
+        attachedFile = null;
+        ui.attachFileInput.value = '';
+        ui.attachFileText.textContent = 'Clique para selecionar o arquivo';
+        
+        ui.attachReceiptModal.show();
+    };
+
+    const handleSaveAttachment = async () => {
+        if (!attachedFile) {
+            showAlert('Por favor, selecione um arquivo de comprovante.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('titulo', ui.attachTituloInput.value);
+        formData.append('tipo_documento', ui.attachTipoSelect.value);
+        formData.append('valor', ui.attachValorInput.value);
+        formData.append('arquivo_documento', attachedFile);
+        formData.append('gestao_financeira_id', ui.attachGestaoId.value);
+
+        ui.saveAttachmentBtn.disabled = true;
+        ui.saveAttachmentBtn.textContent = 'Enviando...';
+
+        try {
+            const result = await fetchData('/api/documentos', { method: 'POST', body: formData });
+            showAlert('Comprovante anexado com sucesso!', false);
+            ui.attachReceiptModal.hide();
+        } catch (error) {
+            showAlert(error.message);
+        } finally {
+            ui.saveAttachmentBtn.disabled = false;
+            ui.saveAttachmentBtn.textContent = 'Salvar Anexo';
+            loadFinancialData();
         }
     };
     
-    const validateForm = (isEdit = false) => {
-        const categoria = isEdit ? ui.editCategoriaSelect : ui.categoriaSelect;
-        const origem = isEdit ? null : ui.origemRecursoSelect;
-        const orcamento = isEdit ? ui.editOrcamentoInput : ui.orcamentoPrevistoInput;
-        const executado = isEdit ? ui.editExecutadoInput : ui.valorExecutadoInput; // Adicionado para validação
-        const errors = [];
-        
-        // As chamadas são independentes, então todas serão executadas
-        const isCategoriaValid = validateField(categoria, !categoria.querySelector('option[disabled]:checked'), 'A categoria é obrigatória.');
-        const isOrigemValid = isEdit ? true : validateField(origem, !origem.querySelector('option[disabled]:checked'), 'A origem do recurso é obrigatória.');
-        const isOrcamentoValid = validateField(orcamento, orcamento.value !== '' && parseFloat(orcamento.value) >= 0, 'O orçamento previsto é obrigatório.');
-        // VALIDAÇÃO DO VALOR EXECUTADO ADICIONADA AQUI
-        const isExecutadoValid = validateField(executado, executado.value !== '' && parseFloat(executado.value) >= 0, 'O valor executado é obrigatório.');
-
-        if (!isCategoriaValid) errors.push('Categoria');
-        if (!isOrigemValid) errors.push('Origem do Recurso');
-        if (!isOrcamentoValid) errors.push('Orçamento Previsto');
-        if (!isExecutadoValid) errors.push('Valor Executado'); // Adicionado à lista de erros
-        
-        return { 
-            isValid: errors.length === 0, 
-            errors: [...new Set(errors)] 
-        };
+    const populateEditModal = (item) => {
+        ui.editIdInput.value = item.id;
+        ui.editCategoriaSelect.innerHTML = ui.categoriaSelect.innerHTML;
+        ui.editCategoriaSelect.value = item.nome_categoria;
+        ui.editOrcamentoInput.value = item.orcamento_previsto;
+        ui.editExecutadoInput.value = item.valor_executado;
+        ui.editModal.show();
     };
 
-    // --- NOVA FUNÇÃO DE VALIDAÇÃO EM TEMPO REAL ---
-    const setupRealTimeValidation = () => {
-        ui.categoriaSelect.addEventListener('blur', () => {
-            validateField(ui.categoriaSelect, !ui.categoriaSelect.querySelector('option[disabled]:checked'), 'A categoria é obrigatória.');
-        });
-        ui.origemRecursoSelect.addEventListener('blur', () => {
-            validateField(ui.origemRecursoSelect, !ui.origemRecursoSelect.querySelector('option[disabled]:checked'), 'A origem do recurso é obrigatória.');
-        });
-        ui.orcamentoPrevistoInput.addEventListener('blur', () => {
-            validateField(ui.orcamentoPrevistoInput, ui.orcamentoPrevistoInput.value !== '' && parseFloat(ui.orcamentoPrevistoInput.value) >= 0, 'O orçamento previsto é obrigatório.');
-        });
-        ui.valorExecutadoInput.addEventListener('blur', () => {
-            validateField(ui.valorExecutadoInput, ui.valorExecutadoInput.value !== '' && parseFloat(ui.valorExecutadoInput.value) >= 0, 'O valor executado é obrigatório.');
-        });
-    };
-
-    // --- LÓGICA DE GRÁFICOS E TABELA ---
     const updateCharts = () => {
         if (originChart) originChart.destroy();
         if (destinationChart) destinationChart.destroy();
@@ -141,6 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const percentual = orcamento > 0 ? ((executado / orcamento) * 100) : 0;
             const statusClass = item.status ? item.status.toLowerCase().replace(' ', '-') + '1' : '';
             
+            const hasAttachment = item.documento_comprobatorio && item.documento_comprobatorio.length > 0;
+            const attachmentButtonHtml = hasAttachment
+                ? `<button class="btn-icon view-attachment-btn" data-path="${item.documento_comprobatorio[0].caminho_arquivo}" title="Ver Comprovante Anexado"><i class="bi bi-paperclip"></i></button>`
+                : '';
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${item.nome_categoria}</td>
@@ -150,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${percentual.toFixed(1)}%</td>
                 <td><span class="status-badge1 status-${statusClass}">${item.status}</span></td>
                 <td class="actions-cell1">
+                    ${attachmentButtonHtml}
                     <button class="editinho1 edit-btn" data-id="${item.id}" title="Editar">Editar</button>
                     <button class="exclusivo1 delete-btn" data-id="${item.id}" data-category="${item.nome_categoria}" title="Excluir">Excluir</button>
                 </td>
@@ -157,128 +263,39 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.tableBody.appendChild(row);
         });
     };
-    
-    // --- FUNÇÕES DE API (CRUD) ---
-    const fetchData = async (url, options = {}) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error('Sessão expirada.');
-        const headers = { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json', ...options.headers };
-        const response = await fetch(url, { ...options, headers });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message || 'Ocorreu um erro.');
-        return result;
-    };
-    
-    const loadFinancialData = async () => {
-        showLoader(true);
-        try {
-            allFinancialData = await fetchData('/api/financeiro');
-            renderTable();
-            updateCharts();
-        } catch (error) {
-            showAlert(error.message);
-            allFinancialData = [];
-            renderTable();
-            updateCharts();
-        } finally {
-            showLoader(false);
-        }
-    };
 
-    const addLancamento = async (e) => {
-        e.preventDefault();
-        const validation = validateForm();
-        if (!validation.isValid) {
-            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
-            return;
-        }
-        
-        ui.submitBtn.disabled = true;
-        ui.submitBtn.textContent = 'Enviando...';
-
-        const newLancamento = {
-            nome_categoria: ui.categoriaSelect.value,
-            origem_recurso: ui.origemRecursoSelect.value,
-            orcamento_previsto: ui.orcamentoPrevistoInput.value,
-            valor_executado: ui.valorExecutadoInput.value || 0,
-        };
-
-        try {
-            const result = await fetchData('/api/financeiro', { method: 'POST', body: JSON.stringify(newLancamento) });
-            showAlert(result.message, false);
-            ui.form.reset();
-            loadFinancialData();
-        } catch (error) {
-            showAlert(error.message);
-        } finally {
-            ui.submitBtn.disabled = false;
-            ui.submitBtn.textContent = 'Adicionar';
-        }
-    };
-
-    const saveEdit = async () => {
-        const validation = validateForm(true);
-        if (!validation.isValid) {
-            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
-            return;
-        }
-        const id = ui.editIdInput.value;
-        const updatedData = {
-            nome_categoria: ui.editCategoriaSelect.value,
-            orcamento_previsto: ui.editOrcamentoInput.value,
-            valor_executado: ui.editExecutadoInput.value || 0
-        };
-        
-        try {
-            const result = await fetchData(`/api/financeiro/${id}`, { method: 'PATCH', body: JSON.stringify(updatedData) });
-            showAlert(result.message, false);
-            ui.editModal.hide();
-            loadFinancialData();
-        } catch (error) {
-            showAlert(error.message);
-        }
-    };
-
-    const deleteItem = async (id, category) => {
-        if (confirm(`Tem certeza que deseja excluir o lançamento "${category}"?`)) {
-            try {
-                const result = await fetchData(`/api/financeiro/${id}`, { method: 'DELETE' });
-                showAlert(result.message, false);
-                loadFinancialData();
-            } catch (error) {
-                showAlert(error.message);
-            }
-        }
-    };
-    
-    const populateEditModal = (item) => {
-        ui.editIdInput.value = item.id;
-        ui.editCategoriaSelect.innerHTML = ui.categoriaSelect.innerHTML;
-        ui.editCategoriaSelect.value = item.nome_categoria;
-        ui.editOrcamentoInput.value = item.orcamento_previsto;
-        ui.editExecutadoInput.value = item.valor_executado;
-        ui.editModal.show();
-    };
-
-    // --- EVENT LISTENERS ---
     ui.form.addEventListener('submit', addLancamento);
     ui.saveEditBtn.addEventListener('click', saveEdit);
-    ui.tableBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const id = deleteBtn.dataset.id;
-            const category = deleteBtn.dataset.category;
-            deleteItem(id, category);
-        }
-        const editBtn = e.target.closest('.edit-btn');
-        if (editBtn) {
-            const id = editBtn.dataset.id;
-            const item = allFinancialData.find(d => d.id == id);
-            if (item) populateEditModal(item);
+    ui.saveAttachmentBtn.addEventListener('click', handleSaveAttachment);
+    ui.attachFileInput.addEventListener('change', (e) => {
+        attachedFile = e.target.files[0];
+        if (attachedFile) {
+            ui.attachFileText.textContent = `Arquivo: ${attachedFile.name}`;
         }
     });
 
-    // --- INICIALIZAÇÃO ---
-    setupRealTimeValidation(); // LIGA A VALIDAÇÃO EM TEMPO REAL
+    ui.tableBody.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            deleteItem(deleteBtn.dataset.id, deleteBtn.dataset.category);
+        }
+        const editBtn = e.target.closest('.edit-btn');
+        if (editBtn) {
+            const item = allFinancialData.find(d => d.id == editBtn.dataset.id);
+            if (item) populateEditModal(item);
+        }
+        const viewAttachmentBtn = e.target.closest('.view-attachment-btn');
+        if (viewAttachmentBtn) {
+            const filePath = viewAttachmentBtn.dataset.path;
+            try {
+                const { data } = supabase.storage.from('comprovantes').getPublicUrl(filePath);
+                if (!data || !data.publicUrl) throw new Error('URL pública não encontrada.');
+                window.open(data.publicUrl, '_blank');
+            } catch (error) {
+                showAlert('Não foi possível gerar a URL do comprovante.');
+            }
+        }
+    });
+
     loadFinancialData();
 });

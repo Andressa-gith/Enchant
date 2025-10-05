@@ -1,5 +1,5 @@
 import supabase from '../db/supabaseClient.js';
-import logger from '../utils/logger.js'; // <-- Logger importado
+import logger from '../utils/logger.js';
 
 /**
  * Converte uma string de data (YYYY-MM-DD) para o formato ISO no início do dia (UTC).
@@ -68,11 +68,12 @@ export const getDashboardData = async (req, res) => {
         new Set([...Object.keys(totaisEntradaGeral), ...Object.keys(totaisSaidaGeral)]).forEach(cat => { estoqueNoPeriodoPorCategoria[cat] = (totaisEntradaGeral[cat] || 0) - (totaisSaidaGeral[cat] || 0); });
 
         const parceriasAtivasValidas = parceriasNoPeriodo.filter(p => { const df = p.data_fim ? new Date(p.data_fim) : null; return p.status === 'Ativo' && (!df || df >= hoje); });
+        
         const totalReceitasRecibos = recibos.reduce((acc, item) => acc + Number(item.valor), 0);
         const totalReceitasParcerias = parceriasAtivasValidas.reduce((acc, item) => acc + Number(item.valor_total_parceria), 0);
-        const totalDespesasTransferencias = transferencias.reduce((acc, item) => acc + Number(item.valor), 0);
         const totalDespesasGastosProprios = gastosProprios.reduce((acc, item) => acc + Number(item.valor_executado), 0);
-        const saldoFinanceiro = (totalReceitasRecibos + totalReceitasParcerias) - (totalDespesasTransferencias + totalDespesasGastosProprios);
+        
+        const saldoFinanceiro = (totalReceitasRecibos + totalReceitasParcerias) - totalDespesasGastosProprios;
         
         const totaisEntradaPeriodo = entradasNoPeriodo.reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
         
@@ -129,7 +130,7 @@ export const getDashboardData = async (req, res) => {
                 fluxoFinanceiroDiario[data].receita += Number(item.valor || item.valor_total_parceria);
             }
         });
-        [...transferencias, ...gastosProprios].forEach(item => {
+        [...gastosProprios].forEach(item => {
             const data = new Date(item.data_criacao).toISOString().split('T')[0];
             if (fluxoFinanceiroDiario[data]) {
                 fluxoFinanceiroDiario[data].despesa += Number(item.valor || item.valor_executado);

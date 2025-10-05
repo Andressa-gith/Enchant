@@ -181,6 +181,49 @@
             </div>
         </div>
 
+        <div class="modal fade" id="attachReceiptModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Anexar Comprovante para "<span id="attachModalTitle"></span>"</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="attach-form">
+                            <input type="hidden" id="attach-gestao-id">
+                            <input type="hidden" id="attach-valor"> 
+                            
+                            <div class="form-group1">
+                                <label for="attach-titulo">Título do Documento</label>
+                                <input type="text" id="attach-titulo" class="form-control1"
+                                    placeholder="Ex: Comprovante de Pagamento de Luz">
+                            </div>
+                            <div class="form-group1">
+                                <label for="attach-tipo">Tipo de Documento</label>
+                                <select id="attach-tipo" class="form-control1">
+                                    <option value="Comprovante de transferência">Comprovante de transferência</option>
+                                    <option value="Nota fiscal">Nota fiscal</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            <div class="form-group1 file-upload-group">
+                                <label>Arquivo do Comprovante</label>
+                                <div class="file-upload" onclick="document.getElementById('attach-file').click()">
+                                    <p id="attach-file-text">Clique para selecionar o arquivo</p>
+                                    <input type="file" id="attach-file" style="display: none;">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveAttachmentBtn">Salvar Anexo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="modal fade" id="editModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">

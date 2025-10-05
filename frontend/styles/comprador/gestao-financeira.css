@@ -199,6 +199,56 @@ input {
     margin-top: 4px;
 }
 
+/* File upload styles */
+.file-upload {
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.file-upload:hover {
+    border-color: #8B4513;
+    background-color: #f9f9f9;
+}
+
+.file-upload.dragover {
+    border-color: #8B4513;
+    background-color: #f0e6d2;
+}
+
+.file-upload.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.file-upload.valid {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload p {
+    margin: 10px 0 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.file-upload small {
+    color: #999;
+    font-size: 12px;
+}
+
+
 .form-group1 input:focus,
 .form-group1 select:focus {
     outline: none;
