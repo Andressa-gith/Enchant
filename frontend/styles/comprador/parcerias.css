@@ -424,7 +424,7 @@ textarea {
 }
 
 .status-finalizado {
-    background: #3d2106;
+    background: #693B11;
     color: white;
 }
 
@@ -486,7 +486,7 @@ textarea {
 
 
 .type-public {
-    background: #61350C;
+    background: #693B11;
     color: white;
 }
 
@@ -536,15 +536,20 @@ textarea {
 
 .delete-btn {
     font-family: 'Lexend Deca', sans-serif;
-    background-color: rgb(255, 255, 255);
-    color: #000000;
+    background: #dc3545;
+    color: white;
     padding: 8px 15px;
     border-radius: 10px;
     font-size: 14px;
     cursor: pointer;
-    border: 1px solid #000000;
-    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+    border: none;  /* <-- Adicione esta linha */
+    outline: none;
     /* ← ADICIONAR */
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
 }
 
 .um {

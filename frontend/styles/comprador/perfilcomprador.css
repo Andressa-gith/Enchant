@@ -60,9 +60,9 @@ body {
 
 /* Título mantido igual */
 .titulo {
-    font-family: "Passion One", sans-serif;
+    font-family: "Passion One", cursive;
     color: var(--dark-brown);
-    font-size: 3.2rem;
+    font-size: 32px;
     margin-bottom: 30px;
     margin-top: 30px;
 }
