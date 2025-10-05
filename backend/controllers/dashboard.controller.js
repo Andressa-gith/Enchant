@@ -97,7 +97,7 @@ export const getDashboardData = async (req, res) => {
             ...entradasNoPeriodo.map(i => ({ data: new Date(i.data_entrada), tipo: 'entrada', desc: `Doação recebida de <b>${i.doador_origem_texto}</b>` })),
             ...saidasNoPeriodo.map(i => ({ data: new Date(i.data_saida), tipo: 'saida', desc: `Doação retirada para <b>${i.destinatario || 'beneficiário'}</b>` })),
             ...recibos.map(i => ({ data: new Date(i.data_criacao), tipo: 'entrada-financeira', desc: `Recibo de doação emitido: <b>${i.titulo}</b>` })),
-            ...transferencias.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Transferência realizada para <b>${i.titulo}</b>` })),
+            ...transferencias.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Comprovante de transferência adicionado: <b>${i.titulo}</b>` })),
             ...gastosProprios.map(i => ({ data: new Date(i.data_criacao), tipo: 'saida-financeira', desc: `Gasto com recursos próprios: <b>${i.nome_categoria}</b>` })),
             ...parceriasNoPeriodo.map(i => ({ data: new Date(i.data_criacao), tipo: 'parceria', desc: `Nova parceria firmada com <b>${i.nome}</b>` })),
         ].sort((a, b) => b.data - a.data);
