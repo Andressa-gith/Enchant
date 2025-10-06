@@ -1,0 +1,467 @@
+@import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+
+/* ========== VARIÁVEIS CSS ========== */
+:root {
+--corfundo: #F5F5F5;
+--corfundo-footer: #fcf2e8;
+--corfundo-container: #F9E7D2;
+--corbotao1: #e2ccae;
+--corbotao2: #caae8d;
+--cortitulo: #4E3629;
+--cortexto: #535151;
+--corlink: #EC9E07;
+--cor-erro: #FF0404;
+--cor-sucesso: #28a745;
+--cor-borda: #B7B6B6;
+--cor-placeholder: #757575;
+}
+
+/* ========== RESET E BASE ========== */
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: "Lexend Deca", sans-serif;
+}
+
+body {
+display: flex;
+flex-direction: column;
+width: 100%;
+min-height: 100vh;
+background-color: var(--corfundo);
+justify-content: space-between;
+}
+
+/* ========== LAYOUT PRINCIPAL ========== */
+main {
+display: flex;
+flex-direction: column;
+gap: 2rem;
+padding: 2rem 1rem 7rem 1rem;
+margin-top: 80px;
+}
+
+.pagamento {
+font-family: "Passion One";
+color: var(--cortitulo);
+text-align: center;
+font-size: 32px;
+font-weight: 500;
+margin-bottom: 2rem;
+}
+
+.subtitulo-secao {
+font-family: "Passion One";
+color: var(--cortitulo);
+font-size: 24px;
+font-weight: 500;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+
+/* ========== CONTAINERS ========== */
+.container {
+border: 1.5px var(--cortitulo) solid;
+padding: 2rem;
+width: 90%;
+max-width: 1200px;
+margin: 0 auto 2rem;
+border-radius: 10px;
+background-color: white;
+}
+
+.recomendacoes {
+padding: 0 1rem 1rem;
+font-size: 16px;
+text-align: center;
+color: var(--cortexto);
+margin-bottom: 1.5rem;
+}
+
+/* ========== FORMULÁRIOS ========== */
+.form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr; 
+gap: 1rem 2rem; 
+}
+
+.full-width {
+grid-column: 1 / -1;
+}
+
+.form-group {
+display: flex;
+flex-direction: column;
+margin-bottom: 1rem;
+}
+
+.senha-area {
+display: grid !important;
+grid-template-columns: 1fr 1fr;
+gap: 1rem 2rem; 
+}
+
+.container-flex {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 2rem;
+margin-bottom: 2rem;
+}
+
+/* ========== INPUTS E SELECTS ========== */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="number"],
+select {
+width: 100%;
+border: 1px solid var(--cor-borda);
+padding: 10px 15px;
+border-radius: 50px;
+font-size: 14px;
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+background-color: white;
+transition: all 0.3s ease;
+}
+
+select { 
+color: var(--cor-placeholder);
+background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+background-repeat: no-repeat;
+background-position: right 1rem center;
+background-size: .65em auto;
+padding-right: 2.5rem; 
+}
+
+select:focus, 
+input:focus { 
+outline: 1.5px solid var(--corbotao2);
+border-color: var(--corbotao2);
+box-shadow: 0 0 0 3px rgba(202, 174, 141, 0.1);
+}
+
+input.error,
+select.error {
+border-color: var(--cor-erro);
+}
+
+input.success,
+select.success {
+border-color: var(--cor-sucesso);
+}
+
+/* ========== LABELS ========== */
+label { 
+margin-bottom: 0.5rem; 
+margin-left: 15px;
+font-weight: 500;
+color: var(--cortexto);
+}
+
+.obrigatorio {
+color: var(--cor-erro);
+}
+
+/* ========== VALIDAÇÃO DE SENHA ========== */
+.requerimento-senha {
+font-size: 12px;
+padding: 0.5rem 1rem 0;
+}
+
+.requerimento-senha p {
+line-height: 1.5;
+margin: 0;
+transition: color 0.3s ease;
+}
+
+.requerimento-senha p:not(:first-child) { 
+color: var(--cor-placeholder);
+}
+
+.requerimento-senha p.valid {
+color: var(--cor-sucesso);
+}
+
+.requerimento-senha p.invalid {
+color: var(--cor-erro);
+}
+
+/* ========== CHECKBOX ========== */
+.campo-checkbox {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+margin-top: 1rem;
+}
+
+.caixinha-escolha {
+width: auto !important;
+margin: 0 !important;
+transform: scale(1.2);
+}
+
+.campo-checkbox label {
+margin: 0;
+cursor: pointer;
+}
+
+/* ========== UPLOAD DE ARQUIVOS ========== */
+.upload-area {
+border: 2px dashed var(--cor-borda);
+border-radius: 10px;
+padding: 2rem;
+text-align: center;
+background-color: #fafafa;
+margin-bottom: 1rem;
+transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+border-color: var(--corbotao2);
+background-color: var(--corfundo-container);
+}
+
+.upload-area.dragover {
+border-color: var(--corbotao2);
+background-color: var(--corfundo-container);
+}
+
+.upload-input {
+display: none;
+}
+
+.upload-button {
+background-color: var(--corbotao1);
+color: var(--cortitulo);
+border: none;
+padding: 10px 20px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 500;
+transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+background-color: var(--corbotao2);
+}
+
+.arquivo-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0.5rem;
+border: 1px solid var(--cor-borda);
+border-radius: 5px;
+margin-bottom: 0.5rem;
+background-color: white;
+}
+
+li{
+  color: #000000;
+  font-size: 15px;
+}
+.arquivo-info {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.arquivo-nome {
+font-weight: 500;
+}
+
+.arquivo-tamanho {
+font-size: 12px;
+color: var(--cor-placeholder);
+}
+
+.remover-arquivo {
+background: none;
+border: none;
+color: var(--cor-erro);
+cursor: pointer;
+font-size: 18px;
+padding: 0.25rem;
+}
+
+.remover-arquivo:hover {
+opacity: 0.7;
+}
+
+/* ========== BOTÕES ========== */
+.div-botao-continuar {
+display: flex;
+justify-content: flex-end;   
+align-items: flex-end;       
+margin-top: 20px;
+margin-right: 15px;
+}
+
+.botao-continuar,
+.btn-adicionar {
+border: none;
+background-color: var(--corbotao1);
+color: var(--cortitulo);
+font-weight: 500;
+padding: 8px 20px;
+border-radius: 8px;
+cursor: pointer;
+transition: background-color 0.3s;
+}
+
+.botao-continuar {
+width: 150px;
+}
+
+.botao-continuar:hover,
+.btn-adicionar:hover { 
+background-color: var(--corbotao2); 
+}
+
+.botoes-navegacao {
+display: flex;
+justify-content: space-between;
+margin-top: 2rem;
+padding: 0 1rem;
+}
+
+.btn-voltar {
+background-color: transparent;
+border: #3d2106 1px solid;
+color: var(--cortitulo);
+padding: 10px 30px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 500;
+}
+
+.btn-voltar:hover {
+background-color: #999;
+}
+
+.btn-enviar {
+background-color: var(--cor-sucesso);
+color: white;
+border: none;
+padding: 10px 30px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 500;
+}
+
+/* ========== SEÇÕES ========== */
+.primeira-parte,
+.segunda-parte {
+transition: all 0.3s ease;
+}
+
+.segunda-parte {
+display: none;
+}
+
+.segunda-parte.active {
+display: block;
+}
+
+/* ========== MODAL DE ERRO ========== */
+
+.modal-content {
+border-radius: 5px;
+box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+border-top-left-radius: 5px;
+border-top-right-radius: 5px;
+}
+
+.modal-title {
+color: rgba(97, 53, 12, 1);
+font-size: 20px;
+font-size: 'Lexend Deca';
+font-weight: bold;   
+}
+
+.modal-body {
+padding: 1.5rem;
+color: black;
+font-family: 'Lexend Deca', sans-serif;
+font-size: 16px;
+}  
+
+.modal-body ul {
+text-align: left;
+color: #d9534f;
+margin-top: 1rem;
+padding-left: 1.5rem;
+}
+
+.modal-footer {
+padding: 1rem;
+border-bottom-left-radius: 5px;
+border-bottom-right-radius: 5px;
+}
+
+.modal .btn-primary {
+background-color: rgba(226, 204, 174, 1);
+color: #4e3629;
+border: none;
+border-radius: 10px;
+font-family: 'Lexend Deca';
+font-size: 14px;
+}
+
+.modal .btn-primary:hover {
+background-color: #caae8d;
+color: #3d2106;
+
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 768px) {
+.form-grid,
+.container-flex,
+.senha-area {
+grid-template-columns: 1fr;
+gap: 1rem;
+}
+
+.div-botao-continuar {
+justify-content: center;
+margin-right: 0;
+}
+
+.botoes-navegacao {
+flex-direction: column;
+gap: 1rem;
+}
+
+.pagamento {
+font-size: 28px;
+}
+
+.container {
+width: 95%;
+padding: 1.5rem;
+}
+}
+
+@media (max-width: 480px) {
+main {
+padding: 1rem 0.5rem 5rem 0.5rem;
+}
+
+.container {
+width: 98%;
+padding: 1rem;
+}
+
+.pagamento {
+font-size: 24px;
+}
+}

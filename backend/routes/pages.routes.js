@@ -41,6 +41,11 @@ pageRouter.get('/pagamento', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'paginapagamento.html'));
 });
 
+pageRouter.get('/requisicao', (req, res) => {
+    console.log(`\n⬆️  Rota /requisicao acessada.\n`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'requisicao.html'));
+});
+
 pageRouter.get('/entrar', (req, res) => {
     console.log(`\n⬆️  Rota /entrar acessada.\n`);
     res.sendFile(path.join(__dirname, '..', 'views', 'entrar.html'));
@@ -133,6 +138,7 @@ pageRouter.get('/historico-doacoes', (req, res) => {
     console.log(`\n⬆️  Rota /historico-doacoes acessada.\n`);
     res.sendFile(path.join(__dirname, '..', 'views', 'comprador', 'historico-doacoes.html'));
 });
+
 
 export default pageRouter;
 
