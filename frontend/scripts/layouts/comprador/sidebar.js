@@ -142,7 +142,7 @@ class SidebarManager {
 
     injectSidebarStyles() {
         const css = `
-            :root { --primary-color: #693B11; --sidebar-width: 290px; --sidebar-collapsed: 50px; --transition: 0.3s ease; }
+            :root { --primary-color: #FF0000; --sidebar-width: 290px; --sidebar-collapsed: 50px; --transition: 0.3s ease; }
             body { font-family: "Lexend Deca", sans-serif; margin: 0; }
             .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-collapsed); background-color: #ECECEC; transition: var(--transition); overflow: hidden; z-index: 800; display: flex; flex-direction: column; }
             #sidebarProfileButton { margin-top: auto; border-top: 1px solid rgba(0, 0, 0, 0.1); }
@@ -151,8 +151,8 @@ class SidebarManager {
             .sidebar-nav span { font-size: 14px; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
             .sidebar-nav i { font-size: 1.2rem; margin-right: 20px; color: #4e4e4e; min-width: 20px; text-align: center; }
             /* EFEITO HOVER E ACTIVE APLICADO AQUI */
-            .sidebar-nav a:hover, .sidebar-nav a.active { background-color: var(--primary-color); color: white; }
-            .sidebar-nav a:hover i, .sidebar-nav a.active i { color: white; }
+            .sidebar-nav a:hover, .sidebar-nav a.active { background-color: #caae8d; color: black; }
+            .sidebar-nav a:hover i, .sidebar-nav a.active i { color: black; }
             .main-content { margin-left: var(--sidebar-collapsed); transition: var(--transition); }
             .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); z-index: 799; display: none; opacity: 0; transition: opacity 0.3s ease; }
             .sidebar-overlay.show { display: block; opacity: 1; }

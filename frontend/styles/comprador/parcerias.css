@@ -522,8 +522,8 @@ textarea {
 
 .edit-btn {
     font-family: 'Lexend Deca', sans-serif;
-    background-color: rgba(226, 204, 174, 1);
-    color: #000000;
+    background-color: #e2ccae;
+    color: #3d2106;
     /* margin-top: 20px; ← REMOVER ESTA LINHA */
     padding: 8px 15px;
     border-radius: 10px;

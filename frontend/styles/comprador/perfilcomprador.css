@@ -8,7 +8,7 @@
     --secondary-brown: #e8d9c0;
     --light-brown: #E2CCAE;
     --hover-brown: #caae8d;
-    --dark-brown: #4A2B00;
+    --dark-brown: #693B11;
     --text-light: #666;
     --text-dark: #333;
     --border-color: #e0d5c0;
@@ -184,7 +184,7 @@ body {
 
 /* Títulos de seção melhorados */
 .section-title1 {
-    font-size: 24px;
+    font-size: 20.8px;
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
@@ -207,17 +207,16 @@ body {
 
 /* Botões melhorados */
 .edit-button1 {
-    background: linear-gradient(135deg, var(--secondary-brown), var(--light-brown));
+    background-color: #e2ccae;
+    color: #3d2106;
     border: none;
     padding: 12px 24px;
-    border-radius: var(--border-radius-lg);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-smooth);
-    box-shadow: 0 2px 8px rgba(232, 217, 192, 0.4);
     position: relative;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .edit-button1::before {
@@ -227,24 +226,21 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: var(--transition-smooth);
+    background-color: #e2ccae;
+    color: #3d2106;
 }
 
 .edit-button1:hover::before {
     left: 100%;
+    background-color: #caae8d;
+    color: #3d2106;
 }
 
 .edit-button1:hover {
-    background: linear-gradient(135deg, var(--hover-brown), var(--secondary-brown));
-    color: var(--dark-brown);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(202, 174, 141, 0.4);
+    background-color: #caae8d;
+    color: #3d2106;
 }
 
-.edit-button1:active {
-    transform: translateY(0);
-}
 
 /* Grade de informações */
 .info-grid1 {
@@ -540,42 +536,39 @@ body {
 .cancel-button1,
 .save-button1 {
     padding: 14px 28px;
-    border-radius: var(--border-radius-lg);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     min-width: 120px;
     border: none;
     margin: 0;
-    transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .cancel-button1 {
     background: linear-gradient(135deg, #ffffff, #f8f9fa);
     color: var(--text-dark);
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--text-light);
+    border-radius: 10px;
 }
 
 .cancel-button1:hover {
     background: linear-gradient(135deg, #f8f9fa, #f0f0f0);
     border-color: var(--text-light);
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .save-button1 {
-    background: linear-gradient(135deg, var(--secondary-brown), var(--light-brown));
-    color: var(--dark-brown);
-    box-shadow: 0 4px 15px rgba(232, 217, 192, 0.4);
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: #e2ccae;
+    color: #3d2106;
 }
 
 .save-button1:hover {
-    background: linear-gradient(135deg, var(--hover-brown), var(--secondary-brown));
-    color: var(--dark-brown);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(202, 174, 141, 0.5);
+  background-color: #caae8d;
+  color: #3d2106;
 }
 
 /* Upload de logo */
