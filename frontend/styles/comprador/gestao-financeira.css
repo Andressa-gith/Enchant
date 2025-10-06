@@ -280,6 +280,21 @@ input {
     color: #3d2106;
 }
 
+.exclusivo1 {
+    font-family: 'Lexend Deca', sans-serif;
+    background: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    border: none;  /* <-- Adicione esta linha */
+    outline: none;
+}
+
+.exclusivo1:hover {
+    background: #c82333;
+}
+
 .dashboard-grid1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
