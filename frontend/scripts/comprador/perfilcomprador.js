@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         profileImage: document.getElementById('profile-image'),
         logoPlaceholder: document.getElementById('logo-placeholder'),
         currentLogo: document.getElementById('current-logo'),
+        // ... (seu objeto 'ui' completo e sem alterações) ...
+        editCnpj: document.getElementById('edit-cnpj'),
+        editPhone: document.getElementById('edit-phone'),
+
         
         // Modais
         editModal: document.getElementById('edit-modal'),
@@ -156,9 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }, 2000); 
 
             } else {
-                const updatedData = await response.json();
-                Object.assign(userData, updatedData); // Atualiza a variável local
-                updateUI();
+                await fetchUserProfile();
                 closeModal(ui.editModal);
                 showNotification('Dados atualizados com sucesso!', 'success');
             }
@@ -327,6 +329,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         modalOverlay.style.display = "block";
         modalElement.style.display = "flex";
         document.body.style.overflow = "hidden";
+        if (modalElement.id === 'edit-modal') {
+            configurarMascaraCNPJ();
+            configurarMascaraTelefone();
+        }
     }
 
     function closeModal(modalElement) {
@@ -383,6 +389,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Lógica de Upload de Logo ---
     function setupLogoUpload() {
+
+        ui.logoUploadArea.addEventListener('click', () => {
+            ui.logoUploadInput.click(); // Dispara o input de arquivo escondido
+        });
+        
         ['dragover', 'dragleave', 'drop'].forEach(eventName => {
             ui.logoUploadArea.addEventListener(eventName, e => {
                 e.preventDefault();
@@ -472,6 +483,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         return true;
+    }
+
+    function configurarMascaraCNPJ() {
+        if (!ui.editCnpj) return;
+        ui.editCnpj.setAttribute('maxlength', '18'); // Limita o tamanho do campo
+        ui.editCnpj.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+            value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            e.target.value = value;
+        });
+    }
+
+    function configurarMascaraTelefone() {
+        if (!ui.editPhone) return;
+        ui.editPhone.setAttribute('maxlength', '15'); // Limita para (XX) XXXXX-XXXX
+        ui.editPhone.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+            if (value.length > 13) {
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            } else {
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
     }
 
     // --- Conexão dos Eventos ---
