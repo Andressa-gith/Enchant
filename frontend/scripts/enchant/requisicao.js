@@ -6,9 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const segundaSecao = document.getElementById('segunda-parte');
     const formDados = document.getElementById('dados-form');
     const formDocumentos = document.getElementById('documentos-form');
-     if (formDocumentos) {
-        formDocumentos.addEventListener('submit', handleDocumentosSubmit);
-    }
     
     // Armazenamento de arquivos por categoria
     const arquivosPorCategoria = {
@@ -23,11 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'declaracao-renda': []
     };
 
-    
-
     // ========== VALIDAÇÃO DE CAMPOS ==========
     
-    // Máscara para CNPJ
     function mascaraCNPJ(campo) {
         let valor = campo.value.replace(/\D/g, '');
         valor = valor.replace(/^(\d{2})(\d)/, '$1.$2');
@@ -37,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
         campo.value = valor;
     }
 
-    // Máscara para telefone
     function mascaraTelefone(campo) {
         let valor = campo.value.replace(/\D/g, '');
         valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
@@ -45,19 +38,16 @@ document.addEventListener('DOMContentLoaded', function() {
         campo.value = valor;
     }
 
-    // Validação de email
     function validarEmail(email) {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     }
 
-    // Validação de CNPJ
     function validarCNPJ(cnpj) {
         cnpj = cnpj.replace(/[^\d]/g, '');
         
         if (cnpj.length !== 14) return false;
         
-        // Validação dos dígitos verificadores
         let tamanho = cnpj.length - 2;
         let numeros = cnpj.substring(0, tamanho);
         let digitos = cnpj.substring(tamanho);
@@ -86,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return resultado == digitos.charAt(1);
     }
 
-    // Validação de senha
     function validarSenha(senha) {
         const criterios = {
             minimodigitos: senha.length >= 8,
@@ -95,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
             letramaiuscula: /[A-Z]/.test(senha)
         };
 
-        // Atualizar indicadores visuais
         Object.keys(criterios).forEach(criterio => {
             const elemento = document.getElementById(criterio);
             if (elemento) {
@@ -184,13 +172,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function validarPrimeiroForm() {
         const erros = [];
         
-        // Validar nome da instituição
         const nomeInstituicao = document.getElementById('nomecomprador').value.trim();
         if (!nomeInstituicao) {
             erros.push('Nome da Instituição/ONG é obrigatório');
         }
 
-        // Validar email
         const email = document.getElementById('email').value.trim();
         if (!email) {
             erros.push('Email é obrigatório');
@@ -198,7 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
             erros.push('Email inválido');
         }
 
-        // Validar CNPJ
         const cnpj = document.getElementById('cnpj').value;
         if (!cnpj) {
             erros.push('CNPJ é obrigatório');
@@ -206,25 +191,21 @@ document.addEventListener('DOMContentLoaded', function() {
             erros.push('CNPJ inválido');
         }
 
-        // Validar telefone
         const telefone = document.getElementById('tel').value.trim();
         if (!telefone) {
             erros.push('Telefone é obrigatório');
         }
 
-        // Validar estado
         const estado = document.getElementById('estado').value;
         if (!estado) {
             erros.push('Estado é obrigatório');
         }
 
-        // Validar cidade
         const cidade = document.getElementById('cidade').value;
         if (!cidade) {
             erros.push('Cidade é obrigatória');
         }
 
-        // Validar senhas
         const senha = document.getElementById('senha').value;
         const confirmarSenha = document.getElementById('confirmarsenha').value;
         
@@ -255,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validarArquivo(arquivo) {
         const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-        const tamanhoMaximo = 10 * 1024 * 1024; // 10MB
+        const tamanhoMaximo = 10 * 1024 * 1024;
 
         if (!tiposPermitidos.includes(arquivo.type)) {
             return 'Tipo de arquivo não permitido. Use apenas JPG, PNG ou PDF.';
@@ -318,15 +299,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Configurar áreas de upload
     function configurarAreaUpload(area) {
         const categoria = area.dataset.categoria;
         const input = area.querySelector('.upload-input');
 
-        // Click para selecionar arquivos
         area.addEventListener('click', () => input.click());
 
-        // Drag and drop
         area.addEventListener('dragover', (e) => {
             e.preventDefault();
             area.classList.add('dragover');
@@ -346,23 +324,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Input file change
         input.addEventListener('change', (e) => {
             const arquivos = Array.from(e.target.files);
             arquivos.forEach(arquivo => {
                 adicionarArquivo(categoria, arquivo);
             });
-            e.target.value = ''; // Limpar input para permitir mesmo arquivo novamente
+            e.target.value = '';
         });
     }
 
-    // Inicializar todas as áreas de upload
     document.querySelectorAll('.upload-area').forEach(configurarAreaUpload);
 
     // ========== SISTEMA DE MODAL ==========
     
     function mostrarModal(titulo, mensagem) {
-        // Verificar se o modal existe, senão criar
         let modal = document.getElementById('errorModal');
         if (!modal) {
             modal = document.createElement('div');
@@ -390,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('errorModalLabel').textContent = titulo;
         document.getElementById('errorModalBody').innerHTML = mensagem;
         
-        // Usar jQuery se disponível, senão implementação nativa
         if (typeof $ !== 'undefined') {
             $('#errorModal').modal('show');
         } else {
@@ -419,12 +393,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function validarSegundaSecao() {
         const erros = [];
         
-        // Verificar se declaração de renda foi enviada (obrigatório)
         if (arquivosPorCategoria['declaracao-renda'].length === 0) {
             erros.push('Declaração de que não possui receita própria suficiente é obrigatória');
         }
 
-        // Verificar se pelo menos 3 categorias têm arquivos
         const categoriasComArquivos = Object.values(arquivosPorCategoria)
             .filter(categoria => categoria.length > 0).length;
 
@@ -434,6 +406,66 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return erros;
     }
+
+    // ========== ENVIO DA SOLICITAÇÃO ==========
+    
+    async function enviarSolicitacao() {
+    const btnEnviar = document.querySelector('#btn-enviar');
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
+
+    try {
+        const dadosFormulario = {
+            nomeInstituicao: document.getElementById('nomecomprador').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            cnpj: document.getElementById('cnpj').value.trim(),
+            telefone: document.getElementById('tel').value.trim(),
+            estado: document.getElementById('estado').value,
+            cidade: document.getElementById('cidade').value,
+            senha: document.getElementById('senha').value
+        };
+
+        const formData = new FormData();
+        
+        Object.keys(dadosFormulario).forEach(key => {
+            formData.append(key, dadosFormulario[key]);
+        });
+
+        Object.keys(arquivosPorCategoria).forEach(categoria => {
+            arquivosPorCategoria[categoria].forEach((item, index) => {
+                formData.append(`${categoria}_${index}`, item.arquivo);
+            });
+        });
+
+        /* DESCOMENTAR quando o backend estiver pronto
+        const response = await fetch('/api/requisicao/enviar', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message);
+        */
+        
+        // Simular sucesso por enquanto
+        console.log('Dados:', dadosFormulario);
+        console.log('Arquivos:', arquivosPorCategoria);
+        
+        // Mostrar modal de sucesso
+        mostrarModal('Requisição Enviada com Sucesso!', 
+            'Você receberá um email quando sua conta for aprovada.');
+        
+        // Redirecionar após 2 segundos
+        setTimeout(() => {
+            window.location.href = '/entrar';
+        }, 4000);
+
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarModal('Erro ao Enviar Requisição', error.message);
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = 'Enviar';
+    }
+}
 
     // ========== EVENT LISTENERS DOS FORMULÁRIOS ==========
     
@@ -465,190 +497,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Aqui você pode implementar o envio dos dados
             enviarSolicitacao();
         });
     }
 
-    // Botão voltar
     const btnVoltar = document.getElementById('btn-voltar');
     if (btnVoltar) {
         btnVoltar.addEventListener('click', voltarPrimeiraSecao);
     }
 
-
-    
-    // ========== ENVIO DA SOLICITAÇÃO ==========
-    
-// Modificar a função enviarSolicitacao
-async function enviarSolicitacao() {
-    try {
-        // Mostrar indicador de carregamento
-        const btnEnviar = document.querySelector('button[type="submit"]');
-        const textoOriginal = btnEnviar.textContent;
-        btnEnviar.disabled = true;
-        btnEnviar.textContent = 'Enviando...';
-
-        // Coletar dados do formulário
-        const dadosFormulario = {
-            nomeInstituicao: document.getElementById('nomecomprador').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            cnpj: document.getElementById('cnpj').value.trim(),
-            telefone: document.getElementById('tel').value.trim(),
-            estado: document.getElementById('estado').value,
-            cidade: document.getElementById('cidade').value,
-            senha: document.getElementById('senha').value
-        };
-
-        // Preparar FormData
-        const formData = new FormData();
-        
-        // Adicionar dados básicos
-        Object.keys(dadosFormulario).forEach(key => {
-            formData.append(key, dadosFormulario[key]);
-        });
-
-        // Adicionar arquivos categorizados
-        Object.keys(arquivosPorCategoria).forEach(categoria => {
-            arquivosPorCategoria[categoria].forEach((item, index) => {
-                formData.append(`${categoria}_${index}`, item.arquivo);
-            });
-        });
-
-        // Enviar para o backend
-        const response = await fetch('/api/requisicao/enviar', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.message || 'Erro ao enviar solicitação');
-        }
-
-        // Sucesso! Mostrar mensagem e redirecionar
-        mostrarModal(
-            'Requisição Enviada com Sucesso!',
-            `
-            <p>${result.message}</p>
-            <p>Você será redirecionado para a página de login em <span id="countdown">5</span> segundos...</p>
-            <p>Verifique seu email para confirmar seu cadastro após a aprovação.</p>
-            `
-        );
-
-        // Countdown e redirecionamento
-        let segundos = 5;
-        const countdownElement = document.getElementById('countdown');
-        
-        const intervalId = setInterval(() => {
-            segundos--;
-            if (countdownElement) {
-                countdownElement.textContent = segundos;
-            }
-            
-            if (segundos <= 0) {
-                clearInterval(intervalId);
-                window.location.href = '/entrar';
-            }
-        }, 1000);
-
-        // Permitir fechar modal manualmente e ir para login
-        const modal = document.getElementById('errorModal');
-        if (modal) {
-            modal.addEventListener('hidden.bs.modal', () => {
-                window.location.href = '/entrar';
-            });
-        }
-
-    } catch (error) {
-        console.error('Erro ao enviar solicitação:', error);
-        mostrarModal(
-            'Erro ao Enviar Requisição',
-            error.message || 'Ocorreu um erro ao processar sua requisição. Tente novamente.'
-        );
-        
-        // Restaurar botão
-        const btnEnviar = document.querySelector('button[type="submit"]');
-        if (btnEnviar) {
-            btnEnviar.disabled = false;
-            btnEnviar.textContent = textoOriginal || 'Enviar Solicitação';
-        }
-    }
-}
-
- async function handleDocumentosSubmit(event) {
-        // Passo 1: Prevenir o comportamento padrão do formulário
-        event.preventDefault();
-
-        const btnEnviar = document.getElementById('btn-enviar');
-
-        // Validação: Verificar se os documentos obrigatórios foram enviados
-        // (Você precisa implementar essa lógica de acordo com suas regras)
-        // Ex: const declaracaoRendaInput = document.querySelector('[data-categoria="declaracao-renda"] input');
-        // if (declaracaoRendaInput.files.length === 0) {
-        //     alert('Por favor, anexe a declaração de baixa renda.');
-        //     return; // Para a execução
-        // }
-
-        // Passo 2: Desabilitar o botão para evitar cliques múltiplos (boa prática do seu exemplo)
-        btnEnviar.disabled = true;
-        btnEnviar.textContent = 'Enviando...';
-
-        try {
-            // Passo 3: LÓGICA DO SUPABASE (A parte assíncrona)
-            // Esta parte é um exemplo e precisa ser adaptada com seu código Supabase
-            
-            // Exemplo: Fazer upload dos arquivos para o Storage
-             const { data: fileData, error: fileError } = await supabase.storage
-                .from('seu-bucket-de-arquivos')
-                .upload('nome_do_arquivo.pdf', arquivo);
-             if (fileError) throw fileError; // Joga o erro para o catch
-
-            // Exemplo: Inserir os dados na tabela do Database
-            // Lembre-se de pegar os dados do primeiro formulário também
-            // const nomeInstituicao = document.getElementById('nomecomprador').value;
-            
-            const { error: insertError } = await supabase
-              .from('sua-tabela-de-dados')
-                 .insert([{ 
-                     nome_instituicao: nomeInstituicao, 
-                     url_documento: fileData.path 
-                 }]);
-             if (insertError) throw insertError; // Joga o erro para o catch
-
-
-            // ---- SIMULAÇÃO DE SUCESSO ----
-            // Como não tenho seu código Supabase, vou simular uma espera de 2 segundos
-            console.log("Enviando dados para o Supabase...");
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            console.log("Dados enviados com sucesso!");
-            // ---- FIM DA SIMULAÇÃO ----
-
-
-            // Passo 4: Mostrar mensagem de sucesso (boa prática do seu exemplo)
-            // Você pode usar seu modal ou um simples alert.
-            alert('Requisição enviada com sucesso! Você será redirecionado.');
-
-            // Passo 5: Redirecionar APÓS o sucesso, com um pequeno delay
-            setTimeout(() => {
-                window.location.href = '/entrar';
-            }, 1500);
-
-        } catch (error) {
-            // Passo 6: Tratar qualquer erro que ocorra no 'try'
-            console.error('Erro ao enviar para o Supabase:', error);
-            alert('Ocorreu um erro ao enviar sua requisição. Por favor, tente novamente.');
-
-            // Muito importante: Reabilitar o botão em caso de erro
-            btnEnviar.disabled = false;
-            btnEnviar.textContent = 'Enviar';
-        }
-    }
-
     // ========== FUNÇÕES GLOBAIS ==========
     
-    // Tornar funções disponíveis globalmente para uso nos event handlers inline
     window.removerArquivo = removerArquivo;
 });
-
