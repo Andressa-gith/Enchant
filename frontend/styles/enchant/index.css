@@ -95,19 +95,44 @@
 }
 
 #doacaoModal .btn-close {
-  /* Força o fundo a ser transparente e remove a borda */
-  background: var(--dark-brown);
-
-  /* Aumenta o tamanho e a opacidade para ficar mais visível */
-  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
   opacity: 1;
-
-  padding: 0.8rem 1rem; /* Aumenta a altura e o espaçamento lateral */
-  font-size: 1.1rem;
+  transition: all 0.3s ease;
 }
 
-#doacaoModal .btn-close:hover{
-  cursor: pointer;
+#doacaoModal .btn-close::before,
+#doacaoModal .btn-close::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background-color: #693B11;
+  top: 50%;
+  left: 50%;
+  transition: all 0.3s ease;
+}
+
+#doacaoModal .btn-close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#doacaoModal .btn-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+#doacaoModal .btn-close:hover {
+  transform: rotate(90deg);
+}
+
+#doacaoModal .btn-close:hover::before,
+#doacaoModal .btn-close:hover::after {
+  background-color: #d2691e;
 }
 
 .page-layout {
@@ -368,7 +393,7 @@
 .header-parceiros h1 {
   font-family: 'Passion One', sans-serif;
   /* Fonte ajustada */
-  font-size: 2.8rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #693B11;
   /* Cor ajustada */
