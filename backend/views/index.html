@@ -14,6 +14,8 @@
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="/scripts/enchant/pix-generator.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <link rel="stylesheet" href="/styles/enchant/index.css">
@@ -253,8 +255,26 @@
                                 <input type="number" class="form-control" id="doacao-valor" step="0.01" min="1"
                                     required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Confirmar Doação (Simulado)</button>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="" id="termos-doacao" required>
+                                <label class="form-check-label" for="termos-doacao" style="font-size: 0.8rem;">
+                                    Concordo que a transação é de responsabilidade minha e da organização.
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Gerar PIX Copia e Cola</button>
                         </form>
+
+                        <div id="area-pix-gerado" style="display: none; text-align: center;">
+                            <p>Tudo pronto! Use o código abaixo no seu app do banco:</p>
+                            <textarea id="pix-codigo" class="form-control" rows="4" readonly></textarea>
+                            <button id="btn-copiar-pix" class="btn btn-success w-100 mt-2">Copiar Código</button>
+                            <p id="copiado-feedback" style="color: green; display: none; margin-top: 10px;">Copiado!</p></br>
+
+                            <canvas id="qrcode-container"></canvas>
+                        </div>
+
                     </div>
                 </div>
             </div>

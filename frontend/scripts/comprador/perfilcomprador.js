@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ... (seu objeto 'ui' completo e sem alterações) ...
         editCnpj: document.getElementById('edit-cnpj'),
         editPhone: document.getElementById('edit-phone'),
-
+        editChavePix: document.getElementById('edit-chave-pix'),
         
         // Modais
         editModal: document.getElementById('edit-modal'),
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             telefone: ui.editPhone.value,
             estado: ui.editEstado.value,
             cidade: ui.editCidade.value,
+            chave_pix: ui.editChavePix.value
         };
         
         const aSenhaFoiAlterada = !!dadosParaEnviar.senha;
@@ -308,6 +309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.editInstitutionName.value = userData.nome || '';
         ui.editEmail.value = userData.email || '';
         ui.editCnpj.value = userData.cnpj || '';
+        ui.editChavePix.value = userData.chave_pix || ''; 
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
         ui.editCidade.value = userData.cidade || '';

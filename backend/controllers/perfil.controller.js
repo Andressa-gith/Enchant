@@ -16,7 +16,7 @@ class UserProfileController {
 
             const { data, error } = await supabase
                 .from('instituicao')
-                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado ), primeiro_login')
+                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado ), primeiro_login, chave_pix')
                 .eq('id', usuarioId)
                 .single();
 
@@ -35,6 +35,7 @@ class UserProfileController {
                 email_contato: data.email_contato,
                 email: req.user.email,
                 cnpj: data.cnpj,
+                chave_pix: data.chave_pix,
                 primeiro_login: data.primeiro_login,
                 telefone: fone?.numero || null,
                 cidade: end?.cidade || null,
@@ -91,7 +92,7 @@ class UserProfileController {
         logger.info('Iniciando processo de atualização de perfil...');
         try {
             const usuarioId = req.user.id;
-            const { nome, email_contato, email, senha, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo } = req.body;
+            const { nome, email_contato, email, senha, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo, chave_pix } = req.body;
 
             // Log de debug sem dados sensíveis (senha)
             const debugData = { ...req.body };
@@ -116,7 +117,7 @@ class UserProfileController {
             }
             
             // 2. Atualiza a tabela 'instituicao'
-            const instituicaoData = { nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo };
+            const instituicaoData = { nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, chave_pix };
             Object.keys(instituicaoData).forEach(key => instituicaoData[key] === undefined && delete instituicaoData[key]);
             if (Object.keys(instituicaoData).length > 0) {
                 logger.info(`Atualizando tabela 'instituicao' para o usuário ID: ${usuarioId}`);

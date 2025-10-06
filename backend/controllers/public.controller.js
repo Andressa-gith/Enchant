@@ -6,7 +6,7 @@ class PublicController {
             // Busca na sua tabela unificada de usuários
             const { data, error } = await supabase
                 .from('instituicao')
-                .select('id, nome, caminho_logo') // Adicione as colunas que quiser mostrar
+                .select('id, nome, caminho_logo, chave_pix') // Adicione as colunas que quiser mostrar
 
             if (error) {
                 throw error; // Joga o erro para o nosso 'catch'
@@ -25,7 +25,8 @@ class PublicController {
                 return {
                     id: ong.id,
                     nome: ong.nome,
-                    caminho_logo: logoUrl
+                    caminho_logo: logoUrl,
+                    chave_pix: ong.chave_pix
                 };
             });
 
@@ -50,8 +51,7 @@ class PublicController {
                     instituicao_id: ongId,
                     tipo_documento: 'Recibo de doação',
                     titulo: `Doação recebida de ${nomeDoador}`,
-                    valor: valor,
-                    detalhes: { doador: { nome: nomeDoador, email: emailDoador } }
+                    valor: valor
                 });
 
             if (error) throw error;

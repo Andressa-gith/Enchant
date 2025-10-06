@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const doacaoModalEl = document.getElementById('doacaoModal');
     const doacaoModal = new bootstrap.Modal(doacaoModalEl);
     const formDoacao = document.getElementById('form-doacao');
+    let ongsList = [];
 
     // 1. Carrega a lista de ONGs assim que a página abre
     async function carregarOngs() {
@@ -10,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/public/ongs');
             if (!response.ok) throw new Error('Falha ao carregar organizações.');
             const ongs = await response.json();
-            
+            ongsList = ongs;
+
             ongsContainer.innerHTML = ''; // Limpa a mensagem "Carregando..."
             if (ongs.length === 0) {
                 ongsContainer.innerHTML = '<p>Nenhuma organização encontrada no momento.</p>';
@@ -42,11 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('card-ong-link')) {
             const ongId = e.target.dataset.ongId;
             const ongNome = e.target.dataset.ongNome;
-            
+
             // Preenche o modal com os dados da ONG selecionada
             document.getElementById('modal-ong-nome').textContent = ongNome;
             document.getElementById('doacao-ong-id').value = ongId;
-            
+
             doacaoModal.show();
         }
     });
@@ -54,35 +56,68 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Lida com o envio do formulário de doação
     formDoacao.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitButton = formDoacao.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-        submitButton.textContent = 'Processando...';
 
-        const dadosDoacao = {
-            ongId: document.getElementById('doacao-ong-id').value,
-            nomeDoador: document.getElementById('doacao-nome').value,
-            emailDoador: document.getElementById('doacao-email').value,
-            valor: parseFloat(document.getElementById('doacao-valor').value)
+        // Dados do formulário
+        const ongId = document.getElementById('doacao-ong-id').value;
+        const nomeDoador = document.getElementById('doacao-nome').value;
+        const valor = parseFloat(document.getElementById('doacao-valor').value);
+
+        // Encontra a ONG selecionada para pegar a chave pix
+        const ongSelecionada = ongsList.find(ong => ong.id === ongId);
+        if (!ongSelecionada || !ongSelecionada.chave_pix) {
+            alert('Esta organização não configurou uma chave Pix para doações.');
+            return;
+        }
+
+        const formatarTextoPix = (texto, limite) => {
+            return texto
+                .normalize("NFD") // Separa os acentos das letras
+                .replace(/[\u0300-\u036f]/g, "") // Remove os acentos
+                .replace(/\s+/g, ' ') // Troca um ou mais espaços por um único underline
+                .substring(0, limite); // Limita o tamanho do texto
         };
 
-        try {
-            const response = await fetch('/api/public/doar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosDoacao)
-            });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.message);
+        const pixCode = gerarPixCopiaECola({
+            merchantName: formatarTextoPix(ongSelecionada.nome, 25),
+            merchantCity: formatarTextoPix(ongSelecionada.cidade || "SAO PAULO", 15),
+            pixKey: ongSelecionada.chave_pix,
+            infoAdicional: '***',
+            transactionAmount: valor,
+        });
 
-            doacaoModal.hide();
-            alert(result.message); // Exibe "Doação registrada com sucesso! Agradecemos sua contribuição."
+        document.getElementById('pix-codigo').value = pixCode;
 
-        } catch (error) {
-            alert(`Erro: ${error.message}`);
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Confirmar Doação (Simulado)';
-        }
+        const canvasElement = document.getElementById('qrcode-container');
+        new QRious({
+            element: canvasElement,
+            value: pixCode,
+            size: 250, // Tamanho do QR Code em pixels
+            foreground: 'black', // Cor dos pontos
+            level: 'H' // Nível de correção de erro (L, M, Q, H)
+        });
+
+        document.getElementById('form-doacao').style.display = 'none';
+        document.getElementById('area-pix-gerado').style.display = 'block';
+
+        // --- REGISTRO NO BACKEND (em paralelo) ---
+        // Envia os dados para o backend criar o recibo
+        fetch('/api/public/doar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ongId, valor, nomeDoador, emailDoador: document.getElementById('doacao-email').value })
+        }).then(res => console.log("Recibo de doação registrado no backend."))
+            .catch(err => console.error("Erro ao registrar recibo:", err));
+    });
+
+    // Lógica do botão de copiar
+    document.getElementById('btn-copiar-pix').addEventListener('click', () => {
+        const pixCodeText = document.getElementById('pix-codigo');
+        pixCodeText.select();
+        document.execCommand('copy');
+
+        const feedback = document.getElementById('copiado-feedback');
+        feedback.style.display = 'inline';
+        setTimeout(() => { feedback.style.display = 'none'; }, 2000);
     });
 
     carregarOngs();
