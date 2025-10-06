@@ -3,66 +3,171 @@ document.addEventListener('DOMContentLoaded', () => {
     const doacaoModalEl = document.getElementById('doacaoModal');
     const doacaoModal = new bootstrap.Modal(doacaoModalEl);
     const formDoacao = document.getElementById('form-doacao');
+    const inputBusca = document.getElementById('input-busca');
+    const paginacaoContainer = document.getElementById('paginacao-container');
+    const mensagemVazia = document.getElementById('mensagem-vazia');
+    
     let ongsList = [];
+    let ongsFiltradas = [];
+    let paginaAtual = 1;
+    const itensPorPagina = 6;
 
-    // 1. Carrega a lista de ONGs assim que a página abre
+    // Carrega ONGs
     async function carregarOngs() {
         try {
             const response = await fetch('/api/public/ongs');
             if (!response.ok) throw new Error('Falha ao carregar organizações.');
             const ongs = await response.json();
             ongsList = ongs;
-
-            ongsContainer.innerHTML = ''; // Limpa a mensagem "Carregando..."
-            if (ongs.length === 0) {
-                ongsContainer.innerHTML = '<p>Nenhuma organização encontrada no momento.</p>';
-                return;
-            }
-
-            ongs.forEach(ong => {
-                const card = document.createElement('div');
-                card.className = 'card-ong'; // Você precisa estilizar esta classe no seu CSS
-                console.log(`${ong.caminho_logo}`);
-                card.innerHTML = `
-                    <img src="${ong.caminho_logo || '/assets/imgs/comprador/avatar-padrao.jpg'}" alt="Logo de ${ong.nome}" class="card-ong-imagem">
-                    <div class="card-ong-conteudo">
-                        <h3>${ong.nome}</h3>
-                        <p>${ong.descricao_curta || 'Esta organização ainda não adicionou uma descrição.'}</p>
-                        <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}">Doar Agora</button>
-                    </div>
-                `;
-                ongsContainer.appendChild(card);
-            });
+            ongsFiltradas = ongs;
+            
+            renderizarOngs();
+            renderizarPaginacao();
         } catch (error) {
             console.error(error);
-            ongsContainer.innerHTML = '<p>Não foi possível carregar as organizações no momento. Tente novamente mais tarde.</p>';
+            ongsContainer.innerHTML = '<p class="mensagem-erro">Não foi possível carregar as organizações no momento. Tente novamente mais tarde.</p>';
         }
     }
 
-    // 2. Adiciona um "ouvinte" para os cliques nos botões "Doar Agora"
+    // Renderiza ONGs na página atual
+    function renderizarOngs() {
+        ongsContainer.innerHTML = '';
+        
+        if (ongsFiltradas.length === 0) {
+            mensagemVazia.style.display = 'block';
+            paginacaoContainer.innerHTML = '';
+            return;
+        }
+        
+        mensagemVazia.style.display = 'none';
+        
+        const inicio = (paginaAtual - 1) * itensPorPagina;
+        const fim = inicio + itensPorPagina;
+        const ongsParaMostrar = ongsFiltradas.slice(inicio, fim);
+        
+        ongsParaMostrar.forEach(ong => {
+            const card = document.createElement('div');
+            card.className = 'card-ong';
+            card.innerHTML = `
+                <img src="${ong.caminho_logo || '/assets/imgs/comprador/avatar-padrao.jpg'}" 
+                     alt="Logo de ${ong.nome}" 
+                     class="card-ong-imagem"
+                     onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
+                <div class="card-ong-conteudo">
+                    <h3>${ong.nome}</h3>
+                    <p>${ong.descricao_curta || 'Esta organização ainda não adicionou uma descrição.'}</p>
+                    <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}">
+                        Doar Agora
+                    </button>
+                </div>
+            `;
+            ongsContainer.appendChild(card);
+        });
+    }
+
+    // Renderiza paginação
+    function renderizarPaginacao() {
+        paginacaoContainer.innerHTML = '';
+        
+        const totalPaginas = Math.ceil(ongsFiltradas.length / itensPorPagina);
+        
+        if (totalPaginas <= 1) return;
+        
+        // Botão anterior
+        const btnAnterior = document.createElement('button');
+        btnAnterior.className = 'btn-pagina';
+        btnAnterior.innerHTML = '←';
+        btnAnterior.disabled = paginaAtual === 1;
+        btnAnterior.onclick = () => {
+            if (paginaAtual > 1) {
+                paginaAtual--;
+                renderizarOngs();
+                renderizarPaginacao();
+                scrollParaOngs();
+            }
+        };
+        paginacaoContainer.appendChild(btnAnterior);
+        
+        // Números das páginas
+        for (let i = 1; i <= totalPaginas; i++) {
+            const btnPagina = document.createElement('button');
+            btnPagina.className = 'btn-pagina';
+            if (i === paginaAtual) btnPagina.classList.add('active');
+            btnPagina.textContent = i;
+            btnPagina.onclick = () => {
+                paginaAtual = i;
+                renderizarOngs();
+                renderizarPaginacao();
+                scrollParaOngs();
+            };
+            paginacaoContainer.appendChild(btnPagina);
+        }
+        
+        // Botão próximo
+        const btnProximo = document.createElement('button');
+        btnProximo.className = 'btn-pagina';
+        btnProximo.innerHTML = '→';
+        btnProximo.disabled = paginaAtual === totalPaginas;
+        btnProximo.onclick = () => {
+            if (paginaAtual < totalPaginas) {
+                paginaAtual++;
+                renderizarOngs();
+                renderizarPaginacao();
+                scrollParaOngs();
+            }
+        };
+        paginacaoContainer.appendChild(btnProximo);
+    }
+
+    // Scroll suave para área das ONGs
+    function scrollParaOngs() {
+        document.querySelector('.container-parceiros').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+
+    // Sistema de busca
+    inputBusca.addEventListener('input', (e) => {
+        const termoBusca = e.target.value.toLowerCase().trim();
+        
+        if (!termoBusca) {
+            ongsFiltradas = ongsList;
+        } else {
+            ongsFiltradas = ongsList.filter(ong => {
+                return ong.nome.toLowerCase().includes(termoBusca) ||
+                       (ong.descricao_curta && ong.descricao_curta.toLowerCase().includes(termoBusca)) ||
+                       (ong.area_atuacao && ong.area_atuacao.toLowerCase().includes(termoBusca));
+            });
+        }
+        
+        paginaAtual = 1; // Volta para primeira página ao buscar
+        renderizarOngs();
+        renderizarPaginacao();
+    });
+
+    // Abre modal de doação
     ongsContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('card-ong-link')) {
             const ongId = e.target.dataset.ongId;
             const ongNome = e.target.dataset.ongNome;
-
-            // Preenche o modal com os dados da ONG selecionada
+            
             document.getElementById('modal-ong-nome').textContent = ongNome;
             document.getElementById('doacao-ong-id').value = ongId;
-
+            formDoacao.reset();
+            
             doacaoModal.show();
         }
     });
 
-    // 3. Lida com o envio do formulário de doação
+    // Envio do formulário de doação
     formDoacao.addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        // Dados do formulário
+        
         const ongId = document.getElementById('doacao-ong-id').value;
         const nomeDoador = document.getElementById('doacao-nome').value;
         const valor = parseFloat(document.getElementById('doacao-valor').value);
 
-        // Encontra a ONG selecionada para pegar a chave pix
         const ongSelecionada = ongsList.find(ong => ong.id === ongId);
         if (!ongSelecionada || !ongSelecionada.chave_pix) {
             alert('Esta organização não configurou uma chave Pix para doações.');
@@ -71,17 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formatarTextoPix = (texto, limite) => {
             return texto
-                .normalize("NFD") // Separa os acentos das letras
-                .replace(/[\u0300-\u036f]/g, "") // Remove os acentos
-                .replace(/\s+/g, ' ') // Troca um ou mais espaços por um único underline
-                .substring(0, limite); // Limita o tamanho do texto
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, ' ')
+                .substring(0, limite);
         };
 
         const pixCode = gerarPixCopiaECola({
             merchantName: formatarTextoPix(ongSelecionada.nome, 25),
             merchantCity: formatarTextoPix(ongSelecionada.cidade || "SAO PAULO", 15),
             pixKey: ongSelecionada.chave_pix,
-            infoAdicional: '***',
+            infoAdicional: 'Doacao',
             transactionAmount: valor,
         });
 
@@ -91,25 +196,28 @@ document.addEventListener('DOMContentLoaded', () => {
         new QRious({
             element: canvasElement,
             value: pixCode,
-            size: 250, // Tamanho do QR Code em pixels
-            foreground: 'black', // Cor dos pontos
-            level: 'H' // Nível de correção de erro (L, M, Q, H)
+            size: 250,
+            foreground: 'black',
+            level: 'H'
         });
 
         document.getElementById('form-doacao').style.display = 'none';
         document.getElementById('area-pix-gerado').style.display = 'block';
 
-        // --- REGISTRO NO BACKEND (em paralelo) ---
-        // Envia os dados para o backend criar o recibo
+        // Registro no backend
         fetch('/api/public/doar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ongId, valor, nomeDoador, emailDoador: document.getElementById('doacao-email').value })
-        }).then(res => console.log("Recibo de doação registrado no backend."))
-            .catch(err => console.error("Erro ao registrar recibo:", err));
+            body: JSON.stringify({ 
+                ongId, 
+                valor, 
+                nomeDoador, 
+                emailDoador: document.getElementById('doacao-email').value 
+            })
+        }).catch(err => console.error("Erro ao registrar:", err));
     });
 
-    // Lógica do botão de copiar
+    // Botão copiar PIX
     document.getElementById('btn-copiar-pix').addEventListener('click', () => {
         const pixCodeText = document.getElementById('pix-codigo');
         pixCodeText.select();
@@ -118,6 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedback = document.getElementById('copiado-feedback');
         feedback.style.display = 'inline';
         setTimeout(() => { feedback.style.display = 'none'; }, 2000);
+    });
+
+    // Reseta formulário ao fechar modal
+    doacaoModalEl.addEventListener('hidden.bs.modal', () => {
+        formDoacao.reset();
+        document.getElementById('form-doacao').style.display = 'block';
+        document.getElementById('area-pix-gerado').style.display = 'none';
     });
 
     carregarOngs();
