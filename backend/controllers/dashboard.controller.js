@@ -54,7 +54,7 @@ export const getDashboardData = async (req, res) => {
             supabase.from('parceiro').select('valor_total_parceria, nome, data_inicio, status, data_fim, data_criacao').eq('instituicao_id', instituicaoId).gte('data_criacao', dataInicio).lte('data_criacao', dataFim),
             supabase.from('doacao_entrada').select('quantidade, categoria:categoria_id(nome)').eq('instituicao_id', instituicaoId).lte('data_entrada', dataFim),
             supabase.from('doacao_saida').select('quantidade_retirada, entrada:entrada_id(categoria:categoria_id(nome))').eq('instituicao_id', instituicaoId).lte('data_saida', dataFim),
-            supabase.from('relatorio_doacao').select('id, data_geracao, caminho_arquivo_pdf, data_inicio_filtro, data_fim_filtro').eq('instituicao_id', instituicaoId).order('data_geracao', { ascending: false }).limit(3),
+            supabase.from('relatorio_doacao').select('id, data_geracao, caminho_arquivo_pdf, data_inicio_filtro, data_fim_filtro').eq('instituicao_id', instituicaoId).order('data_geracao', { ascending: false }),
             supabase.from('parceiro').select('nome, status, data_fim').eq('instituicao_id', instituicaoId)
         ]);
         
