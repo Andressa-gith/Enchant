@@ -9,6 +9,6 @@ const mercadoPagoRoutes = express.Router();
 mercadoPagoRoutes.get('/authorize', generateAuthLink);
 
 // Rota para onde o Mercado Pago redirecionará a ONG após a autorização
-mercadoPagoRoutes.get('/callback', protegerRota, handleCallback);
+mercadoPagoRoutes.get('/callback', handleCallback);
 
 export default mercadoPagoRoutes;
