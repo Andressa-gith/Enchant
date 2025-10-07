@@ -6,7 +6,7 @@ import { protegerRota } from '../middleware/auth.middleware.js'; // Use seu midd
 const mercadoPagoRoutes = express.Router();
 
 // Rota para iniciar a conexão. A ONG será redirecionada para o Mercado Pago
-mercadoPagoRoutes.get('/authorize', protegerRota, generateAuthLink);
+mercadoPagoRoutes.get('/authorize', generateAuthLink);
 
 // Rota para onde o Mercado Pago redirecionará a ONG após a autorização
 mercadoPagoRoutes.get('/callback', protegerRota, handleCallback);

@@ -10,6 +10,7 @@ export const generateAuthLink = (req, res) => {
     const authUrl = `https://auth.mercadopago.com.br/authorization?client_id=${appId}&response_type=code&platform_id=mp&redirect_uri=${redirectUri}`;
     
     res.redirect(authUrl);
+
 };
 
 // Função para lidar com o callback do Mercado Pago após a autorização
