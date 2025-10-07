@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         editCnpj: document.getElementById('edit-cnpj'),
         editPhone: document.getElementById('edit-phone'),
         editChavePix: document.getElementById('edit-chave-pix'),
-        
+
         // Modais
         editModal: document.getElementById('edit-modal'),
         photoModal: document.getElementById('photo-modal'),
@@ -40,19 +40,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         termsModal: document.getElementById('terms-modal'),
         notificationModal: document.getElementById('erroSenhaModal'),
         notificationModalBody: document.getElementById('erroSenhaModalBody'),
-        
+
         // Botões de Abrir Modais
         btnOpenPhotoModal: document.getElementById('btn-open-photo-modal'),
         btnOpenLogoModal: document.getElementById('btn-open-logo-modal'),
         btnOpenEditModal: document.getElementById('btn-open-edit-modal'),
         btnOpenPrivacyModal: document.getElementById('btn-open-privacy-modal'),
         btnOpenTermsModal: document.getElementById('btn-open-terms-modal'),
-        
+
         // Botões Dentro dos Modais
         btnCloseEditModalX: document.getElementById('btn-close-edit-modal-x'),
         btnCancelEditModal: document.getElementById('btn-cancel-edit-modal'),
         btnSaveChanges: document.getElementById('btn-save-changes'),
-        
+
         btnClosePhotoModalX: document.getElementById('btn-close-photo-modal-x'),
         btnCancelPhotoModal: document.getElementById('btn-cancel-photo-modal'),
         btnSavePhoto: document.getElementById('btn-save-photo'),
@@ -60,11 +60,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnCloseLogoModalX: document.getElementById('btn-close-logo-modal-x'),
         btnCancelLogoModal: document.getElementById('btn-cancel-logo-modal'),
         btnSaveLogo: document.getElementById('btn-save-logo'),
-        photoUploadInput: document.getElementById('photo-upload'), 
-        
+        photoUploadInput: document.getElementById('photo-upload'),
+
         btnClosePrivacyModalX: document.getElementById('btn-close-privacy-modal-x'),
         btnClosePrivacyModalFooter: document.getElementById('btn-close-privacy-modal-footer'),
-        
+
         btnCloseTermsModalX: document.getElementById('btn-close-terms-modal-x'),
 
         // Campos do Formulário de Edição
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         editPhone: document.getElementById('edit-phone'),
         editEstado: document.getElementById('edit-estado'),
         editCidade: document.getElementById('edit-cidade'),
-        
+
         // Outros
         togglePassword: document.getElementById('toggle-password'),
         toggleEditPassword: document.getElementById('toggle-edit-password'),
@@ -99,9 +99,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const notificationModalInstance = new bootstrap.Modal(ui.notificationModal);
 
     // 4. FUNÇÕES
-    
+
     // --- Funções de API (Comunicação com o Backend) ---
-    
+
     async function fetchUserProfile() {
         try {
             const response = await fetch('/api/user/profile', {
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             cidade: ui.editCidade.value,
             chave_pix: ui.editChavePix.value
         };
-        
+
         const aSenhaFoiAlterada = !!dadosParaEnviar.senha;
 
         // Não envia a senha se o campo estiver vazio
@@ -155,11 +155,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (aSenhaFoiAlterada) {
                 closeModal(ui.editModal);
                 showNotification('Senha alterada com sucesso! Por segurança, você será desconectado.', 'success');
-            
+
                 setTimeout(async () => {
                     await supabase.auth.signOut();
                     window.location.href = '/entrar';
-                }, 2000); 
+                }, 2000);
 
             } else {
                 await fetchUserProfile();
@@ -189,9 +189,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const cleanFileName = photoPreviewFile.name
-        .replace(/\s+/g, '_') // Substitui espaços por underscore
-        .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
-        .toLowerCase();
+            .replace(/\s+/g, '_') // Substitui espaços por underscore
+            .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
+            .toLowerCase();
 
         // Usa o nome original do ficheiro para mais flexibilidade (ex: .jpg, .png)
         const filePath = `${session.user.id}/${cleanFileName}`;
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeModal(ui.photoModal);
             return showNotification('Erro ao enviar a sua foto.', 'danger');
         }
-        
+
         // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
         try {
             await fetch('/api/user/profile', {
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             showNotification('Foto de perfil atualizada!', 'success');
             await fetchUserProfile(); // Re-busca tudo para atualizar a UI com a nova imagem
             photoPreviewFile = null; // Limpa a seleção
-        
+
         } catch (dbError) {
             console.error('Erro ao salvar caminho no DB:', dbError);
             closeModal(ui.photoModal);
@@ -239,9 +239,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const cleanFileName2 = logoPreviewFile.name
-        .replace(/\s+/g, '_') // Substitui espaços por underscore
-        .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
-        .toLowerCase();
+            .replace(/\s+/g, '_') // Substitui espaços por underscore
+            .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
+            .toLowerCase();
 
         // Usa o nome original do ficheiro para consistência
         const filePath = `${session.user.id}/${cleanFileName2}`;
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Erro no upload do logo:', uploadError);
             return showNotification('Erro ao enviar o seu logo.', 'danger');
         }
-        
+
         // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
         try {
             await fetch('/api/user/profile', {
@@ -307,11 +307,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             ui.currentLogo.style.display = 'none';
         }
 
+        if (userData.mp_connected) {
+            document.getElementById('mp-button-container').style.display = 'none';
+            document.getElementById('mp-connected-info').style.display = 'block';
+            document.getElementById('mp-status-text').textContent = 'Sua conta está conectada e pronta para receber doações!';
+        } else {
+            document.getElementById('mp-button-container').style.display = 'block';
+            document.getElementById('mp-connected-info').style.display = 'none';
+        }
+
         // Preenche o formulário de edição com os dados atuais
         ui.editInstitutionName.value = userData.nome || '';
         ui.editEmail.value = userData.email || '';
         ui.editCnpj.value = userData.cnpj || '';
-        ui.editChavePix.value = userData.chave_pix || ''; 
+        ui.editChavePix.value = userData.chave_pix || '';
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
         ui.editCidade.value = userData.cidade || '';
@@ -327,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             modalOverlay.addEventListener('click', closeAllModals);
         }
     }
-    
+
     function openModal(modalElement) {
         createModalOverlayIfNeeded();
         modalOverlay.style.display = "block";
@@ -358,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.notificationModalBody.innerHTML = `<div class="alert alert-${type} d-flex align-items-center mb-0"><i class="bi ${icon} me-2"></i> ${message}</div>`;
         notificationModalInstance.show();
     }
-    
+
     // --- Lógica de Senha ---
 
     function setupPasswordToggles() {
@@ -378,7 +387,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             number: /[0-9]/.test(senha),
             special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha),
         };
-        
+
         for (const key in checks) {
             const item = ui.passwordChecklist[key];
             if (checks[key]) {
@@ -397,7 +406,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.logoUploadArea.addEventListener('click', () => {
             ui.logoUploadInput.click(); // Dispara o input de arquivo escondido
         });
-        
+
         ['dragover', 'dragleave', 'drop'].forEach(eventName => {
             ui.logoUploadArea.addEventListener(eventName, e => {
                 e.preventDefault();
@@ -430,7 +439,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeModal(ui.logoModal);
             return showNotification('Arquivo muito grande (máx. 2MB).', 'danger');
         }
-        
+
         logoPreviewFile = file; // Armazena o arquivo para envio
         const reader = new FileReader();
         reader.onload = e => showLogoPreview(e.target.result);
@@ -442,14 +451,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             <img src="${imageSrc}" class="logo-preview-image" alt="Preview">
             <button type="button" class="logo-preview-remove" id="btn-clear-logo-preview">×</button>
         </div><p class="logo-preview-text">Clique em "Salvar"</p>`;
-        
+
         // Adiciona o listener para o botão de remover que acabou de ser criado
         document.getElementById('btn-clear-logo-preview').addEventListener('click', (e) => {
             e.stopPropagation(); // Evita que o clique propague para a área de upload
             clearLogoPreview();
         });
     }
-    
+
     function clearLogoPreview() {
         logoPreviewFile = null;
         ui.logoUploadInput.value = '';
@@ -457,9 +466,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p>Clique ou arraste uma imagem aqui</p>
             <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>`;
     }
-    
+
     // --- Validação de Formulário ---
-    
+
     const validadores = {
         nome: (val) => val.trim().length >= 3 ? { v: true } : { v: false, m: "O nome deve ter pelo menos 3 caracteres." },
         email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? { v: true } : { v: false, m: "Formato de email inválido." },
@@ -476,7 +485,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             { el: ui.editCnpj, val: validadores.cnpj, nome: 'CNPJ' },
             { el: ui.editPhone, val: validadores.telefone, nome: 'Telefone' },
         ];
-        
+
         for (const campo of campos) {
             const resultado = campo.val(campo.el.value);
             if (!resultado.v) {
@@ -518,7 +527,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- Conexão dos Eventos ---
-    
+
     function conectarEventos() {
         // Abrir Modais
         ui.btnOpenEditModal.addEventListener('click', () => openModal(ui.editModal));
@@ -535,7 +544,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Ações dos Modais (Salvar)
         ui.btnSaveChanges.addEventListener('click', saveProfileChanges);
 
-        ui.btnSavePhoto.addEventListener('click', saveProfilePhoto); 
+        ui.btnSavePhoto.addEventListener('click', saveProfilePhoto);
         ui.btnSaveLogo.addEventListener('click', saveOrganizationLogo);
         ui.photoUploadInput.addEventListener('change', (event) => {
             handlePhotoFile(event.target.files[0]);
@@ -543,12 +552,65 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Outros eventos
         ui.editPassword.addEventListener('input', checkPasswordStrength);
+
+        const btnConectar = document.getElementById('btn-conectar-mp');
+        if (btnConectar) {
+            btnConectar.addEventListener('click', () => {
+                const instituicaoId = userData.id; // Pega o ID do usuário logado
+
+                // Abre popup
+                const width = 600;
+                const height = 700;
+                const left = (screen.width - width) / 2;
+                const top = (screen.height - height) / 2;
+
+                const popup = window.open(
+                    `/api/mercado-pago/authorize?id=${instituicaoId}`,
+                    'Mercado Pago',
+                    `width=${width},height=${height},left=${left},top=${top}`
+                );
+
+                // Escuta mensagens da popup
+                window.addEventListener('message', function handler(event) {
+                    if (event.data.type === 'mp-success') {
+                        showNotification('✓ Mercado Pago conectado com sucesso!', 'success');
+                        fetchUserProfile(); // Recarrega dados
+                        window.removeEventListener('message', handler);
+                    } else if (event.data.type === 'mp-error') {
+                        showNotification(`Erro: ${event.data.message || 'Não foi possível conectar'}`, 'danger');
+                        window.removeEventListener('message', handler);
+                    }
+                });
+            });
+        }
+
+        // Botão de desconectar MP
+        const btnDesconectar = document.getElementById('btn-desconectar-mp');
+        if (btnDesconectar) {
+            btnDesconectar.addEventListener('click', async () => {
+                if (!confirm('Deseja desconectar o Mercado Pago?')) return;
+
+                try {
+                    const response = await fetch('/api/mercado-pago/disconnect', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${session.access_token}` }
+                    });
+
+                    if (!response.ok) throw new Error('Erro');
+
+                    showNotification('Desconectado com sucesso', 'success');
+                    await fetchUserProfile();
+                } catch (error) {
+                    showNotification('Erro ao desconectar', 'danger');
+                }
+            });
+        }
     }
 
 
     // 5. INICIALIZAÇÃO
     // Ponto de partida da aplicação na página
-    
+
     await fetchUserProfile(); // Busca os dados do usuário e atualiza a UI
     setupPasswordToggles();   // Configura os botões de mostrar/esconder senha
     setupLogoUpload();        // Configura a área de arrastar e soltar logo
@@ -556,4 +618,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
         window.SiteLoader?.hide();
     }, 500);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+
+    if (status) {
+        let mensagem = '';
+        let tipo = 'info';
+
+        switch (status) {
+            case 'mp-conectado':
+                mensagem = '✓ Mercado Pago conectado com sucesso! Agora você pode receber doações.';
+                tipo = 'success';
+                break;
+            case 'mp-erro':
+                mensagem = 'Erro ao conectar com Mercado Pago. Tente novamente.';
+                tipo = 'danger';
+                break;
+            case 'mp-erro-auth':
+                mensagem = 'Erro de autenticação. Faça login novamente.';
+                tipo = 'danger';
+                break;
+            case 'mp-erro-callback':
+                mensagem = 'Erro no retorno do Mercado Pago. Tente novamente.';
+                tipo = 'danger';
+                break;
+        }
+
+        if (mensagem) {
+            showNotification(mensagem, tipo);
+            // Limpa a URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            // Recarrega os dados se conectou com sucesso
+            if (status === 'mp-conectado') {
+                await fetchUserProfile();
+            }
+        }
+    }
 });

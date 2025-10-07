@@ -1,3 +1,4 @@
+// backend/middleware/auth.middleware.js
 import supabase from '../db/supabaseClient.js';
 
 export const protegerRota = async (req, res, next) => {
@@ -10,7 +11,24 @@ export const protegerRota = async (req, res, next) => {
         if (error || !user) {
             return res.status(401).json({ message: 'Token inválido.' });
         }
-        req.user = user;
+        
+        // BUSCA OS DADOS COMPLETOS DA INSTITUIÇÃO NO BANCO
+        const { data: instituicao, error: dbError } = await supabase
+            .from('instituicao')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+        
+        if (dbError || !instituicao) {
+            return res.status(404).json({ message: 'Instituição não encontrada.' });
+        }
+        
+        req.user = {
+            id: user.id,
+            email: user.email,
+            ...instituicao
+        };
+        
         next();
     } catch (error) {
         res.status(500).json({ message: 'Erro no servidor ao validar token.' });

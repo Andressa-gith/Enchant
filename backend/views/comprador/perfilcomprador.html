@@ -107,16 +107,28 @@
                             <div class="info-value1" id="cidade">Carregando...</div>
                         </div>
                     </div>
+
                     <div class="info-item1">
                         <h2>Conexão de Pagamentos</h2>
-                        <p>Conecte sua conta do Mercado Pago para receber doações diretamente.</p>
-                        <a href="/api/mercado-pago/authorize" class="btn btn-primary">
-                            Conectar com Mercado Pago
-                        </a>
+                        <p id="mp-status-text">Conecte sua conta do Mercado Pago para receber doações diretamente.</p>
+
+                        <div id="mp-button-container">
+                            <button class="btn btn-primary" id="btn-conectar-mp">
+                                Conectar com Mercado Pago
+                            </button>
+                        </div>
+
+                        <div id="mp-connected-info" style="display: none;">
+                            <p style="color: #28a745;">✓ Conectado ao Mercado Pago</p>
+                            <button class="btn btn-danger btn-sm" id="btn-desconectar-mp">
+                                Desconectar
+                            </button>
+                        </div>
                     </div>
+
                     <div class="info-item1">
-                            <div class="info-label1">Chave-pix:</div>
-                            <div class="info-value1" id="chave-pix">Carregando...</div>
+                        <div class="info-label1">Chave-pix:</div>
+                        <div class="info-value1" id="chave-pix">Carregando...</div>
                     </div>
                 </div>
             </div>
