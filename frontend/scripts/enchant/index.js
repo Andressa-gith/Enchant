@@ -166,55 +166,50 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const ongId = document.getElementById('doacao-ong-id').value;
         const nomeDoador = document.getElementById('doacao-nome').value;
+        const emailDoador = document.getElementById('doacao-email').value;
         const valor = parseFloat(document.getElementById('doacao-valor').value);
 
-        const ongSelecionada = ongsList.find(ong => ong.id === ongId);
-        if (!ongSelecionada || !ongSelecionada.chave_pix) {
-            alert('Esta organização não configurou uma chave Pix para doações.');
-            return;
+        e.submitter.disabled = true;
+        e.submitter.textContent = 'Gerando PIX...';
+
+        try {
+            const response = await fetch('/api/public/criar-cobranca', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ongId, valor, nomeDoador, emailDoador })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Ocorreu um erro desconhecido.');
+            }
+
+            const pixData = await response.json();
+
+            document.getElementById('pix-codigo').value = pixData.qr_code; // Código Copia e Cola
+
+            const canvasElement = document.getElementById('qrcode-container');
+            new QRious({
+                element: canvasElement,
+                value: pixData.qr_code, // O texto do QR Code
+                size: 250,
+                foreground: 'black',
+                level: 'H'
+            });
+
+            // Mostre a área do PIX
+            document.getElementById('form-doacao').style.display = 'none';
+            document.getElementById('area-pix-gerado').style.display = 'block';
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        } finally {
+            // Reabilite o botão
+            e.submitter.disabled = false;
+            e.submitter.textContent = 'Doar';
         }
 
-        const formatarTextoPix = (texto, limite) => {
-            return texto
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/\s+/g, ' ')
-                .substring(0, limite);
-        };
-
-        const pixCode = gerarPixCopiaECola({
-            merchantName: formatarTextoPix(ongSelecionada.nome, 25),
-            merchantCity: formatarTextoPix(ongSelecionada.cidade || "SAO PAULO", 15),
-            pixKey: ongSelecionada.chave_pix,
-            infoAdicional: 'Doacao',
-            transactionAmount: valor,
-        });
-
-        document.getElementById('pix-codigo').value = pixCode;
-
-        const canvasElement = document.getElementById('qrcode-container');
-        new QRious({
-            element: canvasElement,
-            value: pixCode,
-            size: 250,
-            foreground: 'black',
-            level: 'H'
-        });
-
-        document.getElementById('form-doacao').style.display = 'none';
-        document.getElementById('area-pix-gerado').style.display = 'block';
-
-        // Registro no backend
-        fetch('/api/public/doar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                ongId, 
-                valor, 
-                nomeDoador, 
-                emailDoador: document.getElementById('doacao-email').value 
-            })
-        }).catch(err => console.error("Erro ao registrar:", err));
     });
 
     // Botão copiar PIX

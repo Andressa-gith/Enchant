@@ -148,6 +148,7 @@ export const addDocumento = async (req, res) => {
                 valor: parseFloat(valor),
                 caminho_arquivo: filePath,
                 gestao_financeira_id: gestao_financeira_id || null, // MUDANÇA AQUI: Salvamos o "grampo"
+                status: 'confirmado'
             })
             .select()
             .single();

@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         phone: document.getElementById('phone'),
         estado: document.getElementById('estado'),
         cidade: document.getElementById('cidade'),
+        chave_pix: document.getElementById('chave-pix'),
         passwordDots: document.querySelector('.password-dots1'),
         profileImage: document.getElementById('profile-image'),
         logoPlaceholder: document.getElementById('logo-placeholder'),
@@ -291,6 +292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.phone.textContent = userData.telefone || 'Não informado';
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
+        ui.chave_pix.textContent = userData.chave_pix || 'Não informado';
 
         ui.profileImage.src = userData.url_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
 

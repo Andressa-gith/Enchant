@@ -5,6 +5,8 @@ const publicRouter = express.Router();
 
 publicRouter.get('/ongs', PublicController.listarOngs);
 
-publicRouter.post('/doar', PublicController.processarDoacao);
+publicRouter.post('/criar-cobranca', PublicController.criarCobrancaPix);
+
+publicRouter.post('/webhook', PublicController.receberWebhook);
 
 export default publicRouter;

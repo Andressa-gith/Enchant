@@ -15,7 +15,6 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script src="/scripts/enchant/pix-generator.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <link rel="stylesheet" href="/styles/enchant/index.css">
@@ -248,7 +247,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="doacao-email" class="form-label">Seu e-mail (opcional)</label>
-                                <input type="email" class="form-control" id="doacao-email">
+                                <input type="email" class="form-control" id="doacao-email" required>
                             </div>
                             <div class="mb-3">
                                 <label for="doacao-valor" class="form-label">Valor (R$)*</label>
@@ -263,7 +262,7 @@
                                 </label>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100">Gerar PIX Copia e Cola</button>
+                            <button type="submit" class="btn btn-primary w-100">Doar</button>
                         </form>
 
                         <div id="area-pix-gerado" style="display: none; text-align: center;">
