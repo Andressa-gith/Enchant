@@ -31,6 +31,7 @@ class UserProfileController {
             const end = Array.isArray(data.endereco) ? data.endereco[0] : data.endereco;
 
             const profileData = {
+                id: usuarioId,
                 nome: data.nome,
                 email_contato: data.email_contato,
                 email: req.user.email,
