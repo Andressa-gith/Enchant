@@ -1,6 +1,7 @@
 import supabase from '../db/supabaseClient.js';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import crypto from 'crypto';
+import { generateDonationReceipt } from '../utils/comprovante.js';
 
 const client = new MercadoPagoConfig({
     accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN
@@ -74,7 +75,7 @@ class PublicController {
                 tipo_documento: 'Recibo de Doação',         // Tipo padronizado para doações
                 status: 'pendente',
                 referencia_externa: externalReference,
-                caminho_arquivo: 'pendente',
+                caminho_arquivo: 'doacao_automatica_sem_anexo',
             });
 
             const paymentResponse = await paymentOng.create({
@@ -101,31 +102,65 @@ class PublicController {
     }
 
     async receberWebhook(req, res) {
-        // Apenas para verificar no console que o webhook está chegando
         console.log('Webhook recebido:', req.body);
 
         try {
             if (req.body.type === 'payment') {
                 const paymentId = req.body.data.id;
-
                 const paymentInfo = await payment.get({ id: paymentId });
 
                 if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
+                    const externalReference = paymentInfo.external_reference;
 
-                    const nomeDoador = paymentInfo.payer?.first_name || 'Doador Anônimo';
+                    const { data: docPendente, error: docError } = await supabase
+                        .from('documento_comprobatorio')
+                        .select('instituicao_id, titulo')
+                        .eq('referencia_externa', externalReference)
+                        .single();
+
+                    if (docError || !docPendente) throw new Error('Documento pendente não encontrado.');
+
+                    const nomeOriginalDoForm = docPendente.titulo.replace('Intenção de Doação de ', '');
+
+                    const { data: ongData, error: ongError } = await supabase
+                        .from('instituicao')
+                        .select('nome')
+                        .eq('id', docPendente.instituicao_id)
+                        .single();
+
+                    if (ongError || !ongData) throw new Error('ONG não encontrada.');
+
+                    const nomeDoador = paymentInfo.payer?.first_name || nomeOriginalDoForm || 'Doador Anônimo';
+                    const receiptData = {
+                        ongName: ongData.nome,
+                        donorName: nomeDoador,
+                        amount: paymentInfo.transaction_amount,
+                        paymentId: paymentInfo.id,
+                        date: new Date()
+                    };
+
+                    const pdfBuffer = await generateDonationReceipt(receiptData);
+
+                    const filePath = `comprovantes/${docPendente.instituicao_id}/${externalReference}.pdf`;
+                    const { error: uploadError } = await supabase.storage
+                        .from('comprovantes')
+                        .upload(filePath, pdfBuffer, { contentType: 'application/pdf' });
+
+                    if (uploadError) throw uploadError;
 
                     await supabase
                         .from('documento_comprobatorio')
                         .update({
                             status: 'confirmado',
-                            titulo: `Doação recebida de ${nomeDoador}`, // Atualiza título
-                            caminho_arquivo: paymentInfo.id
+                            titulo: `Doação recebida de ${nomeDoador}`,
+                            id_pagamento_gateway: paymentInfo.id,
+                            caminho_arquivo: filePath
                         })
-                        .eq('referencia_externa', paymentInfo.external_reference);
+                        .eq('referencia_externa', externalReference);
+
+                    console.log(`Doação ${paymentInfo.id} confirmada e recibo gerado em: ${filePath}`);
                 }
             }
-
-            // Responda ao Mercado Pago para confirmar o recebimento da notificação
             res.sendStatus(200);
 
         } catch (error) {
