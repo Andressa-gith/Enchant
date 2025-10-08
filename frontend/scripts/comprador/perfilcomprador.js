@@ -556,7 +556,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const btnConectar = document.getElementById('btn-conectar-mp');
         if (btnConectar) {
             btnConectar.addEventListener('click', () => {
-                const instituicaoId = userData.id; // Pega o ID do usuário logado
+                const instituicaoId = userData.user?.id || userData.id;; // Pega o ID do usuário logado
 
                 // Abre popup
                 const width = 600;
