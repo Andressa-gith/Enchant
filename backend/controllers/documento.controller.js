@@ -17,6 +17,7 @@ export const getDocumentos = async (req, res) => {
             .from('documento_comprobatorio')
             .select('*, gestao_financeira(nome_categoria)')
             .eq('instituicao_id', instituicaoId)
+            .eq('status', 'confirmado')
             .order('data_criacao', { ascending: false });
 
         if (error) throw error;

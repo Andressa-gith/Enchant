@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputBusca = document.getElementById('input-busca');
     const paginacaoContainer = document.getElementById('paginacao-container');
     const mensagemVazia = document.getElementById('mensagem-vazia');
-    
+
     let ongsList = [];
     let ongsFiltradas = [];
     let paginaAtual = 1;
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const ongs = await response.json();
             ongsList = ongs;
             ongsFiltradas = ongs;
-            
+
             renderizarOngs();
             renderizarPaginacao();
         } catch (error) {
@@ -32,19 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Renderiza ONGs na página atual
     function renderizarOngs() {
         ongsContainer.innerHTML = '';
-        
+
         if (ongsFiltradas.length === 0) {
             mensagemVazia.style.display = 'block';
             paginacaoContainer.innerHTML = '';
             return;
         }
-        
+
         mensagemVazia.style.display = 'none';
-        
+
         const inicio = (paginaAtual - 1) * itensPorPagina;
         const fim = inicio + itensPorPagina;
         const ongsParaMostrar = ongsFiltradas.slice(inicio, fim);
-        
+
         ongsParaMostrar.forEach(ong => {
             const card = document.createElement('div');
             card.className = 'card-ong';
@@ -68,11 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Renderiza paginação
     function renderizarPaginacao() {
         paginacaoContainer.innerHTML = '';
-        
+
         const totalPaginas = Math.ceil(ongsFiltradas.length / itensPorPagina);
-        
+
         if (totalPaginas <= 1) return;
-        
+
         // Botão anterior
         const btnAnterior = document.createElement('button');
         btnAnterior.className = 'btn-pagina';
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
         paginacaoContainer.appendChild(btnAnterior);
-        
+
         // Números das páginas
         for (let i = 1; i <= totalPaginas; i++) {
             const btnPagina = document.createElement('button');
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             paginacaoContainer.appendChild(btnPagina);
         }
-        
+
         // Botão próximo
         const btnProximo = document.createElement('button');
         btnProximo.className = 'btn-pagina';
@@ -121,26 +121,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll suave para área das ONGs
     function scrollParaOngs() {
-        document.querySelector('.container-parceiros').scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
+        document.querySelector('.container-parceiros').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
         });
     }
 
     // Sistema de busca
     inputBusca.addEventListener('input', (e) => {
         const termoBusca = e.target.value.toLowerCase().trim();
-        
+
         if (!termoBusca) {
             ongsFiltradas = ongsList;
         } else {
             ongsFiltradas = ongsList.filter(ong => {
                 return ong.nome.toLowerCase().includes(termoBusca) ||
-                       (ong.descricao_curta && ong.descricao_curta.toLowerCase().includes(termoBusca)) ||
-                       (ong.area_atuacao && ong.area_atuacao.toLowerCase().includes(termoBusca));
+                    (ong.descricao_curta && ong.descricao_curta.toLowerCase().includes(termoBusca)) ||
+                    (ong.area_atuacao && ong.area_atuacao.toLowerCase().includes(termoBusca));
             });
         }
-        
+
         paginaAtual = 1; // Volta para primeira página ao buscar
         renderizarOngs();
         renderizarPaginacao();
@@ -151,11 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('card-ong-link')) {
             const ongId = e.target.dataset.ongId;
             const ongNome = e.target.dataset.ongNome;
-            
+
             document.getElementById('modal-ong-nome').textContent = ongNome;
             document.getElementById('doacao-ong-id').value = ongId;
             formDoacao.reset();
-            
+
             doacaoModal.show();
         }
     });
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Envio do formulário de doação
     formDoacao.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const ongId = document.getElementById('doacao-ong-id').value;
         const nomeDoador = document.getElementById('doacao-nome').value;
         const emailDoador = document.getElementById('doacao-email').value;
@@ -200,6 +200,32 @@ document.addEventListener('DOMContentLoaded', () => {
             // Mostre a área do PIX
             document.getElementById('form-doacao').style.display = 'none';
             document.getElementById('area-pix-gerado').style.display = 'block';
+
+            const refExterna = pixData.externalReference;
+            const intervalId = setInterval(async () => {
+                try {
+                    const statusResponse = await fetch(`/api/public/doacao-status/${refExterna}`);
+                    const data = await statusResponse.json();
+
+                    // Se o pagamento foi confirmado...
+                    if (data.status === 'confirmado') {
+                        clearInterval(intervalId); 
+
+                        document.getElementById('area-pix-gerado').innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h3 style="color: green;">Pagamento Aprovado!</h3>
+                        <p>Sua doação foi recebida com sucesso. Muito obrigado por sua contribuição!</p>
+                    </div>
+                `;
+                        setTimeout(() => {
+                            doacaoModal.hide(); 
+                        }, 3000);
+                    }
+                } catch (err) {
+                    console.error("Erro no polling:", err);
+                    clearInterval(intervalId); 
+                }
+            }, 3000);
 
         } catch (error) {
             console.error(error);

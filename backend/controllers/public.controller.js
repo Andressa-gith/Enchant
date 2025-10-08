@@ -72,7 +72,7 @@ class PublicController {
                 titulo: `Intenção de Doação de ${nomeDoador}`, // Título inicial
                 valor: valor,                               // Valor da doação
                 tipo_documento: 'Recibo de Doação',         // Tipo padronizado para doações
-                status: 'pendente',                         
+                status: 'pendente',
                 referencia_externa: externalReference,
                 caminho_arquivo: 'pendente',
             });
@@ -91,6 +91,7 @@ class PublicController {
             res.status(201).json({
                 qr_code: paymentResponse.point_of_interaction.transaction_data.qr_code,
                 qr_code_base64: paymentResponse.point_of_interaction.transaction_data.qr_code_base64,
+                externalReference: externalReference
             });
 
         } catch (error) {
@@ -110,13 +111,14 @@ class PublicController {
                 const paymentInfo = await payment.get({ id: paymentId });
 
                 if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
-                    // Pagamento aprovado!
-                    // Atualize o status no seu banco de dados
+
+                    const nomeDoador = paymentInfo.payer?.first_name || 'Doador Anônimo';
+
                     await supabase
                         .from('documento_comprobatorio')
                         .update({
                             status: 'confirmado',
-                            titulo: `Doação recebida de ${paymentInfo.payer.first_name}`, // Atualiza título
+                            titulo: `Doação recebida de ${nomeDoador}`, // Atualiza título
                             caminho_arquivo: paymentInfo.id
                         })
                         .eq('referencia_externa', paymentInfo.external_reference);
@@ -129,6 +131,27 @@ class PublicController {
         } catch (error) {
             console.error('Erro no webhook:', error);
             res.sendStatus(500); // Se der erro, o MP tentará notificar novamente
+        }
+    }
+
+    async verificarStatusDoacao(req, res) {
+        try {
+            const { refExterna } = req.params;
+
+            const { data, error } = await supabase
+                .from('documento_comprobatorio')
+                .select('status')
+                .eq('referencia_externa', refExterna)
+                .single();
+
+            if (error || !data) {
+                return res.status(404).json({ status: 'não encontrado' });
+            }
+
+            res.status(200).json({ status: data.status });
+
+        } catch (error) {
+            res.status(500).json({ message: 'Erro ao verificar status.' });
         }
     }
 }

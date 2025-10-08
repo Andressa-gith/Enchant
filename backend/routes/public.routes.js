@@ -9,4 +9,6 @@ publicRouter.post('/criar-cobranca', PublicController.criarCobrancaPix);
 
 publicRouter.post('/webhook', PublicController.receberWebhook);
 
+publicRouter.get('/doacao-status/:refExterna', PublicController.verificarStatusDoacao);
+
 export default publicRouter;
