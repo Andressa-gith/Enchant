@@ -556,8 +556,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const btnConectar = document.getElementById('btn-conectar-mp');
         if (btnConectar) {
             btnConectar.addEventListener('click', () => {
-                console.log("🟢 userData:", userData)
-                const instituicaoId = userData.user?.id || userData.id; // Pega o ID do usuário logado
+                const instituicaoId = req.user.id; // Pega o ID do usuário logado
 
                 // Abre popup
                 const width = 600;
@@ -565,6 +564,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const left = (screen.width - width) / 2;
                 const top = (screen.height - height) / 2;
 
+                console.log("🟢 userData:", userData)
                 const popup = window.open(
                     `/api/mercado-pago/authorize?id=${instituicaoId}`,
                     'Mercado Pago',
