@@ -1,24 +1,28 @@
 /**
  * @file Testes de integração para a API de Relatórios de Transparência (/api/relatorios).
- * @description Testa as operações de criação, listagem e exclusão de relatórios.
+ * @description Testa as operações de criação, listagem e exclusão de relatórios,
+ * incluindo upload de arquivos, segurança e limpeza completa do ambiente de teste (DB e Storage).
  */
 
 import request from 'supertest';
 import app from '../../backend/server.js';
 import supabase from '../../backend/db/supabaseClient.js';
 
+// Define o prefixo da API para reutilização nos testes.
 const API_PREFIX = '/api/relatorios';
 
 /**
- * @describe Testes para os endpoints da API de Relatórios.
+ * @describe Suíte de testes para os endpoints da API de Relatórios de Transparência.
  */
-describe('Testes da API de Relatórios', () => {
+describe('API de Relatórios - Testes de Integração', () => {
     
     let token;
-    let newRelatorioId;
+    let instituicaoId;
+    let relatorioCriado; // Armazena o objeto completo do relatório criado para testes e limpeza.
 
     /**
-     * @beforeAll Autentica um usuário de teste antes de todos os testes.
+     * @beforeAll Executa uma vez antes de todos os testes.
+     * @description Autentica um usuário de teste para obter um token JWT válido.
      */
     beforeAll(async () => {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -27,86 +31,114 @@ describe('Testes da API de Relatórios', () => {
         });
         if (error) throw new Error(`Setup de teste falhou no login: ${error.message}`);
         token = data.session.access_token; 
+        instituicaoId = data.user.id;
         expect(token).toBeDefined();
     });
 
     /**
-     * @afterAll Limpa os dados de teste criados no banco.
+     * @afterAll Executa uma vez depois de todos os testes.
+     * @description Limpa o relatório criado no banco de dados e seu respectivo arquivo no Storage.
      */
     afterAll(async () => {
-        if (newRelatorioId) {
-            // A exclusão no teste já limpa, mas isso é uma garantia extra caso o teste de delete falhe.
-            await supabase.from('relatorio').delete().eq('id', newRelatorioId);
-            console.log(`\n[LIMPEZA] Relatório de teste ID: ${newRelatorioId} garantidamente removido.`);
+        if (relatorioCriado) {
+            // Garante a limpeza completa, mesmo que o teste de DELETE falhe.
+            await supabase.storage.from('reports').remove([relatorioCriado.caminho_arquivo]);
+            await supabase.from('relatorio').delete().eq('id', relatorioCriado.id);
+            console.log(`\n[TEARDOWN] Relatório de teste ID ${relatorioCriado.id} e seu arquivo foram limpos com sucesso.`);
         }
     });
 
     /**
-     * @describe Testes para a rota POST / (Criação de Relatório).
+     * @describe Testes de Segurança e Autenticação
+     * @description Verifica se os endpoints estão protegidos e retornam 401 sem token.
      */
-    describe('POST /', () => {
-        it('deve criar um novo relatório com sucesso', async () => {
+    describe('Segurança e Autenticação', () => {
+        it('GET / - deve retornar 401 se não houver token', async () => {
+            const response = await request(app).get(API_PREFIX);
+            expect(response.statusCode).toBe(401);
+        });
+        it('POST / - deve retornar 401 se não houver token', async () => {
+            const response = await request(app).post(API_PREFIX);
+            expect(response.statusCode).toBe(401);
+        });
+        it('DELETE /:id - deve retornar 401 se não houver token', async () => {
+            const response = await request(app).delete(`${API_PREFIX}/999999`);
+            expect(response.statusCode).toBe(401);
+        });
+    });
+
+    /**
+     * @describe Testes para a rota: POST /
+     * @description Testa a criação de um novo relatório com upload de arquivo.
+     */
+    describe('POST / - Criar Relatório', () => {
+        it('deve criar um novo relatório com sucesso quando todos os dados são válidos', async () => {
             const response = await request(app)
                 .post(API_PREFIX)
                 .set('Authorization', `Bearer ${token}`)
                 .field('titulo', 'Relatório de Teste Jest')
-                .field('descricao', 'Descrição do relatório de teste.')
-                .attach('arquivo_relatorio', Buffer.from('conteudo do fake pdf'), 'relatorio.pdf');
+                .field('descricao', 'Descrição do relatório de teste automatizado.')
+                .attach('arquivo_relatorio', Buffer.from('conteúdo do fake pdf para o teste'), 'relatorio-teste.pdf');
 
             expect(response.statusCode).toBe(201);
             expect(response.body.data).toHaveProperty('id');
             expect(response.body.data.titulo).toBe('Relatório de Teste Jest');
 
-            newRelatorioId = response.body.data.id;
+            relatorioCriado = response.body.data;
         });
 
-        it('deve retornar um erro 400 se o arquivo não for enviado', async () => {
+        it('deve retornar erro 400 se o arquivo não for enviado', async () => {
             const response = await request(app)
                 .post(API_PREFIX)
                 .set('Authorization', `Bearer ${token}`)
                 .field('titulo', 'Relatório Sem Arquivo');
             
             expect(response.statusCode).toBe(400);
+            expect(response.body.message).toBe('Nenhum arquivo foi enviado.');
         });
     });
 
     /**
-     * @describe Testes para a rota GET / (Listagem de Relatórios).
+     * @describe Testes para a rota: GET /
+     * @description Testa a listagem de relatórios.
      */
-    describe('GET /', () => {
-        it('deve retornar a lista de relatórios do usuário autenticado', async () => {
+    describe('GET / - Listar Relatórios', () => {
+        it('deve retornar a lista de relatórios, incluindo o recém-criado', async () => {
+            expect(relatorioCriado).toBeDefined();
+
             const response = await request(app)
                 .get(API_PREFIX)
                 .set('Authorization', `Bearer ${token}`);
 
             expect(response.statusCode).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
-            const relatorioCriado = response.body.find(r => r.id === newRelatorioId);
-            expect(relatorioCriado).toBeDefined();
+            const encontrado = response.body.find(r => r.id === relatorioCriado.id);
+            expect(encontrado).toBeDefined();
         });
     });
 
     /**
-     * @describe Testes para a rota DELETE /:id (Exclusão de Relatório).
+     * @describe Testes para a rota: DELETE /:id
+     * @description Testa a exclusão de um relatório e seu arquivo associado.
      */
-    describe('DELETE /:id', () => {
-        it('deve deletar o relatório criado nos testes anteriores', async () => {
+    describe('DELETE /:id - Excluir Relatório', () => {
+        it('deve excluir o relatório criado com sucesso', async () => {
             const response = await request(app)
-                .delete(`${API_PREFIX}/${newRelatorioId}`)
+                .delete(`${API_PREFIX}/${relatorioCriado.id}`)
                 .set('Authorization', `Bearer ${token}`);
 
             expect(response.statusCode).toBe(200);
+            expect(response.body.message).toBe('Relatório deletado com sucesso!');
             
-            // Remove o ID para que o afterAll não tente deletar de novo.
-            newRelatorioId = null; 
+            // Define como nulo para que o afterAll não tente limpar novamente.
+            relatorioCriado = null; 
         });
 
-        it('deve retornar um erro 404 ao tentar deletar um relatório que não existe', async () => {
+        it('deve retornar erro 404 ao tentar excluir um relatório que não existe', async () => {
             const response = await request(app)
                 .delete(`${API_PREFIX}/999999`)
                 .set('Authorization', `Bearer ${token}`);
-
-            // Esperamos 404 pois o controller foi corrigido para tratar este caso.
+            
             expect(response.statusCode).toBe(404);
         });
     });

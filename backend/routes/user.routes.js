@@ -1,7 +1,7 @@
 import express from 'express';
 import { cadastrarInstituicao } from '../controllers/user.controller.js';
-import { protegerRota } from '../middleware/auth.middleware.js';
 import UserProfileController from '../controllers/perfil.controller.js';
+import { protegerRota } from '../middleware/auth.middleware.js';
 
 const userRouter = express.Router();
 
