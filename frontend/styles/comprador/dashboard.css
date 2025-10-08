@@ -81,6 +81,7 @@ body {
     border: 1px solid #ddd;
     font-size: 0.875rem;
     padding: 0.25rem 0.5rem;
+    flex-grow: 1;
 }
 
 .btn-filter {
@@ -414,20 +415,49 @@ body {
     font-weight: 500;
 }
 
-/* RESPONSIVIDADE */
+/* ================== RESPONSIVIDADE ================== */
+
 @media (max-width: 992px) {
-    .main-charts-section {
-        grid-template-columns: 1fr;
-    }
+    /* Mantém o gráfico principal em coluna única em tablets */
+.main-charts-section {
+grid-template-columns: 1fr;
+}
 }
 
+/* Regras otimizadas para mobile */
 @media (max-width: 767px) {
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
+.dashboard-header {
+flex-direction: column;
+align-items: flex-start; /* Alinha os blocos à esquerda */
+}
+
+    /* NOVO: Ajusta o tamanho do título para caber melhor */
+    .dashboard-header h1 {
+        font-size: 2rem;
     }
 
-    .chart-container {
-        min-height: 300px;
+    /* NOVO: Força o container de filtros a ocupar a largura toda */
+    .header-filters {
+        width: 100%;
+    }
+    
+    /* NOVO: Faz o seletor de data se expandir e usar melhor o espaço */
+    .date-picker-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+.chart-container {
+min-height: 300px;
+}
+
+    /* NOVO: Garante que os cards de resumo não fiquem muito espremidos */
+    .summary-section {
+        grid-template-columns: 1fr;
+    }
+
+    .date-picker-group {
+        /* APENAS NO MOBILE: permite que os itens quebrem para a linha de baixo */
+        flex-wrap: wrap;
     }
 }

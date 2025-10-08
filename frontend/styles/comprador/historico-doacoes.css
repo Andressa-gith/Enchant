@@ -330,18 +330,58 @@ body {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .relatorio-container {
         padding-top: 1rem;
     }
     .relatorio-header h1 {
         font-size: 2.5rem;
     }
-    /* Esconde colunas menos importantes da tabela em telas pequenas */
-    .history-table th:nth-child(3),
-    .history-table td:nth-child(3),
-    .history-table th:nth-child(5),
-    .history-table td:nth-child(5) {
+
+    /* --- INÍCIO DA TRANSFORMAÇÃO DA TABELA --- */
+
+    /* 1. Escondemos o cabeçalho original da tabela, pois não será usado */
+    .history-table thead {
         display: none;
     }
+
+    /* 2. Fazemos cada linha da tabela se comportar como um card */
+    .history-table tr {
+        display: block;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        background: white;
+    }
+
+    /* 3. Empilhamos as células umas sobre as outras */
+    .history-table td {
+        display: block;
+        text-align: left; /* Alinha o conteúdo da célula à direita */
+        padding: 0.5rem;
+        border-bottom: 1px solid #f1f3f5;
+        position: relative;
+    }
+    
+    .history-table td:last-child {
+        border-bottom: none; /* Remove a borda da última célula */
+    }
+
+    /* 4. A MÁGICA: Adicionamos o título (do data-label) antes de cada célula */
+    .history-table td::before {
+        content: attr(data-label); /* Pega o texto do atributo data-label */
+        position: absolute;
+        left: 0.5rem; /* Alinha o título à esquerda */
+        font-weight: 600;
+        color: #495057;
+        padding-right: 1rem;
+    }
+
+    /* 5. Ajuste para a coluna de ações ficar alinhada à direita */
+    .history-table td[data-label="Ações"] .action-buttons {
+        justify-content: flex-end;
+        width: 100%;
+    }
+    /* --- FIM DA TRANSFORMAÇÃO DA TABELA --- */
 }
