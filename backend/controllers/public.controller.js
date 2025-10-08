@@ -13,7 +13,8 @@ class PublicController {
             // Busca na sua tabela unificada de usuários
             const { data, error } = await supabase
                 .from('instituicao')
-                .select('id, nome, caminho_logo, chave_pix') // Adicione as colunas que quiser mostrar
+                .select('id, nome, caminho_logo') // Adicione as colunas que quiser mostrar
+                .eq('mp_connected', true);  //so mostra as que tem o mercado pago (pode tirar se quiser)
 
             if (error) {
                 throw error; // Joga o erro para o nosso 'catch'
@@ -33,7 +34,6 @@ class PublicController {
                     id: ong.id,
                     nome: ong.nome,
                     caminho_logo: logoUrl,
-                    chave_pix: ong.chave_pix
                 };
             });
 
@@ -72,12 +72,11 @@ class PublicController {
                 titulo: `Intenção de Doação de ${nomeDoador}`, // Título inicial
                 valor: valor,                               // Valor da doação
                 tipo_documento: 'Recibo de Doação',         // Tipo padronizado para doações
-                status: 'pendente',                         // <-- CORRETO: Começa como pendente
+                status: 'pendente',                         
                 referencia_externa: externalReference,
                 caminho_arquivo: 'pendente',
             });
 
-            // 3. CRIA A COBRANÇA USANDO O CLIENTE ESPECÍFICO DA ONG
             const paymentResponse = await paymentOng.create({
                 body: {
                     transaction_amount: Number(valor),
@@ -89,7 +88,6 @@ class PublicController {
                 }
             });
 
-            // 4. Envie os dados do PIX (QR Code) para o frontend
             res.status(201).json({
                 qr_code: paymentResponse.point_of_interaction.transaction_data.qr_code,
                 qr_code_base64: paymentResponse.point_of_interaction.transaction_data.qr_code_base64,
@@ -109,8 +107,7 @@ class PublicController {
             if (req.body.type === 'payment') {
                 const paymentId = req.body.data.id;
 
-                // Busque as informações completas do pagamento
-                const paymentInfo = await paymentOng.get({ id: paymentId });
+                const paymentInfo = await payment.get({ id: paymentId });
 
                 if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
                     // Pagamento aprovado!
