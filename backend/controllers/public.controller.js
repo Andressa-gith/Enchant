@@ -67,8 +67,15 @@ class PublicController {
 
             const externalReference = crypto.randomUUID();
 
-            // ... (o código para inserir o documento 'pendente' continua igual) ...
-            await supabase.from('documento_comprobatorio').insert({ /* ... */ });
+            await supabase.from('documento_comprobatorio').insert({
+                instituicao_id: ongId,                      // ID da ONG que receberá a doação
+                titulo: `Intenção de Doação de ${nomeDoador}`, // Título inicial
+                valor: valor,                               // Valor da doação
+                tipo_documento: 'Recibo de Doação',         // Tipo padronizado para doações
+                status: 'pendente',                         // <-- CORRETO: Começa como pendente
+                referencia_externa: externalReference,
+                caminho_arquivo: 'pendente',
+            });
 
             // 3. CRIA A COBRANÇA USANDO O CLIENTE ESPECÍFICO DA ONG
             const paymentResponse = await paymentOng.create({
@@ -103,7 +110,7 @@ class PublicController {
                 const paymentId = req.body.data.id;
 
                 // Busque as informações completas do pagamento
-                const paymentInfo = await payment.get({ id: paymentId });
+                const paymentInfo = await paymentOng.get({ id: paymentId });
 
                 if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
                     // Pagamento aprovado!
