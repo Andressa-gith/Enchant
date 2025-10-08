@@ -141,7 +141,7 @@ class PublicController {
 
                     const pdfBuffer = await generateDonationReceipt(receiptData);
 
-                    const filePath = `comprovantes/${docPendente.instituicao_id}/${externalReference}.pdf`;
+                    const filePath = `${docPendente.instituicao_id}/${externalReference}.pdf`;
                     const { error: uploadError } = await supabase.storage
                         .from('comprovantes')
                         .upload(filePath, pdfBuffer, { contentType: 'application/pdf' });
