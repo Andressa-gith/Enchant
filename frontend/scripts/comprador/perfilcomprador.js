@@ -555,6 +555,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const btnConectar = document.getElementById('btn-conectar-mp');
         if (btnConectar) {
+            console.log("🟢 userData:", userData)
             btnConectar.addEventListener('click', () => {
                 const instituicaoId = userData.user?.id || userData.id;; // Pega o ID do usuário logado
 
