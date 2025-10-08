@@ -434,15 +434,16 @@ textarea {
 }
 
 .partnership-details {
-    display: flex;    /* Usa Flexbox */
-    flex-wrap: wrap;  /* Permite que os itens quebrem a linha */
-    gap: 15px 20px;   /* Define o espaçamento entre eles */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 20px;
     margin-top: 15px;
 }
 
 .detail-item-full {
-    grid-column: 1 / -1;
-    margin-top: -0.3rem; 
+    width: 100%; /* ← ADICIONAR */
+    flex-basis: 100%; /* ← ADICIONAR */
+    margin-top: -0.3rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -453,13 +454,15 @@ textarea {
     word-break: break-word;
     font-weight: 400;
     font-size: 0.95rem;
+    text-align: left; /* ← ADICIONAR - força alinhamento à esquerda */
 }
 
 .detail-item {
     display: flex;
     flex-direction: column;
+    align-items: flex-start; /* ← ADICIONAR - alinha à esquerda */
+    min-width: 0; /* ← ADICIONAR - permite quebra de texto */
 }
-
 
 .detail-label {
     font-size: 12px;
@@ -467,11 +470,13 @@ textarea {
     margin-bottom: 2px;
 }
 
-
 .detail-value {
-
-    color: #2c3e50;
+    color: #333;
+    word-wrap: break-word; /* ← ADICIONAR */
+    overflow-wrap: break-word; /* ← ADICIONAR */
+    max-width: 100%; /* ← ADICIONAR */
 }
+
 
 
 .type-badge {
@@ -480,6 +485,7 @@ textarea {
     font-size: 11px;
     font-weight: bold;
     display: inline-block;
+    margin: 0; /* ← ADICIONAR - remove margem extra */
 }
 
 
@@ -534,26 +540,21 @@ textarea {
 
 .delete-btn {
     font-family: 'Lexend Deca', sans-serif;
-    background: #dc3545;
-    color: white;
-    padding: 8px 15px;
+    background-color: transparent;
+    color: #000000;
     border-radius: 10px;
+    border: black 1px solid;
+    padding: 8px 15px;
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border: none;  /* <-- Adicione esta linha */
-    outline: none;
-    /* ← ADICIONAR */
 }
 
-.delete-btn:hover {
-    background-color: #c82333;
-}
 
 .um {
     font-family: 'Lexend Deca', sans-serif;
-    background-color: rgba(226, 204, 174, 1);
-    color: #000000;
+    background-color: #e2ccae;
+    color: #3d2106;
     margin-top: 20px;
 
     padding: 8px 15px;

@@ -257,8 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="actions-cell1">
                     ${attachmentButtonHtml}
                     <button class="editinho1 edit-btn" data-id="${item.id}" title="Editar">Editar</button>
-                    <button class="exclusivo1 delete-btn" data-id="${item.id}" data-category="${item.nome_categoria}" title="Excluir">Excluir</button>
-                </td>
+                    <button class="exclusivo1 delete-btn" data-id="${item.id}" data-category="${item.nome_categoria}" title="Excluir"><i class="bi bi-trash-fill"></i> Excluir</button>
+               </td>
             `;
             ui.tableBody.appendChild(row);
         });

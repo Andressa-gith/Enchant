@@ -3,10 +3,10 @@
 @import url("/styles/global.css");
 
 :root {
-    --primary-color: #72330f;
+    --primary-color: #3d2106;
     --primary-light: #e2ccae;
-    --primary-dark: #4A2B00;
-    --secondary-color: #EADBC8;
+    --primary-dark: #693B11;
+    --secondary-color: #e2ccae;
     --text-color: #333;
     --text-light: #694E4E;
     --border-color: #DCD0C0;
@@ -85,8 +85,8 @@ body {
 }
 
 .btn-filter {
-    background-color: var(--secondary-color);
-    color: #000;
+    background-color: #e2ccae;
+    color: #3d2106;
     border: none;
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
@@ -338,8 +338,8 @@ body {
 }
 
 .report-download-btn {
-    background-color: var(--secondary-color);
-    color: #000;
+    background-color: #e2ccae;
+    color: #3d2106;
     text-decoration: none;
     padding: 0.3rem 0.6rem;
     border-radius: 6px;

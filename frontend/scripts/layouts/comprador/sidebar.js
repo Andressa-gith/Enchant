@@ -8,13 +8,13 @@ function createSimpleLogoutModal() {
         <div id="simple-logout-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
             <div style="background: white; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); max-width: 420px; width: 90%; transform: scale(0.9); transition: transform 0.3s ease; overflow: hidden; border-radius: 8px;">
                 <div style="background: white; color: #3d2106; padding: 24px; text-align: center;">
-                    <i class="bi bi-box-arrow-right" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
-                    <h3 style="margin: 0; font-size: 20px; font-weight: 600;">Confirmar Saída</h3>
+                    <i class="bi bi-box-arrow-right" style="font-size: 32px; margin-bottom: 12px; display: block; color: #693B11;"></i>
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #693B11;">Confirmar Saída</h3>
                 </div>
                 <div style="padding: 32px 24px; text-align: center;"><p style="margin: 0; color: #4a5568; font-size: 16px;">Tem certeza que deseja sair da sua conta?</p></div>
                 <div style="padding: 0 24px 24px; display: flex; gap: 12px; justify-content: center;">
-                    <button id="simple-cancel-btn" style="padding: 12px 24px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f7fafc; color: #4a5568; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Cancelar</button>
-                    <button id="simple-confirm-btn" style="padding: 12px 24px; border: none; border-radius: 8px; background: #3d2106; color: white; cursor: pointer; font-weight: 600; transition: all 0.3s ease;"><span id="simple-btn-text">Sair</span></button>
+                    <button id="simple-cancel-btn" style="padding: 12px 24px; border-radius: 10px; border: black 1px solid; #e2e8f0;background-color: transparent; color: #000000; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Cancelar</button>
+                    <button id="simple-confirm-btn" style="padding: 12px 24px; border: none; border-radius: 8px; background-color: #e2ccae; color: #3d2106; cursor: pointer; font-weight: 600; transition: all 0.3s ease;"><span id="simple-btn-text">Sair</span></button>
                 </div>
             </div>
         </div>

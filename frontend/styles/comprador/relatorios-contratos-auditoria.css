@@ -377,7 +377,6 @@ p {
   justify-content: center;
   display: inline-flex;
   font-size: 14px;
-  font-weight: bold;
   color: #3d2106;
   cursor: pointer;
   margin-top: auto;
@@ -497,19 +496,11 @@ p {
 
 
 .delete-btn {
-    background: #dc3545;
-    color: white;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
 }
-
-
-
-
-.delete-btn:hover {
-    background: #c82333;
-}
-
-
-
 
 /* Status indicator */
 .status-indicator {
@@ -689,7 +680,6 @@ p {
     cursor: pointer;
     font-family: 'Lexend Deca', sans-serif;
     font-size: 14px;
-    font-weight: bold;
     transition: background-color 0.3s ease;
     display: inline-flex;
     align-items: center;
@@ -735,7 +725,6 @@ p {
 .card-actions .delete-btn {
     padding: 10px 16px;
     font-size: 14px;
-    font-weight: bold;
     min-width: 100px;
     flex: 1;
 }
@@ -975,7 +964,6 @@ p {
     cursor: pointer;
     font-family: 'Lexend Deca', sans-serif;
     font-size: 14px;
-    font-weight: bold;
     transition: background-color 0.3s ease;
     display: inline-flex;
     align-items: center;
@@ -1004,7 +992,6 @@ p {
     cursor: pointer;
     font-size: 14px;
     gap: 6px;
-    font-weight: bold;
     transition: background-color 0.3s ease;
     display: inline-flex;
     align-items: center;

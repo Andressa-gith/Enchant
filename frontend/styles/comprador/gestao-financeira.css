@@ -265,8 +265,8 @@ input {
 }
 
 .primeirinho1 {
-    background-color: rgba(226, 204, 174, 1);
-    color: #000000;
+    background-color: #e2ccae;
+    color: #3d2106;
     padding: 8px 15px;
     border-radius: 10px;
     border: none;
@@ -282,17 +282,13 @@ input {
 
 .exclusivo1 {
     font-family: 'Lexend Deca', sans-serif;
-    background: #dc3545;
-    color: white;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
     padding: 8px 12px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
-    border: none;  /* <-- Adicione esta linha */
-    outline: none;
-}
-
-.exclusivo1:hover {
-    background: #c82333;
 }
 
 .dashboard-grid1 {
@@ -479,9 +475,10 @@ input {
 
 .exclusivo1 {
     font-family: 'Lexend Deca', sans-serif;
-    background-color: #dc3545;
-    color: #ffffff;
-    border: none;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
     width: 80px;
     padding: 8px 0;
     border-radius: 6px;
@@ -492,24 +489,31 @@ input {
     align-items: center;
     flex: 1;
     justify-content: center;
+    gap: 6px;
 }
 
-.exclusivo1:hover{
-    color: white;
-    background-color: #c82333;
+.icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
 }
 
 .delete-attachment-btn{
     font-family: 'Lexend Deca', sans-serif;
-    background-color: #dc3545;
-    color: #ffffff;
-    border: none;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
 }
 
-.delete-attachment-btn:hover{
-    color: white;
-    background-color: #c82333;
+.delete i {
+    font-size: 14px;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -1px; /* ← Ajuste fino se necessário */
 }
+
 
 .view-attachment-btn{
     font-family: "Lexend Deca", sans-serif;
@@ -550,8 +554,8 @@ input {
 
 .editinho1 {
     font-size: 14px;
-    background-color: rgba(226, 204, 174, 1);
-    color: #000000;
+    background-color: #e2ccae;
+    color: #3d2106;
     padding: 8px 15px;
     border-radius: 10px;
     border: none;

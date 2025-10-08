@@ -226,8 +226,8 @@ p {
 
 .add-btn {
     font-family: 'Lexend Deca', sans-serif;
-    background-color: rgba(226, 204, 174, 1);
-    color: #000000;
+    background-color: #e2ccae;
+    color: #3d2106;
     margin-top: 20px;
     border: none;
     padding: 8px 15px;
@@ -463,9 +463,7 @@ p {
     padding: 10px 16px;
     border-radius: 6px;
     font-size: 14px;
-    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -505,9 +503,10 @@ p {
 
 .delete {
     font-family: 'Lexend Deca', sans-serif;
-    background-color: #dc3545;
-    color: #ffffff;
-    border: none;
+    background-color: transparent;
+    color: #000000;
+    border-radius: 10px;
+    border: black 1px solid;
     padding: 10px 16px;
     border-radius: 6px;
     font-size: 14px;
@@ -519,10 +518,6 @@ p {
     flex: 1;
     justify-content: center;
     min-width: 100px;
-}
-
-.delete:hover {
-    background-color: #c82333;
 }
 
 .aaa {

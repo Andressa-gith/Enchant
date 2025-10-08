@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-actions">
                     <button class="download-btn" data-path="${contract.caminho_arquivo}"><svg class="icon" viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" fill="currentColor"/></svg> Download</button>
                     <button class="view-description-btn" data-title="${contract.nome_contrato}" data-description="${contract.descricao}"><i class="bi bi-eye-fill"></i> Descrição</button>
-                    <button class="delete-btn" data-id="${contract.id}" data-title="${contract.nome_contrato}"><i class="bi bi-trash-fill"></i> Excluir</button>
+                    <button class="delete-btn" data-id="${contract.id}" data-title="${contract.nome_contrato}"> <i class="bi bi-trash-fill"></i> Excluir</button>
                 </div>
             `;
             ui.contractsList.appendChild(card);
