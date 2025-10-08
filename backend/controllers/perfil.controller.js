@@ -16,7 +16,7 @@ class UserProfileController {
 
             const { data, error } = await supabase
                 .from('instituicao')
-                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado ), primeiro_login, chave_pix')
+                .select('nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, telefone ( numero ), endereco ( cidade, estado ), primeiro_login, chave_pix, mp_connected')
                 .eq('id', usuarioId)
                 .single();
 
@@ -33,6 +33,7 @@ class UserProfileController {
             const profileData = {
                 id: usuarioId,
                 nome: data.nome,
+                mp_connected: data.mp_connected,
                 email_contato: data.email_contato,
                 email: req.user.email,
                 cnpj: data.cnpj,
