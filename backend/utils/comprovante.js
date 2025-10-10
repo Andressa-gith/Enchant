@@ -39,59 +39,180 @@ export async function generateDonationReceipt(receiptData) {
         try {
             const doc = new PDFDocument({ size: 'A4', margin: 50 });
             const buffers = [];
+            const pageWidth = doc.page.width;
+            const pageCenter = pageWidth / 2;
 
             doc.on('data', buffers.push.bind(buffers));
             doc.on('end', () => resolve(Buffer.concat(buffers)));
 
-            // --- CABEÇALHO ---
-            if (logoBuffer) {
-                doc.image(logoBuffer, 50, 45, { width: 70 });
-            }
-            doc.fontSize(20).font('Helvetica-Bold').text(safeData.ongName, 140, 57);
-            doc.fontSize(10).font('Helvetica').text(safeData.date.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), { align: 'right' });
-            doc.moveDown(3);
-            doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, 125).lineTo(550, 125).stroke();
-
-            // --- TÍTULO ---
-            doc.moveDown(2);
-            doc.fontSize(22).font('Helvetica-Bold').text('Recibo de Doação', { align: 'center' });
-            doc.moveDown(2);
-
-            // --- CORPO DO TEXTO ---
-            doc.fontSize(12).font('Helvetica').text('Em nome da organização, agradecemos imensamente sua generosa doação. Sua contribuição nos ajuda a continuar nosso trabalho e a causar um impacto positivo na comunidade.', { align: 'center' });
-            doc.moveDown(3);
-
-            // --- DETALHES DA TRANSAÇÃO ---
-            doc.fontSize(14).font('Helvetica-Bold').text('Resumo da Transação', { align: 'center' });
-            doc.moveDown();
-
-            const valorFormatado = `R$ ${safeData.amount.toFixed(2).replace('.', ',')}`;
+            // --- CABEÇALHO COM LOGO E NOME DA ONG ---
+            let headerY = 60;
             
-            function drawCenteredRow(label, value) {
-                doc.font('Helvetica-Bold').fontSize(12);
-                const labelWidth = doc.widthOfString(label);
-                doc.font('Helvetica').fontSize(12);
-                const valueWidth = doc.widthOfString(value);
-                const totalWidth = labelWidth + valueWidth;
-                const startX = (doc.page.width - totalWidth) / 2;
-                
-                doc.font('Helvetica-Bold').text(label, startX, doc.y);
-                doc.font('Helvetica').text(value, startX + labelWidth, doc.y);
-                doc.moveDown(1.5);
+            if (logoBuffer) {
+                try {
+                    doc.image(logoBuffer, pageCenter - 35, headerY, { width: 70 });
+                    headerY += 85;
+                } catch (err) {
+                    console.error("Erro ao adicionar logo:", err);
+                }
             }
 
-            drawCenteredRow('Doador: ', safeData.donorName);
-            drawCenteredRow('Valor Doado: ', valorFormatado);
-            drawCenteredRow('ID da Transação: ', safeData.paymentId);
+            doc.fontSize(24)
+               .font('Helvetica-Bold')
+               .text(safeData.ongName, 50, headerY, { 
+                   align: 'center',
+                   width: pageWidth - 100
+               });
+
+            headerY += 40;
+
+            // Data
+            doc.fontSize(10)
+               .font('Helvetica')
+               .fillColor('#666666')
+               .text(
+                   safeData.date.toLocaleDateString('pt-BR', { 
+                       weekday: 'long', 
+                       year: 'numeric', 
+                       month: 'long', 
+                       day: 'numeric' 
+                   }), 
+                   50, 
+                   headerY, 
+                   { align: 'center', width: pageWidth - 100 }
+               );
+
+            headerY += 40;
+
+            // Linha divisória
+            doc.strokeColor("#dddddd")
+               .lineWidth(1.5)
+               .moveTo(100, headerY)
+               .lineTo(pageWidth - 100, headerY)
+               .stroke();
+
+            // --- TÍTULO DO RECIBO ---
+            let contentY = headerY + 50;
+            
+            doc.fontSize(28)
+               .font('Helvetica-Bold')
+               .fillColor('#000000')
+               .text('Recibo de Doação', 50, contentY, { 
+                   align: 'center',
+                   width: pageWidth - 100
+               });
+
+            contentY += 60;
+
+            // --- MENSAGEM DE AGRADECIMENTO ---
+            doc.fontSize(12)
+               .font('Helvetica')
+               .fillColor('#444444')
+               .text(
+                   'Em nome da organização, agradecemos imensamente sua generosa doação. Sua contribuição nos ajuda a continuar nosso trabalho e a causar um impacto positivo na comunidade.',
+                   80,
+                   contentY,
+                   { 
+                       align: 'center',
+                       width: pageWidth - 160,
+                       lineGap: 5
+                   }
+               );
+
+            contentY += 100;
+
+            // --- CAIXA DE DETALHES ---
+            const boxX = 120;
+            const boxWidth = pageWidth - 240;
+            const boxY = contentY;
+            const boxHeight = 180;
+
+            // Fundo da caixa
+            doc.rect(boxX, boxY, boxWidth, boxHeight)
+               .fillAndStroke('#f8f9fa', '#dddddd');
+
+            // Título da seção
+            doc.fontSize(16)
+               .font('Helvetica-Bold')
+               .fillColor('#000000')
+               .text('Detalhes da Doação', boxX, boxY + 25, {
+                   width: boxWidth,
+                   align: 'center'
+               });
+
+            let detailsY = boxY + 60;
+            const labelX = boxX + 40;
+            const valueX = pageCenter - 10;
+
+            // Função para desenhar linhas de detalhes
+            function drawDetailLine(label, value, y) {
+                doc.fontSize(11)
+                   .font('Helvetica-Bold')
+                   .fillColor('#666666')
+                   .text(label, labelX, y, { width: valueX - labelX - 10, align: 'right' });
+
+                doc.fontSize(11)
+                   .font('Helvetica')
+                   .fillColor('#000000')
+                   .text(value, valueX, y, { width: boxX + boxWidth - valueX - 40 });
+            }
+
+            // Doador
+            drawDetailLine('Doador:', safeData.donorName, detailsY);
+            detailsY += 35;
+
+            // Valor
+            const valorFormatado = `R$ ${safeData.amount.toFixed(2).replace('.', ',')}`;
+            doc.fontSize(11)
+               .font('Helvetica-Bold')
+               .fillColor('#666666')
+               .text('Valor:', labelX, detailsY, { width: valueX - labelX - 10, align: 'right' });
+
+            doc.fontSize(14)
+               .font('Helvetica-Bold')
+               .fillColor('#28a745')
+               .text(valorFormatado, valueX, detailsY - 2, { width: boxX + boxWidth - valueX - 40 });
+            detailsY += 35;
+
+            // ID da Transação
+            drawDetailLine('ID da Transação:', safeData.paymentId, detailsY);
 
             // --- RODAPÉ ---
-            doc.y = 700;
-            doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-            doc.moveDown();
+            const footerY = doc.page.height - 100;
             
-            doc.fontSize(9).text('Este é um recibo gerado automaticamente pela plataforma Enchant. Para dúvidas, entre em contato com a organização.', { align: 'center' });
-            doc.fontSize(9).text('Salvador, Bahia', { align: 'center' });
-            
+            doc.strokeColor("#dddddd")
+               .lineWidth(1)
+               .moveTo(100, footerY)
+               .lineTo(pageWidth - 100, footerY)
+               .stroke();
+
+            doc.fontSize(9)
+               .font('Helvetica')
+               .fillColor('#888888')
+               .text(
+                   'Este é um recibo gerado automaticamente pela plataforma Enchant.',
+                   50,
+                   footerY + 15,
+                   { align: 'center', width: pageWidth - 100 }
+               );
+
+            doc.fontSize(9)
+               .text(
+                   'Para dúvidas, entre em contato com a organização.',
+                   50,
+                   footerY + 30,
+                   { align: 'center', width: pageWidth - 100 }
+               );
+
+            doc.fontSize(8)
+               .fillColor('#aaaaaa')
+               .text(
+                   'Salvador, Bahia',
+                   50,
+                   footerY + 50,
+                   { align: 'center', width: pageWidth - 100 }
+               );
+
             doc.end();
 
         } catch (error) {
