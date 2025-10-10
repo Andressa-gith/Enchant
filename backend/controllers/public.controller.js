@@ -73,7 +73,7 @@ class PublicController {
                 instituicao_id: ongId,                      // ID da ONG que receberá a doação
                 titulo: `Intenção de Doação de ${nomeDoador}`, // Título inicial
                 valor: valor,                               // Valor da doação
-                tipo_documento: 'Recibo de Doação',         // Tipo padronizado para doações
+                tipo_documento: 'Recibo de doação',         // Tipo padronizado para doações
                 status: 'pendente',
                 referencia_externa: externalReference,
                 caminho_arquivo: 'doacao_automatica_sem_anexo',
