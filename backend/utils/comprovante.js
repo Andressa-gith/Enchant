@@ -24,7 +24,16 @@ async function fetchImage(url) {
  * @returns {Promise<Buffer>} - Uma promise que resolve com o buffer do PDF.
  */
 export async function generateDonationReceipt(receiptData) {
-    const logoBuffer = await fetchImage(receiptData.logoUrl);
+    const safeData = {
+        ongName: receiptData.ongName || 'Nome da ONG Indisponível',
+        donorName: receiptData.donorName || 'Doador Anônimo',
+        amount: Number(receiptData.amount),
+        paymentId: String(receiptData.paymentId) || 'ID Indisponível',
+        logoUrl: receiptData.logoUrl,
+        date: receiptData.date instanceof Date ? receiptData.date : new Date()
+    };
+
+    const logoBuffer = await fetchImage(safeData.logoUrl);
 
     return new Promise((resolve, reject) => {
         try {
@@ -38,8 +47,8 @@ export async function generateDonationReceipt(receiptData) {
             if (logoBuffer) {
                 doc.image(logoBuffer, 50, 45, { width: 70 });
             }
-            doc.fontSize(20).font('Helvetica-Bold').text(receiptData.ongName, 140, 57);
-            doc.fontSize(10).font('Helvetica').text(new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), { align: 'right' });
+            doc.fontSize(20).font('Helvetica-Bold').text(safeData.ongName, 140, 57);
+            doc.fontSize(10).font('Helvetica').text(safeData.date.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), { align: 'right' });
             doc.moveDown(3);
             doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, 125).lineTo(550, 125).stroke();
 
@@ -56,17 +65,13 @@ export async function generateDonationReceipt(receiptData) {
             doc.fontSize(14).font('Helvetica-Bold').text('Resumo da Transação', { align: 'center' });
             doc.moveDown();
 
-            const amount = Number(receiptData.amount) || 0;
-            const valorFormatado = `R$ ${amount.toFixed(2).replace('.', ',')}`;
+            const valorFormatado = `R$ ${safeData.amount.toFixed(2).replace('.', ',')}`;
             
-            // Função auxiliar para desenhar o texto centralizado em colunas
             function drawCenteredRow(label, value) {
                 doc.font('Helvetica-Bold').fontSize(12);
                 const labelWidth = doc.widthOfString(label);
-                
                 doc.font('Helvetica').fontSize(12);
                 const valueWidth = doc.widthOfString(value);
-
                 const totalWidth = labelWidth + valueWidth;
                 const startX = (doc.page.width - totalWidth) / 2;
                 
@@ -75,10 +80,11 @@ export async function generateDonationReceipt(receiptData) {
                 doc.moveDown(1.5);
             }
 
-            drawCenteredRow('Doador: ', receiptData.donorName);
+            drawCenteredRow('Doador: ', safeData.donorName);
             drawCenteredRow('Valor Doado: ', valorFormatado);
-            drawCenteredRow('ID da Transação: ', receiptData.paymentId);
+            drawCenteredRow('ID da Transação: ', safeData.paymentId);
 
+            // --- RODAPÉ ---
             doc.y = 700;
             doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
             doc.moveDown();
