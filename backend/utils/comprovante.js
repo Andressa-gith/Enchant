@@ -34,48 +34,54 @@ export async function generateDonationReceipt(receiptData) {
             doc.on('data', buffers.push.bind(buffers));
             doc.on('end', () => resolve(Buffer.concat(buffers)));
 
-            // --- CABEÇALHO ---
             if (logoBuffer) {
-                doc.image(logoBuffer, 50, 45, { width: 70, align: 'center', valign: 'center' });
+                doc.image(logoBuffer, 50, 45, { width: 70 });
             }
-            doc.fontSize(20).font('Helvetica-Bold').text(receiptData.ongName, 140, 57, { align: 'left' });
-            doc.fontSize(10).font('Helvetica').text(new Date().toLocaleDateString('pt-BR', { dateStyle: 'full' }), { align: 'right' });
-            doc.moveDown(3);
-            doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, 125).lineTo(550, 125).stroke();
+            doc.fontSize(10).font('Helvetica')
+               .text('sexta-feira, 10 de outubro de 2025', { align: 'right' });
 
-            // --- TÍTULO ---
+            doc.moveDown(2); // Aumenta o espaço após o cabeçalho
+            
+            doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, 100).lineTo(550, 100).stroke();
+
+            doc.moveDown(2);
             doc.fontSize(22).font('Helvetica-Bold').text('Recibo de Doação', { align: 'center' });
             doc.moveDown(2);
 
             // --- CORPO DO TEXTO ---
             doc.fontSize(12).font('Helvetica');
-            const valorFormatado = `R$ ${receiptData.amount.toFixed(2).replace('.', ',')}`;
-            doc.text('Em nome da organização, agradecemos imensamente sua generosa doação. Sua contribuição nos ajuda a continuar nosso trabalho e a causar um impacto positivo na comunidade.', { align: 'justify' });
-            doc.moveDown(2);
+            // AJUSTE: Corpo do texto agora centralizado
+            doc.text('Em nome da organização, agradecemos imensamente sua generosa doação. Sua contribuição nos ajuda a continuar nosso trabalho e a causar um impacto positivo na comunidade.', { align: 'center' });
+            doc.moveDown(3);
 
-            // --- DETALHES EM BOX ---
-            const box = { x: 50, y: doc.y, width: 500, padding: 20 };
-            doc.rect(box.x, box.y, box.width, 130).fillOpacity(0.05).fillAndStroke('grey', '#dddddd');
-            doc.fillColor('black').fillOpacity(1);
-
-            doc.font('Helvetica-Bold').fontSize(14).text('Resumo da Transação', { align: 'center' });
+            // --- DETALHES DA TRANSAÇÃO ---
+            doc.fontSize(14).font('Helvetica-Bold').text('Resumo da Transação', { align: 'center' });
             doc.moveDown();
-
-            const detalhesY = doc.y;
-            doc.font('Helvetica-Bold').text('Doador:', box.x + box.padding, detalhesY);
-            doc.font('Helvetica').text(receiptData.donorName, 200, detalhesY);
-
-            doc.font('Helvetica-Bold').text('Valor Doado:', box.x + box.padding, detalhesY + 25);
-            doc.font('Helvetica').text(valorFormatado, 200, detalhesY + 25);
             
-            doc.font('Helvetica-Bold').text('ID da Transação:', box.x + box.padding, detalhesY + 50);
-            doc.font('Helvetica').text(receiptData.paymentId, 200, detalhesY + 50);
-            
-            doc.y = box.y + 130 + 30; // Pula para depois da caixa
+            // AJUSTE: Detalhes da transação centralizados
+            const centerX = doc.page.width / 2;
+            const labelWidth = 120; // Largura estimada para os rótulos
+
+            doc.font('Helvetica-Bold').text('Doador:', centerX - labelWidth, doc.y, { width: labelWidth, align: 'right' });
+            doc.font('Helvetica').text(receiptData.donorName, centerX + 10, doc.y);
+
+            doc.moveDown(0.5);
+            const valorY = doc.y;
+            doc.font('Helvetica-Bold').text('Valor Doado:', centerX - labelWidth, valorY, { width: labelWidth, align: 'right' });
+            doc.font('Helvetica').text(`R$ ${receiptData.amount.toFixed(2).replace('.', ',')}`, centerX + 10, valorY);
+
+            doc.moveDown(0.5);
+            const idY = doc.y;
+            doc.font('Helvetica-Bold').text('ID da Transação:', centerX - labelWidth, idY, { width: labelWidth, align: 'right' });
+            doc.font('Helvetica').text(receiptData.paymentId, centerX + 10, idY);
 
             // --- RODAPÉ ---
+            // Posiciona o rodapé mais para o final da página
+            doc.y = 700; 
             doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
             doc.moveDown();
+            
+            // AJUSTE: Rodapé centralizado
             doc.fontSize(9).text('Este é um recibo gerado automaticamente pela plataforma Enchant. Para dúvidas, entre em contato com a organização.', { align: 'center' });
             doc.fontSize(9).text('Salvador, Bahia', { align: 'center' });
             
