@@ -43,18 +43,23 @@ export async function generateDonationReceipt(receiptData) {
             doc.moveDown(3);
             doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, 125).lineTo(550, 125).stroke();
 
+            // --- TÍTULO ---
             doc.moveDown(2);
             doc.fontSize(22).font('Helvetica-Bold').text('Recibo de Doação', { align: 'center' });
             doc.moveDown(2);
 
+            // --- CORPO DO TEXTO ---
             doc.fontSize(12).font('Helvetica').text('Em nome da organização, agradecemos imensamente sua generosa doação. Sua contribuição nos ajuda a continuar nosso trabalho e a causar um impacto positivo na comunidade.', { align: 'center' });
             doc.moveDown(3);
 
+            // --- DETALHES DA TRANSAÇÃO ---
             doc.fontSize(14).font('Helvetica-Bold').text('Resumo da Transação', { align: 'center' });
             doc.moveDown();
 
-            const valorFormatado = `R$ ${receiptData.amount.toFixed(2).replace('.', ',')}`;
+            const amount = Number(receiptData.amount) || 0;
+            const valorFormatado = `R$ ${amount.toFixed(2).replace('.', ',')}`;
             
+            // Função auxiliar para desenhar o texto centralizado em colunas
             function drawCenteredRow(label, value) {
                 doc.font('Helvetica-Bold').fontSize(12);
                 const labelWidth = doc.widthOfString(label);
