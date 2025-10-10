@@ -125,11 +125,19 @@ class PublicController {
 
                     const { data: ongData, error: ongError } = await supabase
                         .from('instituicao')
-                        .select('nome')
+                        .select('nome, caminho_logo')
                         .eq('id', docPendente.instituicao_id)
                         .single();
 
                     if (ongError || !ongData) throw new Error('ONG não encontrada.');
+
+                    let logoUrl = null;
+                    if (ongData.caminho_logo) {
+                        const { data: publicUrlData } = supabase.storage
+                            .from('logos')
+                            .getPublicUrl(ongData.caminho_logo);
+                        logoUrl = publicUrlData.publicUrl;
+                    }
 
                     const nomeDoador = paymentInfo.payer?.first_name || nomeOriginalDoForm || 'Doador Anônimo';
                     const receiptData = {
@@ -137,7 +145,8 @@ class PublicController {
                         donorName: nomeDoador,
                         amount: paymentInfo.transaction_amount,
                         paymentId: paymentInfo.id,
-                        date: new Date()
+                        date: new Date(),
+                        logoUrl: logoUrl
                     };
 
                     const pdfBuffer = await generateDonationReceipt(receiptData);
