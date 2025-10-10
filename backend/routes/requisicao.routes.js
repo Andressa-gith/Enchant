@@ -1,9 +1,9 @@
 import express from 'express';
 import multer from 'multer';
 import {
-    processarRequisicao,
+    processarRequisicaoComEmail,
     listarRequisicoes,
-    atualizarStatusRequisicao
+    atualizarStatusRequisicaoComEmail
 } from '../controllers/requisicao.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
@@ -31,7 +31,7 @@ const upload = multer({
 requisicaoRouter.post(
     '/enviar',
     upload.any(), // Aceita qualquer quantidade de arquivos com qualquer nome de campo
-    processarRequisicao
+    processarRequisicaoComEmail
 );
 
 // Rotas protegidas (admin)
@@ -44,7 +44,7 @@ requisicaoRouter.get(
 requisicaoRouter.patch(
     '/:id/status',
     protegerRota,
-    atualizarStatusRequisicao
+    atualizarStatusRequisicaoComEmail
 );
 
 export default requisicaoRouter;

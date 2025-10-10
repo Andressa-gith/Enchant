@@ -409,64 +409,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ========== ENVIO DA SOLICITAÇÃO ==========
     
-    async function enviarSolicitacao() {
+ // No seu ficheiro requisicao.js
+
+async function enviarSolicitacao() {
     const btnEnviar = document.querySelector('#btn-enviar');
     btnEnviar.disabled = true;
     btnEnviar.textContent = 'Enviando...';
 
     try {
-        const dadosFormulario = {
-            nomeInstituicao: document.getElementById('nomecomprador').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            cnpj: document.getElementById('cnpj').value.trim(),
-            telefone: document.getElementById('tel').value.trim(),
-            estado: document.getElementById('estado').value,
-            cidade: document.getElementById('cidade').value,
-            senha: document.getElementById('senha').value
-        };
-
+        // PASSO 1: Criar o FormData para enviar tudo junto
         const formData = new FormData();
-        
-        Object.keys(dadosFormulario).forEach(key => {
-            formData.append(key, dadosFormulario[key]);
-        });
 
-        Object.keys(arquivosPorCategoria).forEach(categoria => {
-            arquivosPorCategoria[categoria].forEach((item, index) => {
-                formData.append(`${categoria}_${index}`, item.arquivo);
+        // PASSO 2: Adicionar os dados de texto (nome, email, etc.)
+        formData.append('nomeInstituicao', document.getElementById('nomecomprador').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('cnpj', document.getElementById('cnpj').value.trim());
+        formData.append('telefone', document.getElementById('tel').value.trim());
+        formData.append('estado', document.getElementById('estado').value);
+        formData.append('cidade', document.getElementById('cidade').value);
+        formData.append('senha', document.getElementById('senha').value);
+
+        // PASSO 3: Adicionar os FICHEIROS com as etiquetas corretas
+        // Esta é a parte mais importante.
+        for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
+            listaDeFicheiros.forEach((item, index) => {
+                // Cria a etiqueta que o backend espera, ex: "declaracao-renda_1"
+                const nomeDoCampo = `${categoria}_${index + 1}`;
+                formData.append(nomeDoCampo, item.arquivo, item.nome);
             });
-        });
+        }
 
-        /* DESCOMENTAR quando o backend estiver pronto
+        // PASSO 4: Enviar para o backend
         const response = await fetch('/api/requisicao/enviar', {
             method: 'POST',
             body: formData
         });
+
         const result = await response.json();
-        if (!response.ok) throw new Error(result.message);
-        */
         
-        // Simular sucesso por enquanto
-        console.log('Dados:', dadosFormulario);
-        console.log('Arquivos:', arquivosPorCategoria);
+        if (!response.ok) {
+            throw new Error(result.message || 'Erro ao enviar requisição');
+        }
         
-        // Mostrar modal de sucesso
+        // Se deu tudo certo
         mostrarModal('Requisição Enviada com Sucesso!', 
-            'Você receberá um email quando sua conta for aprovada.');
+            result.message || 'Você receberá um email quando sua conta for aprovada.');
         
-        // Redirecionar após 2 segundos
         setTimeout(() => {
             window.location.href = '/entrar';
-        }, 4000);
+        }, 3000);
 
     } catch (error) {
+        // Captura o erro do servidor e mostra no ecrã
         console.error('Erro:', error);
         mostrarModal('Erro ao Enviar Requisição', error.message);
         btnEnviar.disabled = false;
         btnEnviar.textContent = 'Enviar';
     }
 }
-
     // ========== EVENT LISTENERS DOS FORMULÁRIOS ==========
     
     if (formDados) {

@@ -1,17 +1,39 @@
 import supabase from '../db/supabaseClient.js';
 import supabaseAdmin from '../db/supabaseAdmin.js';
-import { v4 as uuidv4 } from 'uuid';
 import logger from '../utils/logger.js';
+import { 
+    enviarEmailRequisicao, 
+    enviarEmailConfirmacao,
+    enviarEmailAprovacao,
+    enviarEmailRejeicao 
+} from './email.controller.js';
 
 /**
  * Processa uma nova requisição de cadastro de ONG com documentos
- * @param {object} req - Objeto de requisição do Express
- * @param {object} res - Objeto de resposta do Express
+ * VERSÃO COM EMAIL - Envia documentos por email ao invés de storage
  */
-export const processarRequisicao = async (req, res) => {
-    logger.info('Iniciando processamento de nova requisição de cadastro...');
+export const processarRequisicaoComEmail = async (req, res) => {
+    logger.info('Iniciando processamento de nova requisição de cadastro (com email)...');
     let novoUsuarioId = null;
-    let arquivosUpload = [];
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).json({
+        success: false,
+        message: 'Nenhum documento foi enviado.'
+    });
+}
+
+if (!req.files || Object.keys(req.files).length === 0) {
+    // ...
+}
+
+// ADICIONE ESTA LINHA AQUI
+logger.info('Nomes dos campos de ficheiro recebidos:', Object.keys(req.files));
+
+// A validação continua abaixo...
+const temDeclaracaoRenda = Object.keys(req.files).some(key => 
+    key.startsWith('declaracao-renda_')
+);
 
     try {
         const {
@@ -24,7 +46,6 @@ export const processarRequisicao = async (req, res) => {
             senha
         } = req.body;
 
-        // Log sem dados sensíveis
         const debugData = { nomeInstituicao, email, cnpj, telefone, estado, cidade };
         logger.debug('Dados recebidos para requisição:', debugData);
 
@@ -37,7 +58,6 @@ export const processarRequisicao = async (req, res) => {
             });
         }
 
-        // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -46,7 +66,6 @@ export const processarRequisicao = async (req, res) => {
             });
         }
 
-        // Validar CNPJ
         const cnpjLimpo = cnpj.replace(/\D/g, '');
         if (cnpjLimpo.length !== 14) {
             return res.status(400).json({
@@ -55,7 +74,6 @@ export const processarRequisicao = async (req, res) => {
             });
         }
 
-        // Validar senha
         const senhaRegex = /^(?=.*[A-Z])(?=.*\d.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
         if (!senhaRegex.test(senha)) {
             return res.status(400).json({
@@ -64,7 +82,6 @@ export const processarRequisicao = async (req, res) => {
             });
         }
 
-        // Validar arquivos
         if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).json({
                 success: false,
@@ -72,7 +89,7 @@ export const processarRequisicao = async (req, res) => {
             });
         }
 
-        // Verificar se declaração de renda foi enviada (obrigatório)
+        // Verificar declaração de renda
         const temDeclaracaoRenda = Object.keys(req.files).some(key => 
             key.startsWith('declaracao-renda_')
         );
@@ -104,7 +121,7 @@ export const processarRequisicao = async (req, res) => {
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: email,
             password: senha,
-            email_confirm: false, // Usuário precisa confirmar email
+            email_confirm: false,
             user_metadata: {
                 nome_instituicao: nomeInstituicao,
                 cnpj: cnpj,
@@ -140,7 +157,7 @@ export const processarRequisicao = async (req, res) => {
                 nome: nomeInstituicao,
                 email_contato: email,
                 cnpj: cnpj,
-                tipo_instituicao: 'ONG', // Valor padrão
+                tipo_instituicao: 'ONG',
                 primeiro_login: true,
                 status_requisicao: 'pendente'
             });
@@ -172,55 +189,38 @@ export const processarRequisicao = async (req, res) => {
         if (telefoneError) throw telefoneError;
         logger.info('[PASSO 3/4] Endereço e telefone inseridos com sucesso.');
 
-        // ========== PASSO 4: UPLOAD DOS DOCUMENTOS ==========
-        logger.info(`[PASSO 4/4] Iniciando upload de ${Object.keys(req.files).length} documentos...`);
+        // ========== PASSO 4: ENVIAR EMAIL COM DOCUMENTOS ==========
+        logger.info(`[PASSO 4/4] Enviando email com ${Object.keys(req.files).length} documentos...`);
         
-        const bucketName = 'requisicao-documentos';
-        const documentosMetadata = [];
-
+        // Organizar arquivos por categoria
+        const arquivosPorCategoria = {};
         for (const [fieldName, fileArray] of Object.entries(req.files)) {
             const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
             const categoria = fieldName.split('_')[0];
             
-            // Gerar nome único para o arquivo
-            const fileExt = file.originalname.split('.').pop();
-            const fileName = `${novoUsuarioId}/${categoria}/${uuidv4()}.${fileExt}`;
-            
-            logger.debug(`Fazendo upload do arquivo: ${fileName}`);
-            
-            const { error: uploadError } = await supabaseAdmin.storage
-                .from(bucketName)
-                .upload(fileName, file.buffer, {
-                    contentType: file.mimetype,
-                    upsert: false
-                });
-
-            if (uploadError) {
-                logger.error(`Erro ao fazer upload do arquivo ${fileName}`, uploadError);
-                throw uploadError;
+            if (!arquivosPorCategoria[categoria]) {
+                arquivosPorCategoria[categoria] = [];
             }
-
-            arquivosUpload.push(fileName);
             
-            // Salvar metadata do documento
-            documentosMetadata.push({
-                instituicao_id: novoUsuarioId,
-                categoria: categoria,
-                nome_arquivo: file.originalname,
-                caminho_arquivo: fileName,
-                tipo_mime: file.mimetype,
-                tamanho_bytes: file.size
-            });
+            arquivosPorCategoria[categoria].push(file);
         }
 
-        // Inserir metadata dos documentos no banco
-        const { error: docError } = await supabaseAdmin
-            .from('requisicao_documento')
-            .insert(documentosMetadata);
-
-        if (docError) throw docError;
-
-        logger.info(`[PASSO 4/4] Upload de ${arquivosUpload.length} documentos concluído com sucesso.`);
+        // Enviar email para admin com os documentos
+        try {
+            await enviarEmailRequisicao({
+                nomeInstituicao,
+                email,
+                cnpj,
+                telefone,
+                cidade,
+                estado
+            }, arquivosPorCategoria);
+            
+            logger.info('[PASSO 4/4] Email com documentos enviado com sucesso.');
+        } catch (emailError) {
+            logger.error('Erro ao enviar email com documentos', emailError);
+            // Continuar mesmo se falhar o email
+        }
 
         // ========== CRIAR REGISTRO DE REQUISIÇÃO ==========
         const { error: requisicaoError } = await supabaseAdmin
@@ -232,6 +232,13 @@ export const processarRequisicao = async (req, res) => {
             });
 
         if (requisicaoError) throw requisicaoError;
+
+        // Enviar email de confirmação para a instituição
+        try {
+            await enviarEmailConfirmacao(email, nomeInstituicao);
+        } catch (emailError) {
+            logger.warn('Erro ao enviar email de confirmação', emailError);
+        }
 
         logger.info(`✅ Requisição de cadastro processada com sucesso para usuário ID: ${novoUsuarioId}`);
 
@@ -245,22 +252,6 @@ export const processarRequisicao = async (req, res) => {
         logger.error('ERRO NO PROCESSAMENTO DA REQUISIÇÃO. Iniciando rollback...', error);
 
         // ========== LÓGICA DE ROLLBACK ==========
-        
-        // 1. Deletar arquivos do storage
-        if (arquivosUpload.length > 0) {
-            logger.warn(`Removendo ${arquivosUpload.length} arquivos do storage...`);
-            const { error: deleteStorageError } = await supabaseAdmin.storage
-                .from('requisicao-documentos')
-                .remove(arquivosUpload);
-            
-            if (deleteStorageError) {
-                logger.error('Erro ao remover arquivos do storage durante rollback', deleteStorageError);
-            } else {
-                logger.info('Arquivos removidos do storage com sucesso.');
-            }
-        }
-
-        // 2. Deletar usuário do Auth
         if (novoUsuarioId) {
             logger.warn(`Deletando usuário ID ${novoUsuarioId} do Auth...`);
             const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(novoUsuarioId);
@@ -280,52 +271,9 @@ export const processarRequisicao = async (req, res) => {
 };
 
 /**
- * Busca todas as requisições pendentes (apenas para admin)
- * @param {object} req - Objeto de requisição do Express
- * @param {object} res - Objeto de resposta do Express
+ * Atualizar status da requisição (com notificação por email)
  */
-export const listarRequisicoes = async (req, res) => {
-    logger.info('Listando requisições de cadastro...');
-    try {
-        const { data, error } = await supabaseAdmin
-            .from('requisicao_cadastro')
-            .select(`
-                *,
-                instituicao:instituicao_id (
-                    nome,
-                    email_contato,
-                    cnpj
-                ),
-                documentos:requisicao_documento (
-                    categoria,
-                    nome_arquivo,
-                    caminho_arquivo
-                )
-            `)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        res.status(200).json({
-            success: true,
-            requisicoes: data
-        });
-
-    } catch (error) {
-        logger.error('Erro ao listar requisições', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao buscar requisições.'
-        });
-    }
-};
-
-/**
- * Aprova ou rejeita uma requisição (apenas para admin)
- * @param {object} req - Objeto de requisição do Express
- * @param {object} res - Objeto de resposta do Express
- */
-export const atualizarStatusRequisicao = async (req, res) => {
+export const atualizarStatusRequisicaoComEmail = async (req, res) => {
     logger.info('Atualizando status de requisição...');
     try {
         const { id } = req.params;
@@ -338,10 +286,17 @@ export const atualizarStatusRequisicao = async (req, res) => {
             });
         }
 
-        // Buscar a requisição
+        // Buscar a requisição com dados da instituição
         const { data: requisicao, error: fetchError } = await supabaseAdmin
             .from('requisicao_cadastro')
-            .select('instituicao_id')
+            .select(`
+                *,
+                instituicao:instituicao_id (
+                    id,
+                    nome,
+                    email_contato
+                )
+            `)
             .eq('id', id)
             .single();
 
@@ -364,7 +319,7 @@ export const atualizarStatusRequisicao = async (req, res) => {
 
         if (updateError) throw updateError;
 
-        // Se aprovado, atualizar status da instituição e confirmar email
+        // Se aprovado
         if (status === 'aprovado') {
             const { error: instituicaoError } = await supabaseAdmin
                 .from('instituicao')
@@ -382,6 +337,36 @@ export const atualizarStatusRequisicao = async (req, res) => {
             if (confirmError) {
                 logger.warn('Erro ao confirmar email do usuário', confirmError);
             }
+
+            // Enviar email de aprovação
+            try {
+                await enviarEmailAprovacao(
+                    requisicao.instituicao.email_contato,
+                    requisicao.instituicao.nome
+                );
+            } catch (emailError) {
+                logger.warn('Erro ao enviar email de aprovação', emailError);
+            }
+        } 
+        // Se rejeitado
+        else if (status === 'rejeitado') {
+            const { error: instituicaoError } = await supabaseAdmin
+                .from('instituicao')
+                .update({ status_requisicao: 'rejeitado' })
+                .eq('id', requisicao.instituicao_id);
+
+            if (instituicaoError) throw instituicaoError;
+
+            // Enviar email de rejeição
+            try {
+                await enviarEmailRejeicao(
+                    requisicao.instituicao.email_contato,
+                    requisicao.instituicao.nome,
+                    observacoes
+                );
+            } catch (emailError) {
+                logger.warn('Erro ao enviar email de rejeição', emailError);
+            }
         }
 
         logger.info(`Requisição ID ${id} ${status} com sucesso.`);
@@ -391,11 +376,52 @@ export const atualizarStatusRequisicao = async (req, res) => {
             message: `Requisição ${status} com sucesso!`
         });
 
-    } catch (error) {
+} catch (error) {
         logger.error('Erro ao atualizar status da requisição', error);
         res.status(500).json({
             success: false,
-            message: 'Erro ao atualizar requisição.'
+            message: 'Erro interno ao atualizar o status da requisição.'
+        });
+    }
+};
+
+// Adicione esta função que estava faltando no seu arquivo
+
+/**
+ * Lista todas as requisições de cadastro
+ */
+export const listarRequisicoes = async (req, res) => {
+    logger.info('Listando todas as requisições de cadastro...');
+    try {
+        const { data: requisicoes, error } = await supabaseAdmin
+            .from('requisicao_cadastro')
+            .select(`
+                id,
+                status,
+                created_at,
+                instituicao:instituicao_id (
+                    id,
+                    nome,
+                    cnpj,
+                    email_contato
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            throw error;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: requisicoes
+        });
+
+    } catch (error) {
+        logger.error('Erro ao listar requisições', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno ao buscar as requisições.'
         });
     }
 };
