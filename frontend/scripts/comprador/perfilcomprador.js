@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         phone: document.getElementById('phone'),
         estado: document.getElementById('estado'),
         cidade: document.getElementById('cidade'),
-        chave_pix: document.getElementById('chave-pix'),
+        sobre: document.getElementById('sobre'),
+        charCounter: document.getElementById('char-counter'),
         passwordDots: document.querySelector('.password-dots1'),
         profileImage: document.getElementById('profile-image'),
         logoPlaceholder: document.getElementById('logo-placeholder'),
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ... (seu objeto 'ui' completo e sem alterações) ...
         editCnpj: document.getElementById('edit-cnpj'),
         editPhone: document.getElementById('edit-phone'),
-        editChavePix: document.getElementById('edit-chave-pix'),
+        editSobre: document.getElementById('edit-sobre'),
 
         // Modais
         editModal: document.getElementById('edit-modal'),
@@ -100,6 +101,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. FUNÇÕES
 
+    function setupCharCounter() {
+        // Garante que os elementos (textarea e contador) existem na página
+        if (ui.editSobre && ui.charCounter) {
+            const maxLength = ui.editSobre.getAttribute('maxlength');
+
+            // Função interna que faz a atualização do texto do contador
+            const updateCounter = () => {
+                const currentLength = ui.editSobre.value.length;
+                const remaining = maxLength - currentLength;
+
+                ui.charCounter.textContent = `${remaining} caracteres restantes`;
+
+                // Muda a cor para vermelho quando estiver perto do limite
+                if (remaining < 20) {
+                    ui.charCounter.style.color = '#dc3545'; // Vermelho
+                } else {
+                    ui.charCounter.style.color = '#6c757d'; // Cinza padrão
+                }
+            };
+
+            // Adiciona um "ouvinte" que chama a atualização toda vez que o usuário digita
+            ui.editSobre.addEventListener('input', updateCounter);
+        }
+    }
+
     // --- Funções de API (Comunicação com o Backend) ---
 
     async function fetchUserProfile() {
@@ -128,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             telefone: ui.editPhone.value,
             estado: ui.editEstado.value,
             cidade: ui.editCidade.value,
-            chave_pix: ui.editChavePix.value
+            sobre: ui.editSobre.value
         };
 
         const aSenhaFoiAlterada = !!dadosParaEnviar.senha;
@@ -292,7 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.phone.textContent = userData.telefone || 'Não informado';
         ui.estado.textContent = userData.estado || 'Não informado';
         ui.cidade.textContent = userData.cidade || 'Não informado';
-        ui.chave_pix.textContent = userData.chave_pix || 'Não informado';
+        ui.sobre.textContent = userData.sobre || 'Não informado';
 
         ui.profileImage.src = userData.url_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
 
@@ -320,7 +346,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.editInstitutionName.value = userData.nome || '';
         ui.editEmail.value = userData.email || '';
         ui.editCnpj.value = userData.cnpj || '';
-        ui.editChavePix.value = userData.chave_pix || '';
+        ui.editSobre.value = userData.sobre || '';
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
         ui.editCidade.value = userData.cidade || '';
@@ -615,6 +641,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchUserProfile(); // Busca os dados do usuário e atualiza a UI
     setupPasswordToggles();   // Configura os botões de mostrar/esconder senha
     setupLogoUpload();        // Configura a área de arrastar e soltar logo
+    setupCharCounter(); //contador la
     conectarEventos();        // Conecta todos os botões às suas funções
     setTimeout(() => {
         window.SiteLoader?.hide();

@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
                 <div class="card-ong-conteudo">
                     <h3>${ong.nome}</h3>
-                    <p>${ong.descricao_curta || 'Esta organização ainda não adicionou uma descrição.'}</p>
+                    <p>${ong.sobre || 'Esta organização ainda não adicionou uma descrição.'}</p>
                     <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}">
                         Doar Agora
                     </button>
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             ongsFiltradas = ongsList.filter(ong => {
                 return ong.nome.toLowerCase().includes(termoBusca) ||
-                    (ong.descricao_curta && ong.descricao_curta.toLowerCase().includes(termoBusca)) ||
+                    (ong.sobre && ong.sobre.toLowerCase().includes(termoBusca)) ||
                     (ong.area_atuacao && ong.area_atuacao.toLowerCase().includes(termoBusca));
             });
         }

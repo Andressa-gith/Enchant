@@ -14,7 +14,7 @@ class PublicController {
             // Busca na sua tabela unificada de usuários
             const { data, error } = await supabase
                 .from('instituicao')
-                .select('id, nome, caminho_logo') // Adicione as colunas que quiser mostrar
+                .select('id, nome, caminho_logo, sobre') // Adicione as colunas que quiser mostrar
                 .eq('mp_connected', true);  //so mostra as que tem o mercado pago (pode tirar se quiser)
 
             if (error) {
@@ -35,6 +35,7 @@ class PublicController {
                     id: ong.id,
                     nome: ong.nome,
                     caminho_logo: logoUrl,
+                    sobre: ong.sobre,
                 };
             });
 
