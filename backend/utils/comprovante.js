@@ -64,7 +64,7 @@ export async function generateDonationReceipt(receiptData) {
                    width: pageWidth - 100
                });
 
-            headerY += 40;
+            headerY += 25;
 
             // Data
             doc.fontSize(10)
@@ -82,7 +82,7 @@ export async function generateDonationReceipt(receiptData) {
                    { align: 'center', width: pageWidth - 100 }
                );
 
-            headerY += 40;
+            headerY += 30;
 
             // Linha divisória
             doc.strokeColor("#dddddd")
@@ -102,7 +102,7 @@ export async function generateDonationReceipt(receiptData) {
                    width: pageWidth - 100
                });
 
-            contentY += 60;
+            contentY += 50;
 
             // --- MENSAGEM DE AGRADECIMENTO ---
             doc.fontSize(12)
