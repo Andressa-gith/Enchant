@@ -165,7 +165,7 @@ body {
 }
 
 .summary-card-value {
-    font-size: 1.75rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--primary-dark);
 }
@@ -404,7 +404,7 @@ body {
 }
 
 .stat-number {
-    font-size: 2.25rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--primary-color);
 }
