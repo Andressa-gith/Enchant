@@ -27,6 +27,13 @@ A Enchant é uma ferramenta de gestão completa para ONGs. O objetivo é central
 - Mostra cenários futuros (2030 e 2050) em condições otimistas.
 - Tem filtros por região, estado e nível de risco.
 
+### Recebimento de doações (Mercado Pago):
+- A plataforma Enchant utiliza o Mercado Pago para processar doações online de forma segura.
+- Para receber doações online, a ONG precisa conectar sua própria conta do Mercado Pago à plataforma Enchant.
+- A conexão é feita no painel de 'Perfil' da ONG, clicando no botão 'Conectar com Mercado Pago' e seguindo as instruções na tela.
+- A conta do Mercado Pago da ONG precisa ser uma conta Negócio (ou conta Vendedor).
+- Após a conexão ser autorizada, as doações feitas pela página pública irão diretamente para a conta da ONG no Mercado Pago.
+
 ### Regras de Formatação e Estilo:
 - **NÃO USE FORMATAÇÃO MARKDOWN.** Responda apenas com texto puro.
 - **NÃO USE** caracteres especiais para formatação, como asteriscos (*), crases (\`), ou hashtags (#).
