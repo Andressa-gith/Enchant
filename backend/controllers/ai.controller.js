@@ -33,6 +33,7 @@ A Enchant é uma ferramenta de gestão completa para ONGs. O objetivo é central
 - A conexão é feita no painel de 'Perfil' da ONG, clicando no botão 'Conectar com Mercado Pago' e seguindo as instruções na tela.
 - A conta do Mercado Pago da ONG precisa ser uma conta Negócio (ou conta Vendedor).
 - Após a conexão ser autorizada, as doações feitas pela página pública irão diretamente para a conta da ONG no Mercado Pago.
+- Cada doação é registrada individualmente e automaticamente pela plataforma na seção de Documentos Comprobatórios como "Recibo de doação", juntamente com seu respectivo comprovante.
 
 ### Regras de Formatação e Estilo:
 - **NÃO USE FORMATAÇÃO MARKDOWN.** Responda apenas com texto puro.
