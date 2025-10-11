@@ -238,15 +238,42 @@ body {
 .leaflet-container {
     height: 100%;
     width: 100%;
+    z-index: 1 !important;
+}
+
+.leaflet-pane {
+    z-index: 400 !important;
+}
+
+.leaflet-control-zoom {
+    z-index: 400 !important;
+}
+
+.leaflet-control-attribution {
+    z-index: 400 !important;
 }
 
 /* === CONTROLES DO LEAFLET === */
+.leaflet-control-container {
+    z-index: 400 !important;
+}
+
+.leaflet-control {
+    z-index: 400 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 400 !important;
+}
+
 .info {
     padding: 8px 12px;
     font: 13px/16px 'Lexend Deca', Arial, sans-serif;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 6px;
     border: 1px solid #ccc;
+    z-index: 400 !important;
 }
 
 .info h4 {
@@ -264,6 +291,7 @@ body {
     padding: 12px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    z-index: 400 !important;
 }
 
 .legend i {
