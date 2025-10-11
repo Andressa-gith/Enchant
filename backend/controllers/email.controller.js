@@ -161,7 +161,7 @@ export const enviarEmailAprovacao = async (email, nomeInstituicao) => {
                     <h3 style="color: #155724; margin-top: 0;">Bem-vindo à Plataforma Enchant!</h3>
                     <p style="color: #155724; margin: 15px 0;">Agora você pode acessar todas as funcionalidades da plataforma.</p>
                     <a href="${process.env.FRONTEND_URL}/login" 
-                       style="display: inline-block; background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 10px;">
+                        style="display: inline-block; background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 10px;">
                         Fazer Login
                     </a>
                 </div>
