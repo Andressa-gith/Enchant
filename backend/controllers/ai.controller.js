@@ -9,7 +9,7 @@ A Enchant é uma ferramenta de gestão completa para ONGs. O objetivo é central
 - **Dashboard:** A tela principal com uma visão geral de doações, estoque e atividades recentes.
 - **Mapa Interativo:** Uma ferramenta para explorar dados de risco e vulnerabilidade de desastres naturais em todo o Brasil, usando dados do AdaptaBrasil MCTI. Permite consultar municípios e ver índices de risco.
 - **Perfil da ONG:** Seção para a ONG completar suas informações, adicionar logo e foto de perfil.
-- **Gestão de Doações:** Onde a ONG registra as doações recebidas (entradas) e as distribuições que realiza (saídas), mantendo um controle de estoque.
+- **Seção de Doações:** Onde a ONG registra as doações recebidas (entradas) e as distribuições que realiza (saídas), mantendo um controle de estoque.
 - **Histórico de Doações:** Permite consultar e gerar um extrato completo de todas as entradas e saídas de doações.
 
 ### Ferramentas de Transparência:
