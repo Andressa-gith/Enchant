@@ -2967,3 +2967,85 @@ body {
     font-size: 1.4rem;
   }
 }
+
+.form-check-input:checked {
+    background-color: #3d2106 !important; 
+}
+
+#doacaoModal .modal-content {
+    border-radius: 12px; /* Bordas mais arredondadas */
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 2. Cabeçalho do Modal --- */
+#doacaoModal .modal-header {
+    border-bottom: 1px solid #3d2106; /* Linha sutil de separação */
+}
+
+#doacaoModal .modal-title {
+    font-weight: 600;
+    color: #3d2106;
+}
+
+/* --- 3. Corpo e Campos do Formulário --- */
+#doacaoModal .modal-body {
+    padding: 1.5rem 2rem; /* Mais espaçamento interno */
+}
+
+#doacaoModal .form-label {
+    font-size: 0.8rem;
+    font-weight: 390;
+    color: black;
+    text-transform: uppercase; /* Deixa os labels em maiúsculo, como na imagem */
+}
+
+#doacaoModal .form-control {
+    padding: 0.75rem 1rem; /* Aumenta o padding interno dos inputs */
+    font-size: 1rem;
+    border-radius: 8px; /* Bordas mais suaves */
+}
+
+#doacaoModal .form-control:focus {
+    border-color: #8c5a46;
+    box-shadow: 0 0 0 3px rgba(140, 90, 70, 0.2);
+}
+
+#doacaoModal #form-doacao {
+    overflow: hidden; /* Garante que o layout não quebre com o botão flutuando */
+}
+
+#doacaoModal button[type="submit"].btn {
+    width: auto !important;
+    min-width: 120px;
+    float: right !important; /* Alinha o botão à direita */
+    margin-top: 1rem; /* Adiciona um espaço acima do botão */
+    font-weight: 600;
+}
+
+/* --- 5. Área do PIX e QR Code --- */
+#area-pix-gerado {
+    border-top: 1px solid #3d2106;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+}
+
+#area-pix-gerado p {
+    color: black;
+    font-size: 0.9rem;
+}
+
+#pix-codigo {
+    font-family: 'Courier New', Courier, monospace; /* Fonte monoespaçada para código */
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+#qrcode-container {
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #3d2106;
+    border-radius: 8px;
+    display: inline-block; /* Garante que o padding funcione bem */
+    margin-top: 1rem;
+}
