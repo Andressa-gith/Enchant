@@ -140,25 +140,51 @@ class SidebarManager {
         this.initializeSidebarScripts();
     }
 
-    injectSidebarStyles() {
-        const css = `
-            :root { --primary-color: #FF0000; --sidebar-width: 290px; --sidebar-collapsed: 50px; --transition: 0.3s ease; }
-            body { font-family: "Lexend Deca", sans-serif; margin: 0; }
-            .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-collapsed); background-color: #ECECEC; transition: var(--transition); overflow: hidden; z-index: 800; display: flex; flex-direction: column; }
-            #sidebarProfileButton { margin-top: auto; border-top: 1px solid rgba(0, 0, 0, 0.1); }
-            .sidebar-nav { display: flex; flex-direction: column; flex: 1; padding-top: 56px; }
-            .sidebar-nav a { display: flex; align-items: center; color: #333; padding: 13px; text-decoration: none; white-space: nowrap; transition: var(--transition); }
-            .sidebar-nav span { font-size: 14px; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
-            .sidebar-nav i { font-size: 1.2rem; margin-right: 20px; color: #4e4e4e; min-width: 20px; text-align: center; }
-            /* EFEITO HOVER E ACTIVE APLICADO AQUI */
-            .sidebar-nav a:hover, .sidebar-nav a.active { background-color:rgb(209, 209, 209); color: black; }
-            .sidebar-nav a:hover i, .sidebar-nav a.active i { color: black; }
-            .main-content { margin-left: var(--sidebar-collapsed); transition: var(--transition); }
-            .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); z-index: 799; display: none; opacity: 0; transition: opacity 0.3s ease; }
-            .sidebar-overlay.show { display: block; opacity: 1; }
-            @media (min-width: 1025px) { .sidebar:hover { width: var(--sidebar-width); } .sidebar:hover .sidebar-nav span { opacity: 1; visibility: visible; transition-delay: 0.1s; } }
-            @media (max-width: 1024px) { .main-content { margin-left: 0; } .sidebar { left: -100%; width: var(--sidebar-width); box-shadow: 2px 0 10px rgba(0,0,0,0.2); } .sidebar.open { left: 0; } .sidebar-nav span { opacity: 1; visibility: visible; } }
-        `;
+injectSidebarStyles() {
+    const css = `
+        :root { --primary-color: #FF0000; --sidebar-width: 290px; --sidebar-collapsed: 50px; --transition: 0.3s ease; }
+        body { font-family: "Lexend Deca", sans-serif; margin: 0; }
+        .sidebar { 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            bottom: 0; 
+            width: var(--sidebar-collapsed); 
+            background-color: #ECECEC; 
+            transition: var(--transition); 
+            overflow-y: auto; /* MUDANÇA: auto ao invés de hidden */
+            overflow-x: hidden; /* ADICIONAR: esconde scroll horizontal */
+            z-index: 800; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        /* ADICIONAR: Estilo do scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        #sidebarProfileButton { margin-top: auto; border-top: 1px solid rgba(0, 0, 0, 0.1); }
+        .sidebar-nav { display: flex; flex-direction: column; flex: 1; padding-top: 56px; }
+        .sidebar-nav a { display: flex; align-items: center; color: #333; padding: 13px; text-decoration: none; white-space: nowrap; transition: var(--transition); }
+        .sidebar-nav span { font-size: 14px; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
+        .sidebar-nav i { font-size: 1.2rem; margin-right: 20px; color: #4e4e4e; min-width: 20px; text-align: center; }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background-color:rgb(209, 209, 209); color: black; }
+        .sidebar-nav a:hover i, .sidebar-nav a.active i { color: black; }
+        .main-content { margin-left: var(--sidebar-collapsed); transition: var(--transition); }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); z-index: 799; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+        @media (min-width: 1025px) { .sidebar:hover { width: var(--sidebar-width); } .sidebar:hover .sidebar-nav span { opacity: 1; visibility: visible; transition-delay: 0.1s; } }
+        @media (max-width: 1024px) { .main-content { margin-left: 0; } .sidebar { left: -100%; width: var(--sidebar-width); box-shadow: 2px 0 10px rgba(0,0,0,0.2); } .sidebar.open { left: 0; } .sidebar-nav span { opacity: 1; visibility: visible; } }
+    `;
         const styleElement = document.createElement('style'); styleElement.innerHTML = css; document.head.appendChild(styleElement);
         const bootstrapIcons = document.createElement('link'); bootstrapIcons.rel = 'stylesheet'; bootstrapIcons.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css';
         const lexendDecaFont = document.createElement('link'); lexendDecaFont.rel = 'stylesheet'; lexendDecaFont.href = 'https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap';

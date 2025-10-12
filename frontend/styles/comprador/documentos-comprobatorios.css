@@ -209,10 +209,11 @@ p {
 }
 
 .form-group input, .form-group select {
-    padding: 8px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
+    font-family: 'Lexend Deca', sans-serif;
     outline: none;
 }
 
@@ -349,11 +350,12 @@ p {
 
 .form-control1 {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px;
     border: 1px solid #ddd;
-    outline: none;
     border-radius: 6px;
     font-size: 14px;
+    font-family: 'Lexend Deca', sans-serif;
+    outline: none;
     background: white;
 }
 
