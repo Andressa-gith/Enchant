@@ -195,7 +195,7 @@ export function iniciarTutorial(session) {
     tour.addStep({
         id: 'final',
         title: 'Tudo Pronto!',
-        text: 'Você concluiu o tour. Agora, explore a plataforma e comece a transformar a gestão da sua organização!',
+        text: 'Você concluiu o tour. Agora, explore a plataforma e comece a transformar a gestão da sua organização! Fique à vontade para conversar com o nosso assistente virtual, localizado no canto inferior direito da sua tela, e tirar dúvidas sobre a plataforma.',
         buttons: [{ text: 'Concluir', action: tour.next, classes: 'btn-principal' }]
     });
 
