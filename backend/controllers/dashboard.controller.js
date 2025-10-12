@@ -63,7 +63,13 @@ export const getDashboardData = async (req, res) => {
         logger.info('Consultas ao banco finalizadas com sucesso. Iniciando processamento dos dados.');
 
         const estoqueNoPeriodoPorCategoria = {};
-        const totaisEntradaGeral = todasEntradasAteDataFim.reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
+        const totaisEntradaGeral = todasEntradasAteDataFim.reduce((acc, item) => {
+            if (item.categoria && item.categoria.nome) { 
+                const n = item.categoria.nome;
+                acc[n] = (acc[n] || 0) + Number(item.quantidade);
+            }
+            return acc;
+        }, {});
         const totaisSaidaGeral = todasSaidasAteDataFim.reduce((acc, item) => { if (item.entrada?.categoria) { const n = item.entrada.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade_retirada); } return acc; }, {});
         new Set([...Object.keys(totaisEntradaGeral), ...Object.keys(totaisSaidaGeral)]).forEach(cat => { estoqueNoPeriodoPorCategoria[cat] = (totaisEntradaGeral[cat] || 0) - (totaisSaidaGeral[cat] || 0); });
 
@@ -75,7 +81,13 @@ export const getDashboardData = async (req, res) => {
         
         const saldoFinanceiro = (totalReceitasRecibos + totalReceitasParcerias) - totalDespesasGastosProprios;
         
-        const totaisEntradaPeriodo = entradasNoPeriodo.reduce((acc, item) => { const n = item.categoria.nome; acc[n] = (acc[n] || 0) + Number(item.quantidade); return acc; }, {});
+        const totaisEntradaPeriodo = entradasNoPeriodo.reduce((acc, item) => {
+            if (item.categoria?.nome) {
+                const n = item.categoria.nome;
+                acc[n] = (acc[n] || 0) + Number(item.quantidade);
+            }
+            return acc;
+        }, {});
         
         let principalCategoria = '--';
         if (Object.keys(totaisEntradaPeriodo).length > 0) {
