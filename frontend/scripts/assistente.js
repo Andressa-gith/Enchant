@@ -13,7 +13,6 @@ class EnchantAIAssistant {
     }
 
     injectStyles() {
-        // Nenhuma mudança aqui. Seu CSS está ótimo.
         const styles = `
             .enchant-ai-assistant {
                 position: fixed;
@@ -24,8 +23,8 @@ class EnchantAIAssistant {
             }
 
             .enchant-ai-button {
-                width: 60px;
-                height: 60px;
+                width: 70px;
+                height: 70px;
                 border-radius: 50%;
                 background: linear-gradient(135deg, #693B11 0%, #8B4513 100%);
                 border: none;
@@ -36,15 +35,17 @@ class EnchantAIAssistant {
                 transition: all 0.3s ease;
                 position: relative;
                 overflow: hidden;
+                box-shadow: 0 4px 12px rgba(105, 59, 17, 0.3);
             }
 
             .enchant-ai-button:hover {
                 background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+                transform: scale(1.05);
             }
 
             .enchant-ai-button svg {
-                width: 28px;
-                height: 28px;
+                width: 50px;
+                height: 50px;
                 fill: white;
             }
 
@@ -60,18 +61,41 @@ class EnchantAIAssistant {
                 display: block;
             }
 
+            @keyframes blink {
+                0%, 5%, 10%, 100% {
+                    opacity: 1;
+                }
+                2.5%, 7.5% {
+                    opacity: 0.3;
+                }
+            }
+
+            .enchant-ai-button .eye {
+                animation: eyeBlink 10s infinite;
+            }
+
+            @keyframes eyeBlink {
+                0%, 4%, 8%, 100% {
+                    fill: #693B11;
+                }
+                2%, 6% {
+                    fill: white;
+                }
+            }
+
             .enchant-chat-container {
                 position: fixed;
                 bottom: 90px;
                 right: 20px;
                 width: 380px;
                 height: 550px;
-                background: white;
+                background: #f5f5f5;
                 border-radius: 16px;
                 display: none;
                 flex-direction: column;
-                border: 1px solid #dee2e6;
+                border: 1px solid #d0d0d0;
                 overflow: hidden;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
             }
 
             .enchant-chat-container.open {
@@ -97,6 +121,34 @@ class EnchantAIAssistant {
                 display: flex;
                 align-items: center;
                 gap: 12px;
+                position: relative;
+            }
+
+            .enchant-close-chat-button {
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                cursor: pointer;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .enchant-close-chat-button:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .enchant-close-chat-button svg {
+                width: 18px;
+                height: 18px;
+                fill: white;
             }
 
             .enchant-chat-header-icon {
@@ -131,7 +183,7 @@ class EnchantAIAssistant {
                 flex: 1;
                 overflow-y: auto;
                 padding: 20px;
-                background: #f8f9fa;
+                background: #fafafa;
                 display: flex;
                 flex-direction: column;
                 gap: 12px;
@@ -142,12 +194,16 @@ class EnchantAIAssistant {
             }
 
             .enchant-chat-messages::-webkit-scrollbar-track {
-                background: #f1f1f1;
+                background: #f0f0f0;
             }
 
             .enchant-chat-messages::-webkit-scrollbar-thumb {
                 background: #693B11;
                 border-radius: 3px;
+            }
+
+            .enchant-chat-messages::-webkit-scrollbar-thumb:hover {
+                background: #8B4513;
             }
 
             .enchant-message {
@@ -186,7 +242,7 @@ class EnchantAIAssistant {
             }
 
             .enchant-message.user .enchant-message-avatar {
-                background: #e2ccae;
+                background: #e8d4b8;
             }
 
             .enchant-message-avatar svg {
@@ -208,11 +264,13 @@ class EnchantAIAssistant {
                 border-radius: 12px;
                 font-size: 14px;
                 line-height: 1.5;
+                word-wrap: break-word;
             }
 
             .enchant-message.bot .enchant-message-content {
                 background: white;
-                border: 1px solid #dee2e6;
+                color: #2d2d2d;
+                border: 1px solid #e0e0e0;
                 border-radius: 12px 12px 12px 4px;
             }
 
@@ -227,7 +285,7 @@ class EnchantAIAssistant {
                 gap: 4px;
                 padding: 12px 16px;
                 background: white;
-                border: 1px solid #dee2e6;
+                border: 1px solid #e0e0e0;
                 border-radius: 12px;
                 width: fit-content;
             }
@@ -262,7 +320,7 @@ class EnchantAIAssistant {
             .enchant-chat-input-container {
                 padding: 15px;
                 background: white;
-                border-top: 1px solid #dee2e6;
+                border-top: 1px solid #e0e0e0;
                 display: flex;
                 gap: 10px;
             }
@@ -270,16 +328,23 @@ class EnchantAIAssistant {
             .enchant-chat-input {
                 flex: 1;
                 padding: 10px 15px;
-                border: 2px solid #dee2e6;
+                border: 2px solid #e0e0e0;
                 border-radius: 20px;
                 font-size: 14px;
                 outline: none;
                 font-family: 'Lexend Deca', sans-serif;
                 transition: border-color 0.3s ease;
+                background: #fafafa;
+                color: #2d2d2d;
+            }
+
+            .enchant-chat-input::placeholder {
+                color: #999;
             }
 
             .enchant-chat-input:focus {
                 border-color: #693B11;
+                background: white;
             }
 
             .enchant-send-button {
@@ -297,6 +362,7 @@ class EnchantAIAssistant {
 
             .enchant-send-button:hover {
                 background: #8B4513;
+                transform: scale(1.05);
             }
 
             .enchant-send-button:disabled {
@@ -312,11 +378,16 @@ class EnchantAIAssistant {
 
             .enchant-welcome-message {
                 text-align: center;
-                color: #6c757d;
+                color: #777;
                 font-size: 13px;
                 margin-top: 20px;
             }
 
+            .enchant-welcome-message p {
+                margin: 8px 0;
+            }
+
+            /* Responsividade para tablets */
             @media (max-width: 768px) {
                 .enchant-ai-assistant {
                     bottom: 15px;
@@ -328,6 +399,11 @@ class EnchantAIAssistant {
                     height: 55px;
                 }
 
+                .enchant-ai-button svg {
+                    width: 26px;
+                    height: 26px;
+                }
+
                 .enchant-chat-container {
                     bottom: 80px;
                     right: 15px;
@@ -335,8 +411,18 @@ class EnchantAIAssistant {
                     max-width: 380px;
                     height: 500px;
                 }
+
+                .enchant-chat-messages {
+                    padding: 15px;
+                }
+
+                .enchant-message-content {
+                    max-width: 80%;
+                    font-size: 13px;
+                }
             }
 
+            /* Responsividade para smartphones */
             @media (max-width: 480px) {
                 .enchant-chat-container {
                     bottom: 0;
@@ -348,9 +434,68 @@ class EnchantAIAssistant {
                     max-width: none;
                 }
 
+                .enchant-close-chat-button {
+                    display: flex;
+                }
+
                 .enchant-ai-button {
                     bottom: 15px;
                     right: 15px;
+                    width: 50px;
+                    height: 50px;
+                }
+
+                .enchant-ai-button svg {
+                    width: 24px;
+                    height: 24px;
+                }
+
+                .enchant-chat-header {
+                    padding: 15px;
+                }
+
+                .enchant-chat-header-text h3 {
+                    font-size: 15px;
+                }
+
+                .enchant-chat-header-text p {
+                    font-size: 11px;
+                }
+
+                .enchant-chat-messages {
+                    padding: 12px;
+                }
+
+                .enchant-message-content {
+                    max-width: 85%;
+                    font-size: 13px;
+                    padding: 10px 14px;
+                }
+
+                .enchant-chat-input-container {
+                    padding: 12px;
+                }
+
+                .enchant-chat-input {
+                    font-size: 13px;
+                    padding: 9px 14px;
+                }
+
+                .enchant-send-button {
+                    width: 38px;
+                    height: 38px;
+                }
+            }
+
+            /* Responsividade para telas muito pequenas */
+            @media (max-width: 360px) {
+                .enchant-message-content {
+                    max-width: 90%;
+                    font-size: 12px;
+                }
+
+                .enchant-chat-input {
+                    font-size: 12px;
                 }
             }
         `;
@@ -360,17 +505,21 @@ class EnchantAIAssistant {
         document.head.appendChild(styleSheet);
     }
 
+    //MASCOTE
     createChatWidget() {
-        // Nenhuma mudança aqui. A estrutura HTML do seu widget é mantida.
         const widget = document.createElement('div');
         widget.className = 'enchant-ai-assistant';
         widget.innerHTML = `
             <button class="enchant-ai-button" id="enchant-ai-toggle">
                 <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 3 .97 4.29L2 22l5.71-.97C9 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.38 0-2.68-.31-3.85-.86l-.28-.14-2.85.48.48-2.85-.14-.28C4.31 14.68 4 13.38 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z"/>
-                    <circle cx="9" cy="12" r="1"/>
-                    <circle cx="12" cy="12" r="1"/>
-                    <circle cx="15" cy="12" r="1"/>
+                    <!-- Orelhinhas -->
+                    <circle cx="8" cy="8" r="2.5" fill="white"/>
+                    <circle cx="16" cy="8" r="2.5" fill="white"/>
+                    <!-- Cabeça -->
+                    <circle cx="12" cy="12" r="7" fill="white"/>
+                    <!-- Olhinhos que piscam -->
+                    <circle cx="10" cy="11" r="1.2" fill="#693B11" class="eye"/>
+                    <circle cx="14" cy="11" r="1.2" fill="#693B11" class="eye"/>
                 </svg>
                 <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -388,12 +537,17 @@ class EnchantAIAssistant {
                         <h3>Assistente Enchant</h3>
                         <p>Como posso ajudar?</p>
                     </div>
+                    <button class="enchant-close-chat-button" id="enchant-close-chat">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <div class="enchant-chat-messages" id="enchant-chat-messages">
                     <div class="enchant-welcome-message">
                         <p>Olá! Sou o assistente virtual da Enchant.</p>
-                        <p>Posso te ajudar a navegar pelo site e entender os dados de risco climático.</p>
+                        <p>Posso te ajudar a navegar pelo site e entender os dados.</p>
                     </div>
                 </div>
 
@@ -417,12 +571,13 @@ class EnchantAIAssistant {
     }
 
     attachEventListeners() {
-        // Nenhuma mudança aqui. Seus eventos estão corretos.
         const toggleButton = document.getElementById('enchant-ai-toggle');
         const sendButton = document.getElementById('enchant-send-button');
         const input = document.getElementById('enchant-chat-input');
+        const closeButton = document.getElementById('enchant-close-chat');
 
         toggleButton.addEventListener('click', () => this.toggleChat());
+        closeButton.addEventListener('click', () => this.toggleChat());
         sendButton.addEventListener('click', () => this.sendMessage());
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.sendMessage();
@@ -430,7 +585,6 @@ class EnchantAIAssistant {
     }
 
     toggleChat() {
-        // Nenhuma mudança aqui.
         this.isOpen = !this.isOpen;
         const container = document.getElementById('enchant-chat-container');
         const button = document.getElementById('enchant-ai-toggle');
@@ -446,7 +600,6 @@ class EnchantAIAssistant {
     }
 
     async sendMessage() {
-        // Nenhuma mudança aqui na lógica principal.
         const input = document.getElementById('enchant-chat-input');
         const message = input.value.trim();
 
@@ -458,7 +611,6 @@ class EnchantAIAssistant {
         this.showTypingIndicator();
 
         try {
-            // A chamada agora usa a nova função 'callGeminiAPI' modificada
             const response = await this.callGeminiAPI(message);
             this.removeTypingIndicator();
             this.addMessage(response, 'bot');
@@ -470,10 +622,8 @@ class EnchantAIAssistant {
     }
 
     addMessage(text, sender) {
-        // Nenhuma mudança aqui.
         const messagesContainer = document.getElementById('enchant-chat-messages');
 
-        // Remove a mensagem de boas-vindas se for a primeira interação
         const welcomeMessage = messagesContainer.querySelector('.enchant-welcome-message');
         if (welcomeMessage) welcomeMessage.remove();
 
@@ -494,14 +644,12 @@ class EnchantAIAssistant {
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-        // Adiciona a mensagem ao histórico para dar memória ao assistente
         if (text !== 'Desculpe, ocorreu um erro ao contatar o assistente. Por favor, tente novamente.') {
             this.conversationHistory.push({ role: sender === 'user' ? 'user' : 'model', parts: [{ text }] });
         }
     }
 
     showTypingIndicator() {
-        // Nenhuma mudança aqui.
         const messagesContainer = document.getElementById('enchant-chat-messages');
 
         const welcomeMessage = messagesContainer.querySelector('.enchant-welcome-message');
@@ -527,19 +675,16 @@ class EnchantAIAssistant {
     }
 
     removeTypingIndicator() {
-        // Nenhuma mudança aqui.
         const indicator = document.getElementById('typing-indicator');
         if (indicator) indicator.remove();
     }
 
     async callGeminiAPI(userMessage) {
-        // O corpo da requisição agora envia a mensagem e o histórico para o NOSSO backend
         const body = {
             userMessage: userMessage,
             conversationHistory: this.conversationHistory
         };
 
-        // A chamada 'fetch' agora aponta para a nossa rota de proxy no backend
         const response = await fetch('/api/ai/chat', {
             method: 'POST',
             headers: {
@@ -554,12 +699,10 @@ class EnchantAIAssistant {
         }
 
         const data = await response.json();
-        // A resposta do nosso backend vem dentro de uma propriedade 'response'
         return data.response;
     }
 
     escapeHtml(text) {
-        // Nenhuma mudança aqui.
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
