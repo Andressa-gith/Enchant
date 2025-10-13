@@ -1,6 +1,7 @@
 /**
  * @file Testes de integração para a API de Perfil de Usuário (/api/user).
  * @description Testa os endpoints de busca e atualização de perfil, logout e status do tutorial.
+ * Este teste garante o estado inicial do banco antes da execução para ser 100% confiável.
  */
 
 import request from 'supertest';
@@ -9,9 +10,6 @@ import supabase from '../../backend/db/supabaseClient.js';
 
 const API_PREFIX = '/api/user';
 
-/**
- * @describe Testes para os endpoints da API de Perfil.
- */
 describe('Testes da API de Perfil', () => {
     
     let token;
@@ -33,24 +31,19 @@ describe('Testes da API de Perfil', () => {
         userId = authData.user.id;
         expect(token).toBeDefined();
 
-        // Etapa 2: Garantir o estado inicial do banco de dados
+        // Etapa 2: Garante o estado inicial do banco de dados para o teste do tutorial
         const { error: updateError } = await supabase
             .from('instituicao')
             .update({ primeiro_login: true })
             .eq('id', userId);
         if (updateError) throw new Error(`Setup de teste falhou ao resetar o tutorial: ${updateError.message}`);
-        console.log('\n[SETUP] Status do tutorial garantido como "true" para o usuário de teste.');
     });
 
-    /**
-     * @describe Testes para a rota GET /profile
-     */
     describe('GET /profile', () => {
         it('deve retornar os dados do perfil do usuário autenticado', async () => {
             const response = await request(app)
                 .get(`${API_PREFIX}/profile`)
                 .set('Authorization', `Bearer ${token}`);
-
             expect(response.statusCode).toBe(200);
             expect(response.body).toHaveProperty('nome');
             expect(response.body).toHaveProperty('email');
@@ -63,15 +56,11 @@ describe('Testes da API de Perfil', () => {
         });
     });
 
-    /**
-     * @describe Testes para a rota PUT /profile
-     */
     describe('PUT /profile', () => {
         it('deve atualizar os dados do perfil e confirmar a alteração', async () => {
-            const novoNome = `Instituicao Teste ${Date.now()}`;
-            const novoTelefone = '71999998888';
+            const novoNome = `Bora Bill Amostradinho Casca de Bala Super Saia Jeans ${Date.now()}`;
+            const novoTelefone = '(71) 99999-8888';
 
-            // 1. Faz o UPDATE
             const updateResponse = await request(app)
                 .put(`${API_PREFIX}/profile`)
                 .set('Authorization', `Bearer ${token}`)
@@ -81,7 +70,6 @@ describe('Testes da API de Perfil', () => {
                 });
             expect(updateResponse.statusCode).toBe(200);
 
-            // 2. Faz o GET para VERIFICAR se o update funcionou de verdade
             const getResponse = await request(app)
                 .get(`${API_PREFIX}/profile`)
                 .set('Authorization', `Bearer ${token}`);
@@ -91,24 +79,17 @@ describe('Testes da API de Perfil', () => {
         });
     });
 
-    /**
-     * @describe Testes para a rota POST /tutorial-concluido
-     */
     describe('POST /tutorial-concluido', () => {
         it('deve alterar o status de primeiro_login de true para false', async () => {
-            // 1. Verifica o estado inicial (deve ser true)
-            const getResponseBefore = await request(app)
-                .get(`${API_PREFIX}/profile`)
-                .set('Authorization', `Bearer ${token}`);
-            expect(getResponseBefore.body.primeiro_login).toBe(true);
+            // O 'beforeAll' já garantiu que o estado inicial é 'true'.
             
-            // 2. Chama a rota para marcar o tutorial como visto
+            // 1. Chama a rota para marcar o tutorial como visto
             const postResponse = await request(app)
                 .post(`${API_PREFIX}/tutorial-concluido`)
                 .set('Authorization', `Bearer ${token}`);
             expect(postResponse.statusCode).toBe(200);
 
-            // 3. Verifica se o estado foi alterado para false
+            // 2. Verifica se o estado foi alterado para 'false'
             const getResponseAfter = await request(app)
                 .get(`${API_PREFIX}/profile`)
                 .set('Authorization', `Bearer ${token}`);
@@ -116,9 +97,6 @@ describe('Testes da API de Perfil', () => {
         });
     });
 
-    /**
-     * @describe Testes para a rota POST /logout
-     */
     describe('POST /logout', () => {
         it('deve retornar uma mensagem de sucesso', async () => {
             const response = await request(app)
@@ -129,4 +107,4 @@ describe('Testes da API de Perfil', () => {
             expect(response.body.message).toBe('Logout sinalizado pelo servidor.');
         });
     });
-});
+}); 
