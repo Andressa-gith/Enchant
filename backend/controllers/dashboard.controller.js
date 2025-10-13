@@ -38,6 +38,9 @@ export const getDashboardData = async (req, res) => {
         const dataFim = getEndOfDay(endDate);
         logger.debug(`Período de busca definido: ${startDate} a ${endDate}`);
 
+        console.log("\n\n[DEBUG] FILTROS USADOS NA CONSULTA:");
+        console.log({ instituicaoId, dataInicio, dataFim });
+
         logger.info('Executando todas as consultas ao banco de dados...');
         const [
             { data: dadosInstituicao }, { data: entradasNoPeriodo }, { data: saidasNoPeriodo },
@@ -58,6 +61,11 @@ export const getDashboardData = async (req, res) => {
             supabase.from('parceiro').select('nome, status, data_fim').eq('instituicao_id', instituicaoId)
         ]);
         
+        console.log("\n[DEBUG] RESPOSTA BRUTA DO BANCO (DOAÇÕES NO PERÍODO):");
+        console.log("ENTRADAS:", entradasNoPeriodo);
+        console.log("SAÍDAS:", saidasNoPeriodo);
+        console.log("\n\n");
+
         const anyError = [dadosInstituicao, entradasNoPeriodo, saidasNoPeriodo, recibos, transferencias, gastosProprios, parceriasNoPeriodo, todasEntradasAteDataFim, todasSaidasAteDataFim, relatoriosRecentes, todasParcerias].find(result => result && result.error);
         if (anyError) throw anyError.error;
         logger.info('Consultas ao banco finalizadas com sucesso. Iniciando processamento dos dados.');
