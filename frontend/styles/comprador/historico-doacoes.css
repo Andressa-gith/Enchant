@@ -149,14 +149,16 @@ body {
     color: #000000;
     border-radius: 10px;
     border: black 1px solid;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.35rem;
+    font-weight: 500;
 
 }
 
