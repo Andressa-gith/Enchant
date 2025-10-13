@@ -46,16 +46,118 @@ document.addEventListener('DOMContentLoaded', () => {
         alertElement.style.display = 'block';
         setTimeout(() => { alertElement.style.display = 'none'; }, 5000);
     };
-    const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigals: 2, maximumFractionDigits: 2 })}`;
+
+    // --- LÓGICA DE VALIDAÇÃO PADRONIZADA ---
+    const validateField = (input, condition, errorMsg) => {
+        const errorElement = input.closest('.form-group, .form-group1, .file-upload-group').querySelector('.error-message');
+        if (condition) {
+            input.classList.remove('error');
+            if (errorElement) errorElement.style.display = 'none';
+            return true;
+        } else {
+            input.classList.add('error');
+            if (errorElement) { 
+                errorElement.textContent = errorMsg; 
+                errorElement.style.display = 'block'; 
+            }
+            return false;
+        }
+    };
+
+    const validateForm = (isEdit = false) => {
+        const elements = {
+            name: isEdit ? ui.editCompanyNameInput : ui.companyNameInput,
+            type: isEdit ? ui.editDocumentTypeSelect : ui.documentTypeSelect,
+            value: isEdit ? ui.editDocumentValueInput : ui.documentValueInput,
+            file: isEdit ? null : ui.fileUploadArea // arquivo só é obrigatório no cadastro
+        };
+
+        const errors = [];
+
+        // Validação: Nome do documento
+        if (!validateField(elements.name, elements.name.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.')) {
+            errors.push('Nome do documento');
+        }
+
+        // Validação: Tipo de documento
+        if (!validateField(elements.type, elements.type.selectedIndex !== 0, 'Por favor, selecione um tipo de documento.')) {
+            errors.push('Tipo de Documento');
+        }
+
+        // Validação: Valor
+        if (!validateField(elements.value, elements.value.value !== '' && parseFloat(elements.value.value) > 0, 'O valor deve ser obrigatório.')) {
+            errors.push('Valor');
+        }
+
+        // Validação: Arquivo (apenas no cadastro, não na edição)
+        if (!isEdit && elements.file) {
+            if (!validateField(elements.file, selectedFile !== null, 'Por favor, selecione um arquivo.')) {
+                errors.push('Arquivo');
+            }
+        }
+
+        return { 
+            isValid: errors.length === 0, 
+            errors: [...new Set(errors)] 
+        };
+    };
+
+    const setupRealTimeValidation = () => {
+        // Validação em tempo real para o formulário principal
+        ui.companyNameInput.addEventListener('blur', () => 
+            validateField(ui.companyNameInput, ui.companyNameInput.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.')
+        );
+        ui.documentTypeSelect.addEventListener('blur', () => 
+            validateField(ui.documentTypeSelect, ui.documentTypeSelect.selectedIndex !== 0, 'Por favor, selecione um tipo de documento.')
+        );
+        ui.documentValueInput.addEventListener('blur', () => 
+            validateField(ui.documentValueInput, ui.documentValueInput.value !== '' && parseFloat(ui.documentValueInput.value) > 0, 'O valor deve ser obrigatório.')
+        );
+
+        // Validação em tempo real para o modal de edição
+        ui.editCompanyNameInput.addEventListener('blur', () => 
+            validateField(ui.editCompanyNameInput, ui.editCompanyNameInput.value.trim().length >= 5, 'O nome deve ter no mínimo 5 caracteres.')
+        );
+        ui.editDocumentTypeSelect.addEventListener('blur', () => 
+            validateField(ui.editDocumentTypeSelect, ui.editDocumentTypeSelect.selectedIndex !== 0, 'Por favor, selecione um tipo de documento.')
+        );
+        ui.editDocumentValueInput.addEventListener('blur', () => 
+            validateField(ui.editDocumentValueInput, ui.editDocumentValueInput.value !== '' && parseFloat(ui.editDocumentValueInput.value) > 0, 'O valor deve ser obrigatório.')
+        );
+    };
 
     // --- LÓGICA DE UPLOAD DE ARQUIVO ---
     const handleFileSelection = (file) => {
-        selectedFile = file;
-        if (file) {
-            ui.fileUploadText.textContent = `Arquivo: ${file.name}`;
-        } else {
+        if (!file) {
+            selectedFile = null;
             ui.fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
+            return;
         }
+
+        const allowedTypes = [
+            'application/pdf', 
+            'application/msword', 
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/jpeg',
+            'image/png'
+        ];
+        const maxSize = 10 * 1024 * 1024; // 10MB
+
+        if (!allowedTypes.includes(file.type)) {
+            validateField(ui.fileUploadArea, false, 'Formato inválido. Use PDF, DOC, JPG ou PNG.');
+            selectedFile = null;
+            return;
+        }
+        if (file.size > maxSize) {
+            validateField(ui.fileUploadArea, false, 'O arquivo é muito grande (máximo 10MB).');
+            selectedFile = null;
+            return;
+        }
+
+        selectedFile = file;
+        ui.fileUploadText.textContent = `Arquivo: ${file.name}`;
+        validateField(ui.fileUploadArea, true, '');
     };
 
     // --- FUNÇÕES DE API ---
@@ -95,8 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const submitForm = async (e) => {
         e.preventDefault();
-        if (!selectedFile || !ui.companyNameInput.value || !ui.documentValueInput.value || ui.documentTypeSelect.selectedIndex === 0) {
-            showAlert('Por favor, preencha todos os campos obrigatórios.');
+        
+        const validation = validateForm();
+        if (!validation.isValid) {
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
             return;
         }
 
@@ -157,6 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleSaveChanges = async () => {
+        const validation = validateForm(true);
+        if (!validation.isValid) {
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+            return;
+        }
+
         const docId = ui.editIdInput.value;
         const formData = new FormData();
         formData.append('titulo', ui.editCompanyNameInput.value);
@@ -198,7 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'uploaded-item';
 
-            // MUDANÇA AQUI: Adiciona a informação do vínculo se existir
             const linkedToHtml = doc.gestao_financeira
                 ? `<p class="document-linked-to"><i class="bi bi-link-45deg"></i> Vinculado a: ${doc.gestao_financeira.nome_categoria}</p>`
                 : '';
@@ -259,6 +368,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Drag and drop para o arquivo
+    ui.fileUploadArea.addEventListener('dragover', (e) => { 
+        e.preventDefault(); 
+        ui.fileUploadArea.classList.add('dragover'); 
+    });
+    ui.fileUploadArea.addEventListener('dragleave', () => 
+        ui.fileUploadArea.classList.remove('dragover')
+    );
+    ui.fileUploadArea.addEventListener('drop', (e) => { 
+        e.preventDefault(); 
+        ui.fileUploadArea.classList.remove('dragover'); 
+        handleFileSelection(e.dataTransfer.files[0]); 
+    });
+
     // --- INICIALIZAÇÃO ---
+    setupRealTimeValidation();
     loadDocuments();
 });

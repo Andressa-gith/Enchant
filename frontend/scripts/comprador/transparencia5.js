@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         manageAttachmentsModal: new bootstrap.Modal(document.getElementById('manageAttachmentsModal')),
         manageAttachmentsTitle: document.getElementById('manageAttachmentsTitle'),
         existingAttachmentsList: document.getElementById('existing-attachments-list'),
-        // Formulário dentro do novo modal
         attachGestaoId: document.getElementById('attach-gestao-id'),
         attachValorInput: document.getElementById('attach-valor'),
         attachTituloInput: document.getElementById('attach-titulo'),
@@ -53,6 +52,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const formatCurrency = (value) => `R$ ${parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    
+    // --- LÓGICA DE VALIDAÇÃO (NOVA) ---
+    const validateField = (input, condition, errorMsg) => {
+        const errorElement = input.closest('.form-group1').querySelector('.error-message');
+        if (condition) {
+            input.classList.remove('error');
+            if (errorElement) errorElement.style.display = 'none';
+            return true;
+        } else {
+            input.classList.add('error');
+            if (errorElement) { 
+                errorElement.textContent = errorMsg; 
+                errorElement.style.display = 'block'; 
+            }
+            return false;
+        }
+    };
+
+    const validateForm = (isEdit = false) => {
+        const elements = {
+            categoria: isEdit ? ui.editCategoriaSelect : ui.categoriaSelect,
+            origem: isEdit ? null : ui.origemRecursoSelect, // origem só existe no form principal
+            orcamento: isEdit ? ui.editOrcamentoInput : ui.orcamentoPrevistoInput,
+            executado: isEdit ? ui.editExecutadoInput : ui.valorExecutadoInput
+        };
+
+        const errors = [];
+
+        // Validação: Categoria
+        if (!validateField(elements.categoria, elements.categoria.selectedIndex !== 0, 'A categoria é obrigatória.')) {
+            errors.push('Categoria');
+        }
+
+        // Validação: Origem do Recurso (apenas no form principal)
+        if (!isEdit && elements.origem) {
+            if (!validateField(elements.origem, elements.origem.selectedIndex !== 0, 'A origem do recurso é obrigatória.')) {
+                errors.push('Origem do Recurso');
+            }
+        }
+
+        // Validação: Orçamento Previsto
+        if (!validateField(elements.orcamento, elements.orcamento.value !== '' && parseFloat(elements.orcamento.value) > 0, 'O orçamento previsto é obrigatório.')) {
+            errors.push('Orçamento Previsto');
+        }
+
+        // Validação: Valor Executado (obrigatório e deve ser >= 0)
+        if (!validateField(elements.executado, elements.executado.value !== '' && parseFloat(elements.executado.value) >= 0, 'O valor executado é obrigatório.')) {
+            errors.push('Valor Executado');
+        }
+
+        return { 
+            isValid: errors.length === 0, 
+            errors: [...new Set(errors)] 
+        };
+    };
+
+    const setupRealTimeValidation = () => {
+        // Validação em tempo real para o formulário principal
+        ui.categoriaSelect.addEventListener('blur', () => 
+            validateField(ui.categoriaSelect, ui.categoriaSelect.selectedIndex !== 0, 'A categoria é obrigatória.')
+        );
+        ui.origemRecursoSelect.addEventListener('blur', () => 
+            validateField(ui.origemRecursoSelect, ui.origemRecursoSelect.selectedIndex !== 0, 'A origem do recurso é obrigatória.')
+        );
+        ui.orcamentoPrevistoInput.addEventListener('blur', () => 
+            validateField(ui.orcamentoPrevistoInput, ui.orcamentoPrevistoInput.value !== '' && parseFloat(ui.orcamentoPrevistoInput.value) > 0, 'O orçamento previsto deve ser maior que zero.')
+        );
+        ui.valorExecutadoInput.addEventListener('blur', () => 
+            validateField(ui.valorExecutadoInput, ui.valorExecutadoInput.value !== '' && parseFloat(ui.valorExecutadoInput.value) >= 0, 'O valor executado é obrigatório e deve ser maior ou igual a zero.')
+        );
+
+        // Validação em tempo real para o modal de edição
+        ui.editCategoriaSelect.addEventListener('blur', () => 
+            validateField(ui.editCategoriaSelect, ui.editCategoriaSelect.selectedIndex !== 0, 'A categoria é obrigatória.')
+        );
+        ui.editOrcamentoInput.addEventListener('blur', () => 
+            validateField(ui.editOrcamentoInput, ui.editOrcamentoInput.value !== '' && parseFloat(ui.editOrcamentoInput.value) > 0, 'O orçamento previsto deve ser maior que zero.')
+        );
+        ui.editExecutadoInput.addEventListener('blur', () => 
+            validateField(ui.editExecutadoInput, ui.editExecutadoInput.value !== '' && parseFloat(ui.editExecutadoInput.value) >= 0, 'O valor executado é obrigatório e deve ser maior ou igual a zero.')
+        );
+    };
     
     // --- FUNÇÕES DE API (CRUD) ---
     const fetchData = async (url, options = {}) => {
@@ -83,6 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const addLancamento = async (e) => {
         e.preventDefault();
+        
+        const validation = validateForm();
+        if (!validation.isValid) {
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+            return;
+        }
+
         ui.submitBtn.disabled = true;
         ui.submitBtn.textContent = 'Enviando...';
         const newLancamento = {
@@ -105,6 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const saveEdit = async () => {
+        const validation = validateForm(true);
+        if (!validation.isValid) {
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+            return;
+        }
+
         const id = ui.editIdInput.value;
         const updatedData = {
             nome_categoria: ui.editCategoriaSelect.value,
@@ -145,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const openManageAttachmentsModal = (item) => {
         ui.manageAttachmentsTitle.textContent = item.nome_categoria;
         ui.attachGestaoId.value = item.id;
-        ui.attachValorInput.value = item.valor_executado; // Corrigido para passar o valor
+        ui.attachValorInput.value = item.valor_executado;
         
         renderExistingAttachments(item.documento_comprobatorio || []);
 
@@ -181,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('titulo', ui.attachTituloInput.value);
         formData.append('tipo_documento', ui.attachTipoSelect.value);
-        formData.append('valor', ui.attachValorInput.value); // Corrigido para usar o valor correto
+        formData.append('valor', ui.attachValorInput.value);
         formData.append('arquivo_documento', attachedFile);
         formData.append('gestao_financeira_id', ui.attachGestaoId.value);
 
@@ -305,5 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- INICIALIZAÇÃO ---
+    setupRealTimeValidation();
     loadFinancialData();
 });
