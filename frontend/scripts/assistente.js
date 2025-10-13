@@ -174,9 +174,11 @@ class EnchantAIAssistant {
             }
 
             .enchant-chat-header-text p {
-                margin: 0;
+                margin: 0 !important;
+                text-align: left;
                 font-size: 12px;
                 opacity: 0.9;
+                color: white;
             }
 
             .enchant-chat-messages {
