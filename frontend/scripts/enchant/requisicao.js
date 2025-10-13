@@ -1,5 +1,3 @@
-// requisicao.js - Sistema de Requisição e Upload de Documentos
-
 document.addEventListener('DOMContentLoaded', function() {
     // ========== VARIÁVEIS GLOBAIS ==========
     const primeiraSecao = document.getElementById('primeira-parte');

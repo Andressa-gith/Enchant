@@ -15,8 +15,6 @@ import parceriaRoutes from './routes/parceria.routes.js';
 import documentoRoutes from './routes/documento.routes.js';
 import historicoRoutes from './routes/historico-doacoes.routes.js';
 import publicRoutes from './routes/public.routes.js';
-import requisicaoRoutes from'./routes/requisicao.routes.js';
-import adminRoutes from './routes/admin.routes.js';
 import mercadoPagoRoutes from './routes/mercadoPago.routes.js';
 import aiRouter from './routes/ai.routes.js';
 
@@ -46,8 +44,6 @@ app.use('/api/parcerias', parceriaRoutes);
 app.use('/api/documentos', documentoRoutes);
 app.use('/api/historico-doacoes', historicoRoutes);
 app.use('/api/public', publicRoutes);
-app.use('/api/requisicao', requisicaoRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/api/mercado-pago', mercadoPagoRoutes);
 app.use('/api/ai', aiRouter);
 
