@@ -10,6 +10,70 @@ class EnchantAIAssistant {
         this.injectStyles();
         this.createChatWidget();
         this.attachEventListeners();
+        this.loadAndRenderHistory();
+    }
+
+    loadAndRenderHistory() {
+        const savedHistory = localStorage.getItem('enchant-ai-history');
+        if (savedHistory) {
+            this.conversationHistory = JSON.parse(savedHistory);
+
+            const messagesContainer = document.getElementById('enchant-chat-messages');
+            const welcomeMessage = messagesContainer.querySelector('.enchant-welcome-message');
+            if (welcomeMessage) welcomeMessage.remove();
+
+            this.conversationHistory.forEach(message => {
+                const text = message.parts[0].text;
+                const sender = message.role === 'user' ? 'user' : 'bot';
+
+                // Recriamos o HTML da mensagem
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `enchant-message ${sender}`;
+                const avatarContent = this.getAvatar(sender); // Usando uma função auxiliar
+                messageDiv.innerHTML = `
+                <div class="enchant-message-avatar">${avatarContent}</div>
+                <div class="enchant-message-content">${this.escapeHtml(text)}</div>
+            `;
+                messagesContainer.appendChild(messageDiv);
+            });
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }
+
+    getAvatar(sender) {
+        if (sender === 'user' && this.userProfileImg) {
+            return `<img src="${this.userProfileImg}" alt="User Avatar" class="enchant-avatar-img">`;
+        }
+        const svgPath = sender === 'bot'
+            ? '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>'
+            : '<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>';
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${svgPath}</svg>`;
+    }
+
+    addMessage(text, sender) {
+        const messagesContainer = document.getElementById('enchant-chat-messages');
+
+        const welcomeMessage = messagesContainer.querySelector('.enchant-welcome-message');
+        if (welcomeMessage) welcomeMessage.remove();
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `enchant-message ${sender}`;
+
+        const avatarContent = this.getAvatar(sender);
+
+        messageDiv.innerHTML = `
+        <div class="enchant-message-avatar">${avatarContent}</div>
+        <div class="enchant-message-content">${this.escapeHtml(text)}</div>
+    `;
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        if (text.indexOf('Desculpe, ocorreu um erro') === -1) {
+            this.conversationHistory.push({ role: sender === 'user' ? 'user' : 'model', parts: [{ text }] });
+
+            localStorage.setItem('enchant-ai-history', JSON.stringify(this.conversationHistory));
+        }
     }
 
     injectStyles() {
@@ -620,34 +684,6 @@ class EnchantAIAssistant {
             this.removeTypingIndicator();
             this.addMessage('Desculpe, ocorreu um erro ao contatar o assistente. Por favor, tente novamente.', 'bot');
             console.error('Erro na API:', error);
-        }
-    }
-
-    addMessage(text, sender) {
-        const messagesContainer = document.getElementById('enchant-chat-messages');
-
-        const welcomeMessage = messagesContainer.querySelector('.enchant-welcome-message');
-        if (welcomeMessage) welcomeMessage.remove();
-
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `enchant-message ${sender}`;
-
-        const avatarIcon = sender === 'bot'
-            ? '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>'
-            : '<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>';
-
-        messageDiv.innerHTML = `
-            <div class="enchant-message-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${avatarIcon}</svg>
-            </div>
-            <div class="enchant-message-content">${this.escapeHtml(text)}</div>
-        `;
-
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        if (text !== 'Desculpe, ocorreu um erro ao contatar o assistente. Por favor, tente novamente.') {
-            this.conversationHistory.push({ role: sender === 'user' ? 'user' : 'model', parts: [{ text }] });
         }
     }
 

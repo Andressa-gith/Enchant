@@ -60,8 +60,15 @@ class SidebarController {
             this.logoutButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 await showSimpleLogoutModal(async () => {
+
+                    localStorage.removeItem('enchant-ai-history');
+
                     const { error } = await supabase.auth.signOut();
-                    if (error) { console.error('Erro ao fazer logout:', error.message); throw error; }
+                    if (error) {
+                        console.error('Erro ao fazer logout:', error.message);
+                        throw error; // Lança o erro para o modal tratar
+                    }
+                    // Redireciona após o sucesso
                     window.location.href = '/entrar';
                 });
             });
@@ -85,8 +92,8 @@ class SidebarController {
         });
         // Trata o caso da página inicial (dashboard) separadamente
         if (currentPath === '/' || currentPath === '/dashboard') {
-             const dashboardLink = this.sidebar.querySelector('a[href="/dashboard"]');
-             if (dashboardLink) bestMatch = dashboardLink;
+            const dashboardLink = this.sidebar.querySelector('a[href="/dashboard"]');
+            if (dashboardLink) bestMatch = dashboardLink;
         }
         sidebarLinks.forEach(link => link.classList.remove('active'));
         if (bestMatch) {
@@ -140,8 +147,8 @@ class SidebarManager {
         this.initializeSidebarScripts();
     }
 
-injectSidebarStyles() {
-    const css = `
+    injectSidebarStyles() {
+        const css = `
         :root { --primary-color: #FF0000; --sidebar-width: 290px; --sidebar-collapsed: 50px; --transition: 0.3s ease; }
         body { font-family: "Lexend Deca", sans-serif; margin: 0; }
         .sidebar { 
