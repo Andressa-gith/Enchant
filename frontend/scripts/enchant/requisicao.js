@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'declaracao-renda': []
     };
 
+
     // ========== VALIDAÇÃO DE CAMPOS ==========
     
     function mascaraCNPJ(campo) {

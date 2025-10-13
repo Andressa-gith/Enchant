@@ -17,6 +17,7 @@ import historicoRoutes from './routes/historico-doacoes.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import mercadoPagoRoutes from './routes/mercadoPago.routes.js';
 import aiRouter from './routes/ai.routes.js';
+import requisicaoRouter from './routes/requisicao.routes.js'; 
 
 const app = express();
 const PORT = 3080;
@@ -46,6 +47,7 @@ app.use('/api/historico-doacoes', historicoRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/mercado-pago', mercadoPagoRoutes);
 app.use('/api/ai', aiRouter);
+app.use('/api/requisicao', requisicaoRouter);
 
 app.listen(PORT, () => {
     console.log(`✅  Server is running in http://localhost:${PORT}`);
