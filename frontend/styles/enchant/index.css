@@ -3007,11 +3007,21 @@ body {
 }
 
 #campologo img{
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #caae8d;
+    border: 2px solid #ffffff;
+    box-shadow: 0px 0px 0px 2px #66360a;
+    margin: 4px;
+    transition: .2s;
+}
+
+#campologo img:hover{
+  box-shadow: 
+      0px 0px 0px 2px #66360a,
+      0px 0px 10px 4px rgba(255, 249, 231, 0.5);
+  transition: .2s;
 }
 
 #doacaoModal .form-control {
