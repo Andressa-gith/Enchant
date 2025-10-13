@@ -284,8 +284,13 @@ function initializeHeader(session) {
                         height: 36px;
                         border-radius: 50%; /* Deixa a imagem redonda */
                         object-fit: cover;   /* Garante que a foto preencha o círculo sem distorcer */
-                        border: 1px solid #ddd;
+                        border: 2px solid #ffffff;
                         background-color: #f0f0f0; /* Cor de fundo enquanto a imagem carrega */
+                    }
+
+                    .header-profile-photo:hover{
+                        border: 2px solid #ffffff;
+                        box-shadow: 0px 0px 0px 2px #66360a;
                     }
 
                     @media (max-width: 1024px) {
