@@ -2997,7 +2997,21 @@ body {
     font-size: 0.8rem;
     font-weight: 390;
     color: black;
-    text-transform: uppercase; /* Deixa os labels em maiúsculo, como na imagem */
+}
+
+#parte-de-baixo{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;           
+  margin-top: 1.5rem;
+}
+
+#campologo img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3d2106;
 }
 
 #doacaoModal .form-control {

@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-ong-conteudo">
                     <h3>${ong.nome}</h3>
                     <p>${ong.sobre || 'Esta organização ainda não adicionou uma descrição.'}</p>
-                    <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}">
+                    <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}" data-ong-logo="${ong.caminho_logo}">
                         Doar Agora
                     </button>
                 </div>
@@ -151,9 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('card-ong-link')) {
             const ongId = e.target.dataset.ongId;
             const ongNome = e.target.dataset.ongNome;
+            const ongLogo = e.target.dataset.ongLogo;
 
             document.getElementById('modal-ong-nome').textContent = ongNome;
             document.getElementById('doacao-ong-id').value = ongId;
+
+            const campologo = document.getElementById('campologo');
+
+            campologo.innerHTML = `
+                <img src="${ongLogo || '/assets/imgs/comprador/avatar-padrao.jpg'}" 
+                     alt="Logo de ${ongNome}" 
+                     onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
+            `;
+
             formDoacao.reset();
 
             doacaoModal.show();

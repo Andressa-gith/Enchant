@@ -242,11 +242,11 @@
                         <form id="form-doacao">
                             <input type="hidden" id="doacao-ong-id" name="ongId">
                             <div class="mb-3">
-                                <label for="doacao-nome" class="form-label">Seu nome</label>
+                                <label for="doacao-nome" class="form-label">Nome</label>
                                 <input type="text" class="form-control" id="doacao-nome" required>
                             </div>
                             <div class="mb-3">
-                                <label for="doacao-email" class="form-label">Seu e-mail</label>
+                                <label for="doacao-email" class="form-label">E-mail</label>
                                 <input type="email" class="form-control" id="doacao-email" required>
                             </div>
                             <div class="mb-3">
@@ -254,15 +254,10 @@
                                 <input type="number" class="form-control" id="doacao-valor" step="0.01" min="1"
                                     required>
                             </div>
-
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" value="" id="termos-doacao" required>
-                                <label class="form-check-label" for="termos-doacao" style="font-size: 0.8rem;">
-                                    Concordo que a transação é de responsabilidade minha e da organização.
-                                </label>
+                            <div id="parte-de-baixo">
+                                <div id="campologo"></div>
+                                <button type="submit" class="btn btn-primary">Doar</button>
                             </div>
-
-                            <button type="submit" class="btn btn-primary">Doar</button>
                         </form>
 
                         <div id="area-pix-gerado" style="display: none; text-align: center;">
