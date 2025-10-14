@@ -127,6 +127,8 @@ body {
     background-color: var(--secondary-brown);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(105, 59, 17, 0.3);
+    text-decoration: none; /* Adicionado para garantir */
+    color: white; /* Adicionado para garantir que a cor não mude */
 }
 
 /* Tabs Navigation */
@@ -183,6 +185,7 @@ body {
 .tab-button:hover {
     color: var(--primary-brown);
     background-color: var(--cream);
+    text-decoration: none; /* Adicionado */
 }
 
 .tab-button.active {
@@ -425,6 +428,8 @@ body {
 .btn-download:hover {
     background-color: var(--secondary-brown);
     transform: translateY(-2px);
+    text-decoration: none; /* Adicionado */
+    color: white; /* Adicionado para garantir que a cor não mude */
 }
 
 .loading,
