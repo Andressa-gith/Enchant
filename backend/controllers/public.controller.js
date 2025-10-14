@@ -65,7 +65,7 @@ class PublicController {
                 auditoriasRes
             ] = await Promise.all([
                 supabase.from('instituicao').select('id, nome, sobre, caminho_logo, caminho_foto_perfil, endereco ( cidade, estado ), telefone ( numero )').eq('id', id).single(),
-                supabase.from('documento_comprobatorio').select('*').eq('instituicao_id', id),
+                supabase.from('documento_comprobatorio').select('*').eq('instituicao_id', id).eq('status', 'confirmado'),
                 supabase.from('relatorio').select('*').eq('instituicao_id', id),
                 supabase.from('gestao_financeira').select('*').eq('instituicao_id', id),
                 supabase.from('doacao_entrada').select('*, categoria(nome)').eq('instituicao_id', id),
