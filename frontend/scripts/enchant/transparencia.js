@@ -44,9 +44,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderizarInfoOng(ong) {
-    document.getElementById('ong-logo1').src = ong.caminho_logo || '/assets/imgs/comprador/avatar-padrao.jpg';
+    document.getElementById('ong-logo1').src = ong.caminho_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
     document.getElementById('ong-nome').textContent = ong.nome;
     document.getElementById('ong-descricao').textContent = ong.sobre || 'Esta organização ainda não forneceu uma descrição.';
+
+    const heroSection = document.querySelector('.transparencia-hero');
+
+    if (ong.caminho_logo) {
+        heroSection.classList.add('hero-com-desfoque');
+        heroSection.style.setProperty('--bg-image-url', `linear-gradient(135deg, rgba(245, 245, 220, 0.8), rgba(255, 255, 255, 0.7)), url('${ong.caminho_logo}')`);
+    } 
+
     const localizacaoEl = document.getElementById('cidade-estado');
     const telefone = document.getElementById('telefone');
     if (ong.cidade && ong.estado) {

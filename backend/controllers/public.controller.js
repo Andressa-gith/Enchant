@@ -64,7 +64,7 @@ class PublicController {
                 parceriasRes,
                 auditoriasRes
             ] = await Promise.all([
-                supabase.from('instituicao').select('id, nome, sobre, caminho_logo, endereco ( cidade, estado ), telefone ( numero )').eq('id', id).single(),
+                supabase.from('instituicao').select('id, nome, sobre, caminho_logo, caminho_foto_perfil, endereco ( cidade, estado ), telefone ( numero )').eq('id', id).single(),
                 supabase.from('documento_comprobatorio').select('*').eq('instituicao_id', id),
                 supabase.from('relatorio').select('*').eq('instituicao_id', id),
                 supabase.from('gestao_financeira').select('*').eq('instituicao_id', id),
@@ -89,11 +89,16 @@ class PublicController {
             const end = Array.isArray(ongData.endereco) ? ongData.endereco[0] : ongData.endereco;
             const fone = Array.isArray(ongData.telefone) ? ongData.telefone[0] : ongData.telefone;
 
-            if (ongData && ongData.caminho_logo) {
+            if (ongData && ongData.caminho_logo && ongData.caminho_foto_perfil) {
                 const { data: publicUrlData } = supabase.storage
                     .from('logos')
                     .getPublicUrl(ongData.caminho_logo);
                 ongData.caminho_logo = publicUrlData.publicUrl;
+
+                const { data: publicUrlDatafoto } = supabase.storage
+                    .from('profile-photos')
+                    .getPublicUrl(ongData.caminho_foto_perfil);
+                ongData.caminho_foto_perfil = publicUrlDatafoto.publicUrl;
 
                 ongData.telefone = fone?.numero;
                 ongData.cidade = end?.cidade;
