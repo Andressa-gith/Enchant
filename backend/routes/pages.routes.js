@@ -61,6 +61,11 @@ pageRouter.get('/redefinir-senha', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'redefinirsenha.html'));
 });
 
+pageRouter.get('/transparencia', (req, res) => {
+    console.log(`\n⬆️  Rota /transparencia acessada.\n`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'transparencia.html'));
+});
+
 // ===============
 // Rotas pós Login
 // ===============

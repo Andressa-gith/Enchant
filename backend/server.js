@@ -18,6 +18,7 @@ import publicRoutes from './routes/public.routes.js';
 import mercadoPagoRoutes from './routes/mercadoPago.routes.js';
 import aiRouter from './routes/ai.routes.js';
 import requisicaoRouter from './routes/requisicao.routes.js'; 
+import downloadRoutes from './routes/download.routes.js';
 
 const app = express();
 const PORT = 3080;
@@ -48,6 +49,7 @@ app.use('/api/public', publicRoutes);
 app.use('/api/mercado-pago', mercadoPagoRoutes);
 app.use('/api/ai', aiRouter);
 app.use('/api/requisicao', requisicaoRouter);
+app.use('/download', downloadRoutes);
 
 app.listen(PORT, () => {
     console.log(`✅  Server is running in http://localhost:${PORT}`);

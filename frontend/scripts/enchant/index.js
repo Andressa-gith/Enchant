@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-ong-conteudo">
                     <h3>${ong.nome}</h3>
                     <p>${ong.sobre || 'Esta organização ainda não adicionou uma descrição.'}</p>
+                    <a href="/transparencia?id=${ong.id}" class="card-ong-transparencia">
+                        Ver Transparência
+                    </a>
                     <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}" data-ong-logo="${ong.caminho_logo}">
                         Doar Agora
                     </button>

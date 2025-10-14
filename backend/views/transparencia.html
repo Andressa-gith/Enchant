@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparência - Enchant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
+    
+    <link rel="stylesheet" href="/styles/enchant/transparencia.css">
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/layouts/enchant/header.css">
+    <link rel="stylesheet" href="/styles/layouts/enchant/footer.css">
+
+    <script src="/scripts/layouts/enchant/headerenchant.js"></script>
+    <script src="/scripts/layouts/enchant/footerenchant.js"></script>
+    <script src="/scripts/enchant/transparencia.js" defer></script>
+    <!--LOADER-->
+    <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
+</head>
+<body>
+    <body class="auto-loader">
+    <section>
+        <div id="header-container"></div>
+    </section>
+
+    <main class="transparencia-main">
+        <!-- Hero Section com informações da ONG -->
+        <section class="transparencia-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="ong-header">
+                        <img id="ong-logo1" src="/assets/imgs/comprador/avatar-padrao.jpg" alt="Logo da ONG" class="ong-logo">
+                        <div class="ong-info">
+                            <h1 id="ong-nome">Carregando...</h1>
+                            <p id="ong-descricao">Carregando informações...</p>
+                            <div class="ong-badges">
+                                <span class="badge badge-verified">
+                                    <i class="fas fa-check-circle"></i> Verificada
+                                </span>
+                                <span class="badge badge-location" id="ong-localizacao">
+                                    <i class="fas fa-map-marker-alt"></i> <span id="cidade-estado">-</span>
+                                </span>
+                                <span class="badge badge-location" id="ong-telefone">
+                                    <i class="fas fa-phone"></i> <span id="telefone">-</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/" class="btn-voltar">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navegação por Tabs -->
+        <section class="transparencia-tabs">
+            <div class="container">
+                <nav class="tabs-nav">
+                    <button class="tab-button active" data-tab="doacoes">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <span>Doações</span>
+                    </button>
+                    <button class="tab-button" data-tab="financeiro">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Gestão Financeira</span>
+                    </button>
+                    <button class="tab-button" data-tab="documentos">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Documentos</span>
+                    </button>
+                    <button class="tab-button" data-tab="parcerias">
+                        <i class="fas fa-handshake"></i>
+                        <span>Parcerias</span>
+                    </button>
+                    <button class="tab-button" data-tab="contratos">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Contratos</span>
+                    </button>
+                    <button class="tab-button" data-tab="auditorias">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Auditorias</span>
+                    </button>
+                    <button class="tab-button" data-tab="relatorios">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Relatórios</span>
+                    </button>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Conteúdo das Tabs -->
+        <section class="transparencia-content">
+            <div class="container">
+                
+                <!-- Tab Doações -->
+                <div class="tab-content active" id="tab-doacoes">
+                    <h2 class="section-title">Histórico de Doações</h2>
+                    
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-box"></i></div>
+                            <div class="stat-info">
+                                <h3 id="total-entradas">0</h3>
+                                <p>Doações Recebidas</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-truck"></i></div>
+                            <div class="stat-info">
+                                <h3 id="total-saidas">0</h3>
+                                <p>Doações Distribuídas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Doações Recebidas (Entradas)</h3>
+                        <div id="lista-entradas" class="data-list">
+                            <p class="loading">Carregando...</p>
+                        </div>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Doações Distribuídas (Saídas)</h3>
+                        <div id="lista-saidas" class="data-list">
+                            <p class="loading">Carregando...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Gestão Financeira -->
+                <div class="tab-content" id="tab-financeiro">
+                    <h2 class="section-title">Gestão Financeira</h2>
+                    <div id="lista-financeiro" class="data-list">
+                        <p class="loading">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- Tab Documentos Comprobatórios -->
+                <div class="tab-content" id="tab-documentos">
+                    <h2 class="section-title">Documentos Comprobatórios</h2>
+                    <div id="lista-documentos" class="data-list">
+                        <p class="loading">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- Tab Parcerias -->
+                <div class="tab-content" id="tab-parcerias">
+                    <h2 class="section-title">Parcerias</h2>
+                    <div id="lista-parcerias" class="data-list">
+                        <p class="loading">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- Tab Contratos -->
+                <div class="tab-content" id="tab-contratos">
+                    <h2 class="section-title">Contratos</h2>
+                    <div id="lista-contratos" class="data-list">
+                        <p class="loading">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- Tab Auditorias -->
+                <div class="tab-content" id="tab-auditorias">
+                    <h2 class="section-title">Notas de Auditoria</h2>
+                    <div id="lista-auditorias" class="data-list">
+                        <p class="loading">Carregando...</p>
+                    </div>
+                </div>
+
+                <!-- Tab Relatórios -->
+                <div class="tab-content" id="tab-relatorios">
+                    <h2 class="section-title">Relatórios</h2>
+                    <div id="lista-relatorios" class="data-list">
+                        <p class="loading">Carregando...</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <div id="enchant-footer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            HeaderComponent.loadDependencies();
+            initializeHeader('header-container');
+        });
+    </script>
+</body>
+</html>

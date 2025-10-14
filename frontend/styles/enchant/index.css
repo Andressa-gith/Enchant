@@ -467,6 +467,53 @@
   object-fit: cover;
 }
 
+.card-ong-botoes {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: auto;
+    gap: 10px;
+}
+
+.card-ong-link,
+.card-ong-transparencia {
+    width: 160px;
+    height: 40px;
+    font-family: 'Lexend Deca', sans-serif;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-decoration: none;
+}
+
+.card-ong-link {
+    background-color: #e2ccae;
+    color: #3d2106;
+}
+
+.card-ong-link:hover {
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
+.card-ong-transparencia {
+    background-color: transparent;
+    border: 2px solid #e2ccae;
+    color: #3d2106;
+}
+
+.card-ong-transparencia:hover {
+    background-color: #e2ccae;
+    color: #3d2106;
+    text-decoration: none;
+}
+
 .card-ong-conteudo {
   padding: 1.5rem;
   display: flex;

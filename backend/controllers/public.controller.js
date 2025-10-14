@@ -45,6 +45,81 @@ class PublicController {
         }
     }
 
+    async getDadosTransparencia(req, res) {
+        const { id } = req.query;
+
+        if (!id) {
+            return res.status(400).json({ message: 'ID da instituição não fornecido.' });
+        }
+
+        try {
+            const [
+                ongRes,
+                documentosRes,
+                relatoriosRes,
+                gestaoFinanceiraRes,
+                doacoesEntradaRes,
+                doacoesSaidaRes,
+                contratosRes,
+                parceriasRes,
+                auditoriasRes
+            ] = await Promise.all([
+                supabase.from('instituicao').select('id, nome, sobre, caminho_logo, endereco ( cidade, estado ), telefone ( numero )').eq('id', id).single(),
+                supabase.from('documento_comprobatorio').select('*').eq('instituicao_id', id),
+                supabase.from('relatorio').select('*').eq('instituicao_id', id),
+                supabase.from('gestao_financeira').select('*').eq('instituicao_id', id),
+                supabase.from('doacao_entrada').select('*, categoria(nome)').eq('instituicao_id', id),
+                supabase.from('doacao_saida').select('*').eq('instituicao_id', id),
+                supabase.from('contrato').select('*').eq('instituicao_id', id),
+                supabase.from('parceiro').select('*').eq('instituicao_id', id),
+                supabase.from('nota_auditoria').select('*').eq('instituicao_id', id)
+            ]);
+
+            if (ongRes.error) throw new Error(`Erro ao buscar ONG: ${ongRes.error.message}`);
+            if (documentosRes.error) throw new Error(`Erro ao buscar documentos: ${documentosRes.error.message}`);
+            if (relatoriosRes.error) throw new Error(`Erro ao buscar relatórios: ${relatoriosRes.error.message}`);
+            if (gestaoFinanceiraRes.error) throw new Error(`Erro ao buscar gestão financeira: ${gestaoFinanceiraRes.error.message}`);
+            if (doacoesEntradaRes.error) throw new Error(`Erro ao buscar doações de entrada: ${doacoesEntradaRes.error.message}`);
+            if (doacoesSaidaRes.error) throw new Error(`Erro ao buscar doações de saída: ${doacoesSaidaRes.error.message}`);
+            if (contratosRes.error) throw new Error(`Erro ao buscar contratos: ${contratosRes.error.message}`);
+            if (parceriasRes.error) throw new Error(`Erro ao buscar parcerias: ${parceriasRes.error.message}`);
+            if (auditoriasRes.error) throw new Error(`Erro ao buscar auditorias: ${auditoriasRes.error.message}`);
+
+            const ongData = ongRes.data;
+            const end = Array.isArray(ongData.endereco) ? ongData.endereco[0] : ongData.endereco;
+            const fone = Array.isArray(ongData.telefone) ? ongData.telefone[0] : ongData.telefone;
+
+            if (ongData && ongData.caminho_logo) {
+                const { data: publicUrlData } = supabase.storage
+                    .from('logos')
+                    .getPublicUrl(ongData.caminho_logo);
+                ongData.caminho_logo = publicUrlData.publicUrl;
+
+                ongData.telefone = fone?.numero;
+                ongData.cidade = end?.cidade;
+                ongData.estado = end?.estado;
+            }
+
+            const dadosTransparencia = {
+                ong: ongData,
+                documentos: documentosRes.data,
+                relatorios: relatoriosRes.data,
+                gestaoFinanceira: gestaoFinanceiraRes.data,
+                doacoesEntrada: doacoesEntradaRes.data,
+                doacoesSaida: doacoesSaidaRes.data,
+                contratos: contratosRes.data,
+                parcerias: parceriasRes.data,
+                auditorias: auditoriasRes.data,
+            };
+
+            res.status(200).json(dadosTransparencia);
+
+        } catch (error) {
+            console.error('Erro detalhado ao buscar dados de transparência:', error);
+            res.status(500).json({ message: `Erro no servidor: ${error.message}` });
+        }
+    }
+
     async criarCobrancaPix(req, res) {
         try {
             const { ongId, valor, nomeDoador, emailDoador } = req.body;

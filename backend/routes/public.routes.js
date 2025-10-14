@@ -11,4 +11,6 @@ publicRouter.post('/webhook', PublicController.receberWebhook);
 
 publicRouter.get('/doacao-status/:refExterna', PublicController.verificarStatusDoacao);
 
+publicRouter.get('/transparencia', PublicController.getDadosTransparencia);
+
 export default publicRouter;
