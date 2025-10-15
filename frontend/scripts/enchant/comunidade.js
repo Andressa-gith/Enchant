@@ -13,11 +13,24 @@ function inicializar() {
     const btnNovaPostagem = document.getElementById('btn-nova-postagem');
     const modal = document.getElementById('modal-postagem');
     const btnFecharModal = document.getElementById('btn-fechar-modal');
+    const btnCancelar = document.getElementById('btn-cancelar');
     const formPostagem = document.getElementById('form-postagem');
+    const modalTitulo = document.getElementById('modal-titulo');
+    const postIdInput = document.getElementById('post-id');
+    const postTituloInput = document.getElementById('post-titulo');
+    const postConteudoInput = document.getElementById('post-conteudo');
+    const postImagemInput = document.getElementById('post-imagem');
+    const imagePreview = document.getElementById('image-preview');
+    const charCount = document.getElementById('char-count');
 
-    // ============================================
-    // DEBUG: Mostra informações de autenticação
-    // ============================================
+    // Modal de confirmação de exclusão
+    const modalConfirmarExclusao = document.getElementById('modal-confirmar-exclusao');
+    const btnCancelarExclusao = document.getElementById('btn-cancelar-exclusao');
+    const btnConfirmarExclusao = document.getElementById('btn-confirmar-exclusao');
+    
+    let postIdParaExcluir = null;
+    let instituicaoIdAtual = null;
+
     console.log('=== 🔍 DEBUG COMUNIDADE ===');
     console.log('1. Container existe?', !!postCreatorContainer);
     console.log('2. Botão existe?', !!btnNovaPostagem);
@@ -26,9 +39,9 @@ function inicializar() {
     console.log('========================');
 
     /**
-     * Obtém o token de autenticação do localStorage
+     * Obtém o token e ID da instituição do localStorage
      */
-    function obterTokenAuth() {
+    function obterDadosAuth() {
         try {
             const authKey = Object.keys(localStorage).find(key =>
                 key.startsWith('sb-') && key.endsWith('-auth-token')
@@ -36,28 +49,32 @@ function inicializar() {
 
             if (!authKey) {
                 console.warn('⚠️ Chave de autenticação do Supabase não encontrada.');
-                return null;
+                return { token: null, instituicaoId: null };
             }
 
             const authDataString = localStorage.getItem(authKey);
             if (!authDataString) {
                 console.warn('⚠️ Valor da chave de autenticação está vazio.');
-                return null;
+                return { token: null, instituicaoId: null };
             }
 
             const authData = JSON.parse(authDataString);
 
             if (authData && authData.access_token) {
                 console.log('🔑 Token encontrado!');
-                return authData.access_token;
+                const instituicaoId = authData.user?.id || null;
+                return { 
+                    token: authData.access_token,
+                    instituicaoId: instituicaoId
+                };
             }
 
             console.warn('⚠️ Token de acesso não encontrado.');
-            return null;
+            return { token: null, instituicaoId: null };
 
         } catch (error) {
-            console.error('❌ Erro ao obter token:', error);
-            return null;
+            console.error('❌ Erro ao obter dados de autenticação:', error);
+            return { token: null, instituicaoId: null };
         }
     }
 
@@ -65,18 +82,26 @@ function inicializar() {
      * Verifica se o usuário está logado
      */
     function verificarLoginStatus() {
-        const token = obterTokenAuth();
+        const { token, instituicaoId } = obterDadosAuth();
         const isLoggedIn = !!token;
 
+        instituicaoIdAtual = instituicaoId;
         console.log('🔐 Status de login verificado:', isLoggedIn);
+        console.log('🏢 Instituição ID:', instituicaoId);
 
-        // Atualiza a visibilidade do botão de criar postagem
         if (postCreatorContainer) {
             postCreatorContainer.style.display = isLoggedIn ? 'block' : 'none';
             console.log(`${isLoggedIn ? '✅' : '❌'} Botão de criar postagem: ${isLoggedIn ? 'VISÍVEL' : 'OCULTO'}`);
         }
 
         return isLoggedIn;
+    }
+
+    /**
+     * Verifica se a postagem pertence ao usuário logado
+     */
+    function postagemPertenceAoUsuario(postagemInstituicaoId) {
+        return instituicaoIdAtual && postagemInstituicaoId === instituicaoIdAtual;
     }
 
     /**
@@ -91,8 +116,9 @@ function inicializar() {
         if (!postagens || postagens.length === 0) {
             feedContainer.innerHTML = `
                 <div class="empty-state">
-                    <i class="fas fa-bullhorn"></i>
-                    <p>Ainda não há nenhuma publicação na comunidade. Seja o primeiro!</p>
+                    <i class="fas fa-comments"></i>
+                    <p>Ainda não há publicações</p>
+                    <small>Seja o primeiro a compartilhar algo com a comunidade!</small>
                 </div>
             `;
             return;
@@ -100,23 +126,34 @@ function inicializar() {
 
         feedContainer.innerHTML = postagens.map(post => {
             const dataPostagem = new Date(post.created_at);
-            const dataFormatada = dataPostagem.toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            });
+            const dataFormatada = formatarDataRelativa(dataPostagem);
 
             const nomeInstituicao = post.instituicao ? post.instituicao.nome : 'ONG Desconhecida';
             const logoInstituicao = post.instituicao ? post.instituicao.url_logo : '/assets/imgs/comprador/avatar-padrao.jpg';
+            
+            const podeEditar = postagemPertenceAoUsuario(post.instituicao_id);
+            const botoesAcao = podeEditar ? `
+                <div class="post-actions">
+                    <button class="post-action-btn edit" data-id="${post.id}" title="Editar">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="post-action-btn delete" data-id="${post.id}" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            ` : '';
 
             return `
-                <div class="post-card">
+                <div class="post-card" data-post-id="${post.id}">
                     <div class="post-header">
                         <img src="${logoInstituicao}" alt="Logo de ${nomeInstituicao}" class="post-ong-logo" onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
                         <div class="post-ong-info">
-                            <h3>${nomeInstituicao}</h3>
-                            <span>Publicado em ${dataFormatada}</span>
+                            <div class="post-ong-info-header">
+                                <h3>${nomeInstituicao}</h3>
+                                <span>· ${dataFormatada}</span>
+                            </div>
                         </div>
+                        ${botoesAcao}
                     </div>
                     <div class="post-body">
                         ${post.titulo ? `<h4>${post.titulo}</h4>` : ''}
@@ -126,6 +163,179 @@ function inicializar() {
                 </div>
             `;
         }).join('');
+
+        // Adiciona event listeners aos botões de ação
+        adicionarEventListenersBotoes();
+    }
+
+    /**
+     * Formata a data de forma relativa (ex: "há 2 horas")
+     */
+    function formatarDataRelativa(data) {
+        const agora = new Date();
+        const diff = agora - data;
+        const segundos = Math.floor(diff / 1000);
+        const minutos = Math.floor(segundos / 60);
+        const horas = Math.floor(minutos / 60);
+        const dias = Math.floor(horas / 24);
+
+        if (segundos < 60) return 'agora mesmo';
+        if (minutos < 60) return `há ${minutos}min`;
+        if (horas < 24) return `há ${horas}h`;
+        if (dias < 7) return `há ${dias}d`;
+        
+        return data.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short'
+        });
+    }
+
+    /**
+     * Adiciona event listeners aos botões de editar e excluir
+     */
+    function adicionarEventListenersBotoes() {
+        // Botões de editar
+        document.querySelectorAll('.post-action-btn.edit').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const postId = btn.dataset.id;
+                await abrirModalEdicao(postId);
+            });
+        });
+
+        // Botões de excluir
+        document.querySelectorAll('.post-action-btn.delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const postId = btn.dataset.id;
+                abrirModalConfirmacaoExclusao(postId);
+            });
+        });
+    }
+
+    /**
+     * Abre o modal para editar uma postagem
+     */
+    async function abrirModalEdicao(postId) {
+        try {
+            console.log('✏️ Carregando postagem para edição:', postId);
+            
+            const { token } = obterDadosAuth();
+            if (!token) {
+                throw new Error('Você precisa estar logado para editar.');
+            }
+
+            const response = await fetch(`/api/user/comunidade/postagens/${postId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Não foi possível carregar a postagem.');
+            }
+
+            const post = await response.json();
+
+            // Preenche o formulário
+            postIdInput.value = post.id;
+            postTituloInput.value = post.titulo || '';
+            postConteudoInput.value = post.conteudo || '';
+            
+            // Atualiza contador de caracteres
+            charCount.textContent = post.conteudo.length;
+            atualizarContadorCaracteres();
+
+            // Se tem imagem, mostra preview
+            if (post.url_imagem) {
+                imagePreview.innerHTML = `
+                    <img src="${post.url_imagem}" alt="Preview">
+                    <div class="image-preview-actions">
+                        <button type="button" class="btn-remove-image" id="btn-remover-imagem-atual">
+                            <i class="fas fa-times"></i> Remover imagem
+                        </button>
+                    </div>
+                `;
+                imagePreview.classList.add('active');
+
+                // Botão para remover imagem atual
+                document.getElementById('btn-remover-imagem-atual')?.addEventListener('click', () => {
+                    imagePreview.innerHTML = '';
+                    imagePreview.classList.remove('active');
+                });
+            }
+
+            // Atualiza o título do modal
+            modalTitulo.textContent = 'Editar Publicação';
+            
+            // Abre o modal
+            modal.style.display = 'flex';
+
+        } catch (error) {
+            console.error('❌ Erro ao carregar postagem:', error);
+            mostrarNotificacao(error.message, 'error');
+        }
+    }
+
+    /**
+     * Abre o modal de confirmação de exclusão
+     */
+    function abrirModalConfirmacaoExclusao(postId) {
+        postIdParaExcluir = postId;
+        modalConfirmarExclusao.style.display = 'flex';
+    }
+
+    /**
+     * Exclui uma postagem
+     */
+    async function excluirPostagem(postId) {
+        try {
+            console.log('🗑️ Excluindo postagem:', postId);
+            
+            const { token } = obterDadosAuth();
+            if (!token) {
+                throw new Error('Você precisa estar logado para excluir.');
+            }
+
+            const response = await fetch(`/api/user/comunidade/postagens/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+                throw new Error(errorData.message || 'Não foi possível excluir a postagem.');
+            }
+
+            console.log('✅ Postagem excluída com sucesso!');
+            
+            // Fecha o modal
+            modalConfirmarExclusao.style.display = 'none';
+            postIdParaExcluir = null;
+
+            // Remove o card do DOM com animação
+            const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postCard) {
+                postCard.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    postCard.remove();
+                    
+                    // Se não houver mais posts, mostra o empty state
+                    const remainingPosts = document.querySelectorAll('.post-card');
+                    if (remainingPosts.length === 0) {
+                        renderizarFeed([]);
+                    }
+                }, 300);
+            }
+
+            mostrarNotificacao('Publicação excluída com sucesso!', 'success');
+
+        } catch (error) {
+            console.error('❌ Erro ao excluir postagem:', error);
+            mostrarNotificacao(error.message, 'error');
+        }
     }
 
     /**
@@ -155,7 +365,7 @@ function inicializar() {
             feedContainer.innerHTML = `
                 <div class="error-state">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <p>Ocorreu um erro ao carregar o feed.</p>
+                    <p>Não foi possível carregar as publicações</p>
                     <small>${error.message}</small>
                 </div>
             `;
@@ -163,25 +373,97 @@ function inicializar() {
     }
 
     /**
+     * Atualiza o contador de caracteres
+     */
+    function atualizarContadorCaracteres() {
+        const length = postConteudoInput.value.length;
+        charCount.textContent = length;
+        
+        const charCounter = document.querySelector('.char-counter');
+        charCounter.classList.remove('warning', 'error');
+        
+        if (length > 2000) {
+            charCounter.classList.add('error');
+        } else if (length > 1800) {
+            charCounter.classList.add('warning');
+        }
+    }
+
+    /**
+     * Mostra preview da imagem selecionada
+     */
+    function mostrarPreviewImagem(file) {
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <div class="image-preview-actions">
+                    <button type="button" class="btn-remove-image" id="btn-remover-preview">
+                        <i class="fas fa-times"></i> Remover imagem
+                    </button>
+                </div>
+            `;
+            imagePreview.classList.add('active');
+
+            // Botão para remover preview
+            document.getElementById('btn-remover-preview')?.addEventListener('click', () => {
+                postImagemInput.value = '';
+                imagePreview.innerHTML = '';
+                imagePreview.classList.remove('active');
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    /**
+     * Reseta o formulário
+     */
+    function resetarFormulario() {
+        formPostagem.reset();
+        postIdInput.value = '';
+        imagePreview.innerHTML = '';
+        imagePreview.classList.remove('active');
+        charCount.textContent = '0';
+        document.querySelector('.char-counter').classList.remove('warning', 'error');
+        modalTitulo.textContent = 'Criar Nova Publicação';
+    }
+
+    /**
+     * Fecha o modal
+     */
+    function fecharModal() {
+        modal.style.display = 'none';
+        resetarFormulario();
+    }
+
+    /**
      * Mostra notificação toast
      */
     function mostrarNotificacao(mensagem, tipo = 'success') {
         const cor = tipo === 'success' ? '#28a745' : '#dc3545';
+        const icone = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
         const toast = document.createElement('div');
-        toast.textContent = mensagem;
+        toast.innerHTML = `<i class="fas ${icone}"></i> ${mensagem}`;
         toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
             background-color: ${cor};
             color: white;
-            padding: 15px 20px;
+            padding: 16px 24px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             z-index: 10000;
             animation: slideIn 0.3s ease;
-            max-width: 300px;
+            max-width: 350px;
             font-family: 'Lexend Deca', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
         `;
         document.body.appendChild(toast);
 
@@ -192,34 +474,39 @@ function inicializar() {
     }
 
     /**
-     * Manipula o envio do formulário de nova postagem
+     * Manipula o envio do formulário
      */
     if (formPostagem) {
         formPostagem.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const submitButton = formPostagem.querySelector('.btn-publicar');
+            const isEdicao = !!postIdInput.value;
+            
             submitButton.disabled = true;
-            submitButton.textContent = 'A publicar...';
+            submitButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${isEdicao ? 'Salvando...' : 'Publicando...'}`;
 
             const formData = new FormData(formPostagem);
 
             try {
-                console.log('📤 Enviando nova postagem...');
+                console.log(`📤 ${isEdicao ? 'Atualizando' : 'Criando'} postagem...`);
 
-                const token = obterTokenAuth();
-
+                const { token } = obterDadosAuth();
                 if (!token) {
                     throw new Error('Token de autenticação não encontrado. Faça login novamente.');
                 }
 
-                const headers = {
-                    'Authorization': `Bearer ${token}`
-                };
+                const url = isEdicao 
+                    ? `/api/user/comunidade/postagens/${postIdInput.value}`
+                    : '/api/user/comunidade/postagens';
+                
+                const method = isEdicao ? 'PUT' : 'POST';
 
-                const response = await fetch('/api/user/comunidade/postagens', {
-                    method: 'POST',
-                    headers: headers,
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: formData,
                     credentials: 'include'
                 });
@@ -231,67 +518,105 @@ function inicializar() {
                         throw new Error('Sessão expirada. Por favor, faça login novamente.');
                     }
 
-                    throw new Error(errorData.message || 'Falha ao publicar.');
+                    throw new Error(errorData.message || 'Falha ao processar a postagem.');
                 }
 
-                console.log('✅ Postagem criada com sucesso!');
+                console.log(`✅ Postagem ${isEdicao ? 'atualizada' : 'criada'} com sucesso!`);
 
-                // Fecha o modal
-                if (modal) {
-                    modal.style.display = 'none';
-                }
-
-                // Reseta o formulário
-                formPostagem.reset();
-
-                // Recarrega o feed
+                fecharModal();
                 await carregarFeed();
 
-                // Feedback visual de sucesso
-                mostrarNotificacao('Publicação criada com sucesso!', 'success');
+                mostrarNotificacao(
+                    `Publicação ${isEdicao ? 'atualizada' : 'criada'} com sucesso!`, 
+                    'success'
+                );
 
             } catch (error) {
-                console.error('❌ Erro ao criar postagem:', error);
-                mostrarNotificacao(`Erro: ${error.message}`, 'error');
+                console.error('❌ Erro ao processar postagem:', error);
+                mostrarNotificacao(error.message, 'error');
             } finally {
                 submitButton.disabled = false;
-                submitButton.textContent = 'Publicar';
+                submitButton.innerHTML = `<i class="fas fa-paper-plane"></i> Publicar`;
             }
         });
     }
 
     /**
-     * Configuração dos eventos do modal
+     * Event Listeners
      */
-    if (btnNovaPostagem && modal && btnFecharModal) {
-        console.log('✅ Configurando eventos do modal...');
 
+    // Botão Nova Postagem
+    if (btnNovaPostagem) {
         btnNovaPostagem.addEventListener('click', () => {
             console.log('📝 Abrindo modal de criação');
+            resetarFormulario();
             modal.style.display = 'flex';
         });
+    }
 
-        btnFecharModal.addEventListener('click', () => {
-            modal.style.display = 'none';
-            if (formPostagem) formPostagem.reset();
-        });
+    // Botão Fechar Modal
+    if (btnFecharModal) {
+        btnFecharModal.addEventListener('click', fecharModal);
+    }
 
+    // Botão Cancelar
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', fecharModal);
+    }
+
+    // Clique fora do modal
+    if (modal) {
         window.addEventListener('click', (e) => {
             if (e.target === modal) {
-                modal.style.display = 'none';
-                if (formPostagem) formPostagem.reset();
+                fecharModal();
             }
         });
-    } else {
-        console.warn('⚠️ Alguns elementos do modal não foram encontrados:', {
-            btnNovaPostagem: !!btnNovaPostagem,
-            modal: !!modal,
-            btnFecharModal: !!btnFecharModal
+    }
+
+    // Contador de caracteres
+    if (postConteudoInput) {
+        postConteudoInput.addEventListener('input', atualizarContadorCaracteres);
+    }
+
+    // Preview de imagem
+    if (postImagemInput) {
+        postImagemInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                mostrarPreviewImagem(file);
+            }
+        });
+    }
+
+    // Modal de confirmação de exclusão - Cancelar
+    if (btnCancelarExclusao) {
+        btnCancelarExclusao.addEventListener('click', () => {
+            modalConfirmarExclusao.style.display = 'none';
+            postIdParaExcluir = null;
+        });
+    }
+
+    // Modal de confirmação de exclusão - Confirmar
+    if (btnConfirmarExclusao) {
+        btnConfirmarExclusao.addEventListener('click', async () => {
+            if (postIdParaExcluir) {
+                await excluirPostagem(postIdParaExcluir);
+            }
+        });
+    }
+
+    // Clique fora do modal de confirmação
+    if (modalConfirmarExclusao) {
+        window.addEventListener('click', (e) => {
+            if (e.target === modalConfirmarExclusao) {
+                modalConfirmarExclusao.style.display = 'none';
+                postIdParaExcluir = null;
+            }
         });
     }
 
     // ============================================
-    // EXECUTA A INICIALIZAÇÃO
+    // INICIALIZAÇÃO
     // ============================================
     (async function executar() {
         console.log('🚀 Executando inicialização da comunidade...');
@@ -299,7 +624,6 @@ function inicializar() {
         verificarLoginStatus();
         await carregarFeed();
 
-        // Esconde o loader se existir
         setTimeout(() => {
             if (window.SiteLoader) {
                 window.SiteLoader.hide();
@@ -309,3 +633,41 @@ function inicializar() {
         console.log('✅ Comunidade inicializada com sucesso!');
     })();
 }
+
+// Adiciona animação de fadeOut ao CSS dinamicamente
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+`;
+document.head.appendChild(style);

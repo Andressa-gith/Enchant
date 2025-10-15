@@ -130,17 +130,18 @@ class PublicController {
             const { data, error } = await supabase
                 .from('postagens_comunidade')
                 .select(`
+                id,
+                titulo,
+                conteudo,
+                caminho_imagem,
+                created_at,
+                instituicao_id,
+                instituicao:instituicao_id (
                     id,
-                    titulo,
-                    conteudo,
-                    caminho_imagem,
-                    created_at,
-                    instituicao (
-                        id,
-                        nome,
-                        caminho_logo
-                    )
-                `)
+                    nome,
+                    caminho_logo
+                )
+            `)
                 .order('created_at', { ascending: false });
 
             if (error) {
@@ -173,10 +174,15 @@ class PublicController {
                 }
 
                 return {
-                    ...post,
+                    id: post.id,
+                    titulo: post.titulo,
+                    conteudo: post.conteudo,
+                    created_at: post.created_at,
+                    instituicao_id: post.instituicao_id, // IMPORTANTE: Incluir o ID da instituição
                     url_imagem,
                     instituicao: {
-                        ...post.instituicao,
+                        id: post.instituicao.id,
+                        nome: post.instituicao.nome,
                         url_logo
                     }
                 };

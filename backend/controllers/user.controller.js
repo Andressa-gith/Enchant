@@ -122,7 +122,7 @@ export const criarPostagemComunidade = async (req, res) => {
             const filePath = `${instituicao_id}/${fileName}`;
 
             // 2. Usamos o .upload() do Supabase para enviar o buffer
-            const { error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabaseAdmin.storage
                 .from('imagens-comunidade')
                 .upload(filePath, file.buffer, {
                     contentType: file.mimetype,
@@ -156,5 +156,185 @@ export const criarPostagemComunidade = async (req, res) => {
     } catch (error) {
         console.error('Erro ao criar postagem:', error);
         res.status(500).json({ message: 'Não foi possível criar a postagem.' });
+    }
+};
+
+/**
+ * Busca uma postagem específica da instituição logada
+ * @param {object} req - Objeto de requisição do Express
+ * @param {object} res - Objeto de resposta do Express
+ */
+export const buscarPostagemComunidade = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const instituicao_id = req.user.id;
+
+        const { data, error } = await supabase
+            .from('postagens_comunidade')
+            .select('*')
+            .eq('id', id)
+            .eq('instituicao_id', instituicao_id)
+            .single();
+
+        if (error || !data) {
+            return res.status(404).json({ message: 'Postagem não encontrada.' });
+        }
+
+        // Gera URL pública da imagem se existir
+        let url_imagem = null;
+        if (data.caminho_imagem) {
+            const { data: publicUrlData } = supabase.storage
+                .from('imagens-comunidade')
+                .getPublicUrl(data.caminho_imagem);
+            url_imagem = publicUrlData.publicUrl;
+        }
+
+        res.status(200).json({
+            ...data,
+            url_imagem
+        });
+
+    } catch (error) {
+        console.error('Erro ao buscar postagem:', error);
+        res.status(500).json({ message: 'Não foi possível buscar a postagem.' });
+    }
+};
+
+/**
+ * Atualiza uma postagem existente da instituição logada
+ * @param {object} req - Objeto de requisição do Express
+ * @param {object} res - Objeto de resposta do Express
+ */
+export const atualizarPostagemComunidade = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { titulo, conteudo } = req.body;
+        const instituicao_id = req.user.id;
+
+        if (!conteudo) {
+            return res.status(400).json({ message: 'O conteúdo da postagem é obrigatório.' });
+        }
+
+        if (conteudo.length > 2000) {
+            return res.status(400).json({ message: 'O conteúdo não pode ter mais de 2000 caracteres.' });
+        }
+
+        // Verifica se a postagem pertence ao usuário
+        const { data: postagemExistente, error: erroVerificacao } = await supabase
+            .from('postagens_comunidade')
+            .select('*')
+            .eq('id', id)
+            .eq('instituicao_id', instituicao_id)
+            .single();
+
+        if (erroVerificacao || !postagemExistente) {
+            return res.status(404).json({ message: 'Postagem não encontrada ou você não tem permissão para editá-la.' });
+        }
+
+        let caminho_imagem = postagemExistente.caminho_imagem;
+
+        // Se há um novo arquivo de imagem
+        if (req.file) {
+            // Remove a imagem antiga se existir
+            if (postagemExistente.caminho_imagem) {
+                await supabaseAdmin.storage
+                    .from('imagens-comunidade')
+                    .remove([postagemExistente.caminho_imagem]);
+            }
+
+            // Upload da nova imagem
+            const file = req.file;
+            const fileExt = file.originalname.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `${instituicao_id}/${fileName}`;
+
+            const { error: uploadError } = await supabaseAdmin.storage
+                .from('imagens-comunidade')
+                .upload(filePath, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: false
+                });
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            caminho_imagem = filePath;
+        }
+
+        // Atualiza a postagem
+        const { data: postagemAtualizada, error: updateError } = await supabase
+            .from('postagens_comunidade')
+            .update({
+                titulo,
+                conteudo,
+                caminho_imagem
+            })
+            .eq('id', id)
+            .eq('instituicao_id', instituicao_id)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+
+        res.status(200).json({
+            message: 'Postagem atualizada com sucesso!',
+            postagem: postagemAtualizada
+        });
+
+    } catch (error) {
+        console.error('Erro ao atualizar postagem:', error);
+        res.status(500).json({ message: 'Não foi possível atualizar a postagem.' });
+    }
+};
+
+/**
+ * Exclui uma postagem da instituição logada
+ * @param {object} req - Objeto de requisição do Express
+ * @param {object} res - Objeto de resposta do Express
+ */
+export const excluirPostagemComunidade = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const instituicao_id = req.user.id;
+
+        // Busca a postagem para verificar permissão e obter o caminho da imagem
+        const { data: postagem, error: erroVerificacao } = await supabase
+            .from('postagens_comunidade')
+            .select('*')
+            .eq('id', id)
+            .eq('instituicao_id', instituicao_id)
+            .single();
+
+        if (erroVerificacao || !postagem) {
+            return res.status(404).json({ message: 'Postagem não encontrada ou você não tem permissão para excluí-la.' });
+        }
+
+        // Remove a imagem do storage se existir
+        if (postagem.caminho_imagem) {
+            const { error: deleteStorageError } = await supabaseAdmin.storage
+                .from('imagens-comunidade')
+                .remove([postagem.caminho_imagem]);
+
+            if (deleteStorageError) {
+                console.warn('Erro ao deletar imagem do storage:', deleteStorageError);
+                // Continua mesmo se a exclusão da imagem falhar
+            }
+        }
+
+        // Exclui a postagem do banco
+        const { error: deleteError } = await supabase
+            .from('postagens_comunidade')
+            .delete()
+            .eq('id', id)
+            .eq('instituicao_id', instituicao_id);
+
+        if (deleteError) throw deleteError;
+
+        res.status(200).json({ message: 'Postagem excluída com sucesso!' });
+
+    } catch (error) {
+        console.error('Erro ao excluir postagem:', error);
+        res.status(500).json({ message: 'Não foi possível excluir a postagem.' });
     }
 };
