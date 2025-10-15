@@ -95,3 +95,66 @@ export const cadastrarInstituicao = async (req, res) => {
         return res.status(500).json({ message: 'Erro interno no servidor durante o cadastro.' });
     }
 };
+
+/**
+ * Cria uma nova postagem na comunidade para a instituição logada.
+ * Requer que o usuário esteja autenticado (authMiddleware).
+ * Processa o upload de uma imagem opcional.
+ * @param {object} req - Objeto de requisição do Express.
+ * @param {object} res - Objeto de resposta do Express.
+ */
+export const criarPostagemComunidade = async (req, res) => {
+    try {
+        const { titulo, conteudo } = req.body;
+        const instituicao_id = req.user.id;
+        let caminho_imagem = null;
+
+        if (!conteudo) {
+            return res.status(400).json({ message: 'O conteúdo da postagem é obrigatório.' });
+        }
+
+        // CORREÇÃO: Lógica de upload manual
+        if (req.file) {
+            // 1. O ficheiro está em memória (req.file.buffer)
+            const file = req.file;
+            const fileExt = file.originalname.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `${instituicao_id}/${fileName}`;
+
+            // 2. Usamos o .upload() do Supabase para enviar o buffer
+            const { error: uploadError } = await supabase.storage
+                .from('imagens-comunidade')
+                .upload(filePath, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: false
+                });
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            // 3. Guardamos o caminho do ficheiro bem-sucedido
+            caminho_imagem = filePath;
+        }
+
+        // 4. Inserimos na base de dados com o caminho da imagem (ou null se não houver imagem)
+        const { data: postData, error: insertError } = await supabase
+            .from('postagens_comunidade')
+            .insert({
+                instituicao_id,
+                titulo,
+                conteudo,
+                caminho_imagem
+            })
+            .select()
+            .single();
+
+        if (insertError) throw insertError;
+
+        res.status(201).json(postData);
+
+    } catch (error) {
+        console.error('Erro ao criar postagem:', error);
+        res.status(500).json({ message: 'Não foi possível criar a postagem.' });
+    }
+};

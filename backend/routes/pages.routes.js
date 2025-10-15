@@ -66,6 +66,11 @@ pageRouter.get('/transparencia', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'views', 'transparencia.html'));
 });
 
+pageRouter.get('/comunidade', (req, res) => {
+    console.log(`\n⬆️  Rota /comunidade acessada.\n`);
+    res.sendFile(path.join(__dirname, '..', 'views', 'comunidade.html'));
+});
+
 // ===============
 // Rotas pós Login
 // ===============

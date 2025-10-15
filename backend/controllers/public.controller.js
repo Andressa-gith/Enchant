@@ -125,6 +125,74 @@ class PublicController {
         }
     }
 
+    async listarTodasPostagens(req, res) {
+        try {
+            const { data, error } = await supabase
+                .from('postagens_comunidade')
+                .select(`
+                    id,
+                    titulo,
+                    conteudo,
+                    caminho_imagem,
+                    created_at,
+                    instituicao (
+                        id,
+                        nome,
+                        caminho_logo
+                    )
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Erro na consulta ao Supabase em listarTodasPostagens:', error);
+                throw new Error('Falha ao buscar dados das postagens.');
+            }
+
+            // Processa as URLs em paralelo para melhor performance
+            const postagensFormatadas = await Promise.all(data.map(async (post) => {
+                // Filtra postagens órfãs (sem instituição)
+                if (!post.instituicao) {
+                    console.warn(`Postagem ID ${post.id} não possui instituição associada.`);
+                    return null;
+                }
+
+                let url_imagem = null;
+                if (post.caminho_imagem) {
+                    const { data: publicUrlData } = await supabase.storage
+                        .from('imagens-comunidade')
+                        .getPublicUrl(post.caminho_imagem);
+                    url_imagem = publicUrlData.publicUrl;
+                }
+
+                let url_logo = '/assets/imgs/comprador/avatar-padrao.jpg'; // fallback
+                if (post.instituicao.caminho_logo) {
+                    const { data: publicUrlData } = await supabase.storage
+                        .from('logos')
+                        .getPublicUrl(post.instituicao.caminho_logo);
+                    url_logo = publicUrlData.publicUrl;
+                }
+
+                return {
+                    ...post,
+                    url_imagem,
+                    instituicao: {
+                        ...post.instituicao,
+                        url_logo
+                    }
+                };
+            }));
+
+            // Remove postagens nulas
+            const postagensValidas = postagensFormatadas.filter(post => post !== null);
+
+            res.status(200).json(postagensValidas);
+
+        } catch (error) {
+            console.error('Erro geral ao buscar postagens da comunidade:', error);
+            res.status(500).json({ message: error.message || 'Não foi possível carregar as atualizações.' });
+        }
+    }
+
     async criarCobrancaPix(req, res) {
         try {
             const { ongId, valor, nomeDoador, emailDoador } = req.body;

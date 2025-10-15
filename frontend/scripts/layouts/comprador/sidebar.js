@@ -66,9 +66,8 @@ class SidebarController {
                     const { error } = await supabase.auth.signOut();
                     if (error) {
                         console.error('Erro ao fazer logout:', error.message);
-                        throw error; // Lança o erro para o modal tratar
+                        throw error;
                     }
-                    // Redireciona após o sucesso
                     window.location.href = '/entrar';
                 });
             });
@@ -159,13 +158,12 @@ class SidebarManager {
             width: var(--sidebar-collapsed); 
             background-color: #ECECEC; 
             transition: var(--transition); 
-            overflow-y: auto; /* MUDANÇA: auto ao invés de hidden */
-            overflow-x: hidden; /* ADICIONAR: esconde scroll horizontal */
+            overflow-y: auto;
+            overflow-x: hidden;
             z-index: 800; 
             display: flex; 
             flex-direction: column; 
         }
-        /* ADICIONAR: Estilo do scrollbar */
         .sidebar::-webkit-scrollbar {
             width: 6px;
         }
@@ -199,11 +197,11 @@ class SidebarManager {
     }
 
     injectSidebarHTML() {
-        // SUA ESTRUTURA HTML ORIGINAL MANTIDA
         const sidebarHTML = `
             <aside class="sidebar" id="sidebar">
                 <nav class="sidebar-nav">
                     <a href="/dashboard"><i class="bi bi-table"></i><span>Dashboard</span></a>
+                    <a href="/comunidade"><i class="bi bi-chat-dots"></i><span>Comunidade</span></a>
                     <a href="/mapa"><i class="bi bi-map"></i><span>Mapa</span></a>
                     <a href="/doacao"><i class="bi bi-box"></i><span>Doação</span></a>
                     <a href="/historico-doacoes"><i class="bi bi-journal"></i><span>Histórico de doação</span></a>
@@ -227,7 +225,6 @@ class SidebarManager {
     }
 
     initializeSidebarScripts() {
-        // CORREÇÃO DE TIMING APLICADA AQUI
         const sidebarElement = document.getElementById('sidebar');
         const overlayElement = document.getElementById('sidebarOverlay');
         const logoutButton = document.getElementById('sidebarLogoutButton');

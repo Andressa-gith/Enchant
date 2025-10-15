@@ -13,4 +13,6 @@ publicRouter.get('/doacao-status/:refExterna', PublicController.verificarStatusD
 
 publicRouter.get('/transparencia', PublicController.getDadosTransparencia);
 
+publicRouter.get('/comunidade/postagens', PublicController.listarTodasPostagens);
+
 export default publicRouter;
