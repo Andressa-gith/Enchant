@@ -41,6 +41,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.SiteLoader?.hide();
         }, 500);
     }
+
+    const btnVoltar = document.getElementById('btn-voltar');
+    
+    const sectionId = urlParams.get('returnTo');
+
+    const paginaAnterior = document.referrer;
+
+    if (sectionId && paginaAnterior) {
+        const backUrl = new URL(paginaAnterior);
+        backUrl.hash = sectionId;
+
+        console.log(`Botão 'Voltar' configurado para: ${backUrl.href}`);
+        btnVoltar.href = backUrl.href;
+
+    } else {
+        console.warn("Não foi possível determinar a seção de retorno. Usando history.back().");
+        btnVoltar.addEventListener('click', (e) => {
+            e.preventDefault(); // Impede a navegação padrão do <a>
+            if (history.length > 1) {
+                history.back();
+            } else {
+                window.location.href = '/'; // Se não tiver histórico, vai para a home
+            }
+        });
+    }
 });
 
 function renderizarInfoOng(ong) {
