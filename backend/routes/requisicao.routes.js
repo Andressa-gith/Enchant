@@ -6,19 +6,22 @@ import {
     buscarRequisicao,
     aprovarRequisicao,
     rejeitarRequisicao,
-    deletarRequisicao
+    deletarRequisicao,
+    aprovarRequisicaoPorEmail,
+    rejeitarRequisicaoPorEmail,
+    confirmarRejeicaoPorEmail
 } from '../controllers/requisicao.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const requisicaoRouter = express.Router();
 
-// Configuração do Multer para múltiplos arquivos
+// Configuração do Multer
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: { 
-        fileSize: 10 * 1024 * 1024, // 10MB por arquivo
-        files: 20 // Máximo de 20 arquivos
+        fileSize: 10 * 1024 * 1024,
+        files: 20
     },
     fileFilter: (req, file, cb) => {
         const tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
@@ -35,18 +38,29 @@ const upload = multer({
 // Enviar nova requisição de cadastro
 requisicaoRouter.post('/enviar', upload.any(), enviarRequisicao);
 
+// ========== ROTAS DE APROVAÇÃO VIA EMAIL (SEM AUTENTICAÇÃO) ==========
+
+// Aprovar requisição via link do email
+requisicaoRouter.get('/aprovar-email/:token', aprovarRequisicaoPorEmail);
+
+// Rejeitar requisição via link do email (mostra formulário)
+requisicaoRouter.get('/rejeitar-email/:token', rejeitarRequisicaoPorEmail);
+
+// Confirmar rejeição com motivo
+requisicaoRouter.post('/rejeitar-email/:token/confirmar', confirmarRejeicaoPorEmail);
+
 // ========== ROTAS ADMINISTRATIVAS (PROTEGIDAS) ==========
 
-// Listar todas as requisições (com filtro opcional por status)
+// Listar todas as requisições
 requisicaoRouter.get('/listar', protegerRota, listarRequisicoes);
 
 // Buscar detalhes de uma requisição específica
 requisicaoRouter.get('/:id', protegerRota, buscarRequisicao);
 
-// Aprovar requisição
+// Aprovar requisição (via painel admin)
 requisicaoRouter.patch('/:id/aprovar', protegerRota, aprovarRequisicao);
 
-// Rejeitar requisição
+// Rejeitar requisição (via painel admin)
 requisicaoRouter.patch('/:id/rejeitar', protegerRota, rejeitarRequisicao);
 
 // Deletar requisição
