@@ -47,6 +47,20 @@ export function iniciarTutorial(session) {
     });
 
     tour.addStep({
+        id: 'comunidade',
+        title: 'Nossa Comunidade',
+        text: 'Aqui você pode se conectar com doadores e outras ONGS. Compartilhe atualizações, promova sua instituição e veja novidades!',
+        attachTo: { element: 'a[href="/comunidade"]', on: 'right' },
+        canClickTarget: false,
+
+        popperOptions: {
+            modifiers: [{ name: 'offset', options: { offset: [0, 20] } }]
+        },
+
+        buttons: [{ text: 'Voltar', action: tour.back, classes: 'btn-secundario' }, { text: 'Próximo', action: tour.next, classes: 'btn-principal' }]
+    });
+
+    tour.addStep({
         id: 'mapa',
         title: 'Mapa Interativo',
         text: 'Explore o mapa para visualizar dados de risco e vulnerabilidade de desastres naturais em todo o Brasil.',
