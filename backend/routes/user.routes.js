@@ -43,9 +43,6 @@ userRouter.post('/comunidade/postagens',
     criarPostagemComunidade
 );
 
-// ← ADICIONAR ESTAS 3 ROTAS NOVAS:
-
-// Buscar uma postagem específica
 userRouter.get('/comunidade/postagens/:id', 
     protegerRota, 
     buscarPostagemComunidade

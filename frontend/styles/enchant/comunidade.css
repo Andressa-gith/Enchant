@@ -31,11 +31,10 @@ body {
 }
 
 .comunidade-main {
-    flex: 1;
+    flex: 1 0 auto;
     padding-top: 80px;
-    padding-bottom: 40px;
+    padding-bottom: 100px;
     background-color: #ffffff;
-    min-height: calc(100vh - 80px);
 }
 
 .container {
@@ -118,9 +117,31 @@ body {
     margin: 0;
 }
 
+.post-ong-logo:hover {
+    opacity: 0.8;
+    transition: .2s;
+}
+
+.post-ong-nome-link {
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.post-ong-nome-link h3 {
+    color: var(--text-dark);
+    transition: color 0.2s ease;
+}
+
+.post-ong-nome-link:hover h3 {
+    color: #693B11;
+    text-decoration: underline;
+}
+
 /* Feed Container */
 .feed-container {
+    display: grid;
     background-color: #ffffff;
+    gap: 10px;
 }
 
 /* Loading Spinner */
@@ -166,6 +187,7 @@ body {
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+    transition: .2s;
 }
 
 .post-ong-info {

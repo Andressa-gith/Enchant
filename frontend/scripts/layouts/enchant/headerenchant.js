@@ -26,6 +26,9 @@ class HeaderComponent {
                 <a id="suporte-header" class="nav-link" href="/suporte" title="Suporte">Suporte</a>
               </li>
               <li class="nav-item">
+                <a id="comunidade" class="nav-link" href="/comunidade" title="Comunidade">Comunidade</a>
+              </li>
+              <li class="nav-item">
                 <a id="entrar" class="nav-link" href="/entrar" title="Entrar">Entrar</a>
               </li>
             </ul>

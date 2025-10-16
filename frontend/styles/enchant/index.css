@@ -547,7 +547,6 @@
   background-color: #e2ccae;
   border-radius: 10px;
   border: none;
-  margin: 15px auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3004,6 +3003,14 @@ body {
 @media (max-width: 480px) {
   .pricing-container {
     gap: 1rem;
+  }
+
+  #parte-de-baixo {
+    flex-wrap: wrap;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
   }
 
   .plan-price {

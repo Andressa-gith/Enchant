@@ -146,10 +146,14 @@ function inicializar() {
             return `
                 <div class="post-card" data-post-id="${post.id}">
                     <div class="post-header">
-                        <img src="${logoInstituicao}" alt="Logo de ${nomeInstituicao}" class="post-ong-logo" onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
+                        <a href="/transparencia?id=${post.instituicao_id}" class="post-ong-link">
+                            <img src="${logoInstituicao}" alt="Logo de ${nomeInstituicao}" class="post-ong-logo" onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
+                        </a>
                         <div class="post-ong-info">
                             <div class="post-ong-info-header">
-                                <h3>${nomeInstituicao}</h3>
+                                <a href="/transparencia?id=${post.instituicao_id}" class="post-ong-nome-link">
+                                    <h3>${nomeInstituicao}</h3>
+                                </a>
                                 <span>· ${dataFormatada}</span>
                             </div>
                         </div>
