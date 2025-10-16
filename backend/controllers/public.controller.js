@@ -139,7 +139,8 @@ class PublicController {
                 instituicao:instituicao_id (
                     id,
                     nome,
-                    caminho_logo
+                    caminho_logo,
+                    mp_connected
                 )
             `)
                 .order('created_at', { ascending: false });
@@ -183,7 +184,8 @@ class PublicController {
                     instituicao: {
                         id: post.instituicao.id,
                         nome: post.instituicao.nome,
-                        url_logo
+                        url_logo,
+                        mp_connected: post.instituicao.mp_connected
                     }
                 };
             }));

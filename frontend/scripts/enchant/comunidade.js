@@ -143,6 +143,18 @@ function inicializar() {
                 </div>
             ` : '';
 
+            const usuarioLogado = !!instituicaoIdAtual;
+
+            const temMercadoPago = post.instituicao?.mp_connected === true;
+            const botaoDoar = (temMercadoPago && !usuarioLogado) ? `
+                <div class="post-footer">
+                    <a href="/?ong=${post.instituicao_id}#parceiros-container" class="btn-doar">
+                        <i class="fas fa-heart"></i>
+                        Doar
+                    </a>
+                </div>
+            ` : '';
+
             return `
                 <div class="post-card" data-post-id="${post.id}">
                     <div class="post-header">
@@ -163,6 +175,7 @@ function inicializar() {
                         ${post.titulo ? `<h4>${post.titulo}</h4>` : ''}
                         <p>${post.conteudo}</p>
                         ${post.url_imagem ? `<img src="${post.url_imagem}" alt="${post.titulo || 'Imagem da postagem'}" class="post-image" onerror="this.style.display='none'">` : ''}
+                        ${botaoDoar}
                     </div>
                 </div>
             `;

@@ -141,7 +141,6 @@ body {
 .feed-container {
     display: grid;
     background-color: #ffffff;
-    gap: 10px;
 }
 
 /* Loading Spinner */
@@ -176,7 +175,7 @@ body {
 
 .post-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     margin-bottom: 12px;
 }
@@ -274,6 +273,35 @@ body {
     border-radius: 16px;
     margin-top: 12px;
     border: 1px solid var(--border-color);
+}
+
+.post-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-doar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: var(--primary-brown);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-doar:hover {
+    background-color: var(--secondary-brown);
+    text-decoration: none;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(105, 59, 17, 0.3);
 }
 
 /* Estados de Vazio e Erro */

@@ -23,6 +23,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             renderizarOngs();
             renderizarPaginacao();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const ongId = urlParams.get('ong');
+
+            if (ongId) {
+                ongsFiltradas = ongsList.filter(ong => ong.id === ongId);
+                renderizarOngs();
+                renderizarPaginacao();
+
+                // Abre o modal automaticamente
+                setTimeout(() => {
+                    const ongSelecionada = ongsList.find(ong => ong.id === ongId);
+                    if (ongSelecionada) {
+                        document.getElementById('modal-ong-nome').textContent = ongSelecionada.nome;
+                        document.getElementById('doacao-ong-id').value = ongSelecionada.id;
+
+                        const campologo = document.getElementById('campologo');
+                        campologo.innerHTML = `
+                        <img src="${ongSelecionada.caminho_logo || '/assets/imgs/comprador/avatar-padrao.jpg'}" 
+                             alt="Logo de ${ongSelecionada.nome}" 
+                             onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
+                    `;
+
+                        doacaoModal.show();
+                    }
+                }, 500);
+            }
         } catch (error) {
             console.error(error);
             ongsContainer.innerHTML = '<p class="mensagem-erro">Não foi possível carregar as organizações no momento. Tente novamente mais tarde.</p>';
@@ -224,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Se o pagamento foi confirmado...
                     if (data.status === 'confirmado') {
-                        clearInterval(intervalId); 
+                        clearInterval(intervalId);
 
                         document.getElementById('area-pix-gerado').innerHTML = `
                     <div style="text-align: center; padding: 20px;">
@@ -233,12 +260,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                         setTimeout(() => {
-                            doacaoModal.hide(); 
+                            doacaoModal.hide();
                         }, 3000);
                     }
                 } catch (err) {
                     console.error("Erro no polling:", err);
-                    clearInterval(intervalId); 
+                    clearInterval(intervalId);
                 }
             }, 3000);
 
