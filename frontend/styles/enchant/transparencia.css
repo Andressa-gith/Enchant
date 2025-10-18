@@ -164,10 +164,12 @@ body {
 
 .badge-verified {
     color: #155724;
+    border-radius: 0;
 }
 
 .badge-location {
     color: var(--primary-brown);
+    border-radius: 0;
 }
 
 .badge-verified:hover {
@@ -571,7 +573,7 @@ body {
     .transparencia-tabs {
         top: 60px;
     }
-    
+
     .ong-info h1 {
         font-size: 2rem;
     }
