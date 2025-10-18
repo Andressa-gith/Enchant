@@ -54,7 +54,7 @@ body {
     margin-bottom: 0;
     position: sticky;
     top: 80px;
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.90);
     backdrop-filter: blur(12px);
     z-index: 100;
 }
@@ -536,7 +536,7 @@ form {
 /* Botões do Formulário */
 .form-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 12px;
     margin-top: 24px;
     padding-top: 20px;
@@ -653,6 +653,7 @@ form {
     .comunidade-header {
         top: 60px;
         padding: 16px 0;
+        width: 100%;
     }
 
     .header-content i {
