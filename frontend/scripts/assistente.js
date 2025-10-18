@@ -465,11 +465,6 @@ class EnchantAIAssistant {
                     height: 55px;
                 }
 
-                .enchant-ai-button svg {
-                    width: 26px;
-                    height: 26px;
-                }
-
                 .enchant-chat-container {
                     bottom: 80px;
                     right: 15px;
@@ -509,11 +504,6 @@ class EnchantAIAssistant {
                     right: 15px;
                     width: 50px;
                     height: 50px;
-                }
-
-                .enchant-ai-button svg {
-                    width: 24px;
-                    height: 24px;
                 }
 
                 .enchant-chat-header {
