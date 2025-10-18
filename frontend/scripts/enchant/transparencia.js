@@ -43,26 +43,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const btnVoltar = document.getElementById('btn-voltar');
-    
     const sectionId = urlParams.get('returnTo');
-
     const paginaAnterior = document.referrer;
 
     if (sectionId && paginaAnterior) {
         const backUrl = new URL(paginaAnterior);
         backUrl.hash = sectionId;
-
         console.log(`Botão 'Voltar' configurado para: ${backUrl.href}`);
         btnVoltar.href = backUrl.href;
-
     } else {
         console.warn("Não foi possível determinar a seção de retorno. Usando history.back().");
         btnVoltar.addEventListener('click', (e) => {
-            e.preventDefault(); // Impede a navegação padrão do <a>
+            e.preventDefault();
             if (history.length > 1) {
                 history.back();
             } else {
-                window.location.href = '/'; // Se não tiver histórico, vai para a home
+                window.location.href = '/';
             }
         });
     }
@@ -73,15 +69,17 @@ function renderizarInfoOng(ong) {
     document.getElementById('ong-nome').textContent = ong.nome;
     document.getElementById('ong-descricao').textContent = ong.sobre || 'Esta organização ainda não forneceu uma descrição.';
 
-    const heroSection = document.querySelector('.transparencia-hero');
-
+    const heroBanner = document.getElementById('hero-banner');
+    
     if (ong.caminho_logo) {
-        heroSection.classList.add('hero-com-desfoque');
-        heroSection.style.setProperty('--bg-image-url', `linear-gradient(135deg, rgba(245, 245, 220, 0.8), rgba(255, 255, 255, 0.7)), url('${ong.caminho_logo}')`);
-    } 
+        heroBanner.style.backgroundImage = `url('${ong.caminho_logo}')`;
+        heroBanner.style.backgroundSize = 'cover';
+        heroBanner.style.backgroundPosition = 'center';
+    }
 
     const localizacaoEl = document.getElementById('cidade-estado');
     const telefone = document.getElementById('telefone');
+    
     if (ong.cidade && ong.estado) {
         localizacaoEl.textContent = `${ong.cidade}, ${ong.estado}`;
     } else {
@@ -154,7 +152,6 @@ function renderizarGestaoFinanceira(gestao) {
     }).join('');
 }
 
-// NOVA FUNÇÃO: Ajuda a extrair apenas o nome do ficheiro do caminho completo
 function getFileNameFromPath(filePath) {
     if (!filePath) return '';
     return filePath.substring(filePath.lastIndexOf('/') + 1);
@@ -167,7 +164,6 @@ function renderizarDocumentos(documentos) {
         return;
     }
     container.innerHTML = documentos.map(doc => {
-        // CORREÇÃO: Extrai o nome do ficheiro e monta a URL corretamente
         const fileName = getFileNameFromPath(doc.caminho_arquivo);
         return `
         <div class="data-item">
@@ -207,7 +203,6 @@ function renderizarContratos(contratos) {
         return;
     }
     container.innerHTML = contratos.map(c => {
-        // CORREÇÃO: Extrai o nome do ficheiro e monta a URL corretamente
         const fileName = getFileNameFromPath(c.caminho_arquivo);
         return `
         <div class="data-item">
@@ -230,7 +225,6 @@ function renderizarAuditorias(auditorias) {
         return;
     }
     container.innerHTML = auditorias.map(a => {
-        // CORREÇÃO: Extrai o nome do ficheiro e monta a URL corretamente
         const fileName = getFileNameFromPath(a.caminho_arquivo);
         return `
          <div class="data-item">
@@ -253,7 +247,6 @@ function renderizarRelatorios(relatorios) {
         return;
     }
     container.innerHTML = relatorios.map(r => {
-        // CORREÇÃO: Extrai o nome do ficheiro e monta a URL corretamente
         const fileName = getFileNameFromPath(r.caminho_arquivo);
         return `
         <div class="data-item">
@@ -268,7 +261,6 @@ function renderizarRelatorios(relatorios) {
         </div>
     `}).join('');
 }
-
 
 function getEmptyState(message) {
     return `<div class="empty-state"><i class="fas fa-folder-open"></i><p>${message}</p></div>`;

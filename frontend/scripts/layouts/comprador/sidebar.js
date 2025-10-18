@@ -13,8 +13,8 @@ function createSimpleLogoutModal() {
                 </div>
                 <div style="padding: 32px 24px; text-align: center;"><p style="margin: 0; color: #4a5568; font-size: 16px;">Tem certeza que deseja sair da sua conta?</p></div>
                 <div style="padding: 0 24px 24px; display: flex; gap: 12px; justify-content: center;">
-                    <button id="simple-cancel-btn" style="padding: 12px 24px; border-radius: 10px; border: black 1px solid; #e2e8f0;background-color: transparent; color: #000000; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Cancelar</button>
-                    <button id="simple-confirm-btn" style="padding: 12px 24px; border: none; border-radius: 8px; background-color: #e2ccae; color: #3d2106; cursor: pointer; font-weight: 600; transition: all 0.3s ease;"><span id="simple-btn-text">Sair</span></button>
+                    <button id="simple-cancel-btn" style="font-family: 'Lexend Deca'; padding: 12px 24px; border-radius: 10px; border: black 1px solid; #e2e8f0;background-color: transparent; color: #000000; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s ease;">Cancelar</button>
+                    <button id="simple-confirm-btn" style="font-family: 'Lexend Deca'; padding: 12px 24px; border: none; border-radius: 8px; background-color: #e2ccae; color: #3d2106; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s ease;"><span id="simple-btn-text">Sair</span></button>
                 </div>
             </div>
         </div>

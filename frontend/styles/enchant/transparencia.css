@@ -44,7 +44,7 @@ body {
 /* Hero Section */
 .hero-com-desfoque {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     isolation: isolate;
 }
 
@@ -54,47 +54,74 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 200px;
     z-index: -1;
 
     background-image: var(--bg-image-url);
     background-size: cover;
     background-position: center;
 
-    filter: blur(30px);
-    transform: scale(1.05);
+    filter: blur(8px) brightness(0.9);
+    transform: scale(1.02);
 }
 
 .transparencia-hero {
-    padding: 60px 0 40px;
+    padding: 0 0 40px;
     border-bottom: 3px solid var(--primary-brown);
+    background: transparent;
+}
 
+.transparencia-hero .container {
+    position: relative;
+}
+
+.hero-banner {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary-brown), var(--secondary-brown));
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--bg-image-url);
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    opacity: 0.7;
 }
 
 .hero-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     gap: 30px;
+    padding-top: 80px;
+    position: relative;
 }
 
 .ong-header {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 30px;
     flex: 1;
 }
 
 .ong-logo {
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4.5px solid var(--primary-brown);
-    box-shadow: 0 8px 25px rgba(105, 59, 17, 0.2);
+    border: 5px solid var(--white);
+    background: var(--white);
+    position: absolute;
+    top: -75px;
+    left: 20px;
 }
 
 #ong-nome{
@@ -138,12 +165,10 @@ body {
 }
 
 .badge-verified {
-    background-color: #d4edda;
     color: #155724;
 }
 
 .badge-location {
-    background-color: #e2ccae;
     color: var(--primary-brown);
 }
 
@@ -511,9 +536,20 @@ body {
 
 /* Responsive */
 @media (max-width: 992px) {
+
+    .ong-badges {
+        align-items: center;
+        justify-content: center;
+    }
     .ong-header {
         flex-direction: column;
         text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .ong-logo{
+        align-self: center;
     }
 
     #ong-nome {
@@ -527,10 +563,8 @@ body {
 
     .hero-content {
         flex-direction: column;
-    }
-
-    .btn-voltar {
-        align-self: flex-start;
+        align-items: center;
+        justify-content: center;
     }
 }
 
