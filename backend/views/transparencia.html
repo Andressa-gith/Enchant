@@ -14,10 +14,93 @@
     <link rel="stylesheet" href="/styles/layouts/enchant/header.css">
     <link rel="stylesheet" href="/styles/layouts/enchant/footer.css">
 
-    <script src="/scripts/layouts/enchant/headerenchant.js"></script>
-    <script src="/scripts/layouts/enchant/footerenchant.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/supabaseClient.js" type="module"></script>
+
+    <script>
+        // Função para verificar se o usuário está logado
+        function verificarStatusLogin() {
+            try {
+                const authKey = Object.keys(localStorage).find(key => 
+                    key.startsWith('sb-') && key.endsWith('-auth-token')
+                );
+                
+                if (!authKey) {
+                    console.log('❌ Nenhuma chave de autenticação encontrada');
+                    return false;
+                }
+                
+                const authData = JSON.parse(localStorage.getItem(authKey));
+                const isLoggedIn = !!(authData && authData.access_token);
+                
+                console.log('🔐 Status de login:', isLoggedIn);
+                return isLoggedIn;
+            } catch (e) {
+                console.error('Erro ao verificar login:', e);
+                return false;
+            }
+        }
+
+        function carregarScript(src, options = {}) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                
+                if (options.type) script.type = options.type;
+                if (options.defer) script.defer = true;
+                
+                script.onload = () => {
+                    console.log(`✅ Script carregado: ${src}`);
+                    resolve();
+                };
+                
+                script.onerror = () => {
+                    console.error(`❌ Erro ao carregar: ${src}`);
+                    reject(new Error(`Falha ao carregar ${src}`));
+                };
+                
+                document.head.appendChild(script);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Página de transparência carregada, inicializando...');
+
+            const estaLogado = verificarStatusLogin();
+
+            try {
+                if (estaLogado) {
+                    console.log('✅ Usuário LOGADO - Carregando interface completa...');
+                    
+                    await carregarScript('/scripts/layouts/comprador/sidebar.js', { type: 'module', defer: true });
+                    await carregarScript('/scripts/layouts/comprador/headercomprador.js', { type: 'module', defer: true });
+                    
+                    carregarScript('/scripts/assistente.js', { defer: true });
+                    
+                } else {
+                    console.log('👤 Visitante NÃO LOGADO - Carregando interface básica...');
+                    
+                    await carregarScript('/scripts/layouts/enchant/headerenchant.js');
+                    await carregarScript('/scripts/layouts/enchant/footerenchant.js');
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 150));
+
+                if (typeof initializeHeader === 'function') {
+                    console.log('🎨 Inicializando header...');
+                    initializeHeader('header-container');
+                }
+
+                console.log('✅ Inicialização de interface completa!');
+
+            } catch (error) {
+                console.error('❌ Erro durante a inicialização:', error);
+            }
+        });
+    </script>
+    
     <script src="/scripts/enchant/transparencia.js" defer></script>
-    <!--LOADER-->
+    <!-- LOADER -->
     <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
 </head>
 <body class="auto-loader">
@@ -185,12 +268,5 @@
     </main>
 
     <div id="enchant-footer"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            HeaderComponent.loadDependencies();
-            initializeHeader('header-container');
-        });
-    </script>
 </body>
 </html>
