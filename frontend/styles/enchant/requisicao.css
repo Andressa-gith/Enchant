@@ -19,195 +19,120 @@
 
 /* ========== RESET E BASE ========== */
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: "Lexend Deca", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Lexend Deca", sans-serif;
 }
 
 body {
-display: flex;
-flex-direction: column;
-width: 100%;
-min-height: 100vh;
-background-color: var(--corfundo);
-justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--corfundo);
+    justify-content: space-between;
 }
 
-/* ========== LAYOUT PRINCIPAL ========== */
 main {
-display: flex;
-flex-direction: column;
-gap: 2rem;
-padding: 2rem 1rem 7rem 1rem;
-margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 1rem 7rem 1rem;
+    margin-top: 80px;
 }
 
-.pagamento {
-font-family: "Passion One";
-color: var(--cortitulo);
-text-align: center;
-font-size: 32px;
-font-weight: 500;
-margin-bottom: 2rem;
+main h2, .pagamento {
+    font-family: "Passion One";
+    color: var(--cortitulo);
+    text-align: center;
+    font-size: 32px;
+    font-weight: 500;
 }
 
-.subtitulo-secao {
-font-family: "Passion One";
-color: var(--cortitulo);
-font-size: 24px;
-font-weight: 500;
-margin-bottom: 1.5rem;
-text-align: center;
-}
-
-/* ========== CONTAINERS ========== */
 .container {
-border: 1.5px var(--cortitulo) solid;
-padding: 2rem;
-width: 90%;
-max-width: 1200px;
-margin: 0 auto 2rem;
-border-radius: 10px;
-background-color: white;
+    border: 1.5px #4E3629 solid;
+    padding: 2rem;
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto 0;
+    border-radius: 10px;
 }
 
-.recomendacoes {
-padding: 0 1rem 1rem;
-font-size: 16px;
-text-align: center;
-color: var(--cortexto);
-margin-bottom: 1.5rem;
+.recomendações {
+    padding: 0 1rem 1rem;
+    font-size: 16px;
+    text-align: center;
 }
 
-/* ========== FORMULÁRIOS ========== */
-.form-grid {
-display: grid;
-grid-template-columns: 1fr 1fr; 
-gap: 1rem 2rem; 
+/* --- Estilos do Formulário --- */
+.form-control {
+    width: 100%;
+    border: 1px solid #B7B6B6;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
 }
 
-.full-width {
-grid-column: 1 / -1;
+.form-control:is(select) {
+    color: #757575;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: .65em auto;
+    padding-right: 2.5rem;
 }
 
-.form-group {
-display: flex;
-flex-direction: column;
-margin-bottom: 1rem;
+.form-control:focus {
+    outline: none;
+    border-color: var(--corbotao2);
+    box-shadow: 0 0 0 0.2rem #caae8d80;
 }
 
-.senha-area {
-display: grid !important;
-grid-template-columns: 1fr 1fr;
-gap: 1rem 2rem; 
+label {
+    margin-bottom: 0.5rem;
+    margin-left: 15px;
+    color: #000000;
 }
 
-.container-flex {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 2rem;
-margin-bottom: 2rem;
-}
-
-/* ========== INPUTS E SELECTS ========== */
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="password"],
-input[type="number"],
-select {
-width: 100%;
-border: 1px solid var(--cor-borda);
-padding: 10px 15px;
-border-radius: 50px;
-font-size: 14px;
--webkit-appearance: none;
--moz-appearance: none;
-appearance: none;
-background-color: white;
-transition: all 0.3s ease;
-}
-
-select { 
-color: var(--cor-placeholder);
-background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-background-repeat: no-repeat;
-background-position: right 1rem center;
-background-size: .65em auto;
-padding-right: 2.5rem; 
-}
-
-select:focus, 
-input:focus { 
-outline: 1.5px solid var(--corbotao2);
-border-color: var(--corbotao2);
-box-shadow: 0 0 0 3px rgba(202, 174, 141, 0.1);
-}
-
-input.error,
-select.error {
-border-color: var(--cor-erro);
-}
-
-input.success,
-select.success {
-border-color: var(--cor-sucesso);
-}
-
-/* ========== LABELS ========== */
-label { 
-margin-bottom: 0.5rem; 
-margin-left: 15px;
-font-weight: 500;
-color: var(--cortexto);
-}
-
-.obrigatorio {
-color: var(--cor-erro);
-}
-
-/* ========== VALIDAÇÃO DE SENHA ========== */
 .requerimento-senha {
-font-size: 12px;
-padding: 0.5rem 1rem 0;
+    font-size: 12px;
+    padding: 0.5rem 1rem 0;
 }
-
 .requerimento-senha p {
-line-height: 1.5;
-margin: 0;
-transition: color 0.3s ease;
+    line-height: 1.5;
+    margin: 0;
+}
+.requerimento-senha p:not(:first-child) {
+    color: #757575;
 }
 
-.requerimento-senha p:not(:first-child) { 
-color: var(--cor-placeholder);
+.div-botao-continuar {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 20px;
+    padding-right: 15px;
 }
 
-.requerimento-senha p.valid {
-color: var(--cor-sucesso);
+.botao-continuar {
+    border: none;
+    background-color: var(--corbotao1);
+    color: var(--cortitulo);
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 150px;
+    transition: background-color 0.3s;
 }
 
-.requerimento-senha p.invalid {
-color: var(--cor-erro);
-}
-
-/* ========== CHECKBOX ========== */
-.campo-checkbox {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-margin-top: 1rem;
-}
-
-.caixinha-escolha {
-width: auto !important;
-margin: 0 !important;
-transform: scale(1.2);
-}
-
-.campo-checkbox label {
-margin: 0;
-cursor: pointer;
+.botao-continuar:hover {
+    background-color: var(--corbotao2);
 }
 
 /* ========== UPLOAD DE ARQUIVOS ========== */

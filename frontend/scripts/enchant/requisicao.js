@@ -1,226 +1,343 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ========== VARIÁVEIS GLOBAIS ==========
-    const primeiraSecao = document.getElementById('primeira-parte');
-    const segundaSecao = document.getElementById('segunda-parte');
-    const formDados = document.getElementById('dados-form');
-    const formDocumentos = document.getElementById('documentos-form');
+    // --- URLs DAS APIS EXTERNAS ---
+    const API_ESTADOS_URL = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome';
+    const API_CIDADES_URL = (estadoId) => `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estadoId}/municipios`;
+    const API_CEP_URL = (cep) => `https://viacep.com.br/ws/${cep}/json/`;
+
+    // --- SELETORES DE ELEMENTOS ---
+    const formPrincipal = document.getElementById('dados-form');
+    const primeiraParte = document.getElementById('primeira-parte');
+    const segundaParte = document.getElementById('segunda-parte');
     
-    // Armazenamento de arquivos por categoria
-    const arquivosPorCategoria = {
-        'estatuto': [],
-        'cnpj': [],
-        'documento-responsavel': [],
-        'balanco': [],
-        'projetos': [],
-        'ata-eleicao': [],
-        'endereco': [],
-        'relatorio': [],
-        'declaracao-renda': []
-    };
-
-
-    // ========== VALIDAÇÃO DE CAMPOS ==========
+    const inputCep = document.getElementById('cep');
+    const selectEstado = document.getElementById('estado');
+    const selectCidade = document.getElementById('cidade');
+    const inputSenha = document.getElementById('senha');
     
-    function mascaraCNPJ(campo) {
-        let valor = campo.value.replace(/\D/g, '');
-        valor = valor.replace(/^(\d{2})(\d)/, '$1.$2');
-        valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-        valor = valor.replace(/\.(\d{3})(\d)/, '.$1/$2');
-        valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
-        campo.value = valor;
+    const btnVoltar = document.getElementById('voltar-pagamento');
+    const btnComprar = document.getElementById('comprar');
+    const paymentOptions = document.querySelectorAll('input[name="opcao"]');
+
+    // --- FUNÇÕES DE INICIALIZAÇÃO ---
+
+    function inicializarFormulario() {
+        if (segundaParte) segundaParte.style.display = 'none';
+        carregarEstados();
+        adicionarEventListeners();
+        addInputMasks();
+        mudarpagamento(1);
     }
 
-    function mascaraTelefone(campo) {
-        let valor = campo.value.replace(/\D/g, '');
-        valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
-        valor = valor.replace(/(\d)(\d{4})$/, '$1-$2');
-        campo.value = valor;
+    function adicionarEventListeners() {
+        if (formPrincipal) formPrincipal.addEventListener('submit', handleFormSubmit);
+        if (inputCep) inputCep.addEventListener('blur', handleCepBlur);
+        if (selectEstado) selectEstado.addEventListener('change', handleEstadoChange);
+        if (inputSenha) inputSenha.addEventListener('input', handleSenhaInput);
+        if (btnVoltar) btnVoltar.addEventListener('click', voltarParaDados);
+        if (btnComprar) btnComprar.addEventListener('click', handleCompraSubmit);
+        
+        paymentOptions.forEach(option => {
+            option.addEventListener('click', () => mudarpagamento(parseInt(option.value)));
+        });
     }
 
-    function validarEmail(email) {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    }
+    // --- NOVAS FUNÇÕES DE VALIDAÇÃO CUSTOMIZADA ---
 
-    function validarCNPJ(cnpj) {
-        cnpj = cnpj.replace(/[^\d]/g, '');
+    /**
+     * Mostra uma mensagem de erro abaixo de um campo específico.
+     */
+    function showError(inputId, message) {
+        const inputElement = document.getElementById(inputId);
+        if (!inputElement) return;
         
-        if (cnpj.length !== 14) return false;
-        
-        let tamanho = cnpj.length - 2;
-        let numeros = cnpj.substring(0, tamanho);
-        let digitos = cnpj.substring(tamanho);
-        let soma = 0;
-        let pos = tamanho - 7;
-        
-        for (let i = tamanho; i >= 1; i--) {
-            soma += numeros.charAt(tamanho - i) * pos--;
-            if (pos < 2) pos = 9;
+        inputElement.classList.add('is-invalid');
+        const errorElement = inputElement.nextElementSibling;
+        if (errorElement && errorElement.classList.contains('error-message')) {
+            errorElement.textContent = message;
+            errorElement.classList.add('visible');
         }
-        
-        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-        if (resultado != digitos.charAt(0)) return false;
-        
-        tamanho = tamanho + 1;
-        numeros = cnpj.substring(0, tamanho);
-        soma = 0;
-        pos = tamanho - 7;
-        
-        for (let i = tamanho; i >= 1; i--) {
-            soma += numeros.charAt(tamanho - i) * pos--;
-            if (pos < 2) pos = 9;
+    }
+
+    /**
+     * Limpa todas as mensagens de erro e destaques do formulário.
+     */
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(msg => {
+            msg.textContent = '';
+            msg.classList.remove('visible');
+        });
+        document.querySelectorAll('.is-invalid').forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+    }
+
+    /**
+     * Valida todos os campos da primeira parte do formulário.
+     * @returns {boolean} - True se o formulário for válido, false caso contrário.
+     */
+    function validateForm() {
+        clearErrors();
+        let isValid = true;
+
+        const fields = [
+            { id: 'nome_instituicao', msg: 'O nome da instituição é obrigatório.' },
+            { id: 'tipo_instituicao', msg: 'Selecione o tipo de instituição.' },
+            { id: 'cnpj', msg: 'O CNPJ é obrigatório.' },
+            { id: 'email', msg: 'O email é obrigatório.' },
+            { id: 'tel', msg: 'O telefone é obrigatório.' },
+            { id: 'cep', msg: 'O CEP é obrigatório.' },
+            { id: 'estado', msg: 'Selecione um estado.' },
+            { id: 'cidade', msg: 'Selecione uma cidade.' },
+            { id: 'bairro', msg: 'O bairro é obrigatório.' },
+            { id: 'senha', msg: 'A senha é obrigatória.' },
+            { id: 'confirmarsenha', msg: 'A confirmação de senha é obrigatória.' },
+        ];
+
+        fields.forEach(field => {
+            const input = document.getElementById(field.id);
+            if (!input.value.trim()) {
+                showError(field.id, field.msg);
+                isValid = false;
+            }
+        });
+
+        // Validações específicas adicionais
+        const cep = document.getElementById('cep');
+        if (cep.value && cep.value.length !== 9) {
+            showError('cep', 'O CEP deve ter o formato XXXXX-XXX.');
+            isValid = false;
         }
-        
-        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-        return resultado == digitos.charAt(1);
+
+        const senha = document.getElementById('senha');
+        const confirmarSenha = document.getElementById('confirmarsenha');
+        if (senha.value && confirmarSenha.value && senha.value !== confirmarSenha.value) {
+            showError('confirmarsenha', 'As senhas não coincidem.');
+            isValid = false;
+        }
+
+        if (senha.value && !validarSenha(senha.value).valida) {
+            showError('senha', 'A senha não atende aos requisitos de segurança.');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // --- FUNÇÕES DE LÓGICA E API (ORIGINAIS) ---
+
+    async function carregarEstados() {
+        try {
+            const response = await fetch(API_ESTADOS_URL);
+            if (!response.ok) throw new Error('Erro ao buscar estados.');
+            const estados = await response.json();
+            
+            selectEstado.innerHTML = '<option value="" hidden>Escolha uma opção...</option>';
+            estados.forEach(estado => {
+                const option = document.createElement('option');
+                option.value = estado.sigla;
+                option.textContent = estado.nome;
+                selectEstado.appendChild(option);
+            });
+        } catch (error) {
+            console.error(error);
+            showModalAviso('Não foi possível carregar a lista de estados. Tente recarregar a página.');
+        }
+    }
+
+    async function carregarCidades(estadoSigla) {
+        if (!estadoSigla) return;
+        selectCidade.innerHTML = '<option value="">Carregando...</option>';
+        selectCidade.disabled = true;
+
+        try {
+            const response = await fetch(API_CIDADES_URL(estadoSigla));
+            if (!response.ok) throw new Error('Erro ao buscar cidades.');
+            const cidades = await response.json();
+
+            selectCidade.innerHTML = '<option value="" hidden>Selecione uma cidade...</option>';
+            cidades.forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade.nome;
+                option.textContent = cidade.nome;
+                selectCidade.appendChild(option);
+            });
+            selectCidade.disabled = false;
+        } catch (error) {
+            console.error(error);
+            showModalAviso('Não foi possível carregar a lista de cidades.');
+        }
+    }
+    
+    async function buscarCEP(cep) {
+        const cepLimpo = cep.replace(/\D/g, '');
+        if (cepLimpo.length !== 8) return;
+
+        try {
+            const response = await fetch(API_CEP_URL(cepLimpo));
+            if (!response.ok) throw new Error('CEP não encontrado.');
+            const data = await response.json();
+
+            if (data.erro) {
+                showError('cep', 'CEP não encontrado. Verifique o número digitado.');
+                return;
+            }
+
+            document.getElementById('bairro').value = data.bairro;
+            selectEstado.value = data.uf;
+            await carregarCidades(data.uf);
+            selectCidade.value = data.localidade;
+        } catch (error) {
+            console.error(error);
+            showError('cep', 'Erro ao buscar o CEP. Tente novamente.');
+        }
+    }
+
+
+    // --- FUNÇÕES DE MANIPULAÇÃO DE EVENTOS (HANDLERS) ---
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        // A mágica acontece aqui: trocamos a validação padrão pela nossa
+        if (validateForm()) {
+            irParaPagamento();
+        }
+    }
+
+    function handleCepBlur(event) {
+        buscarCEP(event.target.value);
+    }
+    
+    function handleEstadoChange() {
+        carregarCidades(selectEstado.value);
+    }
+
+    function handleSenhaInput() {
+        const validacao = validarSenha(this.value);
+        document.getElementById('minimodigitos').style.color = validacao.temMinimo8 ? 'green' : '#757575';
+        document.getElementById('doisnumeros').style.color = validacao.tem2Numeros ? 'green' : '#757575';
+        document.getElementById('umcaracterespecial').style.color = validacao.temCaractereEspecial ? 'green' : '#757575';
+        document.getElementById('letramaiuscula').style.color = validacao.temMaiuscula ? 'green' : '#757575';
+    }
+
+    function handleCompraSubmit(event) {
+        event.preventDefault();
+        validarPagamentoEFinalizar();
+    }
+
+
+    // --- LÓGICA PRINCIPAL DO FORMULÁRIO ---
+
+    function irParaPagamento() {
+        // A validação pesada já foi feita, aqui só transferimos os dados
+        document.getElementById('display-nome').textContent = document.getElementById('nome_instituicao').value;
+        document.getElementById('display-email').textContent = document.getElementById('email').value;
+        document.getElementById('display-telefone').textContent = document.getElementById('tel').value;
+
+        primeiraParte.style.display = 'none';
+        segundaParte.style.display = 'flex';
+    }
+
+    function voltarParaDados() {
+        segundaParte.style.display = 'none';
+        primeiraParte.style.display = 'block';
     }
 
     function validarSenha(senha) {
-        const criterios = {
-            minimodigitos: senha.length >= 8,
-            doisnumeros: (senha.match(/\d/g) || []).length >= 2,
-            umcaracterespecial: /[!@#$%^&*(),.?":{}|<>]/.test(senha),
-            letramaiuscula: /[A-Z]/.test(senha)
+        const temMinimo8 = senha.length >= 8;
+        const tem2Numeros = (senha.match(/\d/g) || []).length >= 2;
+        const temCaractereEspecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(senha);
+        const temMaiuscula = /[A-Z]/.test(senha);
+        return {
+            temMinimo8, tem2Numeros, temCaractereEspecial, temMaiuscula,
+            valida: temMinimo8 && tem2Numeros && temCaractereEspecial && temMaiuscula
         };
-
-        Object.keys(criterios).forEach(criterio => {
-            const elemento = document.getElementById(criterio);
-            if (elemento) {
-                elemento.classList.toggle('valid', criterios[criterio]);
-                elemento.classList.toggle('invalid', !criterios[criterio]);
-            }
-        });
-
-        return Object.values(criterios).every(Boolean);
-    }
-
-    // ========== EVENT LISTENERS PARA MÁSCARAS ==========
-    
-    const cnpjInput = document.getElementById('cnpj');
-    const telInput = document.getElementById('tel');
-    const senhaInput = document.getElementById('senha');
-    
-    if (cnpjInput) {
-        cnpjInput.addEventListener('input', () => mascaraCNPJ(cnpjInput));
     }
     
-    if (telInput) {
-        telInput.addEventListener('input', () => mascaraTelefone(telInput));
-    }
-    
-    if (senhaInput) {
-        senhaInput.addEventListener('input', () => validarSenha(senhaInput.value));
+    function mudarpagamento(opcao) {
+        document.querySelector('.cartao-credito').style.display = (opcao === 1) ? 'block' : 'none';
+        document.querySelector('.cartao-debito').style.display = (opcao === 2) ? 'block' : 'none';
+        document.querySelector('.pix').style.display = (opcao === 3) ? 'block' : 'none';
     }
 
-    // ========== SISTEMA DE CIDADES POR ESTADO ==========
+    function validarPagamentoEFinalizar() {
+        const paymentMethod = parseInt(document.querySelector('input[name="opcao"]:checked').value);
+        let pagamentoValido = false;
+
+        // ================== LÓGICA RESTAURADA AQUI ==================
+        if (paymentMethod === 1 || paymentMethod === 2) { 
+            const tipo = (paymentMethod === 1) ? '' : 'debito';
+            const numCartao = document.getElementById(`numerocartao${tipo}`).value.replace(/\D/g, '');
+            const cvv = document.getElementById(`cvv${tipo}`).value.replace(/\D/g, '');
+            const mes = document.getElementById(`mes${tipo}`).value;
+            const ano = document.getElementById(`ano${tipo}`).value;
+
+            if (numCartao.length !== 16) showModalAviso(`O número do cartão deve conter 16 dígitos.`, 'erro');
+            else if (cvv.length < 3 || cvv.length > 4) showModalAviso(`O CVV deve conter 3 ou 4 dígitos.`, 'erro');
+            else if (!mes || !ano) showModalAviso(`Selecione a data de validade do cartão.`, 'erro');
+            else pagamentoValido = true;
+
+        } else if (paymentMethod === 3) {
+            const nomeCompleto = document.getElementById("nomecompleto").value.trim();
+            const cpf = document.getElementById("cpf").value.replace(/\D/g, '');
+
+            if (nomeCompleto === "") showModalAviso("Preencha o nome completo para o pagamento PIX.", 'erro');
+            else if (cpf.length !== 11) showModalAviso("O CPF para o pagamento PIX deve conter 11 dígitos.", 'erro');
+            else pagamentoValido = true;
+        }
+        // ==============================================================
+        
+        if (pagamentoValido) {
+            submeterCadastro();
+        }
+    }
     
-    const cidadesPorEstado = {
-        'AC': ['Rio Branco', 'Cruzeiro do Sul', 'Sena Madureira', 'Tarauacá'],
-        'AL': ['Maceió', 'Arapiraca', 'Palmeira dos Índios', 'Rio Largo'],
-        'AP': ['Macapá', 'Santana', 'Laranjal do Jari', 'Oiapoque'],
-        'AM': ['Manaus', 'Parintins', 'Itacoatiara', 'Manacapuru'],
-        'BA': ['Salvador', 'Feira de Santana', 'Vitória da Conquista', 'Camaçari', 'Itabuna', 'Juazeiro'],
-        'CE': ['Fortaleza', 'Caucaia', 'Juazeiro do Norte', 'Maracanaú'],
-        'DF': ['Brasília', 'Taguatinga', 'Ceilândia', 'Sobradinho'],
-        'ES': ['Vitória', 'Serra', 'Vila Velha', 'Cariacica'],
-        'GO': ['Goiânia', 'Aparecida de Goiânia', 'Anápolis', 'Rio Verde'],
-        'MA': ['São Luís', 'Imperatriz', 'Timon', 'Caxias'],
-        'MT': ['Cuiabá', 'Várzea Grande', 'Rondonópolis', 'Sinop'],
-        'MS': ['Campo Grande', 'Dourados', 'Três Lagoas', 'Corumbá'],
-        'MG': ['Belo Horizonte', 'Uberlândia', 'Contagem', 'Juiz de Fora'],
-        'PA': ['Belém', 'Ananindeua', 'Santarém', 'Marabá'],
-        'PB': ['João Pessoa', 'Campina Grande', 'Santa Rita', 'Patos'],
-        'PR': ['Curitiba', 'Londrina', 'Maringá', 'Ponta Grossa'],
-        'PE': ['Recife', 'Jaboatão dos Guararapes', 'Olinda', 'Caruaru'],
-        'PI': ['Teresina', 'Parnaíba', 'Picos', 'Piripiri'],
-        'RJ': ['Rio de Janeiro', 'São Gonçalo', 'Duque de Caxias', 'Nova Iguaçu'],
-        'RN': ['Natal', 'Mossoró', 'Parnamirim', 'São Gonçalo do Amarante'],
-        'RS': ['Porto Alegre', 'Caxias do Sul', 'Pelotas', 'Santa Maria'],
-        'RO': ['Porto Velho', 'Ji-Paraná', 'Ariquemes', 'Vilhena'],
-        'RR': ['Boa Vista', 'Rorainópolis', 'Caracaraí', 'Alto Alegre'],
-        'SC': ['Florianópolis', 'Joinville', 'Blumenau', 'São José'],
-        'SP': ['São Paulo', 'Guarulhos', 'Campinas', 'São Bernardo do Campo'],
-        'SE': ['Aracaju', 'Nossa Senhora do Socorro', 'Lagarto', 'Itabaiana'],
-        'TO': ['Palmas', 'Araguaína', 'Gurupi', 'Porto Nacional']
-    };
+    async function submeterCadastro() {
+        btnComprar.disabled = true;
+        btnComprar.textContent = 'Processando...';
+        try {
+            const formData = new FormData(formPrincipal);
+            const dadosCadastro = Object.fromEntries(formData.entries());
+            const ROTA_CADASTRO = '/api/user/cadastro';
+            const response = await fetch(ROTA_CADASTRO, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosCadastro),
+            });
+            const resultado = await response.json();
+            if (!response.ok) throw new Error(resultado.message || 'Ocorreu um erro no servidor.');
 
-    const estadoSelect = document.getElementById('estado');
-    const cidadeSelect = document.getElementById('cidade');
-
-    if (estadoSelect && cidadeSelect) {
-        estadoSelect.addEventListener('change', function() {
-            const estadoSelecionado = this.value;
-            cidadeSelect.innerHTML = '<option value="" hidden>Selecione uma cidade...</option>';
+            showModalAviso('Cadastro realizado com sucesso!', 'sucesso');
+            setTimeout(() => {
+                window.location.href = '/entrar'; 
+            }, 1500);
             
-            if (estadoSelecionado && cidadesPorEstado[estadoSelecionado]) {
-                cidadeSelect.disabled = false;
-                cidadesPorEstado[estadoSelecionado].forEach(cidade => {
-                    const option = document.createElement('option');
-                    option.value = cidade;
-                    option.textContent = cidade;
-                    cidadeSelect.appendChild(option);
-                });
-            } else {
-                cidadeSelect.disabled = true;
-            }
-        });
+        } catch (error) {
+            console.error('Erro na submissão:', error);
+            showModalAviso(error.message, 'erro');
+            btnComprar.disabled = false;
+            btnComprar.textContent = 'Continuar com a compra';
+        }
     }
-
-    // ========== VALIDAÇÃO DO PRIMEIRO FORMULÁRIO ==========
     
-    function validarPrimeiroForm() {
-        const erros = [];
-        
-        const nomeInstituicao = document.getElementById('nomecomprador').value.trim();
-        if (!nomeInstituicao) {
-            erros.push('Nome da Instituição/ONG é obrigatório');
-        }
+    function showModalAviso(message, tipo = 'erro') {
+        const modalHeader = document.getElementById('avisoModalHeader');
+        const modalTitle = document.getElementById('avisoModalLabel');
+        const modalBody = document.getElementById('errorModalBody');
 
-        const email = document.getElementById('email').value.trim();
-        if (!email) {
-            erros.push('Email é obrigatório');
-        } else if (!validarEmail(email)) {
-            erros.push('Email inválido');
+        if (modalHeader && modalTitle && modalBody) {
+            modalHeader.classList.remove('modal-header-success', 'modal-header-error');
+            if (tipo === 'sucesso') {
+                modalHeader.classList.add('modal-header-success');
+                modalTitle.textContent = 'Sucesso!';
+            } else {
+                modalHeader.classList.add('modal-header-error');
+                modalTitle.textContent = 'Ocorreu um Erro';
+            }
+            modalBody.textContent = message;
+            $('#errorModal').modal('show');
+        } else {
+            alert(message);
         }
-
-        const cnpj = document.getElementById('cnpj').value;
-        if (!cnpj) {
-            erros.push('CNPJ é obrigatório');
-        } else if (!validarCNPJ(cnpj)) {
-            erros.push('CNPJ inválido');
-        }
-
-        const telefone = document.getElementById('tel').value.trim();
-        if (!telefone) {
-            erros.push('Telefone é obrigatório');
-        }
-
-        const estado = document.getElementById('estado').value;
-        if (!estado) {
-            erros.push('Estado é obrigatório');
-        }
-
-        const cidade = document.getElementById('cidade').value;
-        if (!cidade) {
-            erros.push('Cidade é obrigatória');
-        }
-
-        const senha = document.getElementById('senha').value;
-        const confirmarSenha = document.getElementById('confirmarsenha').value;
-        
-        if (!senha) {
-            erros.push('Senha é obrigatória');
-        } else if (!validarSenha(senha)) {
-            erros.push('Senha não atende aos critérios mínimos');
-        }
-
-        if (!confirmarSenha) {
-            erros.push('Confirmação de senha é obrigatória');
-        } else if (senha !== confirmarSenha) {
-            erros.push('As senhas não coincidem');
-        }
-
-        return erros;
     }
 
     // ========== SISTEMA DE UPLOAD DE ARQUIVOS ==========

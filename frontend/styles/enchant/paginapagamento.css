@@ -65,7 +65,7 @@ main h2, .pagamento {
     width: 100%;
     border: 1px solid #B7B6B6;
     padding: 10px 15px;
-    border-radius: 50px;
+    border-radius: 10px;
     font-size: 14px;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -91,6 +91,7 @@ main h2, .pagamento {
 label {
     margin-bottom: 0.5rem;
     margin-left: 15px;
+    color: #000000;
 }
 
 .requerimento-senha {
@@ -197,6 +198,7 @@ label {
     border-radius: 10px;
     text-align: center;
     margin: 0;
+    color: #000000;
 }
 
 input::placeholder{
@@ -209,7 +211,7 @@ input::placeholder{
     font-size: 25px;
 }
 .escolher-pagamento label:hover {
-    background-color: #caac8d36;
+        color: #000000;
 }
 
 .escolher-pagamento input[type="radio"]:checked + label {

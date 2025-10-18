@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
-    <title>Enchant - Pagamento</title>
+    <title>Enchant | Requisição </title>
     
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -21,108 +21,128 @@
 
 </head>
 <body>
-<main>
     <section>
-       <div id="header-container"></div>
+        <div id="header-container"></div>
     </section>
-    <!-- PRIMEIRA PARTE -->
-    <div class="primeira-parte" id="primeira-parte">
-        <h2 class="pagamento">Página de Requisição</h2>
-        
-        <section class="container">
-            <div class="recomendacoes">
-                <p>
-                    Recomendamos atenção total ao preencher os dados nos campos solicitados. É fundamental que as informações sejam inseridas de forma responsável, a fim de evitar fraudes.
-                </p>
+
+    <main>
+        <div class="primeira-parte" id="primeira-parte">
+            <div>
+                <h2 class="pagamento">Requisição - Insira os seus dados</h2>
             </div>
-            
-            <form id="dados-form" class="form-grid" novalidate>
-                <div class="form-group full-width">
-                    <label for="nomecomprador">Nome da Instituição/ONG: <span class="obrigatorio">*</span></label>
-                    <input type="text" name="nomecomprador" id="nomecomprador" autocomplete="off" placeholder="ex: Nome da Instituição" required>
+            <section class="container">
+                <div class="recomendações">
+                    <p>
+                        Recomendamos atenção total ao preencher os dados nos campos solicitados. É fundamental que as
+                        informações sejam inseridas de forma responsável, a fim de evitar fraudes.
+                    </p>
                 </div>
-                
-                <div class="form-group">
-                    <label for="email">Email: <span class="obrigatorio">*</span></label>
-                    <input type="email" name="email" id="email" autocomplete="off" placeholder="ex: example@gmail.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cnpj">CNPJ: <span class="obrigatorio">*</span></label>
-                    <input type="text" name="cnpj" id="cnpj" autocomplete="off" placeholder="ex: XX.XXX.XXX/0001-XX" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="tel">Telefone: <span class="obrigatorio">*</span></label>
-                    <input type="tel" name="tel" id="tel" autocomplete="off" placeholder="ex: (XX) XXXXX-XXXX" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="estado">Estado: <span class="obrigatorio">*</span></label>
-                    <select name="estado" id="estado" required>
-                        <option value="" hidden>Escolha uma opção...</option>
-                        <option value="AC">Acre</option>
-                        <option value="AL">Alagoas</option>
-                        <option value="AP">Amapá</option>
-                        <option value="AM">Amazonas</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="DF">Distrito Federal</option>
-                        <option value="ES">Espírito Santo</option>
-                        <option value="GO">Goiás</option>
-                        <option value="MA">Maranhão</option>
-                        <option value="MT">Mato Grosso</option>
-                        <option value="MS">Mato Grosso do Sul</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="PA">Pará</option>
-                        <option value="PB">Paraíba</option>
-                        <option value="PR">Paraná</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="PI">Piauí</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="RN">Rio Grande do Norte</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="RO">Rondônia</option>
-                        <option value="RR">Roraima</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="SE">Sergipe</option>
-                        <option value="TO">Tocantins</option>
-                    </select>
-                </div>
-                
-                <div class="form-group full-width">
-                    <label for="cidade">Cidade: <span class="obrigatorio">*</span></label>
-                    <select name="cidade" id="cidade" disabled required>
-                        <option value="" hidden>Selecione um estado primeiro...</option>
-                    </select>
-                </div>
-                
-                <div class="form-group senha-area full-width">
-                    <div>
-                        <label for="senha">Senha: <span class="obrigatorio">*</span></label>
-                        <input type="password" name="senha" id="senha" placeholder="ex: Senha@123" required>
+                <form id="dados-form" method="POST" action="/cadastro" novalidate>
+                    <div class="form-row">
+
+                        <div class="form-group col-12">
+                            <label for="nome_instituicao">Nome da Instituição/ONG: <b
+                                    style="color: #FF0404;">*</b></label>
+                            <input type="text" name="nome_instituicao" id="nome_instituicao" class="form-control"
+                                autocomplete="off" placeholder="ex: Nome da Instituição">
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="tipo_instituicao">Tipo de Instituição: <b style="color: #FF0404;">*</b></label>
+                            <select name="tipo_instituicao" id="tipo_instituicao" class="form-control">
+                                <option value="" hidden>Selecione o tipo...</option>
+                                <option value="ONG">ONG</option>
+                                <option value="Associacao">Associação Comunitária</option>
+                                <option value="Fundacao">Fundação</option>
+                                <option value="Organizacao Religiosa">Organização Religiosa</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="cnpj">CNPJ: <b style="color: #FF0404;">*</b></label>
+                            <input type="text" name="cnpj" id="cnpj" class="form-control" autocomplete="off"
+                                placeholder="ex: XX.XXX.XXX/0001-XX">
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="email">Email: <b style="color: #FF0404;">*</b></label>
+                            <input type="email" name="email_contato" id="email" class="form-control" autocomplete="off"
+                                placeholder="ex: example@gmail.com">
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="tel">Telefone: <b style="color: #FF0404;">*</b></label>
+                            <input type="tel" name="numero" id="tel" class="form-control" autocomplete="off"
+                                placeholder="ex: (XX) XXXXX-XXXX">
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="cep">CEP: <b style="color: #FF0404;">*</b></label>
+                            <input type="text" name="cep" id="cep" class="form-control" autocomplete="off"
+                                placeholder="ex: 00000-000" maxlength="9">
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="estado">Estado: <b style="color: #FF0404;">*</b></label>
+                            <select name="estado" id="estado" class="form-control">
+                                <option value="" hidden>Escolha uma opção...</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="cidade">Cidade: <b style="color: #FF0404;">*</b></label>
+                            <select name="cidade" id="cidade" class="form-control" disabled>
+                                <option value="" hidden>Selecione um estado primeiro...</option>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label for="bairro">Bairro: <b style="color: #FF0404;">*</b></label>
+                            <input type="text" name="bairro" id="bairro" class="form-control" autocomplete="off"
+                                placeholder="ex: Centro">
+                            <div class="error-message"></div>
+                        </div>
+
                     </div>
-                    <div>
-                        <label for="confirmarsenha">Confirme a senha: <span class="obrigatorio">*</span></label>
-                        <input type="password" name="confirmarsenha" id="confirmarsenha" placeholder="ex: Senha@123" required>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="senha">Senha: <b style="color: #FF0404;">*</b></label>
+                            <input type="password" name="senha" id="senha" class="form-control"
+                                placeholder="ex: Senha@123">
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="confirmarsenha">Confirme a senha: <b style="color: #FF0404;">*</b></label>
+                            <input type="password" name="confirmarsenha" id="confirmarsenha" class="form-control"
+                                placeholder="ex: Senha@123">
+                            <div class="error-message"></div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="requerimento-senha full-width">
-                    <p id="senha-conter"><span class="obrigatorio">*</span> Sua senha deve conter:</p>
-                    <p id="minimodigitos"><span class="obrigatorio">*</span> Mínimo 8 dígitos</p>
-                    <p id="doisnumeros"><span class="obrigatorio">*</span> Pelo menos 2 números</p>
-                    <p id="umcaracterespecial"><span class="obrigatorio">*</span> Pelo menos 1 caracter especial</p>
-                    <p id="letramaiuscula"><span class="obrigatorio">*</span> Pelo menos 1 letra maiúscula</p>
-                </div>
-                
-                <div class="div-botao-continuar full-width">
-                    <button type="submit" class="botao-continuar" id="botao-continuar">Continuar</button>
-                </div>
-            </form>
-        </section>
-    </div>
+
+                    <div class="requerimento-senha full-width">
+                        <p><b style="color: #FF0404;">*</b> Sua senha deve conter:</p>
+                        <p id="minimodigitos"><b style="color: #FF0404;">*</b> Mínimo 8 dígitos</p>
+                        <p id="doisnumeros"><b style="color: #FF0404;">*</b> Pelo menos 2 números</p>
+                        <p id="umcaracterespecial"><b style="color: #FF0404;">*</b> Pelo menos 1 caracter especial</p>
+                        <p id="letramaiuscula"><b style="color: #FF0404;">*</b> Pelo menos 1 letra maiúscula</p>
+                    </div>
+
+                    <div class="div-botao-continuar">
+                        <button type="submit" class="botao-continuar" id="botao-continuar">Continuar</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
 
     <!-- SEGUNDA PARTE -->
     <div class="segunda-parte" id="segunda-parte">
