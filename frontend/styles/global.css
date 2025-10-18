@@ -136,6 +136,7 @@ a:hover {
     font-size: 14px;
     cursor: pointer;
     font-size: var(--Fonte-geral);
+    padding:10px;
 }
 
 .btn:hover {

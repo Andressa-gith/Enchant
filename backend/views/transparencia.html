@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transparência - Enchant</title>
+    <title>Transparência | Enchant</title>
     <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -26,14 +26,14 @@
                 );
                 
                 if (!authKey) {
-                    console.log('❌ Nenhuma chave de autenticação encontrada');
+                    console.log('Nenhuma chave de autenticação encontrada');
                     return false;
                 }
                 
                 const authData = JSON.parse(localStorage.getItem(authKey));
                 const isLoggedIn = !!(authData && authData.access_token);
                 
-                console.log('🔐 Status de login:', isLoggedIn);
+                console.log('Status de login:', isLoggedIn);
                 return isLoggedIn;
             } catch (e) {
                 console.error('Erro ao verificar login:', e);
@@ -50,12 +50,12 @@
                 if (options.defer) script.defer = true;
                 
                 script.onload = () => {
-                    console.log(`✅ Script carregado: ${src}`);
+                    console.log(`Script carregado: ${src}`);
                     resolve();
                 };
                 
                 script.onerror = () => {
-                    console.error(`❌ Erro ao carregar: ${src}`);
+                    console.error(`Erro ao carregar: ${src}`);
                     reject(new Error(`Falha ao carregar ${src}`));
                 };
                 
@@ -64,13 +64,13 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Página de transparência carregada, inicializando...');
+            console.log('Página de transparência carregada, inicializando...');
 
             const estaLogado = verificarStatusLogin();
 
             try {
                 if (estaLogado) {
-                    console.log('✅ Usuário LOGADO - Carregando interface completa...');
+                    console.log('Usuário LOGADO - Carregando interface completa...');
                     
                     await carregarScript('/scripts/layouts/comprador/sidebar.js', { type: 'module', defer: true });
                     await carregarScript('/scripts/layouts/comprador/headercomprador.js', { type: 'module', defer: true });
@@ -78,7 +78,7 @@
                     carregarScript('/scripts/assistente.js', { defer: true });
                     
                 } else {
-                    console.log('👤 Visitante NÃO LOGADO - Carregando interface básica...');
+                    console.log('Visitante NÃO LOGADO - Carregando interface básica...');
                     
                     await carregarScript('/scripts/layouts/enchant/headerenchant.js');
                     await carregarScript('/scripts/layouts/enchant/footerenchant.js');
@@ -87,14 +87,14 @@
                 await new Promise(resolve => setTimeout(resolve, 150));
 
                 if (typeof initializeHeader === 'function') {
-                    console.log('🎨 Inicializando header...');
+                    console.log('Inicializando header...');
                     initializeHeader('header-container');
                 }
 
-                console.log('✅ Inicialização de interface completa!');
+                console.log('Inicialização de interface completa!');
 
             } catch (error) {
-                console.error('❌ Erro durante a inicialização:', error);
+                console.error('Erro durante a inicialização:', error);
             }
         });
     </script>
@@ -132,9 +132,7 @@
                             </div>
                         </div>
                     </div>
-                    <a class="btn-voltar" id="btn-voltar">
-                        <i class="fas fa-arrow-left"></i> Voltar
-                    </a>
+                    <a class="btn-voltar" id="btn-voltar">Voltar</a>
                 </div>
             </div>
         </section>
@@ -188,31 +186,30 @@
                             <div class="stat-icon"><i class="fas fa-box"></i></div>
                             <div class="stat-info">
                                 <h3 id="total-entradas">0</h3>
-                                <p>Doações Recebidas</p>
+                                <p class="section-title">Doações Recebidas</p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-truck"></i></div>
                             <div class="stat-info">
                                 <h3 id="total-saidas">0</h3>
-                                <p>Doações Distribuídas</p>
+                                <p class="section-title">Doações Distribuídas</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="subsection">
-                        <h3>Doações Recebidas (Entradas)</h3>
-                        <div id="lista-entradas" class="data-list">
-                            <p class="loading">Carregando...</p>
-                        </div>
-                    </div>
+<div class="donations-container">
+    <div class="donation-block" id="doacoes-recebidas">
+        <h3>Doações Recebidas (<span id="total-entradas">0</span>)</h3>
+        <div id="lista-entradas"></div>
+    </div>
 
-                    <div class="subsection">
-                        <h3>Doações Distribuídas (Saídas)</h3>
-                        <div id="lista-saidas" class="data-list">
-                            <p class="loading">Carregando...</p>
-                        </div>
-                    </div>
+    <div class="donation-block" id="doacoes-distribuidas">
+        <h3>Doações Distribuídas (<span id="total-saidas">0</span>)</h3>
+        <div id="lista-saidas"></div>
+    </div>
+</div>
+
                 </div>
 
                 <!-- Tab Gestão Financeira -->

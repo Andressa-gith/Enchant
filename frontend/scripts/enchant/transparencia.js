@@ -105,10 +105,10 @@ function renderizarDoacoes(entradas, saidas) {
     } else {
         containerEntradas.innerHTML = entradas.map(d => `
             <div class="data-item">
-                 <div class="item-icon entrada"><i class="fas fa-arrow-down"></i></div>
+                 <div class="item-icon entrada"></div>
                  <div class="item-info">
-                    <h4>${d.quantidade}x ${d.categoria.nome}</h4>
-                    <p><strong>De:</strong> ${d.doador_origem_texto || 'Anônimo'} | <strong>Data:</strong> ${new Date(d.data_entrada).toLocaleDateString()}</p>
+                    <h4 class="subtitulos">${d.quantidade}x ${d.categoria.nome}</h4>
+                    <p class="subtitulos"><strong>De:</strong> ${d.doador_origem_texto || 'Anônimo'} | <strong>Data:</strong> ${new Date(d.data_entrada).toLocaleDateString()}</p>
                 </div>
             </div>
         `).join('');
@@ -121,7 +121,7 @@ function renderizarDoacoes(entradas, saidas) {
             <div class="data-item">
                 <div class="item-icon saida"><i class="fas fa-arrow-up"></i></div>
                 <div class="item-info">
-                    <h4>${d.quantidade_retirada} unidade(s)</h4>
+                    <h4 class="subtitulos">${d.quantidade_retirada} unidade(s)</h4>
                     <p><strong>Para:</strong> ${d.destinatario || 'Não informado'} | <strong>Data:</strong> ${new Date(d.data_saida).toLocaleDateString()}</p>
                 </div>
             </div>
@@ -140,7 +140,7 @@ function renderizarGestaoFinanceira(gestao) {
         return `
             <div class="data-item financeiro-item">
                 <div class="item-info">
-                    <h4>${item.nome_categoria} (${item.ano})</h4>
+                    <h4 class="subtitulos">${item.nome_categoria} (${item.ano})</h4>
                     <p><strong>Orçamento:</strong> R$ ${parseFloat(item.orcamento_previsto).toFixed(2)} | <strong>Executado:</strong> R$ ${parseFloat(item.valor_executado).toFixed(2)}</p>
                     <div class="progress-bar-container">
                         <div class="progress-bar" style="width: ${percentual.toFixed(2)}%" title="${percentual.toFixed(2)}% Executado"></div>
@@ -167,13 +167,13 @@ function renderizarDocumentos(documentos) {
         const fileName = getFileNameFromPath(doc.caminho_arquivo);
         return `
         <div class="data-item">
-            <div class="item-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="item-icon"></div>
             <div class="item-info">
-                <h4>${doc.titulo}</h4>
+                <h4 class="subtitulos">${doc.titulo}</h4>
                 <p>${doc.tipo_documento} | <strong>Valor:</strong> R$ ${parseFloat(doc.valor).toFixed(2)}</p>
             </div>
             <a href="/download/comprovantes/${doc.instituicao_id}/${fileName}" class="btn-download" download>
-                <i class="fas fa-download"></i> Baixar
+            Baixar
             </a>
         </div>
     `}).join('');
@@ -189,7 +189,7 @@ function renderizarParcerias(parcerias) {
         <div class="data-item">
             <div class="item-icon"><i class="fas fa-handshake"></i></div>
             <div class="item-info">
-                <h4>${p.nome}</h4>
+                <h4 class="subtitulos">${p.nome}</h4>
                 <p><strong>Setor:</strong> ${p.tipo_setor} | <strong>Status:</strong> ${p.status}</p>
             </div>
         </div>
@@ -206,13 +206,13 @@ function renderizarContratos(contratos) {
         const fileName = getFileNameFromPath(c.caminho_arquivo);
         return `
         <div class="data-item">
-            <div class="item-icon"><i class="fas fa-file-signature"></i></div>
+            <div class="item-icon"></div>
             <div class="item-info">
-                <h4>${c.nome_contrato}</h4>
+                <h4 class="subtitulos">${c.nome_contrato}</h4>
                 <p><strong>Ano de Vigência:</strong> ${c.ano_vigencia}</p>
             </div>
              <a href="/download/contracts/${c.instituicao_id}/${fileName}" class="btn-download" download>
-                <i class="fas fa-download"></i> Baixar
+            Baixar
             </a>
         </div>
     `}).join('');
@@ -228,13 +228,13 @@ function renderizarAuditorias(auditorias) {
         const fileName = getFileNameFromPath(a.caminho_arquivo);
         return `
          <div class="data-item">
-            <div class="item-icon"><i class="fas fa-stamp"></i></div>
+            <div class="item-icon"></div>
             <div class="item-info">
-                <h4>${a.titulo}</h4>
+                <h4 class="subtitulos">${a.titulo}</h4>
                 <p><strong>Tipo:</strong> ${a.tipo} | <strong>Status:</strong> ${a.status}</p>
             </div>
             <a href="/download/audit/${a.instituicao_id}/${fileName}" class="btn-download" download>
-                <i class="fas fa-download"></i> Baixar
+            Baixar
             </a>
         </div>
     `}).join('');
@@ -250,13 +250,13 @@ function renderizarRelatorios(relatorios) {
         const fileName = getFileNameFromPath(r.caminho_arquivo);
         return `
         <div class="data-item">
-            <div class="item-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="item-icon"></div>
             <div class="item-info">
-                <h4>${r.titulo}</h4>
+                <h4 class="subtitulos">${r.titulo}</h4>
                 <p><strong>Publicado em:</strong> ${new Date(r.data_publicacao).toLocaleDateString()}</p>
             </div>
             <a href="/download/reports/${r.instituicao_id}/${fileName}" class="btn-download" download>
-                <i class="fas fa-download"></i> Baixar
+            Baixar
             </a>
         </div>
     `}).join('');
