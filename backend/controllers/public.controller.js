@@ -9,6 +9,42 @@ const client = new MercadoPagoConfig({
 const payment = new Payment(client);
 
 class PublicController {
+
+    async listarOngsTodas(req, res) {
+        try {
+            // Busca na sua tabela unificada de usuários
+            const { data, error } = await supabase
+                .from('instituicao')
+                .select('id, nome, caminho_logo, sobre') // Adicione as colunas que quiser mostrar
+
+            if (error) {
+                throw error; // Joga o erro para o nosso 'catch'
+            }
+
+            const ongsFormatadas = data.map(ong => {
+                let logoUrl = null;
+                if (ong.caminho_logo) {
+                    const { data: publicUrlData } = supabase.storage
+                        .from('logos')
+                        .getPublicUrl(ong.caminho_logo);
+
+                    logoUrl = publicUrlData.publicUrl;
+                }
+
+                return {
+                    id: ong.id,
+                    nome: ong.nome,
+                    caminho_logo: logoUrl,
+                    sobre: ong.sobre,
+                };
+            });
+
+            res.status(200).json(ongsFormatadas);
+        } catch (error) {
+            res.status(500).json({ message: 'Erro ao buscar organizações.' });
+        }
+    }
+
     async listarOngs(req, res) {
         try {
             // Busca na sua tabela unificada de usuários
@@ -198,6 +234,70 @@ class PublicController {
         } catch (error) {
             console.error('Erro geral ao buscar postagens da comunidade:', error);
             res.status(500).json({ message: error.message || 'Não foi possível carregar as atualizações.' });
+        }
+    }
+
+    async listarAtividadesDoacoes(req, res) {
+        try {
+            const limit = parseInt(req.query.limit) || 5;
+
+            const { data, error } = await supabase
+                .from('doacao_entrada')
+                .select(`
+                id,
+                quantidade,
+                data_entrada,
+                categoria (nome),
+                instituicao (id, nome)
+            `)
+                .order('data_entrada', { ascending: false })
+                .limit(limit);
+
+            if (error) throw error;
+
+            const atividades = data.map(d => ({
+                instituicao_nome: d.instituicao?.nome || 'ONG',
+                quantidade: d.quantidade,
+                categoria_nome: d.categoria?.nome || 'itens',
+                data_entrada: d.data_entrada
+            }));
+
+            res.status(200).json(atividades);
+        } catch (error) {
+            console.error('Erro ao buscar atividades de doações:', error);
+            res.status(500).json({ message: 'Erro ao carregar atividades' });
+        }
+    }
+
+    async listarAtividadesFinanceiro(req, res) {
+        try {
+            const limit = parseInt(req.query.limit) || 5;
+
+            const { data, error } = await supabase
+                .from('gestao_financeira')
+                .select(`
+                id,
+                nome_categoria,
+                valor_executado,
+                data_criacao,
+                instituicao (id, nome)
+            `)
+                .order('data_criacao', { ascending: false })
+                .limit(limit);
+
+            if (error) throw error;
+
+            const atividades = data.map(f => ({
+                instituicao_nome: f.instituicao?.nome || 'ONG',
+                nome_categoria: f.nome_categoria,
+                valor_executado: parseFloat(f.valor_executado).toFixed(2),
+                data_criacao: f.data_criacao
+            }));
+
+            res.status(200).json(atividades);
+        } catch (error) {
+            console.error('Erro ao buscar atividades financeiras:', error);
+            res.status(500).json({ message: 'Erro ao carregar atividades' });
         }
     }
 

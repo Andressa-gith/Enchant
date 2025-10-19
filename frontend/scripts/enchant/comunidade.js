@@ -27,7 +27,7 @@ function inicializar() {
     const modalConfirmarExclusao = document.getElementById('modal-confirmar-exclusao');
     const btnCancelarExclusao = document.getElementById('btn-cancelar-exclusao');
     const btnConfirmarExclusao = document.getElementById('btn-confirmar-exclusao');
-    
+
     let postIdParaExcluir = null;
     let instituicaoIdAtual = null;
 
@@ -63,7 +63,7 @@ function inicializar() {
             if (authData && authData.access_token) {
                 console.log('🔑 Token encontrado!');
                 const instituicaoId = authData.user?.id || null;
-                return { 
+                return {
                     token: authData.access_token,
                     instituicaoId: instituicaoId
                 };
@@ -130,7 +130,7 @@ function inicializar() {
 
             const nomeInstituicao = post.instituicao ? post.instituicao.nome : 'ONG Desconhecida';
             const logoInstituicao = post.instituicao ? post.instituicao.url_logo : '/assets/imgs/comprador/avatar-padrao.jpg';
-            
+
             const podeEditar = postagemPertenceAoUsuario(post.instituicao_id);
             const botoesAcao = podeEditar ? `
                 <div class="post-actions">
@@ -185,6 +185,107 @@ function inicializar() {
         adicionarEventListenersBotoes();
     }
 
+    let todasOngs = [];
+    let timeoutBusca = null;
+
+    async function carregarOngs() {
+        try {
+            const response = await fetch('/api/public/todasongs');
+            if (!response.ok) throw new Error('Erro ao carregar ONGs');
+            todasOngs = await response.json();
+            console.log('✅ ONGs carregadas:', todasOngs.length);
+        } catch (error) {
+            console.error('❌ Erro ao carregar ONGs:', error);
+        }
+    }
+
+    function buscarOngs(termo) {
+        const resultados = document.getElementById('search-results');
+
+        if (!termo.trim()) {
+            resultados.innerHTML = '';
+            return;
+        }
+
+        const filtradas = todasOngs.filter(ong =>
+            ong.nome.toLowerCase().includes(termo.toLowerCase()) ||
+            (ong.sobre && ong.sobre.toLowerCase().includes(termo.toLowerCase()))
+        );
+
+        if (filtradas.length === 0) {
+            resultados.innerHTML = '<div class="empty-search">Nenhuma ONG encontrada</div>';
+            return;
+        }
+
+        resultados.innerHTML = filtradas.slice(0, 5).map(ong => `
+                <a href="/transparencia?id=${ong.id}" class="ong-result-item">
+                    <img src="${ong.caminho_logo || '/assets/imgs/comprador/avatar-padrao.jpg'}" 
+                         alt="${ong.nome}" 
+                         class="ong-result-avatar"
+                         onerror="this.src='/assets/imgs/comprador/avatar-padrao.jpg'">
+                    <div class="ong-result-info">
+                        <h4>${ong.nome}</h4>
+                        <p>${ong.sobre ? ong.sobre.substring(0, 50) + '...' : 'Sem descrição'}</p>
+                    </div>
+                </a>
+            `).join('');
+    }
+
+    document.getElementById('search-ongs')?.addEventListener('input', (e) => {
+        clearTimeout(timeoutBusca);
+        timeoutBusca = setTimeout(() => {
+            buscarOngs(e.target.value);
+        }, 300);
+    });
+
+    async function carregarAtividades() {
+        const container = document.getElementById('atividades-lista');
+
+        try {
+            // Aqui você pode fazer múltiplas requisições para diferentes tipos de atividade
+            const [doacoes, financeiro] = await Promise.all([
+                fetch('/api/public/atividades/doacoes?limit=3').then(r => r.json()).catch(() => []),
+                fetch('/api/public/atividades/financeiro?limit=2').then(r => r.json()).catch(() => [])
+            ]);
+
+            const atividades = [
+                ...doacoes.map(d => ({
+                    tipo: 'entrada',
+                    texto: `${d.instituicao_nome} recebeu ${d.quantidade} ${d.categoria_nome}`,
+                    data: d.data_entrada,
+                    icone: 'fa-arrow-down'
+                })),
+                ...financeiro.map(f => ({
+                    tipo: 'financeiro',
+                    texto: `${f.instituicao_nome} executou R$ ${f.valor_executado} em ${f.nome_categoria}`,
+                    data: f.data_criacao,
+                    icone: 'fa-chart-line'
+                }))
+            ].sort((a, b) => new Date(b.data) - new Date(a.data)).slice(0, 5);
+
+            if (atividades.length === 0) {
+                container.innerHTML = '<div class="empty-search">Sem atividades recentes</div>';
+                return;
+            }
+
+            container.innerHTML = atividades.map(ativ => `
+                    <div class="atividade-item">
+                        <div class="atividade-icon ${ativ.tipo}">
+                            <i class="fas ${ativ.icone}"></i>
+                        </div>
+                        <div class="atividade-content">
+                            <p>${ativ.texto}</p>
+                            <small>${formatarDataRelativa(new Date(ativ.data))}</small>
+                        </div>
+                    </div>
+                `).join('');
+
+        } catch (error) {
+            console.error('❌ Erro ao carregar atividades:', error);
+            container.innerHTML = '<div class="empty-search">Erro ao carregar atividades</div>';
+        }
+    }
+
     /**
      * Formata a data de forma relativa (ex: "há 2 horas")
      */
@@ -200,7 +301,7 @@ function inicializar() {
         if (minutos < 60) return `há ${minutos}min`;
         if (horas < 24) return `há ${horas}h`;
         if (dias < 7) return `há ${dias}d`;
-        
+
         return data.toLocaleDateString('pt-BR', {
             day: '2-digit',
             month: 'short'
@@ -236,7 +337,7 @@ function inicializar() {
     async function abrirModalEdicao(postId) {
         try {
             console.log('✏️ Carregando postagem para edição:', postId);
-            
+
             const { token } = obterDadosAuth();
             if (!token) {
                 throw new Error('Você precisa estar logado para editar.');
@@ -258,7 +359,7 @@ function inicializar() {
             postIdInput.value = post.id;
             postTituloInput.value = post.titulo || '';
             postConteudoInput.value = post.conteudo || '';
-            
+
             // Atualiza contador de caracteres
             charCount.textContent = post.conteudo.length;
             atualizarContadorCaracteres();
@@ -284,7 +385,7 @@ function inicializar() {
 
             // Atualiza o título do modal
             modalTitulo.textContent = 'Editar Publicação';
-            
+
             // Abre o modal
             modal.style.display = 'flex';
 
@@ -308,7 +409,7 @@ function inicializar() {
     async function excluirPostagem(postId) {
         try {
             console.log('🗑️ Excluindo postagem:', postId);
-            
+
             const { token } = obterDadosAuth();
             if (!token) {
                 throw new Error('Você precisa estar logado para excluir.');
@@ -327,7 +428,7 @@ function inicializar() {
             }
 
             console.log('✅ Postagem excluída com sucesso!');
-            
+
             // Fecha o modal
             modalConfirmarExclusao.style.display = 'none';
             postIdParaExcluir = null;
@@ -338,7 +439,7 @@ function inicializar() {
                 postCard.style.animation = 'fadeOut 0.3s ease';
                 setTimeout(() => {
                     postCard.remove();
-                    
+
                     // Se não houver mais posts, mostra o empty state
                     const remainingPosts = document.querySelectorAll('.post-card');
                     if (remainingPosts.length === 0) {
@@ -395,10 +496,10 @@ function inicializar() {
     function atualizarContadorCaracteres() {
         const length = postConteudoInput.value.length;
         charCount.textContent = length;
-        
+
         const charCounter = document.querySelector('.char-counter');
         charCounter.classList.remove('warning', 'error');
-        
+
         if (length > 2000) {
             charCounter.classList.add('error');
         } else if (length > 1800) {
@@ -461,7 +562,7 @@ function inicializar() {
     function mostrarNotificacao(mensagem, tipo = 'success') {
         const cor = tipo === 'success' ? '#28a745' : '#dc3545';
         const icone = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        
+
         const toast = document.createElement('div');
         toast.innerHTML = `<i class="fas ${icone}"></i> ${mensagem}`;
         toast.style.cssText = `
@@ -499,7 +600,7 @@ function inicializar() {
 
             const submitButton = formPostagem.querySelector('.btn-publicar');
             const isEdicao = !!postIdInput.value;
-            
+
             submitButton.disabled = true;
             submitButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${isEdicao ? 'Salvando...' : 'Publicando...'}`;
 
@@ -513,10 +614,10 @@ function inicializar() {
                     throw new Error('Token de autenticação não encontrado. Faça login novamente.');
                 }
 
-                const url = isEdicao 
+                const url = isEdicao
                     ? `/api/user/comunidade/postagens/${postIdInput.value}`
                     : '/api/user/comunidade/postagens';
-                
+
                 const method = isEdicao ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -544,7 +645,7 @@ function inicializar() {
                 await carregarFeed();
 
                 mostrarNotificacao(
-                    `Publicação ${isEdicao ? 'atualizada' : 'criada'} com sucesso!`, 
+                    `Publicação ${isEdicao ? 'atualizada' : 'criada'} com sucesso!`,
                     'success'
                 );
 
@@ -640,6 +741,8 @@ function inicializar() {
 
         verificarLoginStatus();
         await carregarFeed();
+        carregarOngs();
+        carregarAtividades();
 
         setTimeout(() => {
             if (window.SiteLoader) {

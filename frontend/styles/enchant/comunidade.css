@@ -30,32 +30,44 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: #ffffff;
+    background-color: #fafafa;
     font-family: "Lexend Deca", sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI';
 }
 
 .comunidade-main {
     flex: 1 0 auto;
     padding-top: 80px;
-    padding-bottom: 100px;
-    background-color: #ffffff;
+    padding-bottom: 60px;
+    background-color: #fafafa;
 }
 
-.container {
-    max-width: 1000px;
+/* ============================================
+   LAYOUT PRINCIPAL: FEED + SIDEBAR
+   ============================================ */
+
+.comunidade-container {
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+    padding: 20px;
 }
 
-/* Header da Comunidade */
+.feed-principal {
+    min-width: 0;
+}
+
+/* ============================================
+   HEADER DA COMUNIDADE
+   ============================================ */
+
 .comunidade-header {
-    padding: 20px 0;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 0;
-    top: 80px;
-    background-color: rgba(255, 255, 255, 0.90);
-    backdrop-filter: blur(12px);
-    z-index: 100;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    margin-bottom: 16px;
 }
 
 .header-content {
@@ -84,11 +96,16 @@ body {
     font-weight: 400;
 }
 
-/* Caixa de Criar Post */
+/* ============================================
+   CAIXA DE CRIAR POST
+   ============================================ */
+
 .create-post-box {
     padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: #ffffff;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    margin-bottom: 16px;
 }
 
 .btn-nova-postagem {
@@ -121,60 +138,31 @@ body {
     margin: 0;
 }
 
-.post-ong-logo:hover {
-    opacity: 0.8;
-    transition: .2s;
-}
+/* ============================================
+   FEED CONTAINER
+   ============================================ */
 
-.post-ong-nome-link {
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.post-ong-nome-link h3 {
-    color: var(--text-dark);
-    transition: color 0.2s ease;
-}
-
-.post-ong-nome-link:hover h3 {
-    color: #693B11;
-    text-decoration: underline;
-}
-
-/* Feed Container */
 .feed-container {
     display: grid;
-    background-color: #ffffff;
+    gap: 16px;
 }
 
-/* Loading Spinner */
-.loading-spinner {
-    text-align: center;
-    padding: 60px 20px;
-}
+/* ============================================
+   POST CARDS
+   ============================================ */
 
-.loading-spinner i {
-    font-size: 2.5rem;
-    color: var(--primary-brown);
-    margin-bottom: 15px;
-}
-
-.loading-spinner p {
-    color: var(--text-medium);
-    font-size: 1rem;
-}
-
-/* Post Card */
 .post-card {
-    border-bottom: 1px solid var(--border-color);
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
     padding: 16px;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
     animation: fadeInUp 0.4s ease;
-    position: relative;
 }
 
 .post-card:hover {
     background-color: var(--hover-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .post-header {
@@ -190,7 +178,11 @@ body {
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
-    transition: .2s;
+    transition: opacity 0.2s;
+}
+
+.post-ong-logo:hover {
+    opacity: 0.8;
 }
 
 .post-ong-info {
@@ -205,11 +197,22 @@ body {
     flex-wrap: wrap;
 }
 
-.post-ong-info h3 {
+.post-ong-nome-link {
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.post-ong-nome-link h3 {
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--text-dark);
     margin: 0;
+    transition: color 0.2s ease;
+}
+
+.post-ong-nome-link:hover h3 {
+    color: var(--primary-brown);
+    text-decoration: underline;
 }
 
 .post-ong-info span {
@@ -249,7 +252,6 @@ body {
     color: var(--danger);
 }
 
-/* Post Body */
 .post-body {
     margin-left: 60px;
 }
@@ -274,7 +276,7 @@ body {
     width: 100%;
     max-height: 500px;
     object-fit: cover;
-    border-radius: 16px;
+    border-radius: 12px;
     margin-top: 12px;
     border: 1px solid var(--border-color);
 }
@@ -308,19 +310,236 @@ body {
     box-shadow: 0 4px 12px rgba(105, 59, 17, 0.3);
 }
 
-/* Estados de Vazio e Erro */
-.empty-state,
-.error-state {
+/* ============================================
+   SIDEBAR DIREITA (STICKY)
+   ============================================ */
+
+.sidebar-direita {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Card de Busca */
+.search-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.search-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-brown);
+    background-color: var(--hover-bg);
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-medium);
+    font-size: 1rem;
+}
+
+.search-results {
+    margin-top: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+    background: var(--text-medium);
+}
+
+.ong-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.ong-result-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.ong-result-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.ong-result-info h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.ong-result-info p {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+/* Card de Atividades */
+.atividades-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.atividades-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.atividade-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.atividade-item:last-child {
+    border-bottom: none;
+}
+
+.atividade-item:hover {
+    background-color: var(--hover-bg);
+    margin: 0 -8px;
+    padding: 12px 8px;
+    border-radius: 8px;
+}
+
+.atividade-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.atividade-icon.entrada {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.atividade-icon.saida {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.atividade-icon.financeiro {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.atividade-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.atividade-content p {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    margin: 0 0 4px 0;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.atividade-content small {
+    font-size: 0.75rem;
+    color: var(--text-medium);
+}
+
+.ver-todas {
+    display: block;
     text-align: center;
-    padding: 80px 20px;
+    padding: 10px;
+    color: var(--primary-brown);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 8px;
+    transition: all 0.2s ease;
+}
+
+.ver-todas:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Estados vazios */
+.empty-state,
+.error-state,
+.empty-search {
+    text-align: center;
+    padding: 40px 20px;
     color: var(--text-medium);
 }
 
 .empty-state i,
 .error-state i {
-    font-size: 4rem;
+    font-size: 3rem;
     color: var(--text-medium);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     display: block;
 }
 
@@ -328,21 +547,37 @@ body {
     color: var(--danger);
 }
 
-.empty-state p,
-.error-state p {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 8px;
+.empty-search {
+    padding: 20px;
+    font-size: 0.9rem;
 }
 
-.error-state small {
-    display: block;
-    margin-top: 15px;
+.loading-spinner,
+.loading-spinner-small {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner-small {
+    padding: 20px;
+}
+
+.loading-spinner i,
+.loading-spinner-small i {
+    font-size: 2rem;
+    color: var(--primary-brown);
+    margin-bottom: 10px;
+}
+
+.loading-spinner p {
     color: var(--text-medium);
-    font-style: italic;
+    font-size: 1rem;
 }
 
-/* Modal */
+/* ============================================
+   MODAIS
+   ============================================ */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -358,7 +593,7 @@ body {
 }
 
 .modal-content {
-    background-color: #ffffff;
+    background-color: white;
     border-radius: 16px;
     width: 100%;
     max-width: 600px;
@@ -376,7 +611,7 @@ body {
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    background-color: #ffffff;
+    background-color: white;
     z-index: 10;
 }
 
@@ -407,7 +642,6 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Formulário */
 form {
     padding: 20px;
 }
@@ -440,7 +674,7 @@ form {
     font-family: 'Lexend Deca', sans-serif;
     font-size: 1rem;
     transition: all 0.2s ease;
-    background-color: #ffffff;
+    background-color: white;
     color: var(--text-dark);
 }
 
@@ -470,11 +704,6 @@ form {
 
 .char-counter.error {
     color: var(--danger);
-}
-
-/* File Input */
-.file-input-wrapper {
-    position: relative;
 }
 
 .form-group input[type="file"] {
@@ -532,7 +761,6 @@ form {
     background-color: var(--danger-hover);
 }
 
-/* Botões do Formulário */
 .form-actions {
     display: flex;
     justify-content: space-between;
@@ -592,7 +820,6 @@ form {
     background-color: var(--danger-hover);
 }
 
-/* Modal de Confirmação */
 .modal-confirmar {
     max-width: 400px;
     text-align: center;
@@ -620,7 +847,10 @@ form {
     margin-bottom: 24px;
 }
 
-/* Animações */
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -643,33 +873,38 @@ form {
     }
 }
 
-/* Responsividade */
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .comunidade-container {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-direita {
+        position: static;
+        order: -1;
+    }
+}
+
 @media (max-width: 768px) {
     .comunidade-main {
         padding-top: 60px;
     }
 
-    .comunidade-header {
-        top: 60px;
-        padding: 16px 0;
-        width: 100%;
-    }
-
-    .header-content i {
-        font-size: 1.5rem;
-    }
-
-    .comunidade-header h1 {
-        font-size: 1.25rem;
-    }
-
-    .comunidade-header p {
-        font-size: 0.85rem;
+    .comunidade-container {
+        padding: 10px;
+        gap: 16px;
     }
 
     .post-body {
         margin-left: 0;
         margin-top: 12px;
+    }
+
+    .search-card, .atividades-card {
+        padding: 12px;
     }
 
     .modal-content {
@@ -689,7 +924,6 @@ form {
     }
 }
 
-/* Scrollbar customizada */
 .modal-content::-webkit-scrollbar {
     width: 8px;
 }
