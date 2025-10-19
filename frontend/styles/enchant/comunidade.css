@@ -404,6 +404,7 @@ body {
 
 .ong-result-item:hover {
     background-color: var(--hover-bg);
+    text-decoration: none;
 }
 
 .ong-result-avatar {

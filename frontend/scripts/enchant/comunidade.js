@@ -242,7 +242,6 @@ function inicializar() {
         const container = document.getElementById('atividades-lista');
 
         try {
-            // Aqui você pode fazer múltiplas requisições para diferentes tipos de atividade
             const [doacoes, financeiro] = await Promise.all([
                 fetch('/api/public/atividades/doacoes?limit=3').then(r => r.json()).catch(() => []),
                 fetch('/api/public/atividades/financeiro?limit=2').then(r => r.json()).catch(() => [])

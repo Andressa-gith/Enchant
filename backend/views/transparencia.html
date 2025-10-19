@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transparência | Enchant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="shortcut icon" href="https://i.ibb.co/7NybZ3W7/1.png" type="image/x-icon">
-    
+
     <link rel="stylesheet" href="/styles/enchant/transparencia.css">
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/layouts/enchant/header.css">
@@ -21,18 +25,18 @@
         // Função para verificar se o usuário está logado
         function verificarStatusLogin() {
             try {
-                const authKey = Object.keys(localStorage).find(key => 
+                const authKey = Object.keys(localStorage).find(key =>
                     key.startsWith('sb-') && key.endsWith('-auth-token')
                 );
-                
+
                 if (!authKey) {
                     console.log('Nenhuma chave de autenticação encontrada');
                     return false;
                 }
-                
+
                 const authData = JSON.parse(localStorage.getItem(authKey));
                 const isLoggedIn = !!(authData && authData.access_token);
-                
+
                 console.log('Status de login:', isLoggedIn);
                 return isLoggedIn;
             } catch (e) {
@@ -45,20 +49,20 @@
             return new Promise((resolve, reject) => {
                 const script = document.createElement('script');
                 script.src = src;
-                
+
                 if (options.type) script.type = options.type;
                 if (options.defer) script.defer = true;
-                
+
                 script.onload = () => {
                     console.log(`Script carregado: ${src}`);
                     resolve();
                 };
-                
+
                 script.onerror = () => {
                     console.error(`Erro ao carregar: ${src}`);
                     reject(new Error(`Falha ao carregar ${src}`));
                 };
-                
+
                 document.head.appendChild(script);
             });
         }
@@ -71,15 +75,15 @@
             try {
                 if (estaLogado) {
                     console.log('Usuário LOGADO - Carregando interface completa...');
-                    
+
                     await carregarScript('/scripts/layouts/comprador/sidebar.js', { type: 'module', defer: true });
                     await carregarScript('/scripts/layouts/comprador/headercomprador.js', { type: 'module', defer: true });
-                    
+
                     carregarScript('/scripts/assistente.js', { defer: true });
-                    
+
                 } else {
                     console.log('Visitante NÃO LOGADO - Carregando interface básica...');
-                    
+
                     await carregarScript('/scripts/layouts/enchant/headerenchant.js');
                     await carregarScript('/scripts/layouts/enchant/footerenchant.js');
                 }
@@ -98,11 +102,12 @@
             }
         });
     </script>
-    
+
     <script src="/scripts/enchant/transparencia.js" defer></script>
     <!-- LOADER -->
     <script src="/scripts/layouts/enchant/loader.js" type="module" defer></script>
 </head>
+
 <body class="auto-loader">
     <section>
         <div id="header-container"></div>
@@ -115,7 +120,8 @@
             <div class="container">
                 <div class="hero-content">
                     <div class="ong-header">
-                        <img id="ong-logo1" src="/assets/imgs/comprador/avatar-padrao.jpg" alt="Logo da ONG" class="ong-logo">
+                        <img id="ong-logo1" src="/assets/imgs/comprador/avatar-padrao.jpg" alt="Logo da ONG"
+                            class="ong-logo">
                         <div class="ong-info">
                             <h1 id="ong-nome">Carregando...</h1>
                             <p id="ong-descricao">Carregando informações...</p>
@@ -176,11 +182,11 @@
         <!-- Conteúdo das Tabs -->
         <section class="transparencia-content">
             <div class="container">
-                
+
                 <!-- Tab Doações -->
                 <div class="tab-content active" id="tab-doacoes">
                     <h2 class="section-title">Histórico de Doações</h2>
-                    
+
                     <div class="stats-cards">
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-box"></i></div>
@@ -198,17 +204,17 @@
                         </div>
                     </div>
 
-<div class="donations-container">
-    <div class="donation-block" id="doacoes-recebidas">
-        <h3>Doações Recebidas (Entradas)</h3>
-        <div id="lista-entradas"></div>
-    </div>
+                    <div class="donations-container">
+                        <div class="donation-block" id="doacoes-recebidas">
+                            <h3>Doações Recebidas (Entradas)</h3>
+                            <div id="lista-entradas"></div>
+                        </div>
 
-    <div class="donation-block" id="doacoes-distribuidas">
-        <h3>Doações Distribuídas (Saídas)</h3>
-        <div id="lista-saidas"></div>
-    </div>
-</div>
+                        <div class="donation-block" id="doacoes-distribuidas">
+                            <h3>Doações Distribuídas (Saídas)</h3>
+                            <div id="lista-saidas"></div>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -266,4 +272,5 @@
 
     <div id="enchant-footer"></div>
 </body>
+
 </html>
