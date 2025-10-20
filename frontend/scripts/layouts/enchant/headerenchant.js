@@ -143,6 +143,29 @@ class HeaderComponent {
 
       .nav-link{
         font-size: 14px !important;
+        position: relative;
+        transition: color 0.3s ease;
+      }
+
+      /* Animação da linha crescendo embaixo dos links */
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background-color: #4E3629;
+        transition: width 0.3s ease, left 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+        left: 0;
+      }
+
+      .nav-link:hover {
+        color: #4E3629 !important;
       }
 
       .navbar-toggler-icon::after {
