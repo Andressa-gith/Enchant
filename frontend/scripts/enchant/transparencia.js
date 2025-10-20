@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderizarInfoOng(ong) {
+    document.title = `Transparência | ${ong.nome}`;
     document.getElementById('ong-logo1').src = ong.caminho_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
     document.getElementById('ong-nome').textContent = ong.nome;
     document.getElementById('ong-descricao').textContent = ong.sobre || 'Esta organização ainda não forneceu uma descrição.';
