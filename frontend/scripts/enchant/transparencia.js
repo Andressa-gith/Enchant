@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderizarInfoOng(ong) {
-    document.title = `Transparência | ${ong.nome}`;
     document.getElementById('ong-logo1').src = ong.caminho_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
     document.getElementById('ong-nome').textContent = ong.nome;
     document.getElementById('ong-descricao').textContent = ong.sobre || 'Esta organização ainda não forneceu uma descrição.';
@@ -120,7 +119,7 @@ function renderizarDoacoes(entradas, saidas) {
     } else {
         containerSaidas.innerHTML = saidas.map(d => `
             <div class="data-item">
-                <div class="item-icon saida"><i class="fas fa-arrow-up"></i></div>
+                
                 <div class="item-info">
                     <h4 class="subtitulos">${d.quantidade_retirada} unidade(s)</h4>
                     <p><strong>Para:</strong> ${d.destinatario || 'Não informado'} | <strong>Data:</strong> ${new Date(d.data_saida).toLocaleDateString()}</p>
