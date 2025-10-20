@@ -33,6 +33,94 @@
       transform: translateY(0);
     }
 
+
+/* Garante que o input não mude quando clicado */
+.password-container input {
+    padding-right: 45px !important;
+    width: 400px;
+    height: 45px;
+    outline: none !important;
+    border-radius: 12px !important;
+    border: 1px solid #CCC !important;
+    padding-left: 1rem !important;
+    transition: none !important; /* Remove qualquer animação */
+}
+.password-container {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+}
+
+/* Garante que o input não mude quando clicado */
+.password-container input {
+    padding-right: 45px !important;
+    width: 400px;
+    height: 45px;
+    outline: none !important;
+    border-radius: 12px !important;
+    border: 1px solid #CCC !important;
+    padding-left: 1rem !important;
+    transition: none !important;
+}
+
+/* Remove mudanças no estado de foco */
+.password-container input:focus {
+    outline: none !important;
+    border: 1px solid #CCC !important;
+    box-shadow: none !important;
+    background-color: white !important;
+}
+
+/* Remove mudanças no estado ativo */
+.password-container input:active {
+    outline: none !important;
+    border: 1px solid #CCC !important;
+    box-shadow: none !important;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 35%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    color: #a5a5a5;
+    z-index: 10;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: #777;
+}
+
+.toggle-password svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    pointer-events: none;
+}
+
+/* Responsivo */
+@media (max-width: 790px) {
+    .password-container input {
+        width: 300px !important;
+    }
+    
+    .toggle-password {
+        right: 10px;
+    }
+}
+
+@media (min-width: 790px) and (max-width: 1000px) {
+    .password-container input {
+        width: 400px !important;
+    }
+}
     .error-message {
       background: linear-gradient(135deg, #ff6b6b, #ee5a52);
       color: white !important;
@@ -81,8 +169,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
-      border-left: 4px solid #27ae60;
+     
+      
       margin-top: 15px;
       margin-bottom: 15px;
       max-width: 400px;

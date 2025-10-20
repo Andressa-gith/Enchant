@@ -33,7 +33,7 @@ class HeaderComponent {
               </li>
             </ul>
             <!-- O botão permanece inalterado -->
-              <a href="/#plans">
+              <a class="link" href="/#plans">
               <button class="btn btn-brown" type="button" id="doeagora">
                 Junte-se a nós
               </button>
@@ -176,26 +176,35 @@ class HeaderComponent {
       .btn-brown,
       #doeagora {
         background-color: rgba(226, 204, 174, 1);
-        border-color: rgba(226, 204, 174, 1);
+        border-radius: 10px;
         color: #4E3629;
         font-weight: 700;
         font-family: "Lexend Deca";
       }
 
       #doeagora {
-        font-size: 16px;
-        width: 9rem;
+        font-size: 15px;
+        width: 10rem;
+        height: 2.5rem;
         margin-right: 2rem;
         border: none;
+        text-decoration: none;
       }
 
       #doeagora:hover {
         background-color: #caae8d;
         color: #3d2106;
         transition: .2s;
+        text-decoration: none;
+
       }
 
       #doeagora:focus {
+        text-decoration: none;
+  }
+      .link:hover,
+      .link:focus,
+      .link:active {
         text-decoration: none;
       }
 
