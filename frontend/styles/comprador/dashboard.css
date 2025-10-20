@@ -80,7 +80,7 @@ body {
 .date-picker-group .form-control {
     border: 1px solid #ddd;
     font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
+    padding: 12px;
     flex-grow: 1;
 }
 
