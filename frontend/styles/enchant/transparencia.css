@@ -160,15 +160,14 @@ body {
     font-weight: 500;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
-    background: linear-gradient(to right, whitesmoke 80%, white 100%);
 }
 
 .badge:hover {
-    color: var(--secondary-brown);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .badge-verified {
-    color: var(--primary-brown);
+    color: #155724;
     border-radius: 0;
 }
 
@@ -255,7 +254,7 @@ body {
 #lista-parcerias .data-item {
     background-color: #fdfaf6;
     border: 1px solid #e0dcd5;
-    border-left: 6px solid #a1887f;
+    border-left: 6px solid #bfa58a;
     /* borda marrom claro para destaque */
     border-radius: 6px;
     padding: 16px;
@@ -301,7 +300,7 @@ body {
 #lista-contratos .data-item {
     background-color: #fdfaf6;
     border: 1px solid #e0dcd5;
-    border-left: 6px solid #a1887f;
+    border-left: 6px solid #bfa58a;
     /* marrom claro */
     border-radius: 6px;
     padding: 16px;
@@ -408,7 +407,7 @@ CONTRATOS, AUDITORIAS, RELATÓRIOS
 #lista-relatorios .data-item {
     background-color: #fdfaf6;
     border: 1px solid #e0dcd5;
-    border-left: 6px solid #a1887f;
+    border-left: 6px solid #bfa58a;
     border-radius: 6px;
     padding: 16px;
     display: flex;
@@ -464,9 +463,8 @@ CONTRATOS, AUDITORIAS, RELATÓRIOS
     background-color: transparent;
     /* tom marrom claro */
     border-radius: 8px;
-    border: 1px #3B220A solid;
+    border: 1px #000000 solid;
     padding: 15px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Cabeçalho das doações */
@@ -599,18 +597,7 @@ CONTRATOS, AUDITORIAS, RELATÓRIOS
 
 
 
-.donations-container .donation-block .item-icon.saida {
-    background-color: #7c5235;
-    /* marrom escuro */
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    margin-right: 10px;
-}
+
 
 
 .tab-button i {
@@ -928,7 +915,8 @@ CONTRATOS, AUDITORIAS, RELATÓRIOS
     }
 
     .tab-button {
-        padding: 12px 15px;
+        padding: 22px 20px;
+        transform: scale(1.2);
     }
 
     .data-card-body {
