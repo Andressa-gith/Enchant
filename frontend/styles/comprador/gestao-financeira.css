@@ -84,6 +84,32 @@ input {
     gap: 10px;
 }
 
+#saveEditBtn{
+    background-color: #e2ccae;
+    color: #3d2106;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+}
+
+#saveEditBtn:hover{
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
+#cancelEditBtn{
+    background-color: #e2ccae;
+    color: #3d2106;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+}
+
+#cancelEditBtn:hover{
+    background-color: #caae8d;
+    color: #3d2106;
+}
+
 .nav-tab1 {
     background: none;
     border: none;

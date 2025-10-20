@@ -117,7 +117,7 @@ body {
 
 .btn-reset {
     background-color: #f0f0f0;
-    color: var(--text-light);
+    color: #333;
     border: 1px solid #ddd;
     padding: 0.4rem 0.6rem;
     border-radius: 6px;
@@ -130,7 +130,7 @@ body {
 
 .btn-reset:hover {
     background-color: #e0e0e0;
-    color: var(--primary-dark);
+    color: #333;
 }
 
 /* SUMMARY CARDS (KPIs) */

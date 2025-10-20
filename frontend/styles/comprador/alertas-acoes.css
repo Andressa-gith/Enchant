@@ -39,12 +39,12 @@
 }
 
 .btn-voltar {
-    background-color: rgba(226, 204, 174, 1);;
-    color: #000;
+    background-color: #e2ccae;
+    color: #3d2106;
     font-size: 14px;
     text-decoration: none;
     padding: 0.6rem 1.2rem;
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     gap: 0.5rem;

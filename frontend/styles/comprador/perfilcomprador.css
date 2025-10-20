@@ -201,7 +201,7 @@ body {
 
 /* === BOTÕES === */
 .edit-button1 {
-    background: var(--secondary-brown);
+    background: #e2ccae;
     border: none;
     padding: 12px 24px;
     border-radius: var(--border-radius-lg);
