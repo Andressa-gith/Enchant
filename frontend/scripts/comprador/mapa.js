@@ -77,6 +77,9 @@ Promise.all([
 
       configurarConsultaDetalhada(geojsonFeatureCollection, dadosDosMunicipios, dadosVulnerabilidade, dadosAmeaca, dadosExposicao, dados2030, dados2050);
 
+      // EXIBIR RESULTADO PADRÃO VAZIO
+      exibirResultadoPadrao();
+
       setTimeout(() => {
         window.SiteLoader?.hide();
       }, 500);
@@ -85,11 +88,62 @@ Promise.all([
   });
 }).catch(error => {
   console.error("Erro ao carregar os arquivos de dados do mapa:", error);
-  //alert("Não foi possível carregar os dados do mapa. Verifique o console.");
   setTimeout(() => {
         window.SiteLoader?.hide();
   }, 500);
 });
+
+// FUNÇÃO PARA EXIBIR RESULTADO PADRÃO VAZIO
+function exibirResultadoPadrao() {
+  const resultadoContainer = document.getElementById('resultado-consulta');
+  
+  resultadoContainer.innerHTML = `
+    <div class="card-resultado">
+      <h4>Nenhum município selecionado</h4>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px; font-style: italic;">
+        Use a busca acima para consultar informações detalhadas de um município.
+      </p>
+      <div class="resultado-grid">
+        <div class="resultado-item">
+          <span class="label">Risco (Presente)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Classe Risco (Presente)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Risco (2030 Otimista)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Classe Risco (2030 Otimista)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Risco (2050 Otimista)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Classe Risco (2050 Otimista)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Vulnerabilidade (Presente)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Ameaça (Presente)</span>
+          <span class="value">--</span>
+        </div>
+        <div class="resultado-item">
+          <span class="label">Exposição (Presente)</span>
+          <span class="value">--</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca, dadosExposicao, dados2030, dados2050) {
   const inputConsulta = document.getElementById('input-consulta');
@@ -99,7 +153,7 @@ function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca
   function buscarMunicipio() {
     const nomeCidade = inputConsulta.value.trim().toLowerCase();
     if (nomeCidade === '') {
-      resultadoContainer.innerHTML = ''; // Limpa se a busca for vazia
+      exibirResultadoPadrao(); // Volta ao estado padrão se busca vazia
       return;
     }
 

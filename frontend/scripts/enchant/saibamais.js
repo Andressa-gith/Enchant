@@ -1,56 +1,62 @@
-        // Smooth scroll para os links de navegação
-        document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
+// Adicione esta linha no topo
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Smooth scroll para os links de navegação
+    document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
                 
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    
-                    // Atualizar link ativo
-                    document.querySelectorAll('.nav-menu .nav-link').forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
+                // Atualizar link ativo
+                document.querySelectorAll('.nav-menu .nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
 
-                    // Fechar menu em mobile após clique
-                    if (window.innerWidth <= 992) {
-                        closeMobileNav();
-                    }
+                // Fechar menu em mobile após clique
+                if (window.innerWidth <= 992) {
+                    closeMobileNav();
                 }
-            });
+            }
         });
+    });
 
-        // Destacar seção atual no scroll
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('.section');
-            const navLinks = document.querySelectorAll('.nav-menu .nav-link');
+    // Destacar seção atual no scroll
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-menu .nav-link');
+        
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 150;
+            const sectionHeight = section.offsetHeight;
             
-            let currentSection = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 150;
-                const sectionHeight = section.offsetHeight;
-                
-                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
-                    currentSection = section.getAttribute('id');
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${currentSection}`) {
-                    link.classList.add('active');
-                }
-            });
+            if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                currentSection = section.getAttribute('id');
+            }
         });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSection}`) {
+                link.classList.add('active');
+            }
+        });
+    });
 
-        // Funcionalidade do menu mobile
-        const mobileNavToggle = document.getElementById('mobileNavToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+    // Funcionalidade do menu mobile
+    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    // VERIFIQUE SE OS ELEMENTOS FORAM ENCONTRADOS
+    if (mobileNavToggle && sidebar && overlay) {
 
         function openMobileNav() {
             sidebar.classList.add('mobile-open');
@@ -82,3 +88,11 @@
                 closeMobileNav();
             }
         });
+
+    } else {
+        // Se cair aqui, o HTML está com IDs errados
+        console.error("Erro: Elementos do menu mobile (toggle, sidebar ou overlay) não encontrados.");
+    }
+
+// Adicione esta linha no final
+});

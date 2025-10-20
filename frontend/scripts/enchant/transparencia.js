@@ -120,7 +120,7 @@ function renderizarDoacoes(entradas, saidas) {
     } else {
         containerSaidas.innerHTML = saidas.map(d => `
             <div class="data-item">
-                <div class="item-icon saida"><i class="fas fa-arrow-up"></i></div>
+                
                 <div class="item-info">
                     <h4 class="subtitulos">${d.quantidade_retirada} unidade(s)</h4>
                     <p><strong>Para:</strong> ${d.destinatario || 'Não informado'} | <strong>Data:</strong> ${new Date(d.data_saida).toLocaleDateString()}</p>

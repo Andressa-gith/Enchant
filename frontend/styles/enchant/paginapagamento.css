@@ -313,13 +313,13 @@ input::placeholder{
 }
 
 .modal-header-success {
-    background-color: #d4edda;
-    color: #155724;
+    background-color: white;
+    color: #693B11;
 }
 
 .modal-header-error {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: white;
+    color: #693B11;
 }
 
 /* --- Responsividade --- */

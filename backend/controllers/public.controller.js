@@ -122,23 +122,30 @@ class PublicController {
             if (auditoriasRes.error) throw new Error(`Erro ao buscar auditorias: ${auditoriasRes.error.message}`);
 
             const ongData = ongRes.data;
+
             const end = Array.isArray(ongData.endereco) ? ongData.endereco[0] : ongData.endereco;
             const fone = Array.isArray(ongData.telefone) ? ongData.telefone[0] : ongData.telefone;
 
-            if (ongData && ongData.caminho_logo && ongData.caminho_foto_perfil) {
+            ongData.telefone = fone?.numero || null;
+            ongData.cidade = end?.cidade || null;
+            ongData.estado = end?.estado || null;
+
+            if (ongData.caminho_logo) {
                 const { data: publicUrlData } = supabase.storage
                     .from('logos')
                     .getPublicUrl(ongData.caminho_logo);
                 ongData.caminho_logo = publicUrlData.publicUrl;
+            } else {
+                ongData.caminho_logo = null; 
+            }
 
+            if (ongData.caminho_foto_perfil) {
                 const { data: publicUrlDatafoto } = supabase.storage
                     .from('profile-photos')
                     .getPublicUrl(ongData.caminho_foto_perfil);
                 ongData.caminho_foto_perfil = publicUrlDatafoto.publicUrl;
-
-                ongData.telefone = fone?.numero;
-                ongData.cidade = end?.cidade;
-                ongData.estado = end?.estado;
+            } else {
+                ongData.caminho_foto_perfil = null;
             }
 
             const dadosTransparencia = {
