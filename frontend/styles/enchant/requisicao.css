@@ -344,7 +344,23 @@ font-size: 14px;
 .modal .btn-primary:hover {
 background-color: #caae8d;
 color: #3d2106;
+}
 
+#dados-form .form-control::placeholder {
+  font-size: 14px;
+}
+
+/* Adiciona a cor vermelha à mensagem de erro quando visível */
+.error-message {
+    color: #dc3545; /* Vermelho do Bootstrap para erros */
+    font-size: 0.8em;
+    margin-top: 0.25rem;
+}
+
+/* A classe .is-invalid do Bootstrap já cuida da borda vermelha,
+   mas garantimos que a nossa mensagem de erro também apareça corretamente. */
+.form-control.is-invalid {
+    border-color: #dc3545;
 }
 
 /* ========== RESPONSIVIDADE ========== */
