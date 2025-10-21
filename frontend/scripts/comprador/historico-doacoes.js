@@ -7,12 +7,32 @@ class ReportManager {
             reportForm: document.getElementById('reportForm'),
             generateBtn: document.getElementById('generateReportBtn'),
             pdfLoading: document.getElementById('pdfLoading'),
-            toastContainer: document.getElementById('toastContainer'),
             categorySelect: document.getElementById('categoria_filtro'),
+
+            // --- Modal de Confirmação (Excluir) ---
+            modalOverlay: document.getElementById('confirmationModal'),
+            modalMessage: document.getElementById('modalMessage'),
+            modalConfirmBtn: document.getElementById('modalConfirmBtn'),
+            modalCancelBtn: document.getElementById('modalCancelBtn'),
+
+            // --- Modal de Informação (Substituto do Toast) ---
+            infoModalOverlay: document.getElementById('infoModal'),
+            infoModalIcon: document.getElementById('infoModalIcon'),
+            infoModalTitle: document.getElementById('infoModalTitle'),
+            infoModalMessage: document.getElementById('infoModalMessage'),
+            infoModalOkBtn: document.getElementById('infoModalOkBtn'),
         };
         this.allReports = [];
+        this.onConfirmCallback = null; // Armazena a ação de confirmação
+
+        // Faz o 'this' funcionar nos callbacks
         this.generateReport = this.generateReport.bind(this);
         this.handleTableClick = this.handleTableClick.bind(this);
+        // Modal de Confirmação
+        this.executeConfirmation = this.executeConfirmation.bind(this);
+        this.hideModal = this.hideModal.bind(this);
+        // Modal de Informação
+        this.hideInfoModal = this.hideInfoModal.bind(this);
     }
 
     init() {
@@ -25,36 +45,107 @@ class ReportManager {
     setupEventListeners() {
         this.ui.reportForm.addEventListener('submit', this.generateReport);
         this.ui.tableBody.addEventListener('click', this.handleTableClick);
+
+        // --- Listeners do Modal de Confirmação (Excluir) ---
+        if (this.ui.modalConfirmBtn && this.ui.modalCancelBtn) {
+            this.ui.modalConfirmBtn.addEventListener('click', this.executeConfirmation);
+            this.ui.modalCancelBtn.addEventListener('click', this.hideModal);
+            this.ui.modalOverlay.addEventListener('click', (e) => {
+                if (e.target === this.ui.modalOverlay) this.hideModal();
+            });
+        }
+
+        // --- Listeners do Modal de Informação ---
+        if (this.ui.infoModalOkBtn && this.ui.infoModalOverlay) {
+            this.ui.infoModalOkBtn.addEventListener('click', this.hideInfoModal);
+            this.ui.infoModalOverlay.addEventListener('click', (e) => {
+                if (e.target === this.ui.infoModalOverlay) this.hideInfoModal();
+            });
+        }
     }
 
-    showToast(message, type = 'info') {
-        if (!this.ui.toastContainer) { alert(message); return; }
-        const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
-        const toast = document.createElement('div');
-        toast.className = `toast show ${type}`;
-        toast.innerHTML = `<i class="${iconClass}"></i> <span>${message}</span>`;
-        this.ui.toastContainer.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
+    // --- Funções do Modal de Confirmação (Excluir) ---
+    showConfirmationModal(message, onConfirm) {
+        if (!this.ui.modalOverlay) return;
+        this.onConfirmCallback = onConfirm;
+        this.ui.modalMessage.textContent = message;
+        this.ui.modalOverlay.classList.add('show');
     }
+
+    hideModal() {
+        if (!this.ui.modalOverlay) return;
+        this.ui.modalOverlay.classList.remove('show');
+        this.onConfirmCallback = null;
+    }
+
+    executeConfirmation() {
+        if (this.onConfirmCallback) {
+            this.onConfirmCallback();
+        }
+        this.hideModal();
+    }
+    // --- FIM Funções Modal Confirmação ---
+
+
+    // --- Funções do Modal de Informação (Substituto do Toast) ---
+    showInfoModal(message, type = 'info') {
+        if (!this.ui.infoModalOverlay) {
+            alert(message); // Fallback caso o modal não exista
+            return;
+        }
+
+        const titles = {
+            success: 'Sucesso!',
+            error: 'Ocorreu um Erro',
+            info: 'Atenção'
+        };
+        const icons = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info-circle'
+        };
+
+        // Limpa classes antigas
+        this.ui.infoModalIcon.className = 'modal-icon';
+        this.ui.infoModalTitle.className = 'modal-title';
+        this.ui.infoModalOkBtn.className = 'modal-btn modal-btn-ok';
+
+        // Adiciona novas classes
+        this.ui.infoModalIcon.classList.add(type);
+        this.ui.infoModalTitle.classList.add(type);
+        this.ui.infoModalOkBtn.classList.add(type);
+
+        // Define o conteúdo
+        this.ui.infoModalIcon.innerHTML = `<i class="${icons[type] || icons['info']}"></i>`;
+        this.ui.infoModalTitle.textContent = titles[type] || titles['info'];
+        this.ui.infoModalMessage.textContent = message;
+
+        this.ui.infoModalOverlay.classList.add('show');
+    }
+
+    hideInfoModal() {
+        if (!this.ui.infoModalOverlay) return;
+        this.ui.infoModalOverlay.classList.remove('show');
+    }
+    // --- FIM: Funções do Modal de Informação ---
+
 
     toggleLoading(isLoading, message = 'Aguarde...') {
         const loadingOverlay = this.ui.pdfLoading;
         if (loadingOverlay) {
-            // ================== CORREÇÃO AQUI ==================
-            // Agora ele busca pela classe específica, e não por qualquer <p>
             const textElement = loadingOverlay.querySelector('.loading-text');
             if (textElement) {
                 textElement.textContent = message;
             }
-            // ===============================================
-
             if (isLoading) {
                 loadingOverlay.classList.add('show');
             } else {
                 loadingOverlay.classList.remove('show');
             }
         }
-        this.ui.generateBtn.disabled = isLoading;
+        if (this.ui.generateBtn) {
+            this.ui.generateBtn.disabled = isLoading;
+        }
     }
 
 
@@ -69,14 +160,15 @@ class ReportManager {
             const options = { timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric' };
             const periodo = `${new Date(report.data_inicio_filtro).toLocaleDateString('pt-BR', options)} - ${new Date(report.data_fim_filtro).toLocaleDateString('pt-BR', options)}`;
 
+            // --- Responsividade da Tabela (data-label) ---
             row.innerHTML = `
-                <td>${report.responsavel}</td>
-                <td class="coluna-periodo">${periodo}</td>
-                <td>${report.frequencia_filtro}</td>
-                <td>${report.categoria_filtro || 'Geral'}</td>
-                <td>${new Date(report.data_geracao).toLocaleDateString('pt-BR')}</td>
-                <td>
-                    <div class="action-buttons">
+                <td data-label="Responsável">${report.responsavel}</td>
+                <td data-label="Período" class="coluna-periodo">${periodo}</td>
+                <td data-label="Frequência">${report.frequencia_filtro}</td>
+                <td data-label="Categoria">${report.categoria_filtro || 'Geral'}</td>
+                <td data-label="Data">${new Date(report.data_geracao).toLocaleDateString('pt-BR')}</td>
+                <td data-label="Ações">
+                    <div class.action-buttons">
                         <button class="pdf-btn" data-report-id="${report.id}" title="Baixar PDF">
                             <i class="fas fa-download"></i>
                         </button>
@@ -86,6 +178,7 @@ class ReportManager {
                     </div>
                 </td>
             `;
+
             this.ui.tableBody.appendChild(row);
         });
     }
@@ -94,19 +187,23 @@ class ReportManager {
         try {
             const { data: categorias, error } = await supabase.from('categoria').select('nome').order('nome');
             if (error) throw error;
-            this.ui.categorySelect.innerHTML = '<option value="Geral">Todas as Categorias</option>'; // Limpa e adiciona a opção padrão
+            this.ui.categorySelect.innerHTML = '<option value="Geral">Todas as Categorias</option>';
             categorias.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.nome;
                 option.textContent = cat.nome;
                 this.ui.categorySelect.appendChild(option);
             });
-        } catch (error) { this.showToast('Não foi possível carregar as categorias.', 'error'); }
+        } catch (error) {
+            this.showInfoModal('Não foi possível carregar as categorias.', 'error');
+        }
     }
 
     async fetchReports() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error("Sessão não encontrada. Faça login novamente.");
+
             const response = await fetch('/api/historico-doacoes/relatorios-salvos', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
             if (!response.ok) throw new Error('Falha ao buscar relatórios.');
             const data = await response.json();
@@ -115,6 +212,7 @@ class ReportManager {
         } catch (error) {
             this.allReports = [];
             this.renderTable();
+            this.showInfoModal(error.message, 'error');
         } finally {
             setTimeout(() => {
                 window.SiteLoader?.hide();
@@ -128,7 +226,7 @@ class ReportManager {
         const reportData = Object.fromEntries(formData.entries());
 
         if (new Date(reportData.data_fim_filtro) < new Date(reportData.data_inicio_filtro)) {
-            this.showToast('A data final não pode ser anterior à data inicial.', 'error');
+            this.showInfoModal('A data final não pode ser anterior à data inicial.', 'error');
             return;
         }
 
@@ -155,6 +253,8 @@ class ReportManager {
         this.toggleLoading(true, 'Buscando dados...');
         try {
             const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error("Sessão não encontrada. Faça login novamente.");
+
             const params = new URLSearchParams({
                 data_inicio_filtro: reportData.data_inicio_filtro,
                 data_fim_filtro: reportData.data_fim_filtro,
@@ -167,8 +267,7 @@ class ReportManager {
 
             const { entradas, saidas } = await dataResponse.json();
             if (entradas.length === 0 && saidas.length === 0) {
-                this.showToast('Nenhum dado encontrado para o período.', 'info');
-                if (deveSalvarRegistro) await this.saveReportRecord(reportData, 'vazio'); // Salva registro mesmo se vazio
+                this.showInfoModal('Nenhum dado encontrado para o período.', 'info');
                 return;
             }
 
@@ -184,12 +283,13 @@ class ReportManager {
                 await this.saveReportRecord(reportData, uploadData.path);
             }
 
-            this.showToast('PDF gerado com sucesso!', 'success');
+            this.showInfoModal('PDF gerado com sucesso!', 'success');
+
             const { data: urlData } = supabase.storage.from('donation_report').getPublicUrl(uploadData.path);
             if (urlData.publicUrl) window.open(urlData.publicUrl, '_blank');
 
         } catch (error) {
-            this.showToast(error.message, 'error');
+            this.showInfoModal(error.message, 'error');
         } finally {
             this.toggleLoading(false);
         }
@@ -198,6 +298,8 @@ class ReportManager {
     async saveReportRecord(reportData, filePath) {
         this.toggleLoading(true, 'Salvando registro...');
         const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("Sessão não encontrada.");
+
         const saveData = { ...reportData, caminho_arquivo_pdf: filePath };
         const saveResponse = await fetch('/api/historico-doacoes/adicionar', {
             method: 'POST',
@@ -208,25 +310,33 @@ class ReportManager {
         await this.fetchReports(); // Atualiza a lista na tela
     }
 
+    // Modal de Confirmação (Exclusão)
     async handleDelete(reportId) {
-        if (confirm('Tem certeza que deseja deletar este registro de relatório? O arquivo PDF não será deletado do storage.')) {
+        const message = 'Tem certeza que deseja deletar este registro de relatório? O arquivo PDF não será deletado do storage.';
+
+        // Mostra o modal de confirmação
+        this.showConfirmationModal(message, async () => {
             this.toggleLoading(true, 'Deletando...');
             try {
                 const { data: { session } } = await supabase.auth.getSession();
+                if (!session) throw new Error("Sessão não encontrada.");
+
                 const response = await fetch(`/api/historico-doacoes/deletar/${reportId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${session.access_token}` }
                 });
                 if (!response.ok) throw new Error('Falha ao deletar o relatório.');
-                this.showToast('Relatório deletado com sucesso.', 'success');
-                await this.fetchReports();
+
+                this.showInfoModal('Relatório deletado com sucesso.', 'success');
+                await this.fetchReports(); // Atualiza a tabela
             } catch (error) {
-                this.showToast(error.message, 'error');
+                this.showInfoModal(error.message, 'error');
             } finally {
                 this.toggleLoading(false);
             }
-        }
+        });
     }
+
 
     createPDF(reportData, entradas, saidas) {
         const { jsPDF } = window.jspdf;
@@ -235,23 +345,35 @@ class ReportManager {
         doc.setFontSize(18); doc.text('Relatório de Histórico de Doações', 14, 22);
         doc.setFontSize(11); doc.setTextColor(100);
         doc.text(`Responsável: ${reportData.responsavel}`, 14, 30);
+
+        // ================== AQUI ESTAVA O ERRO ==================
+        // Corrigido de 'repoData' para 'reportData'
         doc.text(`Período: ${new Date(reportData.data_inicio_filtro).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} a ${new Date(reportData.data_fim_filtro).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`, 14, 36);
+        // ========================================================
+
         doc.text(`Categoria: ${reportData.categoria_filtro || 'Geral'}`, 14, 42);
 
+        let startY = 55;
+
         if (entradas && entradas.length > 0) {
-            doc.setFontSize(14); doc.text('Doações Recebidas (Entradas)', 14, 55);
+            doc.setFontSize(14); doc.text('Doações Recebidas (Entradas)', 14, startY);
             doc.autoTable({
-                startY: 60,
+                startY: startY + 5,
                 head: [['Data', 'Categoria', 'Doador', 'Qtd.', 'Detalhes']],
                 body: entradas.map(e => [
                     new Date(e.data_entrada).toLocaleDateString('pt-BR', { timeZone: 'UTC' }), e.categoria?.nome || 'N/A', e.doador_origem_texto, e.quantidade, this.formatJsonDetails(e.detalhes)
                 ]),
                 headStyles: { fillColor: [114, 51, 15] },
             });
+            startY = doc.lastAutoTable.finalY;
+        } else {
+            doc.setFontSize(11); doc.text('Nenhuma entrada registrada neste período.', 14, startY + 5);
+            startY += 10;
         }
 
+
         if (saidas && saidas.length > 0) {
-            const startY = (doc.lastAutoTable.finalY || 50) + 15;
+            startY += 15;
             doc.setFontSize(14); doc.text('Doações Retiradas (Saídas)', 14, startY - 5);
             doc.autoTable({
                 startY: startY,
@@ -261,6 +383,9 @@ class ReportManager {
                 ]),
                 headStyles: { fillColor: [114, 51, 15] },
             });
+        } else {
+            startY += 15;
+            doc.setFontSize(11); doc.text('Nenhuma saída registrada neste período.', 14, startY - 5);
         }
 
         return doc.output('blob');

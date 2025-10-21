@@ -379,3 +379,110 @@ body {
     }
     /* --- FIM DA TRANSFORMAÇÃO DA TABELA --- */
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none; /* Começa escondido */
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Classe para ser usada via JS para mostrar o modal */
+.modal-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+#infoModalIcon{
+    font-size: 32px;
+    margin-bottom: 12px;
+    color: #693B11;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #693B11;
+}
+
+.modal-content p {
+    font-size: 16px;
+    color: #4a5568;
+    margin: 32px 0;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modal-btn {
+    border: none;
+    padding: 0.65rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    font-family: 'Lexend Deca', sans-serif;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.modal-btn-cancel {
+    background-color: transparent;
+    color: black;
+    border: black 1px solid;
+}
+
+.modal-btn-confirm {
+    background: #e2ccae;
+    color: #3d2106;
+}
+.modal-btn-confirm:hover {
+    background-color: #caae8d;
+}
+
+.modal-btn-ok {
+    background: #e2ccae;
+    color: #3d2106;
+    width: 100%; /* Faz o botão ocupar mais espaço */
+}
+.modal-btn-ok:hover {
+    background: #0069d9;
+}
+
+/* Ajuste para o botão OK quando for de sucesso */
+.modal-btn-ok.success {
+    background-color: #e2ccae;
+}
+.modal-btn-ok.success:hover {
+    background-color: #caae8d;
+}
+
+/* Ajuste para o botão OK quando for de erro */
+.modal-btn-ok.error {
+    background-color: #dc3545;
+}
+.modal-btn-ok.error:hover {
+    background-color: #c82333;
+}
