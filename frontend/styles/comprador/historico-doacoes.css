@@ -97,11 +97,10 @@ body {
     border-bottom: 2px solid #dee2e6;
 }
 
-/* ================== CORREÇÃO DA QUEBRA DE LINHA ================== */
+/* Correção da quebra de linha em desktop */
 .history-table td.coluna-periodo {
     white-space: nowrap;
 }
-/* ================================================================= */
 
 .history-table tbody tr {
     border-bottom: 1px solid #f1f3f5;
@@ -138,12 +137,13 @@ body {
     gap: 0.35rem;
     font-weight: 500;
 }
+
 .pdf-btn:hover {
     background-color: #caae8d;
     color: #3d2106;
 }
 
-/* ================== ESTILO DO NOVO BOTÃO DELETAR ================== */
+/* Botão Deletar */
 .delete-btn {
     background-color: transparent;
     color: #000000;
@@ -159,10 +159,7 @@ body {
     justify-content: center;
     gap: 0.35rem;
     font-weight: 500;
-
 }
-
-/* ================================================================== */
 
 
 /* ==========================================================================
@@ -233,8 +230,9 @@ body {
 }
 
 /* ==========================================================================
-    5. Overlays (Loading e Toasts)
+   5. Overlays (Loading e Toasts Antigos)
    ========================================================================== */
+/* Container de Toast (NÃO MAIS USADO, mas mantido caso outro script use) */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -242,27 +240,7 @@ body {
     z-index: 9999;
 }
 
-.toast {
-    background: white;
-    color: #291705ff;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    margin-bottom: 0.5rem;
-    min-width: 300px;
-    border-left: 4px solid;
-    transform: translateX(110%);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.215, 0.610, 0.355, 1);
-}
-.toast.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-.toast.success { border-left-color: #28a745; }
-.toast.error { border-left-color: #dc3545; }
-.toast.info { border-left-color: #17a2b8; }
-
+/* Estilo do Loading */
 #pdfLoading {
     position: fixed;
     top: 0;
@@ -290,33 +268,37 @@ body {
     justify-content: center;
     color: white;
     text-align: center;
-    z-index: 10000; /* <-- ADICIONE APENAS ESTA LINHA */
+    z-index: 10000;
 }
 
-/* Agora o seletor usa a nova classe .loading-text */
 .loading-text {
     font-size: 1.1rem;
     font-weight: 500;
     margin-top: 1.5rem;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .spinner {
     width: 50px;
     height: 50px;
-    border: 5px solid rgba(255,255,255,0.3);
+    border: 5px solid rgba(255, 255, 255, 0.3);
     border-top: 5px solid #FFF;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* ==========================================================================
-   6. Responsividade
+   6. Responsividade (BLOCO ATUALIZADO)
    ========================================================================== */
 @media (max-width: 1024px) {
     .relatorio-main-content {
@@ -324,22 +306,33 @@ body {
     }
 }
 
-@media (max-width: 600px) {
+/* ==================================================================
+   ATUALIZAÇÃO DA RESPONSIVIDADE DA TABELA 
+   Mudámos de 600px para 768px e melhorámos o layout do card.
+   ================================================================== */
+@media (max-width: 768px) {
     .relatorio-container {
         padding-top: 1rem;
     }
+
     .relatorio-header h1 {
         font-size: 2.5rem;
     }
 
     /* --- INÍCIO DA TRANSFORMAÇÃO DA TABELA --- */
 
-    /* 1. Escondemos o cabeçalho original da tabela, pois não será usado */
+    /* 1. Removemos a borda do 'wrapper', pois os cards terão a sua própria */
+    .table-wrapper {
+        border: none;
+        overflow-x: visible;
+    }
+
+    /* 2. Escondemos o cabeçalho original */
     .history-table thead {
         display: none;
     }
 
-    /* 2. Fazemos cada linha da tabela se comportar como um card */
+    /* 3. Fazemos cada linha (tr) virar um card */
     .history-table tr {
         display: block;
         border: 1px solid #dee2e6;
@@ -349,36 +342,77 @@ body {
         background: white;
     }
 
-    /* 3. Empilhamos as células umas sobre as outras */
+    .history-table tbody tr:hover {
+        background-color: white;
+        /* Desativa o hover de linha */
+    }
+
+    /* 4. Empilhamos as células (td) */
     .history-table td {
         display: block;
-        text-align: left; /* Alinha o conteúdo da célula à direita */
-        padding: 0.5rem;
-        border-bottom: 1px solid #f1f3f5;
         position: relative;
-    }
-    
-    .history-table td:last-child {
-        border-bottom: none; /* Remove a borda da última célula */
+        /* Essencial para o '::before' */
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid #f1f3f5;
+
+        /* A MÁGICA: Alinhamento e Espaçamento */
+        padding-left: 45%;
+        /* 1. Cria espaço à esquerda para o label */
+        text-align: right;
+        /* 2. Alinha o VALOR à direita */
+        min-height: 1.5rem;
+        /* 3. Garante altura mínima */
     }
 
-    /* 4. A MÁGICA: Adicionamos o título (do data-label) antes de cada célula */
+    .history-table td:last-child {
+        border-bottom: none;
+        /* Remove a borda da última célula */
+    }
+
+    /* 5. Adicionamos o TÍTULO (do data-label) */
     .history-table td::before {
-        content: attr(data-label); /* Pega o texto do atributo data-label */
+        content: attr(data-label);
+        /* Pega o texto do atributo data-label */
         position: absolute;
-        left: 0.5rem; /* Alinha o título à esquerda */
+        left: 0.5rem;
+        width: 40%;
+        /* Define uma largura para o label */
+
+        /* Alinhamento do TÍTULO */
+        text-align: left;
         font-weight: 600;
         color: #495057;
-        padding-right: 1rem;
     }
 
-    /* 5. Ajuste para a coluna de ações ficar alinhada à direita */
+    /* 6. Ajuste especial para a célula de AÇÕES */
+
+    /* Remove o padding e alinhamento da célula de Ações */
+    .history-table td[data-label="Ações"] {
+        padding-left: 0.5rem;
+        text-align: left;
+    }
+
+    /* Esconde o label "Ações:", pois é desnecessário */
+    .history-table td[data-label="Ações"]::before {
+        display: none;
+    }
+
+    /* Faz os botões alinharem à direita do card */
+    .history-table td[data-label="AÇÕES"] .action-buttons,
     .history-table td[data-label="Ações"] .action-buttons {
+        /* Duplicado para garantir */
         justify-content: flex-end;
         width: 100%;
     }
+
     /* --- FIM DA TRANSFORMAÇÃO DA TABELA --- */
 }
+
+
+/* ==========================================================================
+   7. Modal de Confirmação (NOVO)
+   ========================================================================== */
+
 
 .modal-overlay {
     position: fixed;
@@ -387,7 +421,8 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
-    display: none; /* Começa escondido */
+    display: none;
+    /* Começa escondido */
     align-items: center;
     justify-content: center;
     z-index: 10000;
@@ -405,13 +440,13 @@ body {
     background: white;
     padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     max-width: 400px;
     width: 90%;
     text-align: center;
 }
 
-#infoModalIcon{
+#infoModalIcon {
     font-size: 32px;
     margin-bottom: 12px;
     color: #693B11;
@@ -458,6 +493,7 @@ body {
     background: #e2ccae;
     color: #3d2106;
 }
+
 .modal-btn-confirm:hover {
     background-color: #caae8d;
 }
@@ -465,24 +501,28 @@ body {
 .modal-btn-ok {
     background: #e2ccae;
     color: #3d2106;
-    width: 100%; /* Faz o botão ocupar mais espaço */
+    width: 100%;
+    /* Faz o botão ocupar mais espaço */
 }
+
 .modal-btn-ok:hover {
-    background: #0069d9;
+    background: #caae8d;
 }
 
 /* Ajuste para o botão OK quando for de sucesso */
 .modal-btn-ok.success {
     background-color: #e2ccae;
 }
+
 .modal-btn-ok.success:hover {
     background-color: #caae8d;
 }
 
 /* Ajuste para o botão OK quando for de erro */
 .modal-btn-ok.error {
-    background-color: #dc3545;
+    background-color: #e2ccae;
 }
+
 .modal-btn-ok.error:hover {
-    background-color: #c82333;
+    background-color: #caae8d;
 }
