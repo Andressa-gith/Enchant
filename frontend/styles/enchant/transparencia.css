@@ -204,6 +204,7 @@ body {
 
 .tabs-nav {
     display: flex;
+    justify-content: space-between;
     padding: 15px 0;
 }
 
@@ -235,6 +236,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
+    outline: none;
 }
 
 .subtitulos {
@@ -607,6 +609,7 @@ CONTRATOS, AUDITORIAS, RELATÓRIOS
 .tab-button:hover {
     color: var(--primary-brown);
     text-decoration: none;
+    outline: none;
     /* Adicionado */
 }
 
@@ -614,6 +617,7 @@ CONTRATOS, AUDITORIAS, RELATÓRIOS
     color: var(--primary-brown);
     border-bottom-color: var(--primary-brown);
     font-weight: 600;
+    outline: none;
 }
 
 /* Content Area */
