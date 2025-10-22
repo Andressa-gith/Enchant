@@ -872,9 +872,22 @@ export const enviarRequisicao = async (req, res) => {
     let arquivosEnviados = [];
 
     try {
-        const { nomeInstituicao, email, cnpj, telefone, estado, cidade, senha } = req.body;
+        // ✅ CORRIGIDO: Nomes dos campos atualizados
+        const { 
+            nome_instituicao,      // era: nomeInstituicao
+            tipo_instituicao,      // 🆕 NOVO
+            email, 
+            cnpj, 
+            tel,                   // era: telefone
+            cep,                   // 🆕 NOVO
+            estado, 
+            cidade, 
+            bairro,                // 🆕 NOVO
+            senha 
+        } = req.body;
 
-        if (!nomeInstituicao || !email || !cnpj || !senha) {
+        // ✅ VALIDAÇÃO ATUALIZADA
+        if (!nome_instituicao || !email || !cnpj || !senha) {
             return res.status(400).json({ message: 'Campos obrigatórios ausentes.' });
         }
 
@@ -927,9 +940,15 @@ export const enviarRequisicao = async (req, res) => {
         const { data: requisicao, error: requisicaoError } = await supabase
             .from('requisicao_cadastro')
             .insert({
-                nome_instituicao: nomeInstituicao,
+                nome_instituicao: nome_instituicao,     // ✅
+                tipo_instituicao: tipo_instituicao,     // 🆕
                 email_contato: email,
-                cnpj, telefone, estado, cidade,
+                cnpj, 
+                telefone: tel,                          // ✅ tel -> telefone (coluna do banco)
+                cep: cep,                               // 🆕
+                estado, 
+                cidade,
+                bairro: bairro,                         // 🆕
                 senha_hash: senhaHash,
                 senha_original: senha,
                 requisicao_status: 'pendente',
@@ -1078,28 +1097,28 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         if (authError) throw authError;
         novoUsuarioId = authData.user.id;
 
-        await supabase.from('instituicao').insert({
-            id: novoUsuarioId,
-            nome: requisicao.nome_instituicao,
-            cnpj: requisicao.cnpj,
-            email_contato: requisicao.email_contato,
-            tipo_instituicao: 'ONG',
-            cidade: requisicao.cidade,
-            estado: requisicao.estado,
-            primeiro_login: true
-        });
+// ✅ Na função aprovarRequisicao (e aprovarRequisicaoPorEmail)
+await supabase.from('instituicao').insert({
+    id: novoUsuarioId,
+    nome: requisicao.nome_instituicao,              // ✅
+    tipo_instituicao: requisicao.tipo_instituicao,  // 🆕
+    cnpj: requisicao.cnpj,
+    email_contato: requisicao.email_contato,
+    // ... outros campos
+});
 
-        await supabase.from('endereco').insert({
-            instituicao_id: novoUsuarioId,
-            cidade: requisicao.cidade,
-            estado: requisicao.estado
-        });
+await supabase.from('endereco').insert({
+    instituicao_id: novoUsuarioId,
+    cep: requisicao.cep,        // 🆕
+    bairro: requisicao.bairro,  // 🆕
+    cidade: requisicao.cidade,
+    estado: requisicao.estado
+});
 
-        await supabase.from('telefone').insert({
-            instituicao_id: novoUsuarioId,
-            numero: requisicao.telefone
-        });
-
+await supabase.from('telefone').insert({
+    instituicao_id: novoUsuarioId,
+    numero: requisicao.telefone  // ✅ No banco é 'telefone'
+});
         await supabase.from('requisicao_cadastro').update({
             requisicao_status: 'aprovada',
             data_processamento: new Date().toISOString(),
