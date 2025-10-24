@@ -311,16 +311,16 @@ main {
 .dashboard-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 20px;
+    gap: 35px;
     max-width: 1400px;
     margin: 0 auto;
+    margin-top: 10px;
 }
 
 .grafico {
-    padding: 20px;
+    padding: 35px;
     background-color: #fff;
     border-radius: 8px;
-    border: 1px solid #dee2e6;
     min-width: 0;
 }
 

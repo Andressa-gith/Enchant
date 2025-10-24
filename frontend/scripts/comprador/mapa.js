@@ -100,45 +100,45 @@ function exibirResultadoPadrao() {
   resultadoContainer.innerHTML = `
     <div class="card-resultado">
       <h4>Nenhum município selecionado</h4>
-      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px; font-style: italic;">
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">
         Use a busca acima para consultar informações detalhadas de um município.
       </p>
       <div class="resultado-grid">
         <div class="resultado-item">
           <span class="label">Risco (Presente)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Classe Risco (Presente)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Risco (2030 Otimista)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Classe Risco (2030 Otimista)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Risco (2050 Otimista)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Classe Risco (2050 Otimista)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Vulnerabilidade (Presente)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Ameaça (Presente)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
         <div class="resultado-item">
           <span class="label">Exposição (Presente)</span>
-          <span class="value">--</span>
+          <span class="value"></span>
         </div>
       </div>
     </div>
@@ -454,6 +454,27 @@ function criarGraficoDeRisco(dadosCsv) {
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold',
+            family: "'Lexend Deca', sans-serif"
+          },
+          bodyFont: {
+            size: 13,
+            family: "'Lexend Deca', sans-serif"
+          },
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          displayColors: true,
+          callbacks: {
+            label: function(context) {
+              return ' ' + context.parsed.y + ' municípios';
+            }
+          }
         }
       },
       scales: {
@@ -461,7 +482,19 @@ function criarGraficoDeRisco(dadosCsv) {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Número de Municípios'
+            text: 'Número de Municípios',
+            font: {
+              family: "'Lexend Deca', sans-serif", // <-- Sua fonte
+              size: 12, // <-- Tamanho da fonte
+              weight: 'normal' // <-- Peso (bold, normal, etc.)
+            }
+          },
+          ticks: {
+            font: {
+              family: "'Lexend Deca', sans-serif", // <-- Sua fonte
+              size: 12, // <-- Tamanho da fonte
+              weight: 'normal' // <-- Peso (bold, normal, etc.)
+            }
           }
         },
         x: {
@@ -470,7 +503,8 @@ function criarGraficoDeRisco(dadosCsv) {
             minRotation: 0,
 
             font: {
-              size: 11
+              size: 11,
+              family: "'Lexend Deca', sans-serif"
             }
           }
         }
@@ -526,25 +560,72 @@ function criarGraficoDeRiscoEmpilhado(dadosPresente, dados2030, dados2050) {
     type: 'bar',
     data: {
       labels: labels,
-      datasets: datasets
+      datasets: datasets,
     },
     options: {
       responsive: true,
       plugins: {
         legend: {
-          position: 'bottom' // Mostra a legenda de cores embaixo
+          position: 'bottom', // Mostra a legenda de cores embaixo
+          labels: {
+            font: {
+              family: "'Lexend Deca', sans-serif",
+              size: 13,
+              weight: 'normal' 
+            },
+            color: '#333'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold',
+            family: "'Lexend Deca', sans-serif"
+          },
+          bodyFont: {
+            size: 13,
+            family: "'Lexend Deca', sans-serif"
+          },
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          displayColors: true,
+          callbacks: {
+            label: function(context) {
+              return ' ' + context.parsed.y + ' municípios';
+            }
+          }
         }
       },
       scales: {
         x: {
           stacked: true, // A MÁGICA: Empilha as barras no eixo X
+          ticks: {
+            font: {
+              family: "'Lexend Deca', sans-serif", // <-- Sua fonte
+              size: 12, // <-- Tamanho da fonte
+              weight: 'normal' // <-- Peso (bold, normal, etc.)
+            }
+          }
         },
         y: {
           stacked: true, // A MÁGICA: Empilha as barras no eixo Y
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Número de Municípios'
+            font: {
+              family: "'Lexend Deca', sans-serif", // <-- Sua fonte
+              size: 12, // <-- Tamanho da fonte
+              weight: 'normal' // <-- Peso (bold, normal, etc.)
+            }
+          },
+          ticks: {
+            font: {
+              family: "'Lexend Deca', sans-serif", // <-- Sua fonte
+              size: 12, // <-- Tamanho da fonte
+              weight: 'normal' // <-- Peso (bold, normal, etc.)
+            }
           }
         }
       }
