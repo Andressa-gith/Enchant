@@ -123,10 +123,10 @@
 }
     /* --- MUDANÇA AQUI (COR DO ERRO) --- */
     .error-message {
-      /* Cor alterada de vermelho para um tom dourado/marrom */
-      background: linear-gradient(135deg, #f0c05b, #EC9E07);
-      /* Cor do texto alterada para um marrom escuro */
-      color: #522d06 !important;
+      /* Cor alterada para um tom marrom escuro */
+      background: linear-gradient(135deg, #a36d40, #804d2a);
+      /* Cor do texto alterada para branco para contraste */
+      color: #ffffff !important;
       padding: 12px 16px;
       border-radius: 8px;
       font-size: 14px;
@@ -135,9 +135,9 @@
       align-items: center;
       gap: 10px;
       /* Sombra alterada para combinar com a nova cor */
-      box-shadow: 0 4px 12px rgba(236, 158, 7, 0.3);
-      /* Borda alterada para um marrom */
-      border-left: 4px solid #a36d40;
+      box-shadow: 0 4px 12px rgba(128, 77, 42, 0.3);
+      /* Borda alterada para um marrom mais escuro */
+      border-left: 4px solid #522d06;
       position: relative;
       overflow: hidden;
     }
@@ -161,7 +161,7 @@
     /* --- MUDANÇA AQUI (COR DO ÍCONE DE ERRO) --- */
     .error-icon {
       font-size: 16px;
-      color: #522d06; /* Alterado de 'white' para marrom escuro */
+      color: #ffffff; /* Alterado para 'white' para contrastar com o fundo marrom */
       flex-shrink: 0;
     }
 
@@ -883,7 +883,7 @@ footer-left img {
 
 
 .copyright {
-  margin-top: 30px !important;
+  margin-top: -30px;
 }
 
 
