@@ -95,7 +95,9 @@ p {
     fill: currentColor;
 }
 
-
+#oio{
+    color: black;
+}
 
 @media (max-width: 768px) {
     .nav-tab {
