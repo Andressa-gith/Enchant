@@ -883,7 +883,7 @@ footer-left img {
 
 
 .copyright {
-  margin-top: -30px;
+  margin-top: 30px !important;
 }
 
 
@@ -953,7 +953,7 @@ footer-left img {
 
 
   .copyright {
-    margin-bottom: 20px;
+    margin-bottom: 20px !important;
   }
 
 
