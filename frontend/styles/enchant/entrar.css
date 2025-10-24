@@ -334,24 +334,13 @@
 }
 
 
-/* --- ALTERAÇÃO 1 (Sticky Footer) --- */
 body {
   font-family: 'Lexend Deca', serif;
   font-weight: 400;
   overflow-x: hidden;
-  
-  /* Adicionado para o Sticky Footer */
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
-/* --- ADICIONADO (Sticky Footer) --- */
-/* Este seletor assume que você adicionou <div class="page-wrapper"> no seu HTML */
-.page-wrapper {
-  flex-grow: 1;
-}
-/* ---------------------------------- */
+
 
 
 .h1 {
@@ -419,7 +408,7 @@ body {
     padding: 0;
     line-height: 0;
     position: relative;
-    /* top: 33px; */ /* <-- ALTERAÇÃO 2 (Removido) */
+    top: 33px;
   }
 
   .faixa-imagem img {
@@ -594,7 +583,7 @@ input[type="password"] {
   padding: 0;
   line-height: 0;
   position: relative;
-  /* top: 33px; */ /* <-- ALTERAÇÃO 2 (Removido) */
+  top: 33px;
 }
 
 .faixa-imagem img {
@@ -827,12 +816,10 @@ button[type="submit"]:hover {
 
 }
 
-/* --- ALTERAÇÃO 3 (Remoção da Margem) --- */
 footer {
   background-color: #fcf2e8;
   padding: 20px 50px;
-  /* margin-top: 33px; */ /* <-- Alterado */
-  margin-top: 0;      /* <-- Adicionado */
+  margin-top: 33px;
 
   font-family: "Lexend Deca", sans-serif;
   z-index: 2;
