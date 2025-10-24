@@ -172,25 +172,27 @@ a:hover {
 /* ==================SHEPERD==================*/
 
 .shepherd-button.btn-principal {
-    background-color: #61350C; /* Marrom escuro */
-    color: white;
+    background-color: #e2ccae;
+    color: #3d2106;
+    border-radius: 6px
 }
 
 .shepherd-button.btn-secundario {
     background-color: transparent;
-    color: #61350C;
-    border: 1px solid #61350C;
+    color: #000000;
+    border-radius: 6px;
+    border: black 1px solid;
 }
 
 body .shepherd-button.btn-principal:hover {
-    background-color: #3f2206;
-    color: whitesmoke;
+    background-color: #caae8d;
+    color: #3d2106;
     transition: all 0.3s ease;
 }
 
 body .shepherd-button.btn-secundario:hover {
-   background-color: #b9b9b9;
-   color: #61350C;
+    background-color: transparent;
+    color: #000000;
    transition: all 0.3s ease;
 }
 
@@ -202,13 +204,13 @@ body .shepherd-button.btn-secundario:hover {
 }
 
 .shepherd-custom .shepherd-header {
-    background-color: #61350C !important;
+    background-color: #caae8d !important;
     padding: 1rem 1.5rem;
     border-radius: 8px 8px 0 0;
 }
 
 .shepherd-custom .shepherd-title {
-    color: #FFFFFF; 
+    color: #3d2106; 
     font-weight: 600;
     font-size: 1.1rem;
 }
