@@ -7,20 +7,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const API_CEP_URL = (cep) => `https://viacep.com.br/ws/${cep}/json/`;
 
     // --- SELETORES DE ELEMENTOS ---
-    // Formulários e secções principais
-    const formDados = document.getElementById('dados-form');
-    const formDocumentos = document.getElementById('documentos-form');
-    const primeiraSecao = document.getElementById('primeira-parte');
-    const segundaSecao = document.getElementById('segunda-parte');
+    const formDados = document.getElementById('req_form_dados');
+    const formDocumentos = document.getElementById('req_form_documentos');
+    const primeiraSecao = document.getElementById('req_primeira_parte');
+    const segundaSecao = document.getElementById('req_segunda_parte');
 
-    // Campos do primeiro formulário
-    const inputCep = document.getElementById('cep');
-    const selectEstado = document.getElementById('estado');
-    const selectCidade = document.getElementById('cidade');
-    const inputSenha = document.getElementById('senha');
-
-    // Botões
-    const btnVoltar = document.getElementById('btn-voltar');
+    const inputCep = document.getElementById('req_cep');
+    const selectEstado = document.getElementById('req_estado');
+    const selectCidade = document.getElementById('req_cidade');
+    const inputSenha = document.getElementById('req_senha');
+    const btnVoltar = document.getElementById('req_btn_voltar_nav');
 
     // Objeto para armazenar os ficheiros de upload
     const arquivosPorCategoria = {
@@ -31,19 +27,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- FUNÇÕES DE INICIALIZAÇÃO ---
 
-    /**
-     * Função principal que inicia a lógica do formulário.
-     */
     function inicializarFormulario() {
         if (segundaSecao) segundaSecao.style.display = 'none';
         carregarEstados();
         adicionarEventListeners();
-        document.querySelectorAll('.upload-area').forEach(configurarAreaUpload);
+        document.querySelectorAll('.req_upload_area').forEach(configurarAreaUpload);
     }
 
-    /**
-     * Centraliza a adição de todos os event listeners.
-     */
     function adicionarEventListeners() {
         if (formDados) formDados.addEventListener('submit', handleDadosSubmit);
         if (formDocumentos) formDocumentos.addEventListener('submit', handleDocumentosSubmit);
@@ -68,143 +58,200 @@ document.addEventListener('DOMContentLoaded', function () {
         window.scrollTo(0, 0);
     }
 
-    // --- MANIPULADORES DE EVENTOS (HANDLERS) ---
+    // --- MANIPULADORES DE EVENTOS ---
 
-    /**
-     * Lida com a submissão do primeiro formulário (dados da instituição).
-     * @param {Event} event - O evento de submissão.
-     */
     function handleDadosSubmit(event) {
         event.preventDefault();
-        if (validarPrimeiraSecao()) {
+        const erros = validarPrimeiraSecao();
+        if (erros.length === 0) {
             irParaSegundaSecao();
+        } else {
+            mostrarModal('Erro de Validação', erros);
         }
     }
 
-    /**
-     * Lida com a submissão do segundo formulário (documentos).
-     * @param {Event} event - O evento de submissão.
-     */
     function handleDocumentosSubmit(event) {
         event.preventDefault();
         const erros = validarSegundaSecao();
         if (erros.length > 0) {
-            const listaErros = erros.map(erro => `<li>${erro}</li>`).join('');
-            mostrarModal('Erro de Validação', `<ul>${listaErros}</ul>`);
+            mostrarModal('Erro de Validação', erros);
         } else {
             enviarSolicitacao();
         }
     }
 
-    /**
-     * Atualiza a interface para dar feedback sobre os requisitos da senha.
-     */
     function handleSenhaInput() {
         const validacao = validarRequisitosSenha(this.value);
-        document.getElementById('minimodigitos').style.color = validacao.temMinimo8 ? 'green' : '#FF0404';
-        document.getElementById('doisnumeros').style.color = validacao.tem2Numeros ? 'green' : '#FF0404';
-        document.getElementById('umcaracterespecial').style.color = validacao.temCaractereEspecial ? 'green' : '#FF0404';
-        document.getElementById('letramaiuscula').style.color = validacao.temMaiuscula ? 'green' : '#FF0404';
+        document.getElementById('req_minimo_digitos').style.color = validacao.temMinimo8 ? 'green' : '#FF0404';
+        document.getElementById('req_dois_numeros').style.color = validacao.tem2Numeros ? 'green' : '#FF0404';
+        document.getElementById('req_um_caracter_especial').style.color = validacao.temCaractereEspecial ? 'green' : '#FF0404';
+        document.getElementById('req_letra_maiuscula').style.color = validacao.temMaiuscula ? 'green' : '#FF0404';
     }
-
 
     // --- VALIDAÇÃO DOS FORMULÁRIOS ---
 
-    /**
-     * (MODIFICADO) Mostra uma mensagem de erro e adiciona a borda vermelha.
-     */
     function showError(inputId, message) {
         const inputElement = document.getElementById(inputId);
         if (!inputElement) return;
         
-        // Adiciona a classe para a borda vermelha
         inputElement.classList.add('is-invalid');
-
-        const errorElement = inputElement.closest('.form-group').querySelector('.error-message');
+        const errorElement = inputElement.closest('.form-group').querySelector('.req_error_message');
         if (errorElement) {
             errorElement.textContent = message;
         }
     }
 
-    /**
-     * (MODIFICADO) Limpa todas as mensagens de erro e bordas vermelhas.
-     */
     function clearErrors() {
-        // Remove as mensagens de erro
-        document.querySelectorAll('.error-message').forEach(msg => {
+        document.querySelectorAll('.req_error_message').forEach(msg => {
             msg.textContent = '';
         });
-        // Remove as classes de borda vermelha
         document.querySelectorAll('.is-invalid').forEach(field => {
             field.classList.remove('is-invalid');
         });
     }
 
-    /**
-     * Valida todos os campos da primeira parte do formulário.
-     * @returns {boolean} - True se o formulário for válido, false caso contrário.
-     */
+    function validarEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+    function validarCNPJ(cnpj) {
+        const cnpjLimpo = cnpj.replace(/\D/g, '');
+        return cnpjLimpo.length === 14;
+    }
+
+    function validarTelefone(telefone) {
+        const telLimpo = telefone.replace(/\D/g, '');
+        return telLimpo.length >= 10;
+    }
+
     function validarPrimeiraSecao() {
         clearErrors();
-        let isValid = true;
+        const erros = [];
 
         const fields = [
-            { id: 'nome_instituicao', msg: 'O nome da instituição é obrigatório.' },
-            { id: 'tipo_instituicao', msg: 'Selecione o tipo de instituição.' },
-            { id: 'cnpj', msg: 'O CNPJ é obrigatório.' },
-            { id: 'email', msg: 'O email é obrigatório.' },
-            { id: 'tel', msg: 'O telefone é obrigatório.' },
-            { id: 'cep', msg: 'O CEP é obrigatório.' },
-            { id: 'estado', msg: 'Selecione um estado.' },
-            { id: 'cidade', msg: 'Selecione uma cidade.' },
-            { id: 'bairro', msg: 'O bairro é obrigatório.' },
-            { id: 'senha', msg: 'A senha é obrigatória.' },
-            { id: 'confirmarsenha', msg: 'A confirmação de senha é obrigatória.' },
+            { 
+                id: 'req_nome_instituicao', 
+                label: 'Nome da Instituição',
+                msg: 'O nome da instituição é obrigatório.' 
+            },
+            { 
+                id: 'req_tipo_instituicao', 
+                label: 'Tipo de Instituição',
+                msg: 'Selecione o tipo de instituição.' 
+            },
+            { 
+                id: 'req_cnpj', 
+                label: 'CNPJ',
+                msg: 'O CNPJ é obrigatório.',
+                validacao: (valor) => {
+                    if (!valor) return 'O CNPJ é obrigatório.';
+                    if (!validarCNPJ(valor)) return 'CNPJ inválido. Deve conter 14 dígitos.';
+                    return null;
+                }
+            },
+            { 
+                id: 'req_email', 
+                label: 'Email',
+                msg: 'O email é obrigatório.',
+                validacao: (valor) => {
+                    if (!valor) return 'O email é obrigatório.';
+                    if (!validarEmail(valor)) return 'Email inválido. Verifique o formato (exemplo@dominio.com).';
+                    return null;
+                }
+            },
+            { 
+                id: 'req_tel', 
+                label: 'Telefone',
+                msg: 'O telefone é obrigatório.',
+                validacao: (valor) => {
+                    if (!valor) return 'O telefone é obrigatório.';
+                    if (!validarTelefone(valor)) return 'Telefone inválido. Deve conter no mínimo 10 dígitos.';
+                    return null;
+                }
+            },
+            { 
+                id: 'req_cep', 
+                label: 'CEP',
+                msg: 'O CEP é obrigatório.' 
+            },
+            { 
+                id: 'req_estado', 
+                label: 'Estado',
+                msg: 'Selecione um estado.' 
+            },
+            { 
+                id: 'req_cidade', 
+                label: 'Cidade',
+                msg: 'Selecione uma cidade.' 
+            },
+            { 
+                id: 'req_bairro', 
+                label: 'Bairro',
+                msg: 'O bairro é obrigatório.' 
+            },
+            { 
+                id: 'req_senha', 
+                label: 'Senha',
+                msg: 'A senha é obrigatória.',
+                validacao: (valor) => {
+                    if (!valor) return 'A senha é obrigatória.';
+                    const validacao = validarRequisitosSenha(valor);
+                    if (!validacao.valida) return 'A senha não atende aos requisitos de segurança.';
+                    return null;
+                }
+            },
+            { 
+                id: 'req_confirmar_senha', 
+                label: 'Confirmação de Senha',
+                msg: 'A confirmação de senha é obrigatória.' 
+            },
         ];
 
         fields.forEach(field => {
             const input = document.getElementById(field.id);
-            if (!input || !input.value.trim()) {
+            const valor = input ? input.value.trim() : '';
+
+            if (field.validacao) {
+                const erro = field.validacao(valor);
+                if (erro) {
+                    showError(field.id, erro);
+                    erros.push(`<strong>${field.label}:</strong> ${erro}`);
+                }
+            } else if (!valor) {
                 showError(field.id, field.msg);
-                isValid = false;
+                erros.push(`<strong>${field.label}:</strong> ${field.msg}`);
             }
         });
 
-        const senha = document.getElementById('senha').value;
-        const confirmarSenha = document.getElementById('confirmarsenha').value;
+        // Validação de senhas coincidentes
+        const senha = document.getElementById('req_senha').value;
+        const confirmarSenha = document.getElementById('req_confirmar_senha').value;
         if (senha && confirmarSenha && senha !== confirmarSenha) {
-            showError('confirmarsenha', 'As senhas não coincidem.');
-            isValid = false;
+            const mensagem = 'As senhas não coincidem.';
+            showError('req_confirmar_senha', mensagem);
+            erros.push(`<strong>Confirmação de Senha:</strong> ${mensagem}`);
         }
 
-        if (senha && !validarRequisitosSenha(senha).valida) {
-            showError('senha', 'A senha não atende aos requisitos de segurança.');
-            isValid = false;
-        }
-
-        return isValid;
+        return erros;
     }
 
-    /**
-     * Valida os requisitos do formulário de upload de documentos.
-     * @returns {string[]} - Uma lista de mensagens de erro.
-     */
     function validarSegundaSecao() {
         const erros = [];
+        
         if (arquivosPorCategoria['declaracao-renda'].length === 0) {
-            erros.push('A "Declaração de que não possui receita própria" é obrigatória.');
+            erros.push('<strong>Declaração de Receita:</strong> A "Declaração de que não possui receita própria suficiente" é obrigatória.');
         }
 
         const categoriasComArquivos = Object.values(arquivosPorCategoria)
             .filter(categoria => categoria.length > 0).length;
 
         if (categoriasComArquivos < 3) {
-            erros.push('É necessário enviar documentos de pelo menos 3 categorias diferentes.');
+            erros.push('<strong>Documentos Insuficientes:</strong> É necessário enviar documentos de pelo menos 3 categorias diferentes (incluindo a declaração obrigatória).');
         }
 
         return erros;
     }
-
 
     // --- LÓGICA DE SENHA ---
 
@@ -236,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         } catch (error) {
             console.error(error);
-            mostrarModal('Erro de API', 'Não foi possível carregar a lista de estados.');
+            mostrarModal('Erro de API', ['Não foi possível carregar a lista de estados.']);
         }
     }
 
@@ -260,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectCidade.disabled = false;
         } catch (error) {
             console.error(error);
-            mostrarModal('Erro de API', 'Não foi possível carregar a lista de cidades.');
+            mostrarModal('Erro de API', ['Não foi possível carregar a lista de cidades.']);
         }
     }
     
@@ -274,17 +321,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
             if (data.erro) {
-                showError('cep', 'CEP não encontrado. Verifique o número digitado.');
+                showError('req_cep', 'CEP não encontrado. Verifique o número digitado.');
                 return;
             }
 
-            document.getElementById('bairro').value = data.bairro;
+            document.getElementById('req_bairro').value = data.bairro;
             selectEstado.value = data.uf;
             await carregarCidades(data.uf);
             selectCidade.value = data.localidade;
         } catch (error) {
             console.error(error);
-            showError('cep', 'Erro ao buscar o CEP. Tente novamente.');
+            showError('req_cep', 'Erro ao buscar o CEP. Tente novamente.');
         }
     }
 
@@ -314,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function adicionarArquivo(categoria, arquivo) {
         const erro = validarArquivo(arquivo);
         if (erro) {
-            mostrarModal('Erro de Upload', erro);
+            mostrarModal('Erro de Upload', [erro]);
             return;
         }
         const idUnico = Date.now() + Math.random();
@@ -327,7 +374,6 @@ document.addEventListener('DOMContentLoaded', function () {
         atualizarListaArquivos(categoria);
     }
 
-    // Tornamos esta função acessível globalmente para o onclick funcionar
     window.removerArquivo = function(categoria, id) {
         arquivosPorCategoria[categoria] = arquivosPorCategoria[categoria].filter(
             item => item.id !== id
@@ -336,19 +382,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function atualizarListaArquivos(categoria) {
-        const listaContainer = document.querySelector(`.upload-area[data-categoria="${categoria}"] + .arquivos-lista`);
+        const listaContainer = document.querySelector(`.req_upload_area[data-categoria="${categoria}"] + .req_arquivos_lista`);
         if (!listaContainer) return;
         listaContainer.innerHTML = '';
 
         arquivosPorCategoria[categoria].forEach(item => {
             const arquivoDiv = document.createElement('div');
-            arquivoDiv.className = 'arquivo-item'; // Adicione uma classe para estilização
+            arquivoDiv.className = 'req_arquivo_item';
             arquivoDiv.innerHTML = `
-                <div class="arquivo-info">
+                <div class="req_arquivo_info">
                     <i class="fas fa-file-alt"></i>
-                    <span>${item.nome} (${formatarTamanhoArquivo(item.tamanho)})</span>
+                    <span class="req_arquivo_nome">${item.nome} (${formatarTamanhoArquivo(item.tamanho)})</span>
                 </div>
-                <button type="button" class="remover-arquivo" onclick="removerArquivo('${categoria}', ${item.id})">
+                <button type="button" class="req_remover_arquivo" onclick="removerArquivo('${categoria}', ${item.id})">
                     <i class="fas fa-times"></i>
                 </button>
             `;
@@ -358,44 +404,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function configurarAreaUpload(area) {
         const categoria = area.dataset.categoria;
-        const input = area.querySelector('.upload-input');
+        const input = area.querySelector('.req_upload_input');
 
         area.addEventListener('click', () => input.click());
         area.addEventListener('dragover', (e) => {
             e.preventDefault();
-            area.classList.add('dragover');
+            area.classList.add('req_dragover');
         });
-        area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+        area.addEventListener('dragleave', () => area.classList.remove('req_dragover'));
         area.addEventListener('drop', (e) => {
             e.preventDefault();
-            area.classList.remove('dragover');
+            area.classList.remove('req_dragover');
             const arquivos = Array.from(e.dataTransfer.files);
             arquivos.forEach(arquivo => adicionarArquivo(categoria, arquivo));
         });
         input.addEventListener('change', (e) => {
             const arquivos = Array.from(e.target.files);
             arquivos.forEach(arquivo => adicionarArquivo(categoria, arquivo));
-            e.target.value = ''; // Limpa o input para permitir selecionar o mesmo ficheiro novamente
+            e.target.value = '';
         });
     }
 
     // --- ENVIO DA SOLICITAÇÃO FINAL ---
     
     async function enviarSolicitacao() {
-        const btnEnviar = document.getElementById('btn-enviar');
+        const btnEnviar = document.getElementById('req_btn_enviar');
         btnEnviar.disabled = true;
         btnEnviar.textContent = 'Enviando...';
 
         try {
             const formData = new FormData();
 
-            // Adiciona os dados de texto do primeiro formulário
-            const camposTexto = ['nome_instituicao', 'tipo_instituicao', 'cnpj', 'email', 'tel', 'cep', 'estado', 'cidade', 'bairro', 'senha'];
+            const camposTexto = ['req_nome_instituicao', 'req_tipo_instituicao', 'req_cnpj', 'req_email', 'req_tel', 'req_cep', 'req_estado', 'req_cidade', 'req_bairro', 'req_senha'];
             camposTexto.forEach(id => {
-                formData.append(id, document.getElementById(id).value.trim());
+                const nomeCampoBackend = id.replace('req_', ''); 
+                formData.append(nomeCampoBackend, document.getElementById(id).value.trim());
             });
 
-            // Adiciona os ficheiros com as etiquetas corretas que o backend espera
             for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
                 listaDeFicheiros.forEach((item, index) => {
                     const nomeDoCampo = `${categoria}_${index + 1}`;
@@ -403,7 +448,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
-            // Envia para o backend
             const response = await fetch('/api/requisicao/enviar', {
                 method: 'POST',
                 body: formData
@@ -415,33 +459,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error(result.message || 'Ocorreu um erro no servidor ao enviar a requisição.');
             }
             
-            mostrarModal('Requisição Enviada com Sucesso!', result.message || 'A sua solicitação foi enviada. Receberá um email quando a sua conta for analisada e aprovada.');
+            mostrarModal('Requisição Enviada com Sucesso!', [result.message || 'A sua solicitação foi enviada. Receberá um email quando a sua conta for analisada e aprovada.'], true);
             
             setTimeout(() => {
-                window.location.href = '/entrar'; // Redireciona para a página de login
+                window.location.href = '/entrar';
             }, 3000);
 
         } catch (error) {
             console.error('Erro ao enviar solicitação:', error);
-            mostrarModal('Erro ao Enviar', error.message);
+            mostrarModal('Erro ao Enviar', [error.message]);
             btnEnviar.disabled = false;
             btnEnviar.textContent = 'Enviar';
         }
     }
 
-    // --- FUNÇÃO UTILITÁRIA DE MODAL ---
+    // --- FUNÇÃO DE MODAL ---
     
-    function mostrarModal(titulo, mensagem) {
-        const modalTitle = document.getElementById('errorModalLabel');
-        const modalBody = document.getElementById('errorModalBody');
+    function mostrarModal(titulo, mensagensArray, isSucesso = false) {
+        const modalTitle = document.getElementById('req_errorModalLabel');
+        const modalBody = document.getElementById('req_errorModalBody');
 
         if (modalTitle && modalBody) {
             modalTitle.textContent = titulo;
-            modalBody.innerHTML = mensagem; // Usamos innerHTML para renderizar as tags <li>
-            $('#errorModal').modal('show'); // Usa jQuery para mostrar o modal do Bootstrap
+            
+            // Formata as mensagens como lista HTML
+            const listaHTML = mensagensArray.map(msg => `<li>${msg}</li>`).join('');
+            modalBody.innerHTML = `<ul>${listaHTML}</ul>`;
+            
+            // Usa jQuery para abrir o modal
+            $('#req_errorModal').modal('show');
         } else {
-            // Fallback caso o modal não exista ou jQuery não carregue
-            alert(`${titulo}\n\n${mensagem.replace(/<li>/g, '- ').replace(/<\/li>|<ul>|<\/ul>/g, '')}`);
+            // Fallback para navegadores sem jQuery
+            const mensagemTexto = mensagensArray.join('\n- ');
+            alert(`${titulo}\n\n${mensagemTexto}`);
         }
     }
 

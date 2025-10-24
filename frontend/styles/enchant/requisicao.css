@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
 
-/* ========== VARIÁVEIS CSS ========== */
+/* ========== VARIÁVEIS CSS (INTOCADAS) ========== */
 :root {
 --corfundo: #F5F5F5;
 --corfundo-footer: #fcf2e8;
@@ -17,7 +17,7 @@
 --cor-placeholder: #757575;
 }
 
-/* ========== RESET E BASE ========== */
+/* ========== RESET E BASE (INTOCADOS) ========== */
 * {
     margin: 0;
     padding: 0;
@@ -34,7 +34,9 @@ body {
     justify-content: space-between;
 }
 
-main {
+/* ========== ESTILOS ESCOPADOS PARA A PÁGINA DE REQUISIÇÃO ========== */
+
+#pagina-requisicao {
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -42,7 +44,8 @@ main {
     margin-top: 80px;
 }
 
-main h2, .pagamento {
+/* Classe personalizada renomeada */
+#pagina-requisicao .req_pagamento {
     font-family: "Passion One";
     color: var(--cortitulo);
     text-align: center;
@@ -50,23 +53,26 @@ main h2, .pagamento {
     font-weight: 500;
 }
 
-.container {
+
+#pagina-requisicao .container {
     border: 1.5px #4E3629 solid;
     padding: 2rem;
-    width: 90%;
+    width: 86%;
     max-width: 1200px;
     margin: 40px auto 0;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
-.recomendações {
+.req_recomendacoes {
     padding: 0 1rem 1rem;
     font-size: 16px;
     text-align: center;
 }
 
-/* --- Estilos do Formulário --- */
-.form-control {
+/
+
+
+#pagina-requisicao .form-control {
     width: 100%;
     border: 1px solid #B7B6B6;
     padding: 10px 15px;
@@ -78,7 +84,8 @@ main h2, .pagamento {
     background-color: white;
 }
 
-.form-control:is(select) {
+/* Seletor Bootstrap escopado */
+#pagina-requisicao .form-control:is(select) {
     color: #757575;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
     background-repeat: no-repeat;
@@ -87,31 +94,35 @@ main h2, .pagamento {
     padding-right: 2.5rem;
 }
 
-.form-control:focus {
+/* Seletor Bootstrap escopado */
+#pagina-requisicao .form-control:focus {
     outline: none;
     border-color: var(--corbotao2);
     box-shadow: 0 0 0 0.2rem #caae8d80;
 }
 
-label {
+/* Seletor de tag escopado */
+#pagina-requisicao label {
     margin-bottom: 0.5rem;
     margin-left: 15px;
     color: #000000;
 }
 
-.requerimento-senha {
+/* Classe personalizada renomeada */
+.req_requerimento_senha {
     font-size: 12px;
     padding: 0.5rem 1rem 0;
 }
-.requerimento-senha p {
+.req_requerimento_senha p {
     line-height: 1.5;
     margin: 0;
 }
-.requerimento-senha p:not(:first-child) {
+.req_requerimento_senha p:not(:first-child) {
     color: #757575;
 }
 
-.div-botao-continuar {
+/* Classe personalizada renomeada */
+.req_div_botao_continuar {
     display: flex;
     justify-content: flex-end;
     width: 100%;
@@ -119,7 +130,8 @@ label {
     padding-right: 15px;
 }
 
-.botao-continuar {
+/* Classe personalizada renomeada */
+.req_botao_continuar {
     border: none;
     background-color: var(--corbotao1);
     color: var(--cortitulo);
@@ -131,12 +143,12 @@ label {
     transition: background-color 0.3s;
 }
 
-.botao-continuar:hover {
+.req_botao_continuar:hover {
     background-color: var(--corbotao2);
 }
 
-/* ========== UPLOAD DE ARQUIVOS ========== */
-.upload-area {
+/* ========== UPLOAD DE ARQUIVOS (Classes Renomeadas) ========== */
+.req_upload_area {
 border: 2px dashed var(--cor-borda);
 border-radius: 10px;
 padding: 2rem;
@@ -146,21 +158,23 @@ margin-bottom: 1rem;
 transition: all 0.3s ease;
 }
 
-.upload-area:hover {
+.req_upload_area:hover {
 border-color: var(--corbotao2);
 background-color: var(--corfundo-container);
 }
 
-.upload-area.dragover {
+/* Classe de estado renomeada */
+.req_upload_area.req_dragover {
 border-color: var(--corbotao2);
 background-color: var(--corfundo-container);
 }
 
-.upload-input {
+.req_upload_input {
 display: none;
 }
 
-.upload-button {
+/* Esta classe não estava no HTML, mas foi renomeada */
+.req_upload_button {
 background-color: var(--corbotao1);
 color: var(--cortitulo);
 border: none;
@@ -171,11 +185,11 @@ font-weight: 500;
 transition: background-color 0.3s;
 }
 
-.upload-button:hover {
+.req_upload_button:hover {
 background-color: var(--corbotao2);
 }
 
-.arquivo-item {
+.req_arquivo_item {
 display: flex;
 align-items: center;
 justify-content: space-between;
@@ -186,26 +200,27 @@ margin-bottom: 0.5rem;
 background-color: white;
 }
 
-li{
-  color: #000000;
-  font-size: 15px;
+/* Seletor de tag escopado */
+#pagina-requisicao li{
+    color: #000000;
+    font-size: 15px;
 }
-.arquivo-info {
+.req_arquivo_info {
 display: flex;
 align-items: center;
 gap: 0.5rem;
 }
 
-.arquivo-nome {
+.req_arquivo_nome {
 font-weight: 500;
 }
 
-.arquivo-tamanho {
+.req_arquivo_tamanho {
 font-size: 12px;
 color: var(--cor-placeholder);
 }
 
-.remover-arquivo {
+.req_remover_arquivo {
 background: none;
 border: none;
 color: var(--cor-erro);
@@ -214,12 +229,12 @@ font-size: 18px;
 padding: 0.25rem;
 }
 
-.remover-arquivo:hover {
+.req_remover_arquivo:hover {
 opacity: 0.7;
 }
 
-/* ========== BOTÕES ========== */
-.div-botao-continuar {
+/* ========== BOTÕES (Classes Renomeadas) ========== */
+.req_div_botao_continuar {
 display: flex;
 justify-content: flex-end;   
 align-items: flex-end;       
@@ -227,8 +242,9 @@ margin-top: 20px;
 margin-right: 15px;
 }
 
-.botao-continuar,
-.btn-adicionar {
+/* Classe 'req_btn_adicionar' não estava no HTML, mas foi renomeada */
+.req_botao_continuar,
+.req_btn_adicionar {
 border: none;
 background-color: var(--corbotao1);
 color: var(--cortitulo);
@@ -239,23 +255,23 @@ cursor: pointer;
 transition: background-color 0.3s;
 }
 
-.botao-continuar {
+.req_botao_continuar {
 width: 150px;
 }
 
-.botao-continuar:hover,
-.btn-adicionar:hover { 
+.req_botao_continuar:hover,
+.req_btn_adicionar:hover { 
 background-color: var(--corbotao2); 
 }
 
-.botoes-navegacao {
+.req_botoes_navegacao {
 display: flex;
 justify-content: space-between;
 margin-top: 2rem;
 padding: 0 1rem;
 }
 
-.btn-voltar {
+.req_btn_voltar {
 background-color: transparent;
 border: #3d2106 1px solid;
 color: var(--cortitulo);
@@ -265,74 +281,75 @@ cursor: pointer;
 font-weight: 500;
 }
 
-.btn-voltar:hover {
-background-color: #999;
+
+.req_btn_enviar {
+    background-color: var(--cor-botao-geral);
+    border-radius: 10px;
+    border: none;
+    color: var(--cor-texto-botao);
+    font-size: 14px;
+    cursor: pointer;
+    font-size: var(--Fonte-geral);
+    padding:10px;
+}
+.req_btn_enviar:hover{
+    background-color: var(--cor-hover-botao);
+    color: var(--cor-texto-botao);
 }
 
-.btn-enviar {
-background-color: var(--cor-sucesso);
-color: white;
-border: none;
-padding: 10px 30px;
-border-radius: 8px;
-cursor: pointer;
-font-weight: 500;
-}
-
-/* ========== SEÇÕES ========== */
-.primeira-parte,
-.segunda-parte {
+.req_primeira_parte,
+.req_segunda_parte {
 transition: all 0.3s ease;
 }
 
-.segunda-parte {
+.req_segunda_parte {
 display: none;
 }
 
-.segunda-parte.active {
+
+.req_segunda_parte.req_active {
 display: block;
 }
 
-/* ========== MODAL DE ERRO ========== */
 
-.modal-content {
+#pagina-requisicao .modal-content {
 border-radius: 5px;
 box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
-.modal-header {
+#pagina-requisicao .modal-header {
 border-top-left-radius: 5px;
 border-top-right-radius: 5px;
 }
 
-.modal-title {
+#pagina-requisicao .modal-title {
 color: rgba(97, 53, 12, 1);
 font-size: 20px;
 font-size: 'Lexend Deca';
 font-weight: bold;   
 }
 
-.modal-body {
+#pagina-requisicao .modal-body {
 padding: 1.5rem;
 color: black;
 font-family: 'Lexend Deca', sans-serif;
 font-size: 16px;
-}  
+}   
 
-.modal-body ul {
+#pagina-requisicao .modal-body ul {
 text-align: left;
 color: #d9534f;
 margin-top: 1rem;
 padding-left: 1.5rem;
 }
 
-.modal-footer {
+#pagina-requisicao .modal-footer {
 padding: 1rem;
 border-bottom-left-radius: 5px;
 border-bottom-right-radius: 5px;
 }
 
-.modal .btn-primary {
+#pagina-requisicao .modal .btn-primary {
 background-color: rgba(226, 204, 174, 1);
 color: #4e3629;
 border: none;
@@ -341,68 +358,265 @@ font-family: 'Lexend Deca';
 font-size: 14px;
 }
 
-.modal .btn-primary:hover {
+#pagina-requisicao .modal .btn-primary:hover {
 background-color: #caae8d;
 color: #3d2106;
 }
 
-#dados-form .form-control::placeholder {
-  font-size: 14px;
+/* ID de formulário renomeado */
+#req_form_dados .form-control::placeholder {
+    font-size: 14px;
 }
 
-/* Adiciona a cor vermelha à mensagem de erro quando visível */
-.error-message {
+/* Classe personalizada renomeada */
+.req_error_message {
     color: #dc3545; /* Vermelho do Bootstrap para erros */
     font-size: 0.8em;
     margin-top: 0.25rem;
 }
 
-/* A classe .is-invalid do Bootstrap já cuida da borda vermelha,
-   mas garantimos que a nossa mensagem de erro também apareça corretamente. */
-.form-control.is-invalid {
+/* Seletor Bootstrap escopado */
+#pagina-requisicao .form-control.is-invalid {
     border-color: #dc3545;
 }
 
-/* ========== RESPONSIVIDADE ========== */
+
+/* ==================MODAL==================*/
+/* Use o ID da página para escopar as classes do Bootstrap */
+
+#pagina-requisicao .modal-content {
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+#pagina-requisicao .modal-header {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+#pagina-requisicao .modal-title {
+    color: var(--cor-titulo);
+    font-size: 1.5rem;
+}
+
+#pagina-requisicao .modal-body {
+    padding: 1.5rem;
+    color: var(--cor-texto);
+    font-family: var(--Fonte-geral);
+} 
+
+#pagina-requisicao .modal-body ul {
+    text-align: left;
+    color: var(--cor-para-erros);
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+}
+
+#pagina-requisicao .modal-footer {
+    padding: 1rem;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+#pagina-requisicao .modal .btn-primary {
+    background-color: var(--cor-botao-geral);
+    color: var(--cor-modal-primary);
+    border: none;
+    border-radius: 10px;
+    border: 1px solid var(--cor-botao-geral);
+}
+
+#pagina-requisicao .modal .btn-primary:hover {
+    background-color: var(--cor-botao-geral);
+    color: var(--cor-texto-botao);
+    transition: transform 0.2s ease;
+}
+
+/* ==================BOTÕES==================*/
+/* Escopo para a classe .btn DENTRO da sua página */
+
+#pagina-requisicao .btn {
+    background-color: var(--cor-botao-geral);
+    border-radius: 10px;
+    border: none;
+    color: var(--cor-texto-botao);
+    font-size: 14px;
+    cursor: pointer;
+    font-size: var(--Fonte-geral);
+    padding:10px;
+}
+
+#pagina-requisicao .btn:hover {
+    background-color: var(--cor-hover-botao);
+    color: var(--cor-texto-botao);
+}
+
+/* ==================AVISO==================*/
+/* Estas classes de toast parecem ser globais (position: fixed), 
+   então podem ficar sem o escopo. */
+
+.feedback-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Lexend Deca', sans-serif;
+}
+
+.feedback-success,
+.feedback-warning,
+.feedback-danger {
+    background: #ffffffff;
+    color: #291705ff;
+    box-shadow:
+        -6px 0 0 rgba(92, 46, 28, 1),
+        10px 5px 20px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+}
+
+
+/* Grid de duas colunas para os documentos */
+.req_container_flex {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.req_coluna_esquerda,
+.req_coluna_direita {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Upload de Documentos */
+.req_upload_area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: #fafafa;
+}
+
+.req_upload_area:hover {
+    border-color: var(--corbotao2);
+    background-color: #f0f0f0;
+}
+
+.req_upload_area.req_dragover {
+    border-color: var(--corbotao2);
+    background-color: #e8f4f8;
+}
+
+.req_upload_input {
+    display: none;
+}
+
+.req_upload_area p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+/* Lista de Arquivos */
+.req_arquivos_lista {
+    margin-top: 1rem;
+}
+
+.req_arquivo_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.req_arquivo_info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.req_arquivo_info i {
+    color: var(--corbotao2);
+}
+
+.req_arquivo_nome {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.req_remover_arquivo {
+    background-color: transparent;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.req_remover_arquivo:hover {
+    background-color: #fee;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
-.form-grid,
-.container-flex,
-.senha-area {
+    .req_container_flex {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ========== RESPONSIVIDADE (Escopada) ========== */
+@media (max-width: 768px) {
+/* Seletor 'form-grid' não estava no seu HTML, mas escopo mantido */
+#pagina-requisicao .form-grid,
+#pagina-requisicao .req_container_flex,
+#pagina-requisicao .req_senha_area { /* 'senha-area' não estava, renomeada por segurança */
 grid-template-columns: 1fr;
 gap: 1rem;
 }
 
-.div-botao-continuar {
+#pagina-requisicao .req_div_botao_continuar {
 justify-content: center;
 margin-right: 0;
 }
 
-.botoes-navegacao {
+#pagina-requisicao .req_botoes_navegacao {
 flex-direction: column;
 gap: 1rem;
 }
 
-.pagamento {
+#pagina-requisicao .req_pagamento {
 font-size: 28px;
 }
 
-.container {
+#pagina-requisicao .container {
 width: 95%;
 padding: 1.5rem;
 }
 }
 
 @media (max-width: 480px) {
-main {
+#pagina-requisicao {
 padding: 1rem 0.5rem 5rem 0.5rem;
 }
 
-.container {
+#pagina-requisicao .container {
 width: 98%;
 padding: 1rem;
 }
 
-.pagamento {
+#pagina-requisicao .req_pagamento {
 font-size: 24px;
 }
 }
+

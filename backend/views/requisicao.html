@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <link rel="stylesheet" href="/styles/enchant/requisicao.css">
-    <script src="/scripts/enchant/requisicao.js"></script>
-  
+    <link rel="stylesheet" href="/styles/enchant/requisicao.css"> 
+    
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/layouts/enchant/header.css">
     <link rel="stylesheet" href="/styles/layouts/enchant/footer.css">
@@ -22,288 +21,279 @@
 </head>
 <body>
     <section>
-        <div id="header-container"></div>
+        <div id="req_header_container"></div>
     </section>
 
-    <main>
-        <div class="primeira-parte" id="primeira-parte">
+    <main id="pagina-requisicao">
+        <div class="req_primeira_parte" id="req_primeira_parte">
             <div>
-                <h2 class="pagamento">Requisição - Insira os seus dados</h2>
+                <h2 class="req_pagamento">Requisição - Insira os seus dados</h2>
             </div>
             <section class="container">
-                <div class="recomendações">
+                <div class="req_recomendacoes">
                     <p>
                         Recomendamos atenção total ao preencher os dados nos campos solicitados. É fundamental que as
                         informações sejam inseridas de forma responsável, a fim de evitar fraudes.
                     </p>
                 </div>
-                <form id="dados-form" method="POST" action="/cadastro" novalidate>
+                <form id="req_form_dados" method="POST" action="/cadastro" novalidate>
                     <div class="form-row">
 
                         <div class="form-group col-12">
-                            <label for="nome_instituicao">Nome da Instituição/ONG: <b
+                            <label for="req_nome_instituicao">Nome da Instituição/ONG: <b
                                     style="color: #FF0404;">*</b></label>
-                            <input type="text" name="nome_instituicao" id="nome_instituicao" class="form-control"
+                            <input type="text" name="nome_instituicao" id="req_nome_instituicao" class="form-control"
                                 autocomplete="off" placeholder="ex: Nome da Instituição">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label for="tipo_instituicao">Tipo de Instituição: <b style="color: #FF0404;">*</b></label>
-                            <select name="tipo_instituicao" id="tipo_instituicao" class="form-control">
+                            <label for="req_tipo_instituicao">Tipo de Instituição: <b style="color: #FF0404;">*</b></label>
+                            <select name="tipo_instituicao" id="req_tipo_instituicao" class="form-control">
                                 <option value="" hidden>Selecione o tipo...</option>
                                 <option value="ONG">ONG</option>
                                 <option value="Associacao">Associação Comunitária</option>
                                 <option value="Fundacao">Fundação</option>
                                 <option value="Organizacao Religiosa">Organização Religiosa</option>
                             </select>
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label for="cnpj">CNPJ: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="cnpj" id="cnpj" class="form-control" autocomplete="off"
+                            <label for="req_cnpj">CNPJ: <b style="color: #FF0404;">*</b></label>
+                            <input type="text" name="cnpj" id="req_cnpj" class="form-control" autocomplete="off"
                                 placeholder="ex: XX.XXX.XXX/0001-XX">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label for="email">Email: <b style="color: #FF0404;">*</b></label>
-                            <input type="email" name="email_contato" id="email" class="form-control" autocomplete="off"
+                            <label for="req_email">Email: <b style="color: #FF0404;">*</b></label>
+                            <input type="email" name="email_contato" id="req_email" class="form-control" autocomplete="off"
                                 placeholder="ex: example@gmail.com">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label for="tel">Telefone: <b style="color: #FF0404;">*</b></label>
-                            <input type="tel" name="numero" id="tel" class="form-control" autocomplete="off"
+                            <label for="req_tel">Telefone: <b style="color: #FF0404;">*</b></label>
+                            <input type="tel" name="numero" id="req_tel" class="form-control" autocomplete="off"
                                 placeholder="ex: (XX) XXXXX-XXXX">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
-                            <label for="cep">CEP: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="cep" id="cep" class="form-control" autocomplete="off"
+                            <label for="req_cep">CEP: <b style="color: #FF0404;">*</b></label>
+                            <input type="text" name="cep" id="req_cep" class="form-control" autocomplete="off"
                                 placeholder="ex: 00000-000" maxlength="9">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
-                            <label for="estado">Estado: <b style="color: #FF0404;">*</b></label>
-                            <select name="estado" id="estado" class="form-control">
+                            <label for="req_estado">Estado: <b style="color: #FF0404;">*</b></label>
+                            <select name="estado" id="req_estado" class="form-control">
                                 <option value="" hidden>Escolha uma opção...</option>
                             </select>
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-md-4">
-                            <label for="cidade">Cidade: <b style="color: #FF0404;">*</b></label>
-                            <select name="cidade" id="cidade" class="form-control" disabled>
+                            <label for="req_cidade">Cidade: <b style="color: #FF0404;">*</b></label>
+                            <select name="cidade" id="req_cidade" class="form-control" disabled>
                                 <option value="" hidden>Selecione um estado primeiro...</option>
                             </select>
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
 
                         <div class="form-group col-12">
-                            <label for="bairro">Bairro: <b style="color: #FF0404;">*</b></label>
-                            <input type="text" name="bairro" id="bairro" class="form-control" autocomplete="off"
+                            <label for="req_bairro">Bairro: <b style="color: #FF0404;">*</b></label>
+                            <input type="text" name="bairro" id="req_bairro" class="form-control" autocomplete="off"
                                 placeholder="ex: Centro">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
-
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="senha">Senha: <b style="color: #FF0404;">*</b></label>
-                            <input type="password" name="senha" id="senha" class="form-control"
+                            <label for="req_senha">Senha: <b style="color: #FF0404;">*</b></label>
+                            <input type="password" name="senha" id="req_senha" class="form-control"
                                 placeholder="ex: Senha@123">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="confirmarsenha">Confirme a senha: <b style="color: #FF0404;">*</b></label>
-                            <input type="password" name="confirmarsenha" id="confirmarsenha" class="form-control"
+                            <label for="req_confirmar_senha">Confirme a senha: <b style="color: #FF0404;">*</b></label>
+                            <input type="password" name="confirmarsenha" id="req_confirmar_senha" class="form-control"
                                 placeholder="ex: Senha@123">
-                            <div class="error-message"></div>
+                            <div class="req_error_message"></div>
                         </div>
                     </div>
 
-                    <div class="requerimento-senha full-width">
+                    <div class="req_requerimento_senha full-width">
                         <p><b style="color: #FF0404;">*</b> Sua senha deve conter:</p>
-                        <p id="minimodigitos"><b style="color: #FF0404;">*</b> Mínimo 8 dígitos</p>
-                        <p id="doisnumeros"><b style="color: #FF0404;">*</b> Pelo menos 2 números</p>
-                        <p id="umcaracterespecial"><b style="color: #FF0404;">*</b> Pelo menos 1 caracter especial</p>
-                        <p id="letramaiuscula"><b style="color: #FF0404;">*</b> Pelo menos 1 letra maiúscula</p>
+                        <p id="req_minimo_digitos"><b style="color: #FF0404;">*</b> Mínimo 8 dígitos</p>
+                        <p id="req_dois_numeros"><b style="color: #FF0404;">*</b> Pelo menos 2 números</p>
+                        <p id="req_um_caracter_especial"><b style="color: #FF0404;">*</b> Pelo menos 1 caracter especial</p>
+                        <p id="req_letra_maiuscula"><b style="color: #FF0404;">*</b> Pelo menos 1 letra maiúscula</p>
                     </div>
 
-                    <div class="div-botao-continuar">
-                        <button type="submit" class="botao-continuar" id="botao-continuar">Continuar</button>
+                    <div class="req_div_botao_continuar">
+                        <button type="submit" class="req_botao_continuar" id="req_botao_continuar_dados">Continuar</button>
                     </div>
                 </form>
             </section>
         </div>
 
 
-    <!-- SEGUNDA PARTE -->
-    <div class="segunda-parte" id="segunda-parte">
-    <h2 class="pagamento">Upload de Documentos</h2>
+    <div class="req_segunda_parte" id="req_segunda_parte">
+        <h2 class="req_pagamento">Upload de Documentos</h2>
         <section class="container">
-
             
-            <div class="recomendacoes">
+            <div class="req_recomendacoes">
                 <p><strong>Importante:</strong> não é necessário enviar todos os documentos listados, mas o envio de pelo menos 3 é obrigatório. Entre eles, a <strong>autodeclaração de baixa renda</strong> é indispensável para que possamos analisar a solicitação de gratuidade. Certifique-se de que os arquivos estejam legíveis e completos.</p>
             </div>
 
-            <form id="documentos-form">
-                <div class="container-flex">
-                    <div class="coluna-esquerda">
-                        <!-- Estatuto Social -->
+            <form id="req_form_documentos">
+                <div class="req_container_flex">
+                    <div class="req_coluna_esquerda">
                         <div class="form-group">
                             <label>Estatuto Social registrado (foto de todas as páginas)</label>
-                            <div class="upload-area" data-categoria="estatuto">
+                            <div class="req_upload_area" data-categoria="estatuto">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="estatuto"></div>
+                            <div class="req_arquivos_lista" data-categoria="estatuto"></div>
                         </div>
 
-                        <!-- Certidão CNPJ -->
                         <div class="form-group">
                             <label>Certidão de CNPJ atualizada (PDF gerado da Receita Federal)</label>
-                            <div class="upload-area" data-categoria="cnpj">
+                            <div class="req_upload_area" data-categoria="cnpj">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="cnpj"></div>
+                            <div class="req_arquivos_lista" data-categoria="cnpj"></div>
                         </div>
 
-                        <!-- Documento Responsável -->
                         <div class="form-group">
                             <label>Documento assinado pelo responsável legal da ONG</label>
-                            <div class="upload-area" data-categoria="documento-responsavel">
+                            <div class="req_upload_area" data-categoria="documento-responsavel">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="documento-responsavel"></div>
+                            <div class="req_arquivos_lista" data-categoria="documento-responsavel"></div>
                         </div>
 
-                        <!-- Balanço Financeiro -->
                         <div class="form-group">
                             <label>Balanço financeiro ou declaração de isenção de IRPJ</label>
-                            <div class="upload-area" data-categoria="balanco">
+                            <div class="req_upload_area" data-categoria="balanco">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="balanco"></div>
+                            <div class="req_arquivos_lista" data-categoria="balanco"></div>
                         </div>
 
-                        <!-- Projetos -->
                         <div class="form-group">
                             <label>Projetos aprovados ou executados com orçamento reduzido</label>
-                            <div class="upload-area" data-categoria="projetos">
+                            <div class="req_upload_area" data-categoria="projetos">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="projetos"></div>
+                            <div class="req_arquivos_lista" data-categoria="projetos"></div>
                         </div>
                     </div>
 
-                    <div class="coluna-direita">
-                        <!-- Ata de Eleição -->
+                    <div class="req_coluna_direita">
                         <div class="form-group">
                             <label>Ata de eleição da diretoria atual</label>
-                            <div class="upload-area" data-categoria="ata-eleicao">
+                            <div class="req_upload_area" data-categoria="ata-eleicao">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="ata-eleicao"></div>
+                            <div class="req_arquivos_lista" data-categoria="ata-eleicao"></div>
                         </div>
 
-                        <!-- Comprovante de Endereço -->
                         <div class="form-group">
                             <label>Comprovante de endereço em nome da ONG</label>
-                            <div class="upload-area" data-categoria="endereco">
+                            <div class="req_upload_area" data-categoria="endereco">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="endereco"></div>
+                            <div class="req_arquivos_lista" data-categoria="endereco"></div>
                         </div>
 
-                        <!-- Relatório de Atividades -->
                         <div class="form-group">
                             <label>Relatório de atividades</label>
-                            <div class="upload-area" data-categoria="relatorio">
+                            <div class="req_upload_area" data-categoria="relatorio">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="relatorio"></div>
+                            <div class="req_arquivos_lista" data-categoria="relatorio"></div>
                         </div>
 
-                        <!-- Declaração Baixa Renda -->
                         <div class="form-group">
-                            <label><strong>Declaração de que não possui receita própria suficiente</strong> <span class="obrigatorio">*</span></label>
-                            <div class="upload-area" data-categoria="declaracao-renda">
+                            <label>Declaração de que não possui receita própria suficiente<span class="req_obrigatorio">*</span></label>
+                            <div class="req_upload_area" data-categoria="declaracao-renda">
                                 <i class="fas fa-cloud-upload-alt fa-2x" style="color: var(--corbotao2); margin-bottom: 1rem;"></i>
                                 <p>Clique ou arraste arquivos aqui</p>
                                 <p style="font-size: 12px; color: var(--cor-placeholder);">JPG, PNG, PDF (máx. 10MB)</p>
-                                <input type="file" class="upload-input" name="declaracao-renda_1" accept=".jpg,.jpeg,.png,.pdf" multiple>
+                                <input type="file" class="req_upload_input" name="declaracao-renda_1" accept=".jpg,.jpeg,.png,.pdf" multiple>
                             </div>
-                            <div class="arquivos-lista" data-categoria="declaracao-renda"></div>
+                            <div class="req_arquivos_lista" data-categoria="declaracao-renda"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="botoes-navegacao">
-                    <button type="button" class="btn-voltar" id="btn-voltar">Voltar</button>
-                    <button  type="submit" class="botao-continuar" id="btn-enviar">Enviar</button>
+                <div class="req_botoes_navegacao">
+                    <button type="button" class="req_btn_voltar" id="req_btn_voltar_nav">Voltar</button>
+                    <button type="submit" class="req_botao_continuar req_btn_enviar" id="req_btn_enviar">Enviar</button>
                 </div>
             </form>
         </section>
     </div>
 
-        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+    <div class="modal fade" id="req_errorModal" tabindex="-1" role="dialog" aria-labelledby="req_errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Erro de Validação</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body" id="errorModalBody"></div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
-              </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="req_errorModalLabel">Erro de Validação</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="req_errorModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+                </div>
             </div>
-          </div>
+        </div>
+    </div>
 </main>
 
-    <div id="enchant-footer"></div>
+<div id="req_footer_container"></div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-      initializeHeader('header-container');
-      });
-    </script>
+<script src="/scripts/enchant/requisicao.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeHeader('req_header_container');
+    });
+</script>
 </body>
 </html>

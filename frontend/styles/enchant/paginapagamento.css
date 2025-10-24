@@ -60,7 +60,6 @@ main h2, .pagamento {
     text-align: center;
 }
 
-/* --- Estilos do Formulário --- */
 .form-control {
     width: 100%;
     border: 1px solid #B7B6B6;
@@ -342,11 +341,8 @@ input::placeholder{
     }
 }
 
-/* ==========================================================================
-   NOVAS REGRAS PARA VALIDAÇÃO CUSTOMIZADA
-   ========================================================================== */
 
-/* Estilo para o campo de input quando ele está inválido */
+
 .form-control.is-invalid {
     border-color: var(--cor-erro);
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); /* Efeito de 'glow' vermelho */
