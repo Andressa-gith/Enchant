@@ -103,6 +103,10 @@ class EnchantAIAssistant {
                 box-shadow: 0 4px 12px rgba(105, 59, 17, 0.3);
             }
 
+            .close-icon {
+                fill: #3d2106;
+            }
+
             .enchant-ai-button:hover {
                 background-color: #caae8d;
                 color: #3d2106;
@@ -145,7 +149,7 @@ class EnchantAIAssistant {
 
             @keyframes eyeBlink {
                 0%, 4%, 8%, 100% {
-                    fill: white;
+                    fill: #e2ccae;
                 }
                 2%, 6% {
                     fill: #3d2106;
@@ -184,7 +188,7 @@ class EnchantAIAssistant {
             }
 
             .enchant-chat-header {
-                background: linear-gradient(135deg, #693B11 0%, #8B4513 100%);
+                background: linear-gradient(135deg,rgb(232, 212, 184) 0%,rgb(255, 236, 222) 100%);
                 color: white;
                 padding: 20px;
                 display: flex;
@@ -233,13 +237,14 @@ class EnchantAIAssistant {
             .enchant-chat-header-icon svg {
                 width: 20px;
                 height: 20px;
-                fill: white;
+                fill: #693B11;
             }
 
             .enchant-chat-header-text h3 {
                 margin: 0;
                 font-size: 16px;
                 font-weight: 600;
+                color: #693B11;
             }
 
             .enchant-chat-header-text p {
@@ -247,7 +252,7 @@ class EnchantAIAssistant {
                 text-align: left;
                 font-size: 12px;
                 opacity: 0.9;
-                color: white;
+                color: #693B11;
             }
 
             .enchant-chat-messages {
@@ -346,8 +351,8 @@ class EnchantAIAssistant {
             }
 
             .enchant-message.user .enchant-message-content {
-                background: #693B11;
-                color: white;
+                background: #e8d4b8;
+                color:rgb(78, 41, 6);
                 border-radius: 12px 12px 4px 12px;
             }
 
@@ -422,7 +427,7 @@ class EnchantAIAssistant {
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
-                background: #693B11;
+                background: #e2ccae;
                 border: none;
                 cursor: pointer;
                 display: flex;
@@ -444,7 +449,7 @@ class EnchantAIAssistant {
             .enchant-send-button svg {
                 width: 18px;
                 height: 18px;
-                fill: white;
+                fill: #693B11;
             }
 
             .enchant-welcome-message {
@@ -495,7 +500,7 @@ class EnchantAIAssistant {
                     right: 0;
                     left: 0;
                     width: 100%;
-                    height: 100vh;
+                    height: 90vh;
                     border-radius: 0;
                     max-width: none;
                 }
@@ -567,21 +572,21 @@ class EnchantAIAssistant {
     }
 
     //MASCOTE
-createChatWidget() {
- const widget = document.createElement('div');
- widget.className = 'enchant-ai-assistant';
-  widget.innerHTML = `
- <button class="enchant-ai-button" id="enchant-ai-toggle">
- <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
- <circle class="bear-body" cx="8" cy="8" r="2.5"/>
- <circle class="bear-body" cx="16" cy="8" r="2.5"/>
- <circle class="bear-body" cx="12" cy="12" r="7"/>
+    createChatWidget() {
+        const widget = document.createElement('div');
+        widget.className = 'enchant-ai-assistant';
+        widget.innerHTML = `
+                    <button class="enchant-ai-button" id="enchant-ai-toggle">
+                    <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <circle class="bear-body" cx="8" cy="8" r="2.5"/>
+                    <circle class="bear-body" cx="16" cy="8" r="2.5"/>
+                    <circle class="bear-body" cx="12" cy="12" r="7"/>
                     <!-- Olhinhos que piscam -->
-                    <circle cx="10" cy="11" r="1.2" fill="#693B11" class="eye"/>
-                    <circle cx="14" cy="11" r="1.2" fill="white" class="eye"/>
+                    <circle cx="10" cy="11" r="1.2" fill="#e8d4b8" class="eye"/>
+                    <circle cx="14" cy="11" r="1.2" fill="#e8d4b8" class="eye"/>
                 </svg>
                 <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    <path fill="#3d2106" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                 </svg>
             </button>
 
@@ -589,7 +594,7 @@ createChatWidget() {
                 <div class="enchant-chat-header">
                     <div class="enchant-chat-header-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            <path fill="#3d2106" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                         </svg>
                     </div>
                     <div class="enchant-chat-header-text">
@@ -598,7 +603,7 @@ createChatWidget() {
                     </div>
                     <button class="enchant-close-chat-button" id="enchant-close-chat">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            <path fill="#3d2106" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                         </svg>
                     </button>
                 </div>
