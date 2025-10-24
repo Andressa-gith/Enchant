@@ -17,188 +17,178 @@
   padding-right: 16px;
 }
 
-/* NOVA SEÇÃO: Estilos para a mensagem de erro estilizada */
-    .error-message-container {
-      margin-top: 15px;
-      margin-bottom: 15px;
-      max-width: 400px;
-      opacity: 0;
-      transform: translateY(-10px);
-      color: white;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .error-message-container.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-
-/* Garante que o input não mude quando clicado */
-.password-container input {
-    padding-right: 45px !important;
-    width: 400px;
-    height: 45px;
-    outline: none !important;
-    border-radius: 12px !important;
-    border: 1px solid #CCC !important;
-    padding-left: 1rem !important;
-    transition: none !important; /* Remove qualquer animação */
+.error-message-container {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateY(-10px);
+  color: white;
+  transition: all 0.3s ease-in-out;
 }
+
+.error-message-container.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.password-container input {
+  padding-right: 45px !important;
+  width: 400px;
+  height: 45px;
+  outline: none !important;
+  border-radius: 12px !important;
+  border: 1px solid #CCC !important;
+  padding-left: 1rem !important;
+  transition: none !important;
+}
+
 .password-container {
-    position: relative;
-    width: 100%;
-    display: inline-block;
+  position: relative;
+  width: 100%;
+  display: inline-block;
 }
 
-/* Garante que o input não mude quando clicado */
 .password-container input {
-    padding-right: 45px !important;
-    width: 400px;
-    height: 45px;
-    outline: none !important;
-    border-radius: 12px !important;
-    border: 1px solid #CCC !important;
-    padding-left: 1rem !important;
-    transition: none !important;
+  padding-right: 45px !important;
+  width: 400px;
+  height: 45px;
+  outline: none !important;
+  border-radius: 12px !important;
+  border: 1px solid #CCC !important;
+  padding-left: 1rem !important;
+  transition: none !important;
 }
 
-/* Remove mudanças no estado de foco */
 .password-container input:focus {
-    outline: none !important;
-    border: 1px solid #CCC !important;
-    box-shadow: none !important;
-    background-color: white !important;
+  outline: none !important;
+  border: 1px solid #CCC !important;
+  box-shadow: none !important;
+  background-color: white !important;
 }
 
-/* Remove mudanças no estado ativo */
 .password-container input:active {
-    outline: none !important;
-    border: 1px solid #CCC !important;
-    box-shadow: none !important;
+  outline: none !important;
+  border: 1px solid #CCC !important;
+  box-shadow: none !important;
 }
 
 .toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 35%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    color: #a5a5a5;
-    z-index: 10;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  color: #a5a5a5;
+  z-index: 10;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-password:hover {
-    color: #777;
+  color: #777;
 }
 
 .toggle-password svg {
-    width: 20px;
-    height: 20px;
-    display: block;
-    pointer-events: none;
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
 }
 
 /* Responsivo */
 @media (max-width: 790px) {
-    .password-container input {
-        width: 300px !important;
-    }
-    
-    .toggle-password {
-        right: 10px;
-    }
+  .password-container input {
+    width: 300px !important;
+  }
+
+  .toggle-password {
+    right: 10px;
+  }
 }
 
 @media (min-width: 790px) and (max-width: 1000px) {
-    .password-container input {
-        width: 400px !important;
-    }
+  .password-container input {
+    width: 400px !important;
+  }
 }
-    /* --- MUDANÇA AQUI (COR DO ERRO) --- */
-    .error-message {
-      /* Cor alterada para um tom marrom escuro */
-      background: linear-gradient(135deg, #a36d40, #804d2a);
-      /* Cor do texto alterada para branco para contraste */
-      color: #ffffff !important;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      /* Sombra alterada para combinar com a nova cor */
-      box-shadow: 0 4px 12px rgba(128, 77, 42, 0.3);
-      /* Borda alterada para um marrom mais escuro */
-      border-left: 4px solid #522d06;
-      position: relative;
-      overflow: hidden;
-    }
 
-    .error-message::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-      animation: shimmer 2s infinite;
-    }
+.error-message {
+  background: linear-gradient(135deg, #a36d40, #804d2a);
+  color: #ffffff !important;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(128, 77, 42, 0.3);
+  border-left: 4px solid #522d06;
+  position: relative;
+  overflow: hidden;
+}
 
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-    
-    /* --- MUDANÇA AQUI (COR DO ÍCONE DE ERRO) --- */
-    .error-icon {
-      font-size: 16px;
-      color: #ffffff; /* Alterado para 'white' para contrastar com o fundo marrom */
-      flex-shrink: 0;
-    }
+.error-message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmer 2s infinite;
+}
 
-    /* --- MUDANÇA AQUI (COR DE SUCESSO) --- */
-    .success-message {
-      /* Cor alterada de verde para o tom de bege/marrom do site */
-      background: linear-gradient(135deg, #e2ccae, #caae8d);
-      /* Cor do texto alterada para o marrom escuro do site */
-      color: #4e3629 !important;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      /* Sombra e borda adicionadas para consistência */
-      box-shadow: 0 4px 12px rgba(202, 174, 141, 0.3);
-      border-left: 4px solid #a36d40;
-      
-      margin-top: 15px;
-      margin-bottom: 15px;
-      max-width: 400px;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.3s ease-in-out;
-    }
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
 
-    .success-message.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  100% {
+    transform: translateX(100%);
+  }
+}
 
-/* --- MUDANÇA AQUI (COR DO ÍCONE DE SUCESSO) --- */
+.error-icon {
+  font-size: 16px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.success-message {
+  background: linear-gradient(135deg, #e2ccae, #caae8d);
+  color: #4e3629 !important;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(202, 174, 141, 0.3);
+  border-left: 4px solid #a36d40;
+
+  margin-top: 15px;
+  margin-bottom: 15px;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease-in-out;
+}
+
+.success-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .success-icon {
   font-size: 16px;
-  color: #4e3629; /* Alterado de 'white' para marrom escuro */
+  color: #4e3629;
   flex-shrink: 0;
 }
 
@@ -289,7 +279,6 @@
   }
 }
 
-/* Corrigido para não interferir com o comportamento do Bootstrap */
 @media (max-width: 991px) {
   .navbar-brand {
     margin-right: 0;
@@ -299,7 +288,6 @@
     margin-right: 15px;
   }
 
-  /* Remove o alinhamento centralizado em telas menores */
   #conteudoNavbarSuportado {
     text-align: left !important;
   }
@@ -327,7 +315,6 @@
     margin-right: auto;
   }
 
-  /* Garante que os itens de dropdown também fiquem alinhados à esquerda */
   .dropdown-menu {
     text-align: left;
     padding-left: 15px;
@@ -357,14 +344,10 @@ body {
 
 
 .h1 {
-  font-family: "Passion One", serif!important;
+  font-family: "Passion One", serif !important;
   font-weight: 700;
   font-size: 32px;
-
-  color: rgba(97, 53, 12, 1)!important;
-
-  /* Ajusta o espaçamento */
-
+  color: rgba(97, 53, 12, 1) !important;
 }
 
 
@@ -422,20 +405,16 @@ body {
 
   .faixa-imagem {
     margin: 0;
-    /* Remove this negative margin: margin-top: -32rem; */
     padding: 0;
     line-height: 0;
     position: relative;
-    /* Add positioning context */
     top: 33px;
   }
 
   .faixa-imagem img {
     width: 80vw;
     height: 50rem;
-    /* Remove negative z-index */
     display: block;
-    /* Let it naturally flow in the document */
   }
 }
 
@@ -447,7 +426,6 @@ body {
 }
 
 
-/* Estilos para as mensagens de feedback */
 .error-message,
 .success-message {
   padding: 12px;
@@ -472,7 +450,6 @@ body {
 }
 
 
-/* Melhorias no formulário */
 .form {
   margin-bottom: 20px;
 
@@ -603,20 +580,16 @@ input[type="password"] {
 
 .faixa-imagem {
   margin: 0;
-  /* Remove this negative margin: margin-top: -32rem; */
   padding: 0;
   line-height: 0;
   position: relative;
-  /* Add positioning context */
   top: 33px;
 }
 
 .faixa-imagem img {
   width: 80vw;
   height: 42rem;
-  /* Remove negative z-index */
   display: block;
-  /* Let it naturally flow in the document */
 }
 
 
@@ -679,7 +652,6 @@ button[type="submit"] {
   cursor: pointer;
   padding: 8px;
   background-color: rgba(226, 204, 174, 1);
-  /* cor marrom */
   color: #4e3629;
   font-weight: 400;
   font-size: 14px;
@@ -934,8 +906,7 @@ footer-left img {
 
   footer {
     padding: 20px 30px;
-    /* --- MUDANÇA AQUI (FOOTER) --- */
-    height: auto; /* Alterado de '60vh' para 'auto' */
+    height: auto;
   }
 
 
@@ -1073,8 +1044,7 @@ footer-left img {
   footer {
     padding: 20px 50px;
     font-family: "Lexend Deca", sans-serif;
-    /* --- MUDANÇA AQUI (FOOTER) --- */
-    height: auto; /* Alterado de '36vh' para 'auto' */
+    height: auto;
   }
 
 
@@ -1145,8 +1115,7 @@ footer-left img {
 
   footer {
     padding: 20px 50px;
-    /* --- MUDANÇA AQUI (FOOTER) --- */
-    height: auto; /* Alterado de '40vh' para 'auto' */
+    height: auto;
     font-family: "Lexend Deca", sans-serif;
   }
 
