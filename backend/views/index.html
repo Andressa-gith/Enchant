@@ -39,9 +39,8 @@
             <div class="container">
                 <div class="hero-text">
                     <h1 style="color: #693B11;">Transforme vidas com tecnologia e impacto social</h1>
-                    <p>O Enchant é uma plataforma completa que une ferramentas intuitivas para doações online,
-                        transparência
-                        total e engajamento comunitário.</p>
+                    <p>O Enchant é uma plataforma completa que une ferramentas intuitivas para gestõem de ONGs,
+                        transparência e engajamento comunitário.</p>
                     <a href="#plans" class="cta-button" style="color: #693B11;">Quero adquirir</a>
                 </div>
                 <div class="hero-mockup-area">
@@ -264,7 +263,7 @@
                             <p>Tudo pronto! Use o código abaixo no seu app do banco:</p>
                             <textarea id="pix-codigo" class="form-control" rows="4" readonly></textarea>
                             <button id="btn-copiar-pix" class="btn btn-success w-100 mt-2">Copiar Código</button>
-                            <p id="copiado-feedback" style="color: green; display: none; margin-top: 10px;">Copiado!</p></br>
+                            <p id="copiado-feedback" style="background-color:#e2ccae; color:#693B11; display: none; margin-top: 10px;">Copiado!</p></br>
 
                             <canvas id="qrcode-container"></canvas>
                         </div>
@@ -576,99 +575,160 @@
                                 <div class="timeline-node"></div>
                             </div>
 
-                            <div class="feature-item">
-                                <div class="feature-content">
-                                    <div class="feature-text">
-                                        <h3>Pontos de Abrigo</h3>
-                                        <p>Disponibilize rapidamente abrigos parceiros para que as pessoas em situação
-                                            de risco
-                                            possam encontrar acolhimento seguro.
-                                        </p>
+                          
+                     
+                        <div class="feature-item">
+                            <div class="feature-content">
+                                <div class="feature-text">
+                                    <h3>Gestão das doações</h3>
+                                    <p>Você pode adicionar as doações que chegaram de forma rápida e prática, após isso
+                                        você pode adicionar as doações que saíram e pra quem foram direcionadas.
+                                    </p>
+                                </div>
+                                <div class="feature-visual" style="padding: 0;">
+                                    <div class="detailed-mockup-wrapper">
+                                        <div class="detailed-mockup-content form-mockup-content donation-box-mockup">
+                                            <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 35px; margin-top: 20px;">
+                                                <div style="background: rgba(255, 255, 255, 0.5); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);">
+                                                    <h3 style="font-size: 22px; margin-bottom: 25px; color: #3d3d3d; font-weight: 600;">Tipo de Doação</h3>
+                                                    <select style="width: 100%; padding: 14px 16px; border: 2px solid #e0d8c5; border-radius: 10px; background: #fff; margin-bottom: 25px; font-size: 15px; color: #5d5d5d; cursor: pointer;" disabled>
+                                                        <option>Selecione a categoria...</option>
+                                                    </select>
+                                                    <h3 style="font-size: 22px; margin-bottom: 15px; color: #3d3d3d; font-weight: 600;">Quantidade</h3>
+                                                    <input type="text" placeholder="Digite..." style="width: 100%; padding: 14px 16px; border: 2px solid #e0d8c5; border-radius: 10px; margin-bottom: 25px; font-size: 15px;" disabled>
+                                                    <h3 style="font-size: 22px; margin-bottom: 15px; color: #3d3d3d; font-weight: 600;">Doador / Origem</h3>
+                                                    <input type="text" value="Anônimo" style="width: 100%; padding: 14px 16px; border: 2px solid #e0d8c5; border-radius: 10px; margin-bottom: 30px; font-size: 15px;" disabled>
+                                                    <div style="display: flex; gap: 12px;">
+                                                        <button style="flex: 1; padding: 14px; background: #d4c4b0; border: none; border-radius: 10px; color: #3d3d3d; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;" disabled>
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                                            </svg>
+                                                            Voltar
+                                                        </button>
+                                                        <button style="flex: 1.3; padding: 14px; background: #8c5a46; border: none; border-radius: 10px; color: #fff; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;" disabled>
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                                                <line x1="8" y1="12" x2="16" y2="12"/>
+                                                            </svg>
+                                                            Adicionar item
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div style="background: linear-gradient(135deg, #c89860 0%, #b87f4d 100%); padding: 40px 30px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(139, 90, 70, 0.25);">
+                                                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);"></div>
+                                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" style="margin-bottom: 15px; opacity: 0.9;">
+                                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#fff" stroke-width="1.5"/>
+                                                        <path d="M3 9h18M9 3v6M15 3v6" stroke="#fff" stroke-width="1.5"/>
+                                                    </svg>
+                                                    <h2 style="color: #fff; font-size: 26px; font-weight: 700; margin: 15px 0 10px 0; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,0.1);">Caixa de Doação</h2>
+                                                    <div style="width: 180px; height: 140px; position: relative; margin: 25px 0;">
+                                                        <svg width="180" height="140" viewBox="0 0 180 140">
+                                                            <defs>
+                                                                <filter id="boxShadow">
+                                                                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                                                                    <feOffset dx="0" dy="4" result="offsetblur"/>
+                                                                    <feComponentTransfer>
+                                                                        <feFuncA type="linear" slope="0.3"/>
+                                                                    </feComponentTransfer>
+                                                                    <feMerge>
+                                                                        <feMergeNode/>
+                                                                        <feMergeNode in="SourceGraphic"/>
+                                                                    </feMerge>
+                                                                </filter>
+                                                            </defs>
+                                                            <g filter="url(#boxShadow)">
+                                                                <path d="M 30,50 L 90,25 L 150,50 L 150,110 L 90,135 L 30,110 Z" fill="rgba(255, 255, 255, 0.12)" stroke="#fff" stroke-width="2.5"/>
+                                                                <line x1="90" y1="25" x2="90" y2="85" stroke="#fff" stroke-width="2" opacity="0.7"/>
+                                                                <line x1="30" y1="50" x2="90" y2="85" stroke="#fff" stroke-width="2" opacity="0.7"/>
+                                                                <line x1="150" y1="50" x2="90" y2="85" stroke="#fff" stroke-width="2" opacity="0.7"/>
+                                                                <path d="M 60,40 L 90,25 L 120,40" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                                            </g>
+                                                        </svg>
+                                                    </div>
+                                                    <p style="color: rgba(255, 255, 255, 0.95); font-size: 15px; font-style: italic; margin: 20px 0 30px 0; text-align: center; line-height: 1.5;">Sua caixa de doações está vazia.</p>
+                                                    <button style="padding: 14px 35px; background: rgba(61, 45, 35, 0.6); backdrop-filter: blur(5px); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px; color: #fff; font-weight: 600; font-size: 14px; cursor: not-allowed; transition: all 0.3s;" disabled>Registrar Todas as Doações</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="feature-visual" style="padding: 0;">
-                                        <div class="detailed-mockup-wrapper">
-                                            <div
-                                                class="detailed-mockup-content form-mockup-content abrigo-mockup-content">
-                                                <h1>Pontos de Abrigo</h1>
-                                                <div class="add-form-container">
-                                                    <div class="image-uploader">Adicionar foto</div>
-                                                    <div class="form-fields">
-                                                        <label for="nome-local-2">Nome do Local:</label>
-                                                        <input type="text" id="nome-local-2"
-                                                            placeholder="Digite o nome do local..." disabled>
-                                                        <div class="time-inputs">
-                                                            <div>
-                                                                <label for="horario-abre">Horário de abertura:</label>
-                                                                <input type="text" id="horario-abre" placeholder="--:--"
-                                                                    disabled>
-                                                            </div>
-                                                            <div>
-                                                                <label for="horario-fecha">Horário de
-                                                                    fechamento:</label>
-                                                                <input type="text" id="horario-fecha"
-                                                                    placeholder="--:--" disabled>
-                                                            </div>
+                                </div>
+                            </div>
+                            <div class="timeline-node"></div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-content">
+                                <div class="feature-text">
+                                    <h3>Comunidade de ONGs</h3>
+                                    <p>Se comunique e conecte com as mais variadas ONG do Brasil, você pode compartilhar
+                                         um pouco das suas vivências e problemas com outros, recebendo conselhos e
+                                          aprendizados.
+                                    </p>
+                                </div>
+                                <div class="feature-visual" style="padding: 0;">
+                                    <div class="detailed-mockup-wrapper">
+                                        <div class="detailed-mockup-content form-mockup-content community-mockup">
+                                            <div style="background: #fff; padding: 25px; border-radius: 12px;">
+                                                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+                                                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#8c5a46" stroke-width="2">
+                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                                        <circle cx="9" cy="7" r="4"/>
+                                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                                    </svg>
+                                                    <div>
+                                                        <h2 style="margin: 0; font-size: 24px; font-weight: 600; color: #3d3d3d;">Comunidade</h2>
+                                                        <p style="margin: 0; font-size: 14px; color: #888;">Conecte-se com ONGs e acompanhe suas histórias</p>
+                                                    </div>
+                                                </div>
+                                                <div style="background: #f8f6f2; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #8c5a46;">
+                                                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8c5a46" stroke-width="2">
+                                                            <path d="M12 20h9"/>
+                                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                                        </svg>
+                                                        <input type="text" placeholder="O que há de novo?" style="flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff;" disabled>
+                                                    </div>
+                                                </div>
+                                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #eee;">
+                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                        <div style="width: 45px; height: 45px; border-radius: 50%; background: #8c5a46;"></div>
+                                                        <div>
+                                                            <p style="margin: 0; font-weight: 600; font-size: 14px; color: #3d3d3d;">Buscar ONGs</p>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" placeholder="Digite o nome da ONG..." style="flex: 1; margin-left: 20px; padding: 8px 15px; border: 1px solid #ddd; border-radius: 20px; background: #f8f9fa;" disabled>
+                                                </div>
+                                                <h3 style="font-size: 18px; margin-bottom: 15px; color: #3d3d3d;">Atividades Recentes</h3>
+                                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                                    <div style="display: flex; align-items: start; gap: 12px; padding: 15px; background: #f8f6f2; border-radius: 8px;">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#28a745" style="flex-shrink: 0; margin-top: 3px;">
+                                                            <circle cx="12" cy="12" r="10"/>
+                                                            <path d="M12 6v6l4 2" stroke="#fff" stroke-width="2" fill="none"/>
+                                                        </svg>
+                                                        <div style="flex: 1;">
+                                                            <p style="margin: 0 0 5px 0; font-size: 13px; color: #555; line-height: 1.5;"><strong>Bora Bill Amostradinho Casca de Bala</strong> recebeu 455 Cobertores</p>
+                                                            <span style="font-size: 12px; color: #888;">há 16h</span>
+                                                        </div>
+                                                    </div>
+                                                    <div style="display: flex; align-items: start; gap: 12px; padding: 15px; background: #f8f6f2; border-radius: 8px;">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#28a745" style="flex-shrink: 0; margin-top: 3px;">
+                                                            <circle cx="12" cy="12" r="10"/>
+                                                            <path d="M12 6v6l4 2" stroke="#fff" stroke-width="2" fill="none"/>
+                                                        </svg>
+                                                        <div style="flex: 1;">
+                                                            <p style="margin: 0 0 5px 0; font-size: 13px; color: #555; line-height: 1.5;"><strong>Bora Bill Amostradinho Casca de Bala</strong> recebeu 155 Alimentos</p>
+                                                            <span style="font-size: 12px; color: #888;">há 16h</span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="button-wrapper"
-                                                    style="text-align: center; margin-top: 1rem;">
-                                                    <button disabled>Adicionar Abrigo</button>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="timeline-node"></div>
                             </div>
-
-
-                            <div class="feature-item">
-                                <div class="feature-content">
-                                    <div class="feature-text">
-                                        <h3>Pontos de Coleta</h3>
-                                        <p>Adicione seus parceiros e ajude os doadores a encontrar facilmente onde doar
-                                            alimentos, roupas e itens essenciais, tornando a solidariedade prática e
-                                            próxima de
-                                            quem precisa.
-                                        </p>
-                                    </div>
-                                    <div class="feature-visual" style="padding: 0; position: relative;">
-                                        <div class="detailed-mockup-wrapper">
-                                            <div
-                                                class="detailed-mockup-content form-mockup-content coleta-mockup-content">
-                                                <h1>Pontos de Coleta</h1>
-                                                <div class="collection-point-card">
-                                                    <div class="image-uploader">Adicionar foto</div>
-                                                    <div class="card-details">
-                                                        <p><strong>Local:</strong> Centro de Saúde</p>
-                                                        <p><strong>Horário:</strong> 08:00 - 18:00</p>
-                                                        <p><strong>Endereço:</strong> Av. Central, 123</p>
-                                                    </div>
-                                                    <div class="card-actions">
-                                                        <button class="qr-btn" onclick="openModal()">Ver QR
-                                                            Code</button>
-                                                        <button class="edit-btn" disabled>Editar</button>
-                                                        <button class="delete-btn" disabled>Excluir</button>
-                                                    </div>
-                                                </div>
-                                                <div id="qrModal" class="modal-overlay-local">
-                                                    <div class="modal-content-local">
-                                                        <span class="close-btn" onclick="closeModal()">&times;</span>
-                                                        <h2>Ponto de Coleta</h2>
-                                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CentroDeSaude"
-                                                            alt="QR Code" class="qr-code">
-                                                        <p><strong>Local:</strong> Centro de Saúde</p>
-                                                        <button class="close-modal-btn"
-                                                            onclick="closeModal()">Fechar</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="timeline-node"></div>
-                            </div>
+                            <div class="timeline-node"></div>
                         </div>
                     </div>
                 </div>
@@ -691,7 +751,7 @@
                                 diversity_1
                             </span></div>
                         <h3 class="benefit-title">Mais perto da comunidade</h3>
-                        <p>Com mapas, pontos de coleta e abrigos, sua ONG se conecta de verdade com quem precisa e com
+                        <p>Com mapas sua ONG se conecta de verdade com quem precisa e com
                             quem
                             quer ajudar. É solidariedade sem barreiras.</p>
                     </div>
@@ -718,223 +778,150 @@
             </div>
         </section>
 
+<section class="plans" id="plans">
+    <div class="container">
+        <h2 class="section-title fade-in">Escolha seu plano</h2>
+        <div class="pricing-container">
 
-        <section class="plans" id="plans">
-            <div class="container">
-                <h2 class="section-title fade-in">Escolha seu plano</h2>
-                <div class="pricing-container">
-
-                    <div class="plan-card plan-basic">
-                        <div class="plan-header">
-                            <h2>Plano Básico</h2>
-                            <p>Ideal para ONGs que estão começando.</p>
-                        </div>
-                        <div class="plan-body">
-                            <div class="plan-price">R$ 129,90<span>/mês</span></div>
-                            <ul class="plan-features">
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Mapa interativo</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Relatórios de doações (limitados)</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Gestão de tipos de doações</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Recursos básicos de transparência documental</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Suporte básico</li>
-                                <li class="not-included"><svg viewBox="0 0 24 24">
-                                        <path fill="#aaa"
-                                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z">
-                                        </path>
-                                    </svg>Personalização avançada</li>
-                                <li class="not-included"><svg viewBox="0 0 24 24">
-                                        <path fill="#aaa"
-                                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z">
-                                        </path>
-                                    </svg>Dashboard completo (apenas visão simples)</li>
-                            </ul>
-                            <div class="plan-cta">
-                                <a href="/pagamento" class="btn btn-basic">Escolher
-                                    plano</a>
-                            </div>
-                        </div>
+                      
+            <!-- Plano Premium -->
+            <div class="plan-card plan-premium">
+                <div class="popular-badge">Mais Completo</div>
+                <div class="plan-header">
+                    <h2>Plano Premium</h2>
+                    <p>Máximo de autonomia e organização para sua ONG</p>
+                </div>
+                <div class="plan-body">
+                    <div class="plan-price">R$ 299,90<span>/mês</span></div>
+                    <ul class="plan-features">
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Dashboard com insights personalizados
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Mapa interativo avançado
+                        </li>
+                       
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Suporte prioritário
+                        </li>
+                         <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Gestão Financeira eficiente
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Acesso antecipado a novas funções
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Ferramentas avançadas de gestão
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Transparência documental completa
+                        </li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="/pagamento" class="btn btn-premium">Fazer o pagamento</a>
                     </div>
-
-                    <div class="plan-card popular">
-                        <div class="popular-badge">Mais Popular</div>
-                        <div class="plan-header">
-                            <h2>Plano Intermediário</h2>
-                            <p>Para ONGs em crescimento, com mais ferramentas.</p>
-                        </div>
-                        <div class="plan-body">
-                            <div class="plan-price">R$ 319,90<span>/mês</span></div>
-                            <ul class="plan-features">
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Tudo do Plano Básico</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Ajuda médica disponível</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Relatórios com mais detalhes</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Ferramentas de gestão interna ampliadas</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Dashboard com recursos intermediários</li>
-                                <li class="not-included"><svg viewBox="0 0 24 24">
-                                        <path fill="#aaa"
-                                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z">
-                                        </path>
-                                    </svg>Personalização total do site</li>
-                                <li class="not-included"><svg viewBox="0 0 24 24">
-                                        <path fill="#aaa"
-                                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z">
-                                        </path>
-                                    </svg>Acesso antecipado a novidades exclusivas</li>
-                            </ul>
-                            <div class="plan-cta">
-                                <a href="/pagamento" class="btn btn-popular">Escolher
-                                    plano</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="plan-card plan-premium">
-                        <div class="plan-header">
-                            <h2>Plano Premium</h2>
-                            <p>Máximo de autonomia e organização.</p>
-                        </div>
-                        <div class="plan-body">
-                            <div class="plan-price">R$ 399,90<span>/mês</span></div>
-                            <ul class="plan-features">
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Tudo do Plano Intermediário</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Dashboard com insights personalizados</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Personalização total do site</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Suporte prioritário</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Acesso antecipado a novas funções e testes beta</li>
-                                <li><svg viewBox="0 0 24 24">
-                                        <path fill="var(--color-icon-check)"
-                                            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                    </svg>Ferramentas avançadas de gestão e transparência</li>
-                            </ul>
-                            <div class="plan-cta">
-                                <a href="/pagamento" class="btn btn-premium">Escolher
-                                    plano</a>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-        </section>
-
-        <section class="alianca-section">
-            <div class="main-container">
-                <h1 class="main-title" style="color: #693B11; font-weight: 400;">
-                    Enchant <span class="acolhe" style="font-weight: 600;">acolhe</span>, impulsiona e <span
-                        class="realiza" style="font-weight: 600;">realiza</span>!
-                </h1>
-
-                <div class="page-layout">
-
-                    <div class="side-text left-text" style="text-align: left; color: black;">
-                        <p style="font-weight: 400;">
-                            Acreditamos que boas ideias não podem ser limitadas pela falta de recursos. Se sua ONG ainda
-                            não
-                            tem renda suficiente, você pode solicitar nosso plano gratuito.
-                        </p>
+            
+            <!-- Plano Aliança (Gratuito) -->
+            <div class="plan-card plan-alianca">
+                <div class="plan-header">
+                    <h2>Plano Aliança</h2>
+                    <p>Para ONGs que querem fazer a diferença</p>
+                </div>
+                <div class="plan-body">
+                    <div class="plan-price">R$ 0,00<span>/mês</span></div>
+                    <ul class="plan-features">
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Acesso completo a todas as funcionalidades do plano pago
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Dashboard inteligente
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Mapa interativo de riscos
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Portal da transparência
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            Gestão completa de doações
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24">
+                                <path fill="var(--color-icon-check)"
+                                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                            </svg>
+                            O poder de agir com gestão financeira
+                        </li>
+                        <li style="margin-top: 1rem; padding: 1rem; background: #fff3e0; border-radius: 8px; color: #693B11; font-size: 0.9rem; font-style: italic;">
+                            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+                                <path fill="#693B11"
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+                            </svg>
+                            <span>Sujeito à análise e validação da ONG</span>
+                        </li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="/requisicao" class="btn btn-premium">Fazer requisição</a>
                     </div>
-
-                    <div class="center-content">
-                        <div class="problem-bubble bubble-problem-1">
-                            "Não tenho como investir em uma plataforma no momento..."
-                        </div>
-
-                        <div class="problem-bubble bubble-problem-2">
-                            "Nossos recursos são limitados e precisamos de ferramentas eficazes."
-                        </div>
-
-                        <div class="plan-card">
-                            <div class="popular-badge" style="color: #693B11; background-color: var(--cream);">Gratuito
-                            </div>
-                            <div class="plan-header">
-                                <h2 style="font-family: lexend deca; font-weight: 700;">Plano Aliança</h2>
-                                <p>Para ONGs que querem fazer a diferença</p>
-                            </div>
-                            <div class="plan-body">
-                                <div class="plan-price">R$ 0,00<span>/mês</span></div>
-                                <ul class="plan-features">
-                                    <li>
-                                        <svg viewBox="0 0 24 24">
-                                            <path fill="var(--color-icon-check)"
-                                                d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                        </svg>
-                                        <span>Acesso a tudo que os planos pagos fornecem</span>
-                                    </li>
-                                    <li>
-                                        <svg viewBox="0 0 24 24">
-                                            <path fill="var(--color-icon-check)"
-                                                d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>   
-                                        </svg>
-                                        <span>O caminho completo para novas oportunidades</span>
-                                    </li>
-                                    <li>
-                                        <svg viewBox="0 0 24 24">
-                                            <path fill="var(--color-icon-check)"
-                                                d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
-                                        </svg>
-                                        <span>O poder de agir, sem limites financeiros</span>
-                                    </li>
-                                </ul>
-                                <a href="/requisicao" class="btn btn-premium">Fazer
-                                    requisição</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="side-text right-text" style="text-align: right; color: black;">
-                        <p style="font-weight: 400;">
-                            Após uma breve inspeção e validação, sua organização poderá contar com todas as ferramentas
-                            essenciais para começar a transformar realidades.
-                        </p>
-                    </div>
-
                 </div>
             </div>
-        </section>
+                   
+        </div>
+    </div>
+</section>
+
+
+
         <section class="faq">
             <div class="container">
                 <div class="faq-content">

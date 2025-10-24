@@ -34,39 +34,9 @@
   --border-radius: 16px;
 }
 
-.alianca-section * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
-.alianca-section {
-  font-family: 'Lexend Deca', sans-serif;
-  background-color: var(--color-white);
-  color: var(--color-text-dark);
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
-}
+ 
 
-.btn-premium {
-  width: 160px !important;
-  height: 40px !important;
-  margin: 0 auto;
-  /* centraliza na horizontal */
-  font-family: 'Lexend Deca', sans-serif;
-  background-color: #e2ccae;
-  border-radius: 10px !important;
-  border: none;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #3d2106 !important;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
 
 .main-container {
   display: flex;
@@ -135,14 +105,7 @@
   background-color: #d2691e;
 }
 
-.page-layout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 30px;
-  width: 100%;
-  max-width: 1400px;
-}
+
 
 .side-text {
   flex: 1;
@@ -150,7 +113,7 @@
   font-size: 1.05rem;
   line-height: 1.7;
   color: #000000;
-  text-align: center;
+
 }
 
 .center-content {
@@ -176,8 +139,8 @@
 }
 
 .center-content .popular-badge {
-  position: absolute;
-  width: 160px;
+ 
+ 
   text-align: center;
   background-color: var(--color-dark-brown);
   color: var(--color-text-light);
@@ -191,90 +154,193 @@
   transform: rotate(45deg);
 }
 
-.center-content .plan-header {
-  background: #5a3221;
-  color: var(--color-white);
-  padding: 2rem;
+
+
+/* === PLANOS DE PREÇOS (DOIS PLANOS LADO A LADO) === */
+.pricing-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3.5rem;
+  width: 100%;
+  
+  margin: 0 auto;
+}
+
+.plan-card {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(84, 53, 44, 0.15);
+}
+
+.popular-badge {
+  position: absolute;
+  width: 160px;
   text-align: center;
+  background-color: #000000;
+  color: #fff3e0;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 2;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  top: 22px;
+  right: -35px;
+  transform: rotate(45deg);
 }
 
-.center-content .plan-header h2 {
-  font-family: 'Lexend Deca', sans-serif;
+.plan-header {
+  color: #fff3e0;
+  padding: 1.5rem;
+}
+
+.plan-premium .plan-header {
+  background: #915217 !important;
+}
+
+.plan-alianca .plan-header {
+  background:  #663507;
+}
+
+.plan-header h2 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.8rem;
-  font-weight: 400;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
-.center-content .plan-header p {
+.plan-header p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 400;
   opacity: 0.9;
 }
 
-.center-content .plan-body {
-  padding: 2rem;
+.plan-body {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
-.center-content .plan-price {
-  font-family: 'Lexend Deca', sans-serif;
-  font-size: 32px;
+.plan-price {
+  font-size: 1.8rem;
   font-weight: 700;
   color: #4e342e;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
-.center-content .plan-price span {
-  font-family: 'Lexend Deca', sans-serif;
-  font-size: 1rem;
+.plan-price span {
+  font-size: 0.95rem;
   font-weight: 400;
   color: #777;
 }
 
-.center-content .plan-features {
+.plan-features {
   list-style: none;
+  padding: 0;
+  margin: 0;
   flex-grow: 1;
 }
 
-.center-content .plan-features li {
+.plan-features li {
   display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  line-height: 1.5;
+  align-items: start;
+  margin-bottom: 0.85rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-.center-content .plan-features li svg {
-  width: 22px;
-  height: 22px;
-  margin-right: 12px;
+.plan-features li.not-included {
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.plan-features li svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
-.center-content .cta-button {
-  background: linear-gradient(135deg, var(--color-deep-orange) 0%, var(--color-vibrant-orange) 100%);
-  color: white;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 10px;
-  font-family: 'Lexend Deca', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 400;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-  width: 100%;
+.plan-cta {
+  align-items: center;
+  justify-content: center;
   margin-top: 2rem;
 }
 
-.center-content .cta-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+.btn {
+  display: block;
+  width: 100%;
+  padding: 8px 15px !important;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
 }
+
+.btn-premium {
+  width: 160px !important;
+  height: 40px !important;
+  margin: 0 auto;
+  font-family: 'Lexend Deca', sans-serif;
+  background-color: #e2ccae;
+  border-radius: 10px !important;
+  border: none;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  color: #3d2106;
+  cursor: pointer;
+  margin-top: auto;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-premium:hover {
+  background-color: #caae8d !important;
+  color: #3d2106 !important;
+  text-decoration: none;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .pricing-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 400px;
+  }
+  
+  .plan-price {
+    font-size: 2rem;
+  }
+
+  .plan-header h2 {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pricing-container {
+    gap: 1.5rem;
+  }
+}
+
+
 
 .problem-bubble {
   position: absolute;
@@ -355,6 +421,7 @@
 .alianca-section .cta-button {
   display: inline-block;
   font-weight: 400 !important;
+  color: #693B11;
   margin-top: 10px;
   padding: 10px 22px !important;
   border-radius: 10px !important;
@@ -403,6 +470,7 @@
 .header-parceiros p {
   font-size: 1.1rem;
   color: #555;
+  text-align:center;
   max-width: 600px;
   margin: 0.5rem auto 0;
 }
@@ -415,7 +483,7 @@
 
 #input-busca {
   width: 100%;
-  padding: 1rem 3.5rem 1rem 1rem;
+  padding: 1rem 2.5rem 1rem 1rem;
   border-radius: 50px;
   border: 1px solid #ddd;
   background-color: #fff;
@@ -471,6 +539,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    align-items: center;
     margin-top: auto;
     gap: 10px;
 }
@@ -504,12 +573,12 @@
 
 .card-ong-transparencia {
     background-color: transparent;
-    border: 2px solid #e2ccae;
+    border: 1px solid #0e0d0d;
     color: #3d2106;
 }
 
 .card-ong-transparencia:hover {
-    background-color: #e2ccae;
+   
     color: #3d2106;
     text-decoration: none;
 }
@@ -766,6 +835,7 @@ body {
   padding: 14px 35px;
   font-size: 1.1rem;
   font-weight: 600;
+  color: #693B11;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   text-decoration: none;
@@ -2074,6 +2144,7 @@ body {
 .benefits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
   gap: 40px;
   margin-top: 50px;
 }
@@ -2297,6 +2368,7 @@ body {
   border-radius: 15px;
   padding: 20px;
   height: 100%;
+  max-width:650px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   position: relative;
 }
@@ -2322,6 +2394,7 @@ body {
 
 .plan-features-mockup {
   display: flex;
+  
   flex-direction: column;
   gap: 12px;
 }
@@ -2412,6 +2485,7 @@ body {
 .hero .cta-button {
   padding: 14px 35px;
   font-size: 1.1rem;
+  color: #3d2106 !important;
   font-weight: 600;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -2421,11 +2495,12 @@ body {
 
 .faq .cta-button {
   margin: 15px 0;
+
 }
 
 .hero .cta-button:hover {
   transform: translateY(-3px);
-  color: #ffffff !important;
+  color:   #3d2106 !important;
 }
 
 .faq-button {
@@ -2774,7 +2849,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
   width: 100%;
-  max-width: 1100px;
+  max-width: 880px;
   margin: 0 auto;
 }
 
