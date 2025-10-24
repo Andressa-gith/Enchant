@@ -90,7 +90,8 @@ class EnchantAIAssistant {
                 width: 70px;
                 height: 70px;
                 border-radius: 50%;
-                background: linear-gradient(135deg, #693B11 0%, #8B4513 100%);
+                background-color: #e2ccae;
+                color: #3d2106;
                 border: none;
                 cursor: pointer;
                 display: flex;
@@ -103,7 +104,8 @@ class EnchantAIAssistant {
             }
 
             .enchant-ai-button:hover {
-                background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+                background-color: #caae8d;
+                color: #3d2106;
                 transform: scale(1.05);
             }
 
@@ -112,6 +114,9 @@ class EnchantAIAssistant {
                 height: 50px;
                 fill: white;
             }
+                .enchant-ai-button .bear-body {
+ fill: #3d2106; 
+}
 
             .enchant-ai-button .close-icon {
                 display: none;
@@ -140,10 +145,10 @@ class EnchantAIAssistant {
 
             @keyframes eyeBlink {
                 0%, 4%, 8%, 100% {
-                    fill: #693B11;
+                    fill: white;
                 }
                 2%, 6% {
-                    fill: white;
+                    fill: #3d2106;
                 }
             }
 
@@ -562,20 +567,18 @@ class EnchantAIAssistant {
     }
 
     //MASCOTE
-    createChatWidget() {
-        const widget = document.createElement('div');
-        widget.className = 'enchant-ai-assistant';
-        widget.innerHTML = `
-            <button class="enchant-ai-button" id="enchant-ai-toggle">
-                <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <!-- Orelhinhas -->
-                    <circle cx="8" cy="8" r="2.5" fill="white"/>
-                    <circle cx="16" cy="8" r="2.5" fill="white"/>
-                    <!-- Cabeça -->
-                    <circle cx="12" cy="12" r="7" fill="white"/>
+createChatWidget() {
+ const widget = document.createElement('div');
+ widget.className = 'enchant-ai-assistant';
+  widget.innerHTML = `
+ <button class="enchant-ai-button" id="enchant-ai-toggle">
+ <svg class="chat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <circle class="bear-body" cx="8" cy="8" r="2.5"/>
+ <circle class="bear-body" cx="16" cy="8" r="2.5"/>
+ <circle class="bear-body" cx="12" cy="12" r="7"/>
                     <!-- Olhinhos que piscam -->
                     <circle cx="10" cy="11" r="1.2" fill="#693B11" class="eye"/>
-                    <circle cx="14" cy="11" r="1.2" fill="#693B11" class="eye"/>
+                    <circle cx="14" cy="11" r="1.2" fill="white" class="eye"/>
                 </svg>
                 <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
