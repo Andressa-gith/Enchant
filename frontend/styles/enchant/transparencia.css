@@ -160,14 +160,16 @@ body {
     font-weight: 500;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
+    background: linear-gradient(to right, whitesmoke 80%, white 100%);
 }
 
 .badge:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: var(--secondary-brown);
 }
 
 .badge-verified {
     color: #155724;
+    color: var(--primary-brown);
     border-radius: 0;
 }
 
