@@ -85,9 +85,6 @@ async function validarDocumentoComIA(arquivo, categoria) {
     }
 }
 
-/**
- * Envia email de notificação ao admin COM BOTÕES
- */
 async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
     try {
         if (!process.env.RESEND_API_KEY) {
@@ -96,9 +93,12 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
         }
 
         const baseUrl = process.env.BASE_URL || 'https://enchant.onrender.com';
+        
+        // ✅ URLs simplificadas (mas ainda funcionais)
         const urlAprovar = `${baseUrl}/api/requisicao/aprovar-email/${requisicao.token_aprovacao}`;
         const urlRejeitar = `${baseUrl}/api/requisicao/rejeitar-email/${requisicao.token_aprovacao}`;
 
+        // Gera links dos documentos
         const linksDocumentos = await Promise.all(
             documentos.map(async (doc) => {
                 const { data, error } = await supabase.storage
@@ -106,13 +106,24 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
                     .createSignedUrl(doc.caminho_arquivo, 604800);
 
                 if (error) {
-                    return `<li><strong>${doc.categoria_documento}</strong>: ${doc.nome_arquivo_original}</li>`;
+                    return `<li><strong>${doc.categoria_documento}</strong>: ${doc.nome_arquivo_original} (link indisponível)</li>`;
                 }
 
-                return `<li><strong>${doc.categoria_documento}</strong>: <a href="${data.signedUrl}" target="_blank" style="color: #8B5CF6;">${doc.nome_arquivo_original}</a></li>`;
+                return `
+                    <li>
+                        <strong>${doc.categoria_documento}</strong>: 
+                        <a href="${data.signedUrl}" 
+                           target="_blank" 
+                           download="${doc.nome_arquivo_original}"
+                           style="color: #8B5CF6; text-decoration: underline;">
+                            ${doc.nome_arquivo_original}
+                        </a>
+                    </li>
+                `;
             })
         );
 
+        // ✅ HTML otimizado com menos conteúdo suspeito
         const htmlEmail = `
             <!DOCTYPE html>
             <html>
@@ -120,89 +131,49 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <style>
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
                     body { 
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                         line-height: 1.6; 
                         color: #1F2937;
-                        background: linear-gradient(135deg, #F3E8FF 0%, #E0E7FF 100%);
+                        background: #f5f5f5;
                         padding: 20px;
+                        margin: 0;
                     }
-                    .email-wrapper {
+                    .container {
                         max-width: 600px;
                         margin: 0 auto;
                         background: #FFFFFF;
-                        border-radius: 16px;
+                        border-radius: 12px;
                         overflow: hidden;
-                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                     }
                     .header {
                         background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-                        padding: 40px 30px;
+                        padding: 30px 20px;
                         text-align: center;
-                        position: relative;
-                    }
-                    .header::after {
-                        content: '';
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        right: 0;
-                        height: 4px;
-                        background: linear-gradient(90deg, #EC4899, #8B5CF6, #3B82F6);
                     }
                     .header h1 {
                         color: #FFFFFF;
-                        font-size: 28px;
-                        font-weight: 700;
-                        margin-bottom: 8px;
-                        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    }
-                    .header p {
-                        color: #E9D5FF;
-                        font-size: 15px;
-                        font-weight: 500;
+                        font-size: 24px;
+                        margin: 0;
                     }
                     .content {
-                        padding: 40px 30px;
+                        padding: 30px 20px;
                     }
-                    .badge {
-                        display: inline-block;
-                        background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
-                        color: #78350F;
-                        padding: 8px 20px;
-                        border-radius: 20px;
-                        font-weight: 700;
-                        font-size: 13px;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-                    }
-                    .intro-text {
-                        color: #4B5563;
-                        font-size: 15px;
-                        margin: 20px 0;
-                        line-height: 1.7;
-                    }
-                    .card {
+                    .info-box {
                         background: #F9FAFB;
-                        border: 2px solid #E5E7EB;
-                        border-radius: 12px;
-                        padding: 24px;
-                        margin: 24px 0;
+                        border: 1px solid #E5E7EB;
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin: 20px 0;
                     }
-                    .card h3 {
+                    .info-box h3 {
                         color: #8B5CF6;
-                        font-size: 18px;
-                        font-weight: 700;
-                        margin-bottom: 20px;
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
+                        font-size: 16px;
+                        margin: 0 0 15px 0;
                     }
                     .info-row {
-                        display: flex;
-                        padding: 12px 0;
+                        padding: 8px 0;
                         border-bottom: 1px solid #E5E7EB;
                     }
                     .info-row:last-child {
@@ -210,240 +181,176 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
                     }
                     .info-label {
                         font-weight: 600;
-                        color: #8B5CF6;
-                        min-width: 120px;
-                        font-size: 14px;
-                    }
-                    .info-value {
-                        color: #374151;
-                        font-size: 14px;
-                        flex: 1;
+                        color: #6B7280;
+                        display: inline-block;
+                        width: 100px;
                     }
                     .documents-list {
                         list-style: none;
                         padding: 0;
-                        margin: 0;
+                        margin: 15px 0 0 0;
                     }
                     .documents-list li {
-                        padding: 12px 16px;
+                        padding: 10px;
                         background: #FFFFFF;
-                        border-radius: 8px;
+                        border-radius: 6px;
                         margin-bottom: 8px;
                         border-left: 3px solid #8B5CF6;
                         font-size: 14px;
                     }
-                    .documents-list li:last-child {
-                        margin-bottom: 0;
-                    }
                     .documents-list strong {
                         color: #8B5CF6;
+                        font-size: 11px;
                         text-transform: uppercase;
-                        font-size: 12px;
-                        font-weight: 700;
-                        letter-spacing: 0.5px;
                     }
                     .documents-list a {
                         color: #7C3AED;
                         text-decoration: none;
-                        font-weight: 500;
                     }
-                    .documents-list a:hover {
-                        text-decoration: underline;
-                    }
-                    .action-section {
-                        background: linear-gradient(135deg, #F3E8FF 0%, #EDE9FE 100%);
-                        border: 2px solid #C4B5FD;
-                        border-radius: 12px;
-                        padding: 32px 24px;
-                        margin: 30px 0;
+                    .button-container {
                         text-align: center;
-                    }
-                    .action-section h3 {
-                        color: #5B21B6;
-                        font-size: 20px;
-                        margin-bottom: 12px;
-                        font-weight: 700;
-                    }
-                    .action-section p {
-                        color: #6B7280;
-                        font-size: 14px;
-                        margin-bottom: 24px;
-                    }
-                    .button-group {
-                        display: flex;
-                        gap: 12px;
-                        justify-content: center;
-                        flex-wrap: wrap;
+                        margin: 30px 0;
+                        padding: 20px;
+                        background: #F9FAFB;
+                        border-radius: 8px;
                     }
                     .button {
                         display: inline-block;
-                        padding: 14px 32px;
-                        border-radius: 10px;
+                        padding: 12px 30px;
+                        margin: 0 5px;
+                        border-radius: 8px;
                         text-decoration: none;
                         font-weight: 600;
-                        font-size: 15px;
-                        transition: all 0.3s ease;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        font-size: 14px;
                     }
-                    .button-approve {
-                        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+                    .btn-approve {
+                        background: #10B981;
                         color: #FFFFFF;
                     }
-                    .button-approve:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
-                    }
-                    .button-reject {
-                        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+                    .btn-reject {
+                        background: #EF4444;
                         color: #FFFFFF;
-                    }
-                    .button-reject:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
-                    }
-                    .alert-box {
-                        background: #FEF3C7;
-                        border-left: 4px solid #F59E0B;
-                        border-radius: 8px;
-                        padding: 16px;
-                        margin: 20px 0;
-                    }
-                    .alert-box p {
-                        color: #92400E;
-                        font-size: 13px;
-                        margin: 0;
-                    }
-                    .alert-box code {
-                        background: #FDE68A;
-                        padding: 2px 8px;
-                        border-radius: 4px;
-                        font-family: 'Courier New', monospace;
-                        font-size: 12px;
-                        font-weight: 600;
                     }
                     .footer {
                         background: #F9FAFB;
-                        padding: 24px 30px;
+                        padding: 20px;
                         text-align: center;
-                        border-top: 2px solid #E5E7EB;
-                    }
-                    .footer p {
-                        color: #6B7280;
-                        font-size: 13px;
-                        margin: 4px 0;
-                    }
-                    .footer strong {
-                        color: #8B5CF6;
-                    }
-                    .timestamp {
-                        color: #9CA3AF;
+                        border-top: 1px solid #E5E7EB;
                         font-size: 12px;
-                        margin-top: 8px;
+                        color: #6B7280;
                     }
                 </style>
             </head>
             <body>
-                <div class="email-wrapper">
+                <div class="container">
                     <!-- Header -->
                     <div class="header">
-                        <h1>🎉 Nova Requisição de Cadastro</h1>
-                        <p>Enchant - Painel Administrativo</p>
+                        <h1>Nova Requisição de Cadastro</h1>
+                        <p style="color: #E9D5FF; margin: 5px 0 0 0; font-size: 14px;">
+                            Enchant - Painel Administrativo
+                        </p>
                     </div>
                     
                     <!-- Content -->
                     <div class="content">
-                        <div style="margin-bottom: 20px;">
-                            <span class="badge">⏳ Aguardando Análise</span>
-                        </div>
-                        
-                        <p class="intro-text">
-                            Uma nova instituição solicitou cadastro na plataforma Enchant. 
-                            Todos os documentos foram <strong>validados automaticamente pela IA</strong> ✨
+                        <p style="margin: 0 0 20px 0; font-size: 15px;">
+                            Uma nova instituição solicitou cadastro na plataforma. 
+                            Os documentos foram validados pela IA. ✅
                         </p>
                         
                         <!-- Dados da Instituição -->
-                        <div class="card">
-                            <h3>📋 Informações da Instituição</h3>
+                        <div class="info-box">
+                            <h3>Informações da Instituição</h3>
                             <div class="info-row">
                                 <span class="info-label">Nome:</span>
-                                <span class="info-value">${requisicao.nome_instituicao}</span>
+                                <span>${requisicao.nome_instituicao}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Email:</span>
-                                <span class="info-value">${requisicao.email_contato}</span>
+                                <span>${requisicao.email_contato}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">CNPJ:</span>
-                                <span class="info-value">${requisicao.cnpj}</span>
+                                <span>${requisicao.cnpj}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Telefone:</span>
-                                <span class="info-value">${requisicao.telefone}</span>
+                                <span>${requisicao.telefone}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Localização:</span>
-                                <span class="info-value">${requisicao.cidade} - ${requisicao.estado}</span>
+                                <span>${requisicao.cidade} - ${requisicao.estado}</span>
                             </div>
                         </div>
                         
                         <!-- Documentos -->
-                        <div class="card">
-                            <h3>📎 Documentos Enviados (${documentos.length})</h3>
+                        <div class="info-box">
+                            <h3>Documentos Enviados (${documentos.length})</h3>
                             <ul class="documents-list">
                                 ${linksDocumentos.join('')}
                             </ul>
-                            <p style="color: #6B7280; font-size: 12px; margin-top: 16px; margin-bottom: 0;">
-                                ⏰ Os links de download são válidos por 7 dias
+                            <p style="color: #6B7280; font-size: 11px; margin: 10px 0 0 0;">
+                                Links válidos por 7 dias
                             </p>
                         </div>
                         
-                        <!-- Ações -->
-                        <div class="action-section">
-                            <h3>🔍 Revisar e Decidir</h3>
-                            <p>Analise os documentos acima e escolha uma das ações:</p>
-                            <div class="button-group">
-                                <a href="${urlAprovar}" class="button button-approve">
-                                    ✅ Aprovar Cadastro
-                                </a>
-                                <a href="${urlRejeitar}" class="button button-reject">
-                                    ❌ Rejeitar Cadastro
-                                </a>
-                            </div>
+                        <!-- Botões de Ação -->
+                        <div class="button-container">
+                            <p style="margin: 0 0 15px 0; font-size: 15px; font-weight: 600; color: #374151;">
+                                Revisar e Decidir
+                            </p>
+                            <a href="${urlAprovar}" class="button btn-approve">
+                                ✅ Aprovar Cadastro
+                            </a>
+                            <a href="${urlRejeitar}" class="button btn-reject">
+                                ❌ Rejeitar Cadastro
+                            </a>
                         </div>
                         
-                        <!-- Alert Box -->
-                        <div class="alert-box">
-                            <p>
-                                <strong>ID da Requisição:</strong> 
-                                <code>${requisicao.id}</code>
-                            </p>
-                        </div>
+                        <!-- ID da Requisição -->
+                        <p style="text-align: center; color: #9CA3AF; font-size: 12px; margin: 20px 0 0 0;">
+                            ID: ${requisicao.id}
+                        </p>
                     </div>
                     
                     <!-- Footer -->
                     <div class="footer">
-                        <p><strong>Enchant</strong> - Transformando a gestão de instituições sociais</p>
-                        <p>Salvador, Bahia • Brasil</p>
-                        <p class="timestamp">📅 ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</p>
+                        <p style="margin: 0;">
+                            <strong>Enchant</strong> - Plataforma de Gestão para ONGs
+                        </p>
+                        <p style="margin: 5px 0 0 0;">
+                            Salvador, Bahia • Brasil
+                        </p>
                     </div>
                 </div>
             </body>
             </html>
         `;
 
-        await resend.emails.send({
+        // ✅ Configuração otimizada do email
+        const emailConfig = {
             from: process.env.EMAIL_REMETENTE || 'Enchant <onboarding@resend.dev>',
             to: process.env.EMAIL_DESTINO_ADMIN,
-            subject: `🔔 Nova Requisição: ${requisicao.nome_instituicao}`,
-            html: htmlEmail
-        });
+            subject: `Nova Requisição: ${requisicao.nome_instituicao}`,
+            html: htmlEmail,
+            // ✅ Headers adicionais para melhorar deliverability
+            headers: {
+                'X-Entity-Ref-ID': requisicao.id,
+            },
+            // ✅ Tags para tracking (opcional)
+            tags: [
+                { name: 'category', value: 'requisicao-cadastro' },
+                { name: 'instituicao', value: requisicao.nome_instituicao }
+            ]
+        };
+
+        await resend.emails.send(emailConfig);
 
         logger.info('✅ Email enviado ao admin com sucesso.');
     } catch (error) {
         logger.error('❌ Erro ao enviar email:', error);
     }
 }
-
 /**
  * Envia email de aprovação ao usuário
  */
@@ -1073,6 +980,14 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
 
     try {
         const { token } = req.params;
+        
+        console.log('✅ [APROVAÇÃO] Iniciando processo...');
+        console.log('✅ [APROVAÇÃO] Token recebido:', token);
+
+        if (!token) {
+            console.error('❌ [APROVAÇÃO] Token não fornecido na URL');
+            return res.status(400).send('<h1>❌ Token inválido</h1>');
+        }
 
         const { data: requisicao, error } = await supabase
             .from('requisicao_cadastro')
@@ -1080,10 +995,38 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
             .eq('token_aprovacao', token)
             .single();
 
-        if (error || !requisicao || requisicao.requisicao_status !== 'pendente') {
-            return res.status(404).send('<h1>Requisição não encontrada ou já processada</h1>');
+        console.log('✅ [APROVAÇÃO] Resultado da busca:', { 
+            encontrou: !!requisicao, 
+            erro: error?.message,
+            status: requisicao?.requisicao_status 
+        });
+
+        if (error || !requisicao) {
+            console.error('❌ [APROVAÇÃO] Requisição não encontrada. Erro:', error);
+            return res.status(404).send(`
+                <html>
+                <body style="font-family: Arial; text-align: center; padding: 50px;">
+                    <h1 style="color: #EF4444;">❌ Requisição não encontrada</h1>
+                    <p>Este link pode ter expirado ou já foi processado.</p>
+                    <p style="color: #999; font-size: 12px;">Token: ${token}</p>
+                </body>
+                </html>
+            `);
         }
 
+        if (requisicao.requisicao_status !== 'pendente') {
+            console.warn('⚠️ [APROVAÇÃO] Requisição já processada:', requisicao.requisicao_status);
+            return res.status(400).send(`
+                <html>
+                <body style="font-family: Arial; text-align: center; padding: 50px;">
+                    <h1 style="color: #F59E0B;">⚠️ Requisição já processada</h1>
+                    <p>Status atual: <strong>${requisicao.requisicao_status}</strong></p>
+                </body>
+                </html>
+            `);
+        }
+
+        console.log('✅ [APROVAÇÃO] Criando usuário no Auth...');
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: requisicao.email_contato,
             password: requisicao.senha_original,
@@ -1094,31 +1037,41 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
             }
         });
 
-        if (authError) throw authError;
+        if (authError) {
+            console.error('❌ [APROVAÇÃO] Erro ao criar usuário:', authError);
+            throw authError;
+        }
+        
         novoUsuarioId = authData.user.id;
+        console.log('✅ [APROVAÇÃO] Usuário criado. ID:', novoUsuarioId);
 
-// ✅ Na função aprovarRequisicao (e aprovarRequisicaoPorEmail)
-await supabase.from('instituicao').insert({
-    id: novoUsuarioId,
-    nome: requisicao.nome_instituicao,              // ✅
-    tipo_instituicao: requisicao.tipo_instituicao,  // 🆕
-    cnpj: requisicao.cnpj,
-    email_contato: requisicao.email_contato,
-    // ... outros campos
-});
+        console.log('✅ [APROVAÇÃO] Inserindo dados nas tabelas...');
+        
+        // Instituição
+        await supabase.from('instituicao').insert({
+            id: novoUsuarioId,
+            nome: requisicao.nome_instituicao,
+            tipo_instituicao: requisicao.tipo_instituicao,
+            cnpj: requisicao.cnpj,
+            email_contato: requisicao.email_contato,
+        });
 
-await supabase.from('endereco').insert({
-    instituicao_id: novoUsuarioId,
-    cep: requisicao.cep,        // 🆕
-    bairro: requisicao.bairro,  // 🆕
-    cidade: requisicao.cidade,
-    estado: requisicao.estado
-});
+        // Endereço
+        await supabase.from('endereco').insert({
+            instituicao_id: novoUsuarioId,
+            cep: requisicao.cep,
+            bairro: requisicao.bairro,
+            cidade: requisicao.cidade,
+            estado: requisicao.estado
+        });
 
-await supabase.from('telefone').insert({
-    instituicao_id: novoUsuarioId,
-    numero: requisicao.telefone  // ✅ No banco é 'telefone'
-});
+        // Telefone
+        await supabase.from('telefone').insert({
+            instituicao_id: novoUsuarioId,
+            numero: requisicao.telefone
+        });
+
+        console.log('✅ [APROVAÇÃO] Atualizando status da requisição...');
         await supabase.from('requisicao_cadastro').update({
             requisicao_status: 'aprovada',
             data_processamento: new Date().toISOString(),
@@ -1126,24 +1079,41 @@ await supabase.from('telefone').insert({
             senha_original: null
         }).eq('id', requisicao.id);
 
+        console.log('✅ [APROVAÇÃO] Enviando email de confirmação...');
         await enviarEmailAprovacao(requisicao);
 
+        console.log('✅ [APROVAÇÃO] Processo concluído com sucesso!');
+        
         res.send(`
             <html>
+            <head><meta charset="utf-8"></head>
             <body style="font-family: Arial; text-align: center; padding: 50px;">
                 <h1 style="color: #10B981;">✅ Requisição Aprovada!</h1>
-                <p><strong>${requisicao.nome_instituicao}</strong> foi aprovada.</p>
+                <p><strong>${requisicao.nome_instituicao}</strong> foi aprovada com sucesso.</p>
                 <p>Um email foi enviado com as instruções de acesso.</p>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+                <p style="color: #666; font-size: 14px;">Você pode fechar esta página.</p>
             </body>
             </html>
         `);
 
     } catch (error) {
-        logger.error('Erro ao aprovar:', error);
+        console.error('❌ [APROVAÇÃO] Erro catastrófico:', error);
+        
         if (novoUsuarioId) {
+            console.log('🔄 [ROLLBACK] Deletando usuário órfão:', novoUsuarioId);
             await supabaseAdmin.auth.admin.deleteUser(novoUsuarioId);
         }
-        res.status(500).send('<h1>Erro ao processar aprovação</h1>');
+        
+        res.status(500).send(`
+            <html>
+            <body style="font-family: Arial; text-align: center; padding: 50px;">
+                <h1 style="color: #EF4444;">❌ Erro ao processar aprovação</h1>
+                <p>Ocorreu um erro inesperado. Por favor, tente novamente.</p>
+                <p style="color: #999; font-size: 12px;">${error.message}</p>
+            </body>
+            </html>
+            `);
     }
 };
 

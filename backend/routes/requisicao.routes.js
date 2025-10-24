@@ -33,6 +33,25 @@ const upload = multer({
     }
 });
 
+requisicaoRouter.get('/aprovar-email/:token', (req, res, next) => {
+    console.log('🔵 Rota /aprovar-email/:token acessada');
+    console.log('🔵 Token recebido:', req.params.token);
+    next();
+}, aprovarRequisicaoPorEmail);
+
+requisicaoRouter.get('/rejeitar-email/:token', (req, res, next) => {
+    console.log('🟡 Rota /rejeitar-email/:token acessada');
+    console.log('🟡 Token recebido:', req.params.token);
+    next();
+}, rejeitarRequisicaoPorEmail);
+
+requisicaoRouter.post('/rejeitar-email/:token/confirmar', (req, res, next) => {
+    console.log('🟠 Rota /rejeitar-email/:token/confirmar acessada');
+    console.log('🟠 Token recebido:', req.params.token);
+    console.log('🟠 Body recebido:', req.body);
+    next();
+}, confirmarRejeicaoPorEmail);
+
 // ========== ROTAS PÚBLICAS ==========
 
 // Enviar nova requisição de cadastro
