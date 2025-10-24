@@ -338,9 +338,19 @@ body {
   font-family: 'Lexend Deca', serif;
   font-weight: 400;
   overflow-x: hidden;
+
+  /* --- SOLUÇÃO ADICIONADA --- */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* ------------------------- */
 }
 
-
+/* --- SOLUÇÃO ADICIONADA --- */
+.page-wrapper {
+  flex-grow: 1;
+}
+/* ------------------------- */
 
 
 .h1 {
