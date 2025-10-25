@@ -1361,6 +1361,11 @@ footer-left img {
     padding: 20px 50px;
     font-family: "Lexend Deca", sans-serif;
     height: auto;
+    
+    /* --- ALTERAÇÕES COMEÇAM AQUI --- */
+    padding-top: 100px;
+    padding-bottom: 100px;
+    /* --- ALTERAÇÕES TERMINAM AQUI --- */
   }
 
 
@@ -1455,6 +1460,11 @@ footer-left img {
     padding: 20px 50px;
     height: auto;
     font-family: "Lexend Deca", sans-serif;
+    
+    /* --- ALTERAÇÕES COMEÇAM AQUI --- */
+    padding-top: 100px;
+    padding-bottom: 100px;
+    /* --- ALTERAÇÕES TERMINAM AQUI --- */
   }
 
 
@@ -1529,4 +1539,3 @@ footer-left img {
     text-decoration: underline;
   }
 }
-
