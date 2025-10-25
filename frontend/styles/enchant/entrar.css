@@ -9,6 +9,11 @@
 }
 
 
+input[type="password"]::-ms-reveal {
+  display: none;
+}
+
+
 #fixado {
   position: fixed;
   width: 100%;

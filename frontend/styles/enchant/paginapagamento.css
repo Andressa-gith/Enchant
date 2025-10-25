@@ -12,13 +12,44 @@
     --corlink: #EC9E07;
     --cor-erro: #dc3545; /* Cor de erro padrão (Bootstrap) */
 }
-
+input[type="password"]::-ms-reveal {
+  display: none;
+}
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Lexend Deca", sans-serif;
 }
+
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top:  73%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    color: #a5a5a5;
+    z-index: 10;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: #777;
+}
+
+.toggle-password svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    pointer-events: none;
+}
+
 
 body {
     display: flex;
