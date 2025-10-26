@@ -546,7 +546,7 @@
 
 .card-ong-link,
 .card-ong-transparencia {
-    width: 160px;
+    width: 130px !important;
     height: 40px;
     font-family: 'Lexend Deca', sans-serif;
     border-radius: 10px;
@@ -562,6 +562,7 @@
 }
 
 .card-ong-link {
+   width: 130px;
     background-color: #e2ccae;
     color: #3d2106;
 }
