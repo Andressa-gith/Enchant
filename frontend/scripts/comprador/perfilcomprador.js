@@ -219,23 +219,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
             .toLowerCase();
 
-        // Usa o nome original do ficheiro para mais flexibilidade (ex: .jpg, .png)
         const filePath = `${session.user.id}/${cleanFileName}`;
         showNotification('A enviar foto...', 'info');
 
-        // 1. Tenta fazer o upload para o Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
             .from('profile-photos')
             .upload(filePath, photoPreviewFile, { upsert: true });
 
-        // 2. Verifica se o upload falhou
         if (uploadError) {
             console.error('Erro no upload da foto:', uploadError);
             closeModal(ui.photoModal);
             return showNotification('Erro ao enviar a sua foto.', 'danger');
         }
 
-        // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
         try {
             await fetch('/api/user/profile', {
                 method: 'PUT',
@@ -248,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             closeModal(ui.photoModal);
             showNotification('Foto de perfil atualizada!', 'success');
-            await fetchUserProfile(); // Re-busca tudo para atualizar a UI com a nova imagem
+            window.location.reload();
             photoPreviewFile = null; // Limpa a seleção
 
         } catch (dbError) {
@@ -269,24 +265,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
             .toLowerCase();
 
-        // Usa o nome original do ficheiro para consistência
         const filePath = `${session.user.id}/${cleanFileName2}`;
         showNotification('A enviar logo...', 'info');
 
-        // 1. Tenta fazer o upload para o Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
             .from('logos')
             .upload(filePath, logoPreviewFile, {
                 upsert: true // Substitui o logo se já existir
             });
 
-        // 2. Verifica se o upload falhou
         if (uploadError) {
             console.error('Erro no upload do logo:', uploadError);
             return showNotification('Erro ao enviar o seu logo.', 'danger');
         }
 
-        // 3. Se o upload teve sucesso, tenta salvar o caminho no banco de dados
         try {
             await fetch('/api/user/profile', {
                 method: 'PUT',
@@ -299,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             closeModal(ui.logoModal);
             showNotification('Logo atualizado com sucesso!', 'success');
-            await fetchUserProfile(); // Re-busca os dados para obter a nova URL assinada
+            window.location.reload();
             logoPreviewFile = null; // Limpa a seleção
 
         } catch (dbError) {
