@@ -94,18 +94,23 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
 
         const baseUrl = process.env.BASE_URL || 'https://enchant.onrender.com';
         
-        // ✅ URLs simplificadas (mas ainda funcionais)
         const urlAprovar = `${baseUrl}/api/requisicao/aprovar-email/${requisicao.token_aprovacao}`;
         const urlRejeitar = `${baseUrl}/api/requisicao/rejeitar-email/${requisicao.token_aprovacao}`;
 
-        // Gera links dos documentos
+        // ✅ CORREÇÃO: Usar supabaseAdmin para gerar signed URLs
         const linksDocumentos = await Promise.all(
             documentos.map(async (doc) => {
-                const { data, error } = await supabase.storage
+                const { data, error } = await supabaseAdmin.storage
                     .from('requisicao-documentos')
                     .createSignedUrl(doc.caminho_arquivo, 604800);
 
                 if (error) {
+                    logger.error(`Erro ao gerar signed URL para ${doc.caminho_arquivo}:`, error);
+                    return `<li><strong>${doc.categoria_documento}</strong>: ${doc.nome_arquivo_original} (erro ao gerar link)</li>`;
+                }
+
+                if (!data || !data.signedUrl) {
+                    logger.warn(`Signed URL vazia para ${doc.caminho_arquivo}`);
                     return `<li><strong>${doc.categoria_documento}</strong>: ${doc.nome_arquivo_original} (link indisponível)</li>`;
                 }
 
@@ -121,7 +126,7 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
                     </li>
                 `;
             })
-        );
+        )
 
         // ✅ HTML otimizado com menos conteúdo suspeito
         const htmlEmail = `
