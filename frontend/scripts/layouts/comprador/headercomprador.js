@@ -208,11 +208,12 @@ function initializeHeader(session) {
                         color: var(--text-color);
                         padding: 0;
                         text-decoration: none; /* Garante que não tenha sublinhado de link */
+                        transition: .2s ease;
                     }
 
                     .profile-button:hover {
                         color: var(--primary-color); /* Efeito hover sutil */
-                        transition: .2s;
+                        transition: .2s ease;
                     }
 
                     .profile-photo {
@@ -286,11 +287,13 @@ function initializeHeader(session) {
                         object-fit: cover;   /* Garante que a foto preencha o círculo sem distorcer */
                         border: 2px solid #ffffff;
                         background-color: #f0f0f0; /* Cor de fundo enquanto a imagem carrega */
+                        transition: .2s ease;
                     }
 
                     .header-profile-photo:hover{
                         border: 2px solid #ffffff;
                         box-shadow: 0px 0px 0px 2px #66360a;
+                        transition: .2s ease;
                     }
 
                     @media (max-width: 1024px) {
