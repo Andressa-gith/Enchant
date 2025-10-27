@@ -1462,14 +1462,9 @@ footer-left img {
 
 
   footer {
-    padding: 20px 50px;
+    padding: 30px 50px !important;
     height: auto;
     font-family: "Lexend Deca", sans-serif;
-    
-    /* --- ALTERAÇÕES COMEÇAM AQUI --- */
-    padding-top: 100px;
-    padding-bottom: 100px;
-    /* --- ALTERAÇÕES TERMINAM AQUI --- */
   }
 
 
