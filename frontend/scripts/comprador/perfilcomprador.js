@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         btnClosePrivacyModalX: document.getElementById('btn-close-privacy-modal-x'),
         btnClosePrivacyModalFooter: document.getElementById('btn-close-privacy-modal-footer'),
+        photoUploadArea: document.getElementById('photo-upload-area'),
 
         btnCloseTermsModalX: document.getElementById('btn-close-terms-modal-x'),
 
@@ -199,13 +200,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function handlePhotoFile(file) {
-        if (!file) return;
-        // Validações (pode adicionar mais se quiser)
-        if (!file.type.startsWith('image/')) {
+        const tiposPermitidos = ['image/jpeg', 'image/png', 'image/svg+xml'];
+        if (!tiposPermitidos.includes(file.type)) {
             closeModal(ui.photoModal);
-            return showNotification('Por favor, selecione um ficheiro de imagem.', 'danger');
+            return showNotification('Formato não permitido. Use JPG, PNG ou SVG.', 'danger');
         }
-        photoPreviewFile = file; // Armazena o ficheiro selecionado
+        if (file.size > 2 * 1024 * 1024) { // 2MB
+            closeModal(ui.photoModal);
+            return showNotification('Arquivo muito grande (máx. 2MB).', 'danger');
+        }
+
+        photoPreviewFile = file;
+        const reader = new FileReader();
+        reader.onload = e => showPhotoPreview(e.target.result);
+        reader.readAsDataURL(file);
+    }
+
+    function showPhotoPreview(imageSrc) {
+        ui.photoUploadArea.innerHTML = `<div class="logo-preview-container">
+        <img src="${imageSrc}" class="logo-preview-image" alt="Preview">
+        <button type="button" class="logo-preview-remove" id="btn-clear-photo-preview">×</button>
+    </div><p class="logo-preview-text">Clique em "Salvar"</p>`;
+
+        document.getElementById('btn-clear-photo-preview').addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearPhotoPreview();
+        });
+    }
+
+    function clearPhotoPreview() {
+        photoPreviewFile = null;
+        ui.photoUploadInput.value = '';
+        ui.photoUploadArea.innerHTML = `<i class="bi bi-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
+        <p>Clique ou arraste uma imagem aqui</p>
+        <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>`;
+    }
+
+    function setupPhotoUpload() {
+        ui.photoUploadArea.addEventListener('click', () => {
+            ui.photoUploadInput.click();
+        });
+
+        ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+            ui.photoUploadArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (eventName === 'dragover') ui.photoUploadArea.classList.add('drag-over');
+                else ui.photoUploadArea.classList.remove('drag-over');
+            });
+        });
+
+        ui.photoUploadArea.addEventListener('drop', e => {
+            if (e.dataTransfer.files.length > 0) {
+                handlePhotoFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        ui.photoUploadInput.addEventListener('change', e => {
+            if (e.target.files.length > 0) {
+                handlePhotoFile(e.target.files[0]);
+            }
+        });
     }
 
     async function saveProfilePhoto() {
@@ -564,9 +619,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         ui.btnSavePhoto.addEventListener('click', saveProfilePhoto);
         ui.btnSaveLogo.addEventListener('click', saveOrganizationLogo);
-        ui.photoUploadInput.addEventListener('change', (event) => {
-            handlePhotoFile(event.target.files[0]);
-        });
 
         // Outros eventos
         ui.editPassword.addEventListener('input', checkPasswordStrength);
@@ -633,6 +685,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchUserProfile(); // Busca os dados do usuário e atualiza a UI
     setupPasswordToggles();   // Configura os botões de mostrar/esconder senha
     setupLogoUpload();        // Configura a área de arrastar e soltar logo
+    setupPhotoUpload();  
     setupCharCounter(); //contador la
     conectarEventos();        // Conecta todos os botões às suas funções
     setTimeout(() => {
