@@ -990,10 +990,11 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         console.log('✅ [APROVAÇÃO] Token recebido:', token);
 
         if (!token) {
-            console.error('❌ [APROVAÇÃO] Token não fornecido na URL');
+            console.error('❌ [APROVAÇÃO] Token não fornecido');
             return res.status(400).send('<h1>❌ Token inválido</h1>');
         }
 
+        // ========== BUSCA A REQUISIÇÃO ==========
         const { data: requisicao, error } = await supabase
             .from('requisicao_cadastro')
             .select('*')
@@ -1007,13 +1008,12 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         });
 
         if (error || !requisicao) {
-            console.error('❌ [APROVAÇÃO] Requisição não encontrada. Erro:', error);
+            console.error('❌ [APROVAÇÃO] Requisição não encontrada');
             return res.status(404).send(`
                 <html>
                 <body style="font-family: Arial; text-align: center; padding: 50px;">
                     <h1 style="color: #EF4444;">❌ Requisição não encontrada</h1>
                     <p>Este link pode ter expirado ou já foi processado.</p>
-                    <p style="color: #999; font-size: 12px;">Token: ${token}</p>
                 </body>
                 </html>
             `);
@@ -1031,6 +1031,7 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
             `);
         }
 
+        // ========== PASSO 1: CRIAR USUÁRIO NO AUTH ==========
         console.log('✅ [APROVAÇÃO] Criando usuário no Auth...');
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: requisicao.email_contato,
@@ -1038,7 +1039,8 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
             email_confirm: true,
             user_metadata: {
                 nome_instituicao: requisicao.nome_instituicao,
-                cnpj: requisicao.cnpj
+                cnpj: requisicao.cnpj,
+                tipo_instituicao: requisicao.tipo_instituicao // ✅ Importante para o trigger
             }
         });
 
@@ -1050,44 +1052,106 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         novoUsuarioId = authData.user.id;
         console.log('✅ [APROVAÇÃO] Usuário criado. ID:', novoUsuarioId);
 
-        console.log('✅ [APROVAÇÃO] Inserindo dados nas tabelas...');
-        
-        // Instituição
-        await supabase.from('instituicao').insert({
-            id: novoUsuarioId,
-            nome: requisicao.nome_instituicao,
-            tipo_instituicao: requisicao.tipo_instituicao,
-            cnpj: requisicao.cnpj,
-            email_contato: requisicao.email_contato,
-        });
+        // ========== PASSO 2: AGUARDAR O TRIGGER CRIAR A INSTITUIÇÃO ==========
+        console.log('⏳ [APROVAÇÃO] Aguardando trigger criar instituição...');
+        let tentativas = 0;
+        let instituicaoExiste = false;
 
-        // Endereço
-        await supabase.from('endereco').insert({
-            instituicao_id: novoUsuarioId,
-            cep: requisicao.cep,
-            bairro: requisicao.bairro,
-            cidade: requisicao.cidade,
-            estado: requisicao.estado
-        });
+        while (tentativas < 15 && !instituicaoExiste) { // 15 tentativas = 15 segundos
+            const { data: checkInstituicao, error: checkError } = await supabaseAdmin
+                .from('instituicao')
+                .select('id')
+                .eq('id', novoUsuarioId)
+                .maybeSingle();
 
-        // Telefone
-        await supabase.from('telefone').insert({
-            instituicao_id: novoUsuarioId,
-            numero: requisicao.telefone
-        });
+            if (checkInstituicao && !checkError) {
+                instituicaoExiste = true;
+                console.log('✅ [APROVAÇÃO] Instituição criada pelo trigger!');
+            } else {
+                tentativas++;
+                console.log(`⏳ [APROVAÇÃO] Tentativa ${tentativas}/15 - Aguardando...`);
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Espera 1 segundo
+            }
+        }
 
+        if (!instituicaoExiste) {
+            throw new Error('❌ Timeout: O trigger não criou a instituição a tempo');
+        }
+
+        // ========== PASSO 3: ATUALIZAR DADOS COMPLETOS DA INSTITUIÇÃO ==========
+        console.log('✅ [APROVAÇÃO] Atualizando dados completos da instituição...');
+        const { error: instituicaoError } = await supabaseAdmin
+            .from('instituicao')
+            .update({
+                nome: requisicao.nome_instituicao,
+                tipo_instituicao: requisicao.tipo_instituicao, // ✅ Garante que está preenchido
+                cnpj: requisicao.cnpj,
+                email_contato: requisicao.email_contato,
+                primeiro_login: true
+            })
+            .eq('id', novoUsuarioId);
+
+        if (instituicaoError) {
+            console.error('❌ [APROVAÇÃO] Erro ao atualizar instituição:', instituicaoError);
+            throw instituicaoError;
+        }
+        console.log('✅ [APROVAÇÃO] Instituição atualizada!');
+
+        // ========== PASSO 4: INSERIR ENDEREÇO ==========
+        console.log('✅ [APROVAÇÃO] Inserindo endereço...');
+        const { error: enderecoError } = await supabaseAdmin
+            .from('endereco')
+            .insert({
+                instituicao_id: novoUsuarioId,
+                cep: requisicao.cep,
+                bairro: requisicao.bairro,
+                cidade: requisicao.cidade,
+                estado: requisicao.estado
+            });
+
+        if (enderecoError) {
+            console.error('❌ [APROVAÇÃO] Erro ao inserir endereço:', enderecoError);
+            throw enderecoError;
+        }
+        console.log('✅ [APROVAÇÃO] Endereço inserido!');
+
+        // ========== PASSO 5: INSERIR TELEFONE ==========
+        console.log('✅ [APROVAÇÃO] Inserindo telefone...');
+        const { error: telefoneError } = await supabaseAdmin
+            .from('telefone')
+            .insert({
+                instituicao_id: novoUsuarioId,
+                numero: requisicao.telefone
+            });
+
+        if (telefoneError) {
+            console.error('❌ [APROVAÇÃO] Erro ao inserir telefone:', telefoneError);
+            throw telefoneError;
+        }
+        console.log('✅ [APROVAÇÃO] Telefone inserido!');
+
+        // ========== PASSO 6: ATUALIZAR STATUS DA REQUISIÇÃO ==========
         console.log('✅ [APROVAÇÃO] Atualizando status da requisição...');
-        await supabase.from('requisicao_cadastro').update({
-            requisicao_status: 'aprovada',
-            data_processamento: new Date().toISOString(),
-            token_aprovacao: null,
-            senha_original: null
-        }).eq('id', requisicao.id);
+        const { error: updateReqError } = await supabase
+            .from('requisicao_cadastro')
+            .update({
+                requisicao_status: 'aprovada',
+                data_processamento: new Date().toISOString(),
+                token_aprovacao: null,
+                senha_original: null
+            })
+            .eq('id', requisicao.id);
 
+        if (updateReqError) {
+            console.error('❌ [APROVAÇÃO] Erro ao atualizar requisição:', updateReqError);
+            throw updateReqError;
+        }
+
+        // ========== PASSO 7: ENVIAR EMAIL ==========
         console.log('✅ [APROVAÇÃO] Enviando email de confirmação...');
         await enviarEmailAprovacao(requisicao);
 
-        console.log('✅ [APROVAÇÃO] Processo concluído com sucesso!');
+        console.log('✅ [APROVAÇÃO] ✨ PROCESSO CONCLUÍDO COM SUCESSO! ✨');
         
         res.send(`
             <html>
@@ -1103,25 +1167,40 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         `);
 
     } catch (error) {
-        console.error('❌ [APROVAÇÃO] Erro catastrófico:', error);
+        console.error('❌ [APROVAÇÃO] 💥 ERRO CATASTRÓFICO:', error);
         
+        // ========== ROLLBACK COMPLETO ==========
         if (novoUsuarioId) {
-            console.log('🔄 [ROLLBACK] Deletando usuário órfão:', novoUsuarioId);
+            console.log('🔄 [ROLLBACK] Iniciando limpeza...');
+            
+            // Remove telefone
+            await supabaseAdmin.from('telefone').delete().eq('instituicao_id', novoUsuarioId);
+            
+            // Remove endereço
+            await supabaseAdmin.from('endereco').delete().eq('instituicao_id', novoUsuarioId);
+            
+            // Remove instituição
+            await supabaseAdmin.from('instituicao').delete().eq('id', novoUsuarioId);
+            
+            // Remove usuário do Auth
             await supabaseAdmin.auth.admin.deleteUser(novoUsuarioId);
+            
+            console.log('🔄 [ROLLBACK] Limpeza concluída.');
         }
         
         res.status(500).send(`
             <html>
             <body style="font-family: Arial; text-align: center; padding: 50px;">
                 <h1 style="color: #EF4444;">❌ Erro ao processar aprovação</h1>
-                <p>Ocorreu um erro inesperado. Por favor, tente novamente.</p>
-                <p style="color: #999; font-size: 12px;">${error.message}</p>
+                <p>Ocorreu um erro inespeado. Por favor, tente novamente.</p>
+                <p style="color: #999; font-size: 12px; margin-top: 20px;">
+                    Detalhes técnicos: ${error.message}
+                </p>
             </body>
             </html>
-            `);
+        `);
     }
 };
-
 /**
  * Rejeitar via email (mostra formulário)
  */
@@ -1223,41 +1302,69 @@ export const aprovarRequisicao = async (req, res) => {
             return res.status(400).json({ message: 'Esta requisição já foi processada.' });
         }
 
+        // Criar usuário no Auth
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: requisicao.email_contato,
             password: requisicao.senha_original,
             email_confirm: true,
             user_metadata: {
                 nome_instituicao: requisicao.nome_instituicao,
-                cnpj: requisicao.cnpj
+                cnpj: requisicao.cnpj,
+                tipo_instituicao: requisicao.tipo_instituicao
             }
         });
 
         if (authError) throw authError;
         novoUsuarioId = authData.user.id;
 
-        await supabase.from('instituicao').insert({
-            id: novoUsuarioId,
+        // ✅ Aguardar trigger criar instituição
+        let tentativas = 0;
+        let instituicaoExiste = false;
+
+        while (tentativas < 15 && !instituicaoExiste) {
+            const { data: checkInstituicao } = await supabaseAdmin
+                .from('instituicao')
+                .select('id')
+                .eq('id', novoUsuarioId)
+                .maybeSingle();
+
+            if (checkInstituicao) {
+                instituicaoExiste = true;
+            } else {
+                tentativas++;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        if (!instituicaoExiste) {
+            throw new Error('Timeout: Trigger não criou a instituição');
+        }
+
+        // ✅ Atualizar instituição
+        await supabaseAdmin.from('instituicao').update({
             nome: requisicao.nome_instituicao,
+            tipo_instituicao: requisicao.tipo_instituicao,
             cnpj: requisicao.cnpj,
             email_contato: requisicao.email_contato,
-            tipo_instituicao: 'ONG',
-            cidade: requisicao.cidade,
-            estado: requisicao.estado,
             primeiro_login: true
-        });
+        }).eq('id', novoUsuarioId);
 
-        await supabase.from('endereco').insert({
+        // Inserir endereço
+        await supabaseAdmin.from('endereco').insert({
             instituicao_id: novoUsuarioId,
+            cep: requisicao.cep,
+            bairro: requisicao.bairro,
             cidade: requisicao.cidade,
             estado: requisicao.estado
         });
 
-        await supabase.from('telefone').insert({
+        // Inserir telefone
+        await supabaseAdmin.from('telefone').insert({
             instituicao_id: novoUsuarioId,
             numero: requisicao.telefone
         });
 
+        // Atualizar requisição
         await supabase.from('requisicao_cadastro').update({
             requisicao_status: 'aprovada',
             data_processamento: new Date().toISOString(),
@@ -1272,9 +1379,14 @@ export const aprovarRequisicao = async (req, res) => {
 
     } catch (error) {
         logger.error('❌ Erro ao aprovar requisição:', error);
+        
         if (novoUsuarioId) {
+            await supabaseAdmin.from('telefone').delete().eq('instituicao_id', novoUsuarioId);
+            await supabaseAdmin.from('endereco').delete().eq('instituicao_id', novoUsuarioId);
+            await supabaseAdmin.from('instituicao').delete().eq('id', novoUsuarioId);
             await supabaseAdmin.auth.admin.deleteUser(novoUsuarioId);
         }
+        
         res.status(500).json({ message: 'Erro ao aprovar requisição.' });
     }
 };
