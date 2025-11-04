@@ -4,7 +4,7 @@ import {
     adicionarRelatorio,
     getDadosParaPDF,
     deletarRelatorio
-} from '../controllers/historico-doacoes.controller.js';
+} from '../controllers/historicoDoacoes.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 
 const historicoRouter = express.Router();

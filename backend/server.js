@@ -13,7 +13,7 @@ import auditoriaRoutes from './routes/auditoria.routes.js';
 import gestaoFinanceiraRoutes from './routes/gestaoFinanceira.routes.js';
 import parceriaRoutes from './routes/parceria.routes.js';
 import documentoRoutes from './routes/documento.routes.js';
-import historicoRoutes from './routes/historico-doacoes.routes.js';
+import historicoRoutes from './routes/historicoDoacoes.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import mercadoPagoRoutes from './routes/mercadoPago.routes.js';
 import aiRouter from './routes/ai.routes.js';
