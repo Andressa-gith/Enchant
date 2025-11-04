@@ -33,7 +33,8 @@ export const loginInstituicao = async (req, res) => {
         logger.info(`Login bem-sucedido para o usuário ID: ${data.user.id}`);
         res.status(200).json({
             message: 'Login bem-sucedido!',
-            redirectTo: '/dashboard'
+            redirectTo: '/dashboard',
+            token: data.session.access_token
         });
 
     } catch (error) {
