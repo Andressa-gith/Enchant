@@ -136,9 +136,21 @@ describe('Página de Requisição (/requisicao) - Testes de Integração', () =>
      * - Campo Estado preenchido com "BA" (do ViaCEP)
      * - Campo Cidade preenchido com "Salvador" (do ViaCEP + validação IBGE)
      * - Campo Cidade habilitado (script JS remove 'disabled' após IBGE)
+     * 
+     * **AJUSTE PARA REALIDADE:**
+     * Se o seu JavaScript real NÃO preenche automaticamente,
+     * você pode precisar selecionar manualmente nos testes:
      */
+    
+    // Opção A: Se o JS preenche automaticamente (ideal)
     cy.get('#req_estado').should('have.value', 'BA');
     cy.get('#req_cidade').should('have.value', 'Salvador');
+    
+    // Opção B: Se o JS apenas carrega opções (selecionar manualmente)
+    // cy.get('#req_estado').select('BA');
+    // cy.get('#req_cidade').should('not.be.disabled');
+    // cy.get('#req_cidade').select('Salvador');
+    
     cy.get('#req_cidade').should('not.be.disabled');
   });
 
@@ -195,6 +207,18 @@ describe('Página de Requisição (/requisicao) - Testes de Integração', () =>
     cy.get('#req_cep').type('40000-000').blur();
     cy.wait('@getCep');      // Sincroniza com ViaCEP
     cy.wait('@getCidades');  // Sincroniza com IBGE
+    
+    /**
+     * Esperar campos serem preenchidos
+     * 
+     * Alguns JavaScripts demoram para processar a resposta.
+     * Aguardamos o campo Estado ter valor antes de continuar.
+     */
+    cy.get('#req_estado').should('not.have.value', '');
+    
+    // Se precisar selecionar manualmente (caso o JS não preencha):
+    // cy.get('#req_estado').select('BA');
+    // cy.get('#req_cidade').select('Salvador');
 
     /**
      * Validação de Senhas
