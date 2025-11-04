@@ -1,11 +1,15 @@
+// cypress/support/commands.js
+
 Cypress.Commands.add('login', (email, senha) => {
-    cy.request({
-        method: 'POST',
-        url: '/api/auth/login', // Usa a URL relativa (sem o baseUrl)
-        body: { email, senha },
-    }).then((resp) => {
-        // Assume que o teu token é guardado no localStorage
-        // (Ajusta isto se guardares em cookies)
-        window.localStorage.setItem('session_token', resp.body.token);
-    });
+  cy.session([email, senha], () => {
+    
+    cy.visit('/entrar');
+
+    cy.get('#email').type(email);
+    cy.get('#senha').type(senha, { log: false });
+    
+    cy.get('.btn-entrar').click();
+
+    cy.url({ timeout: 20000 }).should('include', '/dashboard'); 
+  });
 });
