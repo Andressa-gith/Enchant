@@ -103,69 +103,77 @@ describe('Auth Controller', () => {
 
     // --- Testes para loginInstituicao ---
     describe('loginInstituicao', () => {
-        it('deve retornar 200 e a mensagem de sucesso em caso de login válido', async () => {
-            // Arrange
-            const req = mockRequest({ email: 'teste@ong.com', senha: '123456' });
-            const mockUserData = { user: { id: 'user-uuid-123' } };
-            mockAuth.signInWithPassword.mockResolvedValue({ data: mockUserData, error: null });
+        it('deve retornar 200 e a mensagem de sucesso em caso de login válido', async () => {
+            // Arrange
+            const req = mockRequest({ email: 'teste@ong.com', senha: '123456' });
+            
+            const mockSessao = {
+                user: { id: 'c1ad67ca-e215-4639-b672-6e9d7a9854a6' },
+                session: { access_token: 'mock-token-jwt-123' } 
+            };
+            // mockAuth.signInWithPassword.mockResolvedValue({ data: mockUserData, error: null }); // <- Linha antiga
+            mockAuth.signInWithPassword.mockResolvedValue({ data: mockSessao, error: null });
 
-            // Act
-            await loginInstituicao(req, res);
+            // Act
+            await loginInstituicao(req, res);
 
-            // Assert
-            expect(mockAuth.signInWithPassword).toHaveBeenCalledWith({ email: 'teste@ong.com', password: '123456' });
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({
-                message: 'Login bem-sucedido!',
-                redirectTo: '/dashboard'
-            });
-            expect(mockLogger.info).toHaveBeenCalledWith(`Login bem-sucedido para o usuário ID: ${mockUserData.user.id}`);
-        });
+            // Assert
+            expect(mockAuth.signInWithPassword).toHaveBeenCalledWith({ email: 'teste@ong.com', password: '123456' });
+            expect(res.status).toHaveBeenCalledWith(200);
+            
+            expect(res.json).toHaveBeenCalledWith({
+                message: 'Login bem-sucedido!',
+                redirectTo: '/dashboard',
+                token: 'mock-token-jwt-123'
+            });
+            expect(mockLogger.info).toHaveBeenCalledWith(`Login bem-sucedido para o usuário ID: ${mockSessao.user.id}`);
+        });
 
-        it('deve retornar 400 se o email não for fornecido', async () => {
-            // Arrange
-            const req = mockRequest({ senha: '123456' }); // Sem email
 
-            // Act
-            await loginInstituicao(req, res);
+        it('deve retornar 400 se o email não for fornecido', async () => {
+            // Arrange
+            const req = mockRequest({ senha: '123456' }); // Sem email
 
-            // Assert
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Email e senha são obrigatórios.' });
-            expect(mockLogger.warn).toHaveBeenCalledWith('Tentativa de login com email ou senha ausentes.');
-            expect(mockAuth.signInWithPassword).not.toHaveBeenCalled();
-        });
+            // Act
+            await loginInstituicao(req, res);
 
-        it('deve retornar 401 se as credenciais forem inválidas', async () => {
-            // Arrange
-            const req = mockRequest({ email: 'errado@ong.com', senha: 'senhaerrada' });
-            const mockError = { message: 'Invalid login credentials' };
-            mockAuth.signInWithPassword.mockResolvedValue({ data: null, error: mockError });
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Email e senha são obrigatórios.' });
+            expect(mockLogger.warn).toHaveBeenCalledWith('Tentativa de login com email ou senha ausentes.');
+            expect(mockAuth.signInWithPassword).not.toHaveBeenCalled();
+        });
 
-            // Act
-            await loginInstituicao(req, res);
+        it('deve retornar 401 se as credenciais forem inválidas', async () => {
+            // Arrange
+            const req = mockRequest({ email: 'errado@ong.com', senha: 'senhaerrada' });
+            const mockError = { message: 'Invalid login credentials' };
+            mockAuth.signInWithPassword.mockResolvedValue({ data: null, error: mockError });
 
-            // Assert
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas. Verifique seu email e senha.' });
-            expect(mockLogger.warn).toHaveBeenCalledWith(`Falha na autenticação para o email: errado@ong.com. Motivo: ${mockError.message}`);
-        });
+            // Act
+            await loginInstituicao(req, res);
 
-        it('deve retornar 500 se o Supabase falhar inesperadamente', async () => {
-            // Arrange
-            const req = mockRequest({ email: 'teste@ong.com', senha: '123456' });
-            const mockError = new Error('Falha na conexão com o DB');
-            mockAuth.signInWithPassword.mockRejectedValue(mockError);
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas. Verifique seu email e senha.' });
+            expect(mockLogger.warn).toHaveBeenCalledWith(`Falha na autenticação para o email: errado@ong.com. Motivo: ${mockError.message}`);
+        });
 
-            // Act
-            await loginInstituicao(req, res);
+        it('deve retornar 500 se o Supabase falhar inesperadamente', async () => {
+            // Arrange
+            const req = mockRequest({ email: 'teste@ong.com', senha: '123456' });
+            const mockError = new Error('Falha na conexão com o DB');
+            mockAuth.signInWithPassword.mockRejectedValue(mockError);
 
-            // Assert
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: 'Erro interno no servidor.' });
-            expect(mockLogger.error).toHaveBeenCalledWith('Erro inesperado no servidor durante o login.', mockError);
-        });
-    });
+            // Act
+            await loginInstituicao(req, res);
+
+            // Assert
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Erro interno no servidor.' });
+            expect(mockLogger.error).toHaveBeenCalledWith('Erro inesperado no servidor durante o login.', mockError);
+        });
+    });
 
     // --- Testes para enviarEmailResetSenha ---
     describe('enviarEmailResetSenha', () => {
