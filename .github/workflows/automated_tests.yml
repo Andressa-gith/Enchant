@@ -22,10 +22,22 @@ jobs:
       - name: Run Unit Tests (Jest)
         run: npm run test
 
+      - name: Setup Grafana k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run Load Test (Grafana k6)
+        uses: grafana/run-k6-action@v1
+        run: npm start
+        with:
+          path: k6/cenario-doacao.js
+        env:
+          BASE_URL: 'http://localhost:3080'
+          K6_USER_EMAIL: "guilherme.oliver@ba.estudante.senai.br"
+          K6_USER_PASSWORD: "G@123456"
+
       - name: Run Cypress Tests (E2E)
         uses: cypress-io/github-action@v6
         with:
-          start: npm start
           wait-on: 'http://localhost:3080'
           command: npm run cypress:run
         env:
@@ -40,15 +52,3 @@ jobs:
           path: |
             cypress/videos
             cypress/screenshots
-
-      - name: Setup Grafana k6
-        uses: grafana/setup-k6-action@v1
-
-      - name: Run Load Test (Grafana k6)
-        uses: grafana/run-k6-action@v1
-        with:
-          path: k6/cenario-doacao.js
-        env:
-          BASE_URL: 'http://localhost:3080'
-          K6_USER_EMAIL: "guilherme.oliver@ba.estudante.senai.br"
-          K6_USER_PASSWORD: "G@123456"
