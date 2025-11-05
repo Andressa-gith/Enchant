@@ -24,6 +24,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
 
     it('deve fazer upload, deletar e falhar ao tentar baixar o arquivo', () => {
       let uploadResponse;
+      const baseUrl = Cypress.env('BASE_URL') || 'http://localhost:3080';
 
       // Usar cy.window() para pegar o 'Blob' e 'FormData' nativos do navegador
       cy.window().then((win) => {
@@ -38,7 +39,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
 
         // 2. RETORNAR O FETCH DIRETAMENTE (sem cy.wrap)
         // O Cypress vai esperar essa Promise ser resolvida.
-        return win.fetch('/api/relatorios', { // URL relativa (usa a baseUrl)
+        return win.fetch(`${baseUrl}/api/relatorios`, { // URL relativa (usa a baseUrl)
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${authToken}`
