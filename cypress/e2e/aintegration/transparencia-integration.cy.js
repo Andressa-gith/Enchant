@@ -25,46 +25,37 @@ describe('Testes de Integração - Módulo de Transparência', () => {
     it('deve fazer upload, deletar e falhar ao tentar baixar o arquivo', () => {
       let uploadResponse;
 
-      // 1. Criar um Blob diretamente sem escrever arquivo
-      const fileContent = 'Conteúdo do PDF de teste';
-      const blob = new Blob([fileContent], { type: 'application/pdf' });
-
-      // 2. Fazer upload usando XMLHttpRequest
+      // NÃO usar writeFile, criar blob direto
       cy.window().then((win) => {
-        return new Cypress.Promise((resolve, reject) => {
-          const formData = new FormData();
-          formData.append('arquivo_relatorio', blob, 'relatorio_anual_teste.pdf');
-          formData.append('titulo', 'Relatório Anual (Teste Cypress)');
-          formData.append('ano', '2025');
+        // Criar conteúdo fake de PDF
+        const pdfContent = '%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n>>\nendobj\n%%EOF';
+        const blob = new win.Blob([pdfContent], { type: 'application/pdf' });
 
-          const xhr = new win.XMLHttpRequest();
+        const formData = new win.FormData();
+        formData.append('arquivo_relatorio', blob, 'relatorio_anual_teste.pdf');
+        formData.append('titulo', 'Relatório Anual (Teste Cypress)');
+        formData.append('ano', '2025');
 
-          xhr.timeout = 30000; // 30 segundos
-
-          xhr.open('POST', `${Cypress.config('baseUrl')}/api/relatorios`);
-          xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
-
-          xhr.onload = function () {
-            if (xhr.status === 201) {
-              resolve(JSON.parse(xhr.response));
-            } else {
-              reject(new Error(`Upload failed: ${xhr.status} - ${xhr.responseText}`));
-            }
-          };
-
-          xhr.onerror = () => reject(new Error('Network error'));
-          xhr.send(formData);
-        });
+        return cy.wrap(
+          win.fetch('/api/relatorios', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: formData
+          })
+            .then(res => {
+              if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+              return res.json();
+            })
+        );
       }).then((response) => {
-        cy.log('Response completo:', JSON.stringify(response));
-
         const responseData = response.data || response;
 
         expect(responseData).to.have.property('id');
         expect(responseData).to.have.property('caminho_arquivo');
         uploadResponse = responseData;
 
-        // 3. Deletar
         return cy.request({
           method: 'DELETE',
           url: `/api/relatorios/${uploadResponse.id}`,
@@ -75,7 +66,6 @@ describe('Testes de Integração - Módulo de Transparência', () => {
       }).then((deleteResponse) => {
         expect(deleteResponse.status).to.eq(200);
 
-        // 4. Tentar download (deve falhar)
         const pathParts = uploadResponse.caminho_arquivo.split('/');
         return cy.request({
           method: 'GET',
