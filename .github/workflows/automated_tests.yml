@@ -1,4 +1,4 @@
-name: Testes Automatizados (Jest, Cypress)
+name: Testes Automatizados (Jest, Cypress, k6)
 
 on: [push, pull_request]
 
@@ -13,7 +13,9 @@ jobs:
       - name: Node.js Configuration
         uses: actions/setup-node@v4
         with:
-          node-version: 23.x
+          # 20.x é a versão LTS (Estável)
+          node-version: 20.x 
+          cache: 'npm'
 
       - name: Download Dependencies
         run: npm ci
@@ -21,5 +23,27 @@ jobs:
       - name: Run Unit Tests (Jest)
         run: npm run test
 
+      - name: Install Grafana k6
+        run: |
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run Cypress Tests (E2E)
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start
+          wait-on: 'http://localhost:3080'
+          command: npm run cypress:run 
+        
+        env:
+          SUPABASE_URL: "https://xztrvvpxhccackzoaalz.supabase.co"
+          SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6dHJ2dnB4aGNjYWNrem9hYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDYxNjUsImV4cCI6MjA3MDUyMjE2NX0.lNTBC-VzvHjvIydGUcg3uPb6leOIt78B6Zw6SeIa1zk"
+
       - name: Run Load Test (Grafana k6)
         run: k6 run k6/cenario-doacao.js
+        
+        env:
+          K6_TOKEN: "eyJhbGciOiJIUzI1NiIsImtpZCI6ImRDRnNoVjBsdWUvUmxmTXciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3h6dHJ2dnB4aGNjYWNrem9hYWx6LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJjMWFkNjdjYS1lMjE1LTQ2MzktYjY3Mi02ZTlkN2E5ODU0YTYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYyMzA5MDc5LCJpYXQiOjE3NjIzMDU0NzksImVtYWlsIjoiZ3VpbGhlcm1lLm9saXZlckBiYS5lc3R1ZGFudGUuc2VuYWkuYnIiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImNucGoiOiIxNi4yMDAuMzQ5LzAwMDEtMDciLCJlbWFpbCI6Imd1aWxoZXJtZS5vbGl2ZXJAYmEuZXN0dWRhbnRlLnNlbmFpLmJyIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5vbWVfaW5zdGl0dWljYW8iOiJJbnN0aXR1acOnw6NvIDEiLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImMxYWQ2N2NhLWUyMTUtNDYzOS1iNjcyLTZlOWQ3YTk4NTRhNiIsInRpcG9faW5zdGl0dWljYW8iOiJPTkcifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc2MjMwNTQ3OX1dLCJzZXNzaW9uX2lkIjoiZDUxMDEyN2ItMmM4MS00Y2I2LTk0MmYtYmM3YjY1OTM1YzhkIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.iokq-M1A7RmQUvzgj_x6GybAJ89lk2ajOtz7sTD9GTE"
+          BASE_URL: 'http://localhost:3080'
