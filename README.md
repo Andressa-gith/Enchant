@@ -111,7 +111,7 @@ O **Enchant** é uma plataforma web revolucionária desenvolvida como TCC que tr
 </tr>
 </table>
 
-### 🏆 GitHub Stats das Desenvolvedoras
+### 🏆 GitHub Stats ds Desenvolvedores 🏆
 
 <div align="center">
 <table>
