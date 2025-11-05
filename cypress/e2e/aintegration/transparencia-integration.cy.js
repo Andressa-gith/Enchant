@@ -37,7 +37,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
         formData.append('ano', '2025');
 
         return cy.wrap(
-          win.fetch('/api/relatorios', {
+          win.fetch('http://localhost:3080/api/relatorios', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${authToken}`
