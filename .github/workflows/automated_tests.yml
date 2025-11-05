@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Load Test (Grafana k6)
         uses: grafana/run-k6-action@v1
-        run: npm start
+        start: npm start
         with:
           path: k6/cenario-doacao.js
         env:
@@ -38,6 +38,7 @@ jobs:
       - name: Run Cypress Tests (E2E)
         uses: cypress-io/github-action@v6
         with:
+          start: npm start
           wait-on: 'http://localhost:3080'
           command: npm run cypress:run
         env:
