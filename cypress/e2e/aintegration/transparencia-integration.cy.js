@@ -25,9 +25,9 @@ describe('Testes de Integração - Módulo de Transparência', () => {
     it('deve fazer upload, deletar e falhar ao tentar baixar o arquivo', () => {
       let uploadResponse;
 
-      // NÃO usar writeFile, criar blob direto
+      // Usar cy.window() para pegar o 'Blob' e 'FormData' nativos do navegador
       cy.window().then((win) => {
-        // Criar conteúdo fake de PDF
+        // 1. Criar o Blob e o FormData (seu código estava correto)
         const pdfContent = '%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n>>\nendobj\n%%EOF';
         const blob = new win.Blob([pdfContent], { type: 'application/pdf' });
 
@@ -36,26 +36,34 @@ describe('Testes de Integração - Módulo de Transparência', () => {
         formData.append('titulo', 'Relatório Anual (Teste Cypress)');
         formData.append('ano', '2025');
 
-        return cy.wrap(
-          win.fetch('http://localhost:3080/api/relatorios', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${authToken}`
-            },
-            body: formData
-          })
-            .then(res => {
-              if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
-              return res.json();
-            })
-        );
+        // 2. RETORNAR O FETCH DIRETAMENTE (sem cy.wrap)
+        // O Cypress vai esperar essa Promise ser resolvida.
+        return win.fetch('/api/relatorios', { // URL relativa (usa a baseUrl)
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+            // Não defina 'Content-Type', o navegador faz isso
+            // automaticamente para FormData
+          },
+          body: formData
+        })
+          .then(res => {
+            // Tratar a resposta do fetch
+            if (!res.ok) {
+              throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+            }
+            return res.json(); // Isso será o 'response' do próximo .then()
+          });
+
       }).then((response) => {
+        // 3. 'response' aqui é o JSON retornado do fetch
         const responseData = response.data || response;
 
         expect(responseData).to.have.property('id');
         expect(responseData).to.have.property('caminho_arquivo');
         uploadResponse = responseData;
 
+        // 4. O resto do seu teste continua usando cy.request
         return cy.request({
           method: 'DELETE',
           url: `/api/relatorios/${uploadResponse.id}`,
@@ -67,9 +75,10 @@ describe('Testes de Integração - Módulo de Transparência', () => {
         expect(deleteResponse.status).to.eq(200);
 
         const pathParts = uploadResponse.caminho_arquivo.split('/');
+
         return cy.request({
           method: 'GET',
-          url: `/reports/download/${pathParts[0]}/${pathParts[1]}`,
+          url: `/reports/download/${pathParts[0]}/${pathParts[1]}`, // Cuidado aqui*
           headers: {
             'Authorization': `Bearer ${authToken}`
           },
