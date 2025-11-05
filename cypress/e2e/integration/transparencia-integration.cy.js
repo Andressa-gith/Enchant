@@ -2,8 +2,22 @@
 
 describe('Testes de Integração - Módulo de Transparência', () => {
 
+  let authToken;
+
   beforeEach(() => {
-    cy.login('teste.integracao@enchant.com', 'Teste123!@#');
+    cy.clearCookies();
+
+    cy.request({
+      method: 'POST',
+      url: '/api/auth/login', //
+      body: {
+        email: 'teste.integracao@enchant.com',
+        senha: 'Teste123!@#'
+      }
+    }).then(response => {
+      expect(response.status).to.eq(200);
+      authToken = response.body.token; //
+    });
   });
 
   describe('Jornada 4: Ciclo de Vida de Documentos (Upload/Delete)', () => {
@@ -11,42 +25,38 @@ describe('Testes de Integração - Módulo de Transparência', () => {
     it('deve fazer upload, deletar e falhar ao tentar baixar o arquivo', () => {
       let uploadResponse;
 
-      // 1. Criar arquivo de teste
-      cy.writeFile('cypress/fixtures/relatorio_teste.pdf', 'Conteúdo do PDF de teste');
+      // 1. Criar um Blob diretamente sem escrever arquivo
+      const fileContent = 'Conteúdo do PDF de teste';
+      const blob = new Blob([fileContent], { type: 'application/pdf' });
 
       // 2. Fazer upload usando XMLHttpRequest
-      cy.fixture('relatorio_teste.pdf', 'binary').then((fileContent) => {
-        const blob = Cypress.Blob.binaryStringToBlob(fileContent, 'application/pdf');
-        
-        return cy.window().then((win) => {
-          return new Cypress.Promise((resolve, reject) => {
-            const formData = new FormData();
-            formData.append('arquivo_relatorio', blob, 'relatorio_anual_teste.pdf');
-            formData.append('titulo', 'Relatório Anual (Teste Cypress)');
-            formData.append('ano', '2025');
+      cy.window().then((win) => {
+        return new Cypress.Promise((resolve, reject) => {
+          const formData = new FormData();
+          formData.append('arquivo_relatorio', blob, 'relatorio_anual_teste.pdf');
+          formData.append('titulo', 'Relatório Anual (Teste Cypress)');
+          formData.append('ano', '2025');
 
-            const xhr = new win.XMLHttpRequest();
-            xhr.open('POST', `${Cypress.config('baseUrl')}/api/relatorios`);
-            xhr.setRequestHeader('Authorization', `Bearer ${Cypress.env('authToken')}`);
-            
-            xhr.onload = function() {
-              if (xhr.status === 201) {
-                resolve(JSON.parse(xhr.response));
-              } else {
-                reject(new Error(`Upload failed: ${xhr.status} - ${xhr.responseText}`));
-              }
-            };
-            
-            xhr.onerror = () => reject(new Error('Network error'));
-            xhr.send(formData);
-          });
+          const xhr = new win.XMLHttpRequest();
+          xhr.open('POST', `${Cypress.config('baseUrl')}/api/relatorios`);
+          xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+
+          xhr.onload = function () {
+            if (xhr.status === 201) {
+              resolve(JSON.parse(xhr.response));
+            } else {
+              reject(new Error(`Upload failed: ${xhr.status} - ${xhr.responseText}`));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error('Network error'));
+          xhr.send(formData);
         });
       }).then((response) => {
-        // Ajuste: acessar response.data se existir, senão usar response diretamente
         cy.log('Response completo:', JSON.stringify(response));
-        
+
         const responseData = response.data || response;
-        
+
         expect(responseData).to.have.property('id');
         expect(responseData).to.have.property('caminho_arquivo');
         uploadResponse = responseData;
@@ -56,7 +66,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
           method: 'DELETE',
           url: `/api/relatorios/${uploadResponse.id}`,
           headers: {
-            'Authorization': `Bearer ${Cypress.env('authToken')}`
+            'Authorization': `Bearer ${authToken}`
           }
         });
       }).then((deleteResponse) => {
@@ -68,7 +78,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
           method: 'GET',
           url: `/reports/download/${pathParts[0]}/${pathParts[1]}`,
           headers: {
-            'Authorization': `Bearer ${Cypress.env('authToken')}`
+            'Authorization': `Bearer ${authToken}`
           },
           failOnStatusCode: false
         });
@@ -83,7 +93,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
     it('deve listar documentos (documento.controller.js)', () => {
       cy.request({
         url: '/api/documentos',
-        headers: { 'Authorization': `Bearer ${Cypress.env('authToken')}` }
+        headers: { 'Authorization': `Bearer ${authToken}` }
       }).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.be.an('array');
@@ -93,7 +103,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
     it('deve listar registros financeiros (gestaoFinanceira.controller.js)', () => {
       cy.request({
         url: '/api/financeiro',
-        headers: { 'Authorization': `Bearer ${Cypress.env('authToken')}` }
+        headers: { 'Authorization': `Bearer ${authToken}` }
       }).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.be.an('array');
@@ -103,7 +113,7 @@ describe('Testes de Integração - Módulo de Transparência', () => {
     it('deve listar relatórios (relatorio.controller.js)', () => {
       cy.request({
         url: '/api/relatorios',
-        headers: { 'Authorization': `Bearer ${Cypress.env('authToken')}` }
+        headers: { 'Authorization': `Bearer ${authToken}` }
       }).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.be.an('array');
