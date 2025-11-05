@@ -19,8 +19,12 @@ import mercadoPagoRoutes from './routes/mercadoPago.routes.js';
 import aiRouter from './routes/ai.routes.js';
 import requisicaoRouter from './routes/requisicao.routes.js'; 
 import downloadRoutes from './routes/download.routes.js';
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors());
+
 const PORT = 3080;
 
 const __filename = fileURLToPath(import.meta.url);
