@@ -23,16 +23,15 @@ jobs:
         run: npm run test
 
       - name: Start Server in Background
+        env:
+          SUPABASE_URL: "https://xztrvvpxhccackzoaalz.supabase.co"
+          SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6dHJ2dnB4aGNjYWNrem9hYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDYxNjUsImV4cCI6MjA3MDUyMjE2NX0.lNTBC-VzvHjvIydGUcg3uPb6leOIt78B6Zw6SeIa1zk"
         run: |
           npm install -g wait-on # Instala a ferramenta de espera
           echo "Iniciando servidor em background..."
-          # Passa as ENVs do Supabase para o npm start
-          SUPABASE_URL: "https://xztrvvpxhccackzoaalz.supabase.co" \
-          SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6dHJ2dnB4aGNjYWNrem9hYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDYxNjUsImV4cCI6MjA3MDUyMjE2NX0.lNTBC-VzvHjvIydGUcg3uPb6leOIt78B6Zw6SeIa1zk" \
           npm start &
           
           echo "Aguardando http://localhost:3080..."
-          # Espera até 60 segundos pelo servidor
           wait-on http://localhost:3080 -t 60000
           echo "Servidor está no ar!"
 
