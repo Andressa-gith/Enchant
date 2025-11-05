@@ -24,11 +24,12 @@ describe('Testes de Integração - Módulo de Transparência', () => {
 
     it('deve fazer upload, deletar e falhar ao tentar baixar o arquivo', () => {
       let uploadResponse;
+
+      // Pega a URL base das variáveis de ambiente do Cypress
       const baseUrl = Cypress.env('BASE_URL') || 'http://localhost:3080';
 
-      // Usar cy.window() para pegar o 'Blob' e 'FormData' nativos do navegador
       cy.window().then((win) => {
-        // 1. Criar o Blob e o FormData (seu código estava correto)
+        // 1. Criar o Blob e o FormData (seu código aqui está correto)
         const pdfContent = '%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n>>\nendobj\n%%EOF';
         const blob = new win.Blob([pdfContent], { type: 'application/pdf' });
 
@@ -37,37 +38,42 @@ describe('Testes de Integração - Módulo de Transparência', () => {
         formData.append('titulo', 'Relatório Anual (Teste Cypress)');
         formData.append('ano', '2025');
 
-        // 2. RETORNAR O FETCH DIRETAMENTE (sem cy.wrap)
-        // O Cypress vai esperar essa Promise ser resolvida.
-        return win.fetch(`${baseUrl}/api/relatorios`, { // URL relativa (usa a baseUrl)
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-            // Não defina 'Content-Type', o navegador faz isso
-            // automaticamente para FormData
-          },
-          body: formData
-        })
-          .then(res => {
-            // Tratar a resposta do fetch
-            if (!res.ok) {
-              throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+        // 2. Retornar uma Promise que o Cypress aguardará (usando XHR)
+        return new Promise((resolve, reject) => {
+          const xhr = new win.XMLHttpRequest();
+
+          // Usar a URL absoluta e completa
+          xhr.open('POST', `${baseUrl}/api/relatorios`);
+          xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              // Importante: parsear a resposta
+              resolve(JSON.parse(xhr.response));
+            } else {
+              reject(new Error(`Upload XHR falhou com status: ${xhr.status} ${xhr.responseText}`));
             }
-            return res.json(); // Isso será o 'response' do próximo .then()
-          });
+          };
+
+          xhr.onerror = () => {
+            reject(new Error('Erro de rede durante o upload XHR.'));
+          };
+
+          xhr.send(formData);
+        });
 
       }).then((response) => {
-        // 3. 'response' aqui é o JSON retornado do fetch
+        // 3. 'response' aqui é o JSON retornado do XHR
         const responseData = response.data || response;
 
         expect(responseData).to.have.property('id');
         expect(responseData).to.have.property('caminho_arquivo');
         uploadResponse = responseData;
 
-        // 4. O resto do seu teste continua usando cy.request
+        // 4. O resto do seu teste continua normalmente
         return cy.request({
           method: 'DELETE',
-          url: `/api/relatorios/${uploadResponse.id}`,
+          url: `${baseUrl}/api/relatorios/${uploadResponse.id}`, // URL absoluta por segurança
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
@@ -76,10 +82,9 @@ describe('Testes de Integração - Módulo de Transparência', () => {
         expect(deleteResponse.status).to.eq(200);
 
         const pathParts = uploadResponse.caminho_arquivo.split('/');
-
         return cy.request({
           method: 'GET',
-          url: `/reports/download/${pathParts[0]}/${pathParts[1]}`, // Cuidado aqui*
+          url: `${baseUrl}/reports/download/${pathParts[0]}/${pathParts[1]}`, // URL absoluta
           headers: {
             'Authorization': `Bearer ${authToken}`
           },
