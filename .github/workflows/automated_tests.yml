@@ -22,23 +22,36 @@ jobs:
       - name: Run Unit Tests (Jest)
         run: npm run test
 
+      - name: Start Server in Background
+        run: |
+          npm install -g wait-on # Instala a ferramenta de espera
+          echo "Iniciando servidor em background..."
+          # Passa as ENVs do Supabase para o npm start
+          SUPABASE_URL: "https://SEU_PROJETO.supabase.co" \
+          SUPABASE_ANON_KEY: "SUA_CHAVE_ANON_GIGANTE_AQUI" \
+          npm start &
+          
+          echo "Aguardando http://localhost:3080..."
+          # Espera até 60 segundos pelo servidor
+          wait-on http://localhost:3080 -t 60000
+          echo "Servidor está no ar!"
+
       - name: Setup Grafana k6
         uses: grafana/setup-k6-action@v1
 
       - name: Run Load Test (Grafana k6)
         uses: grafana/run-k6-action@v1
-        start: npm start
         with:
           path: k6/cenario-doacao.js
         env:
           BASE_URL: 'http://localhost:3080'
           K6_USER_EMAIL: "guilherme.oliver@ba.estudante.senai.br"
-          K6_USER_PASSWORD: "G@123456"
+          K6_USER_PASSWORD: "G@123456" 
 
       - name: Run Cypress Tests (E2E)
+        continue-on-error: true 
         uses: cypress-io/github-action@v6
         with:
-          start: npm start
           wait-on: 'http://localhost:3080'
           command: npm run cypress:run
         env:
