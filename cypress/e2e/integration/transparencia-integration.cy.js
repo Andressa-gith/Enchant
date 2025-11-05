@@ -38,6 +38,9 @@ describe('Testes de Integração - Módulo de Transparência', () => {
           formData.append('ano', '2025');
 
           const xhr = new win.XMLHttpRequest();
+
+          xhr.timeout = 30000; // 30 segundos
+
           xhr.open('POST', `${Cypress.config('baseUrl')}/api/relatorios`);
           xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
 
