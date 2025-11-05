@@ -54,6 +54,7 @@ jobs:
           wait-on: 'http://localhost:3080'
           command: npm run cypress:run
         env:
+          BASE_URL: 'http://localhost:3080'
           SUPABASE_URL: "https://xztrvvpxhccackzoaalz.supabase.co"
           SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6dHJ2dnB4aGNjYWNrem9hYWx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NDYxNjUsImV4cCI6MjA3MDUyMjE2NX0.lNTBC-VzvHjvIydGUcg3uPb6leOIt78B6Zw6SeIa1zk"
 
