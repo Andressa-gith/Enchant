@@ -23,6 +23,12 @@ import cors from 'cors';
 
 const app = express();
 
+const corsOptions = {
+  origin: '*',
+  methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization'
+};
+
 app.use(cors());
 
 const PORT = 3080;
