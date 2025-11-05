@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node ./backend/server.js",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --verbose",
     "cypress:run": "cypress run",
     "dev": "nodemon ./backend/server.js"
   },
