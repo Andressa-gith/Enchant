@@ -50,15 +50,8 @@ export const options = {
 
     // Thresholds (Limites de Aceitação)
     thresholds: {
-        // 1. Falha global: Menos de 1% de todas as requisições HTTP podem falhar.
         'http_req_failed': ['rate<0.01'],
-
-        // 2. Limite de performance (P95): 95% das requisições para 'registrar-doacao'
-        //    devem responder em menos de 800ms.
         'http_req_duration{endpoint:registrar-doacao}': ['p(95)<800'],
-
-        // 3. Limite de sucesso funcional: Mais de 99% dos 'checks' (verificações)
-        //    para 'registrar-doacao' devem passar.
         'checks{endpoint:registrar-doacao}': ['rate>0.99'],
     },
 };

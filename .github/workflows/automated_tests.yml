@@ -29,6 +29,10 @@ jobs:
         uses: grafana/run-k6-action@v1
         with:
           path: k6/cenario-doacao.js
+        env:
+          BASE_URL: 'http://localhost:3080'
+          K6_USER_EMAIL: "guilherme.oliver@ba.estudante.senai.br"
+          K6_USER_PASSWORD: "G@123456"
 
       - name: Run Cypress Tests (E2E)
         uses: cypress-io/github-action@v6
@@ -45,8 +49,3 @@ jobs:
           path: |
             cypress/videos
             cypress/screenshots
-        
-        env:
-          BASE_URL: 'http://localhost:3080'
-          K6_USER_EMAIL: "guilherme.oliver@ba.estudante.senai.br"
-          K6_USER_PASSWORD: "G@123456"
