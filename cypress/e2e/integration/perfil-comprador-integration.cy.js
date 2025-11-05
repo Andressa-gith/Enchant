@@ -79,7 +79,7 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
       }).then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body).to.have.property('nome');
-        
+
         cy.log('✅ Perfil buscado com sucesso');
       });
     });
@@ -130,7 +130,7 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
      * - Identificação via instituicao_id do token JWT
      */
     it('Deve buscar o perfil e depois atualizar as informações', () => {
-      
+
       // 1. Busca perfil atual
       cy.request({
         method: 'GET',
@@ -142,7 +142,7 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
       }).then((getRes) => {
         expect(getRes.status).to.eq(200);
         expect(getRes.body).to.have.property('nome');
-        
+
         cy.log('✅ Perfil buscado com sucesso');
 
         // 2. Atualiza dados do perfil
@@ -163,10 +163,10 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
           body: dadosAtualizados,
           failOnStatusCode: false
         });
-      
+
       }).then((putRes) => {
         expect(putRes.status).to.eq(200);
-        
+
         // Valida mensagem de sucesso (aceita variações)
         if (putRes.body && putRes.body.message) {
           expect(putRes.body.message).to.satisfy(
@@ -174,7 +174,7 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
             'Mensagem de sucesso esperada'
           );
         }
-        
+
         cy.log('✅ Perfil atualizado com sucesso');
       });
     });
@@ -192,7 +192,7 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
      * - Este endpoint apenas salva o PATH da imagem
      */
     it('Deve salvar a URL de uma nova logo', () => {
-      
+
       const dadosComNovaLogo = {
         caminho_logo: `caminho/fake/do/supabase/logo-teste-${Date.now()}.png`
       };
@@ -206,18 +206,18 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
         body: dadosComNovaLogo,
         failOnStatusCode: false
       }).then((putRes) => {
-        
+
         expect(putRes.status).to.eq(200);
 
         if (putRes.body && putRes.body.message) {
           expect(putRes.body.message).to.satisfy(
-            msg => msg.includes('Perfil atualizado') || 
-                   msg.includes('Dados atualizados') ||
-                   msg.includes('sucesso'),
+            msg => msg.includes('Perfil atualizado') ||
+              msg.includes('Dados atualizados') ||
+              msg.includes('sucesso'),
             'Mensagem de sucesso esperada'
           );
         }
-        
+
         cy.log('✅ Logo atualizada com sucesso');
       });
     });
@@ -240,7 +240,7 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
      * @knownIssue Backend pode retornar 500 se validação não está implementada
      */
     it('Deve rejeitar uma senha fraca (se a validação for no backend)', () => {
-      
+
       const dadosComSenhaFraca = {
         senha: '123' // Senha fraca (apenas números)
       };
@@ -257,12 +257,12 @@ describe('API de Perfil da ONG (/api/user/profile) - Testes de Backend', () => {
 
         // Aceita 400 (validação OK) ou 500 (bug backend)
         expect(putRes.status).to.be.oneOf([400, 500]);
-        
+
         if (putRes.status === 400 && putRes.body) {
-          const hasPasswordError = 
+          const hasPasswordError =
             (putRes.body.message && putRes.body.message.includes('senha')) ||
             (putRes.body.error && putRes.body.error.includes('senha'));
-            
+
           expect(hasPasswordError).to.be.true;
           cy.log('✅ Validação de senha fraca funcionando');
         } else {
