@@ -296,6 +296,32 @@
     </div>
 </main>
 
+<!-- Modal de Progresso -->
+<div class="modal fade" id="req_progressModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Processando Requisição</h5>
+            </div>
+            <div class="modal-body">
+                <div class="req_progress_container">
+                    <div class="req_progress_icon">
+                        <i class="fas fa-file-upload fa-3x"></i>
+                    </div>
+                    <div class="req_progress_info">
+                        <p id="req_progress_message">Preparando envio...</p>
+                        <div class="req_progress_bar">
+                            <div class="req_progress_fill" id="req_progress_fill"></div>
+                        </div>
+                        <p id="req_progress_details" class="req_progress_details"></p>
+                    </div>
+                    <div id="req_progress_logs" class="req_progress_logs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="req_footer_container"></div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

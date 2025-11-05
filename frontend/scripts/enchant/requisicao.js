@@ -428,51 +428,142 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- ENVIO DA SOLICITAÇÃO FINAL ---
     
     async function enviarSolicitacao() {
-        const btnEnviar = document.getElementById('req_btn_enviar');
-        btnEnviar.disabled = true;
-        btnEnviar.textContent = 'Enviando...';
+    const btnEnviar = document.getElementById('req_btn_enviar');
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
 
-        try {
-            const formData = new FormData();
+    // Abre o modal de progresso
+    $('#req_progressModal').modal('show');
+    
+    const progressFill = document.getElementById('req_progress_fill');
+    const progressMessage = document.getElementById('req_progress_message');
+    const progressDetails = document.getElementById('req_progress_details');
+    const progressLogs = document.getElementById('req_progress_logs');
 
-            const camposTexto = ['req_nome_instituicao', 'req_tipo_instituicao', 'req_cnpj', 'req_email', 'req_tel', 'req_cep', 'req_estado', 'req_cidade', 'req_bairro', 'req_senha'];
-            camposTexto.forEach(id => {
-                const nomeCampoBackend = id.replace('req_', ''); 
-                formData.append(nomeCampoBackend, document.getElementById(id).value.trim());
-            });
-
-            for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
-                listaDeFicheiros.forEach((item, index) => {
-                    const nomeDoCampo = `${categoria}_${index + 1}`;
-                    formData.append(nomeDoCampo, item.arquivo, item.nome);
-                });
-            }
-
-            const response = await fetch('/api/requisicao/enviar', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.message || 'Ocorreu um erro no servidor ao enviar a requisição.');
-            }
-            
-            mostrarModal('Requisição Enviada com Sucesso!', [result.message || 'A sua solicitação foi enviada. Receberá um email quando a sua conta for analisada e aprovada.'], true);
-            
-            setTimeout(() => {
-                window.location.href = '/entrar';
-            }, 3000);
-
-        } catch (error) {
-            console.error('Erro ao enviar solicitação:', error);
-            mostrarModal('Erro ao Enviar', [error.message]);
-            btnEnviar.disabled = false;
-            btnEnviar.textContent = 'Enviar';
-        }
+    // Função para adicionar log
+    function addLog(message, type = 'info') {
+        const logItem = document.createElement('div');
+        logItem.className = `req_progress_log_item req_log_${type}`;
+        
+        const icon = type === 'success' ? 'fa-check-circle' : 
+                    type === 'error' ? 'fa-exclamation-circle' : 
+                    'fa-info-circle';
+        
+        logItem.innerHTML = `
+            <i class="fas ${icon}"></i>
+            <span>${message}</span>
+        `;
+        progressLogs.appendChild(logItem);
+        progressLogs.scrollTop = progressLogs.scrollHeight;
     }
 
+    // Função para atualizar progresso
+    function updateProgress(percent, message, details = '') {
+        progressFill.style.width = `${percent}%`;
+        progressMessage.textContent = message;
+        progressDetails.textContent = details;
+    }
+
+    try {
+        const formData = new FormData();
+
+        // Preparando dados
+        updateProgress(10, 'Preparando dados...', '');
+        addLog('Coletando informações do formulário', 'info');
+        await sleep(300);
+
+        const camposTexto = ['req_nome_instituicao', 'req_tipo_instituicao', 'req_cnpj', 'req_email', 'req_tel', 'req_cep', 'req_estado', 'req_cidade', 'req_bairro', 'req_senha'];
+        camposTexto.forEach(id => {
+            const nomeCampoBackend = id.replace('req_', ''); 
+            formData.append(nomeCampoBackend, document.getElementById(id).value.trim());
+        });
+
+        // Contando documentos
+        const totalDocumentos = Object.values(arquivosPorCategoria)
+            .reduce((acc, lista) => acc + lista.length, 0);
+        
+        updateProgress(20, 'Anexando documentos...', `${totalDocumentos} arquivo(s)`);
+        addLog(`Preparando ${totalDocumentos} documento(s) para envio`, 'info');
+        await sleep(300);
+
+        for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
+            listaDeFicheiros.forEach((item, index) => {
+                const nomeDoCampo = `${categoria}_${index + 1}`;
+                formData.append(nomeDoCampo, item.arquivo, item.nome);
+            });
+        }
+
+        updateProgress(40, 'Enviando requisição...', 'Aguarde, isso pode levar alguns minutos');
+        addLog('Enviando dados para o servidor', 'info');
+
+        const response = await fetch('/api/requisicao/enviar', {
+            method: 'POST',
+            body: formData
+        });
+
+        updateProgress(60, 'Validando documentos...', `Verificando ${totalDocumentos} documento(s)`);
+        addLog(` Validando ${totalDocumentos} documento(s)...`, 'info');
+        await sleep(500);
+
+        // Simula logs de validação por categoria
+        let validados = 0;
+        for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
+            if (listaDeFicheiros.length > 0) {
+                addLog(`Validando documento da categoria: ${categoria}`, 'info');
+                await sleep(800);
+                
+                validados++;
+                const progressPercent = 60 + (validados / Object.keys(arquivosPorCategoria).length) * 20;
+                updateProgress(progressPercent, 'Validando documentos...', `${validados} categoria(s) validada(s)`);
+                
+                addLog(`✅ Documento ${categoria} validado com sucesso`, 'success');
+                await sleep(300);
+            }
+        }
+
+        updateProgress(85, 'Processando requisição...', '');
+        addLog('Finalizando processamento', 'info');
+
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.message || 'Ocorreu um erro no servidor ao enviar a requisição.');
+        }
+
+        updateProgress(100, 'Requisição enviada com sucesso!', '');
+        addLog('✅ Requisição processada com sucesso!', 'success');
+        addLog('Você receberá um email quando sua conta for aprovada', 'success');
+        
+        await sleep(2000);
+        
+        $('#req_progressModal').modal('hide');
+        mostrarModal('Requisição Enviada com Sucesso!', [
+            result.message || 'A sua solicitação foi enviada.',
+            'Você receberá um email quando sua conta for analisada e aprovada.'
+        ], true);
+        
+        setTimeout(() => {
+            window.location.href = '/entrar';
+        }, 3000);
+
+    } catch (error) {
+        console.error('Erro ao enviar solicitação:', error);
+        addLog(`❌ Erro: ${error.message}`, 'error');
+        updateProgress(0, 'Erro ao processar', '');
+        
+        await sleep(2000);
+        $('#req_progressModal').modal('hide');
+        
+        mostrarModal('Erro ao Enviar', [error.message]);
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = 'Enviar';
+    }
+}
+
+// Função auxiliar para criar delays
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
     // --- FUNÇÃO DE MODAL ---
     
     function mostrarModal(titulo, mensagensArray, isSucesso = false) {

@@ -649,3 +649,254 @@ font-size: 24px;
 }
 }
 
+/* ========== MODAL DE PROGRESSO ========== */
+.req_progress_container {
+    padding: 1rem 0;
+}
+
+.req_progress_icon {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--corbotao2);
+    animation: req_pulse 2s infinite;
+}
+
+@keyframes req_pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.req_progress_info {
+    margin-bottom: 1.5rem;
+}
+
+.req_progress_info p {
+    text-align: center;
+    font-weight: 600;
+    color: var(--cortitulo);
+    margin-bottom: 1rem;
+}
+
+.req_progress_bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.req_progress_fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--corbotao1), var(--corbotao2));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.req_progress_details {
+    font-size: 13px;
+    color: var(--cor-placeholder);
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.req_progress_logs {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 13px;
+}
+
+.req_progress_log_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.req_progress_log_item:last-child {
+    border-bottom: none;
+}
+
+.req_progress_log_item i {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.req_progress_log_item.req_log_info {
+    color: #4E3629;
+}
+
+.req_progress_log_item.req_log_success {
+    color: #28a745;
+}
+
+.req_progress_log_item.req_log_error {
+    color: #dc3545;
+}
+
+/* ========== CORREÇÕES DE RESPONSIVIDADE ========== */
+
+/* Container principal */
+#pagina-requisicao .container {
+    padding: 2rem;
+    width: 90%;
+}
+
+/* Grid de documentos */
+.req_container_flex {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Labels com asterisco obrigatório */
+.req_obrigatorio {
+    color: var(--cor-erro);
+    margin-left: 4px;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+    #pagina-requisicao .container {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .req_container_flex {
+        gap: 1.5rem;
+    }
+
+    #pagina-requisicao .req_pagamento {
+        font-size: 28px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    #pagina-requisicao {
+        padding: 1.5rem 0.5rem 5rem 0.5rem;
+        margin-top: 60px;
+    }
+
+    #pagina-requisicao .container {
+        width: 98%;
+        padding: 1.25rem;
+    }
+
+    .req_container_flex {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    #pagina-requisicao .req_pagamento {
+        font-size: 24px;
+    }
+
+    .req_recomendacoes {
+        font-size: 14px;
+        padding: 0 0.5rem 1rem;
+    }
+
+    .req_botoes_navegacao {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0;
+    }
+
+    .req_btn_voltar,
+    .req_btn_enviar {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .req_div_botao_continuar {
+        justify-content: center;
+        padding: 0;
+        margin-right: 0;
+    }
+
+    .req_botao_continuar {
+        width: 100%;
+    }
+
+    /* Upload areas menores no mobile */
+    .req_upload_area {
+        padding: 1.5rem 1rem;
+    }
+
+    .req_upload_area i {
+        font-size: 1.5rem !important;
+    }
+
+    .req_upload_area p {
+        font-size: 13px;
+    }
+
+    /* Form fields */
+    #pagina-requisicao label {
+        font-size: 14px;
+        margin-left: 8px;
+    }
+
+    #pagina-requisicao .form-control {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .toggle-password {
+        right: 8px;
+    }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 480px) {
+    #pagina-requisicao {
+        padding: 1rem 0.25rem 4rem 0.25rem;
+    }
+
+    #pagina-requisicao .container {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0;
+    }
+
+    #pagina-requisicao .req_pagamento {
+        font-size: 22px;
+        padding: 0 1rem;
+    }
+
+    .req_recomendacoes {
+        font-size: 13px;
+    }
+
+    .req_requerimento_senha {
+        font-size: 11px;
+    }
+
+    .req_arquivo_nome {
+        font-size: 12px;
+        word-break: break-all;
+    }
+
+    .req_progress_logs {
+        font-size: 12px;
+        padding: 0.75rem;
+    }
+}
+
+/* Landscape em dispositivos móveis */
+@media (max-height: 600px) and (orientation: landscape) {
+    #pagina-requisicao {
+        margin-top: 60px;
+        padding: 1rem 0.5rem;
+    }
+
+    .req_upload_area {
+        padding: 1rem;
+    }
+}
