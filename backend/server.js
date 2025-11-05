@@ -19,17 +19,8 @@ import mercadoPagoRoutes from './routes/mercadoPago.routes.js';
 import aiRouter from './routes/ai.routes.js';
 import requisicaoRouter from './routes/requisicao.routes.js'; 
 import downloadRoutes from './routes/download.routes.js';
-import cors from 'cors';
 
 const app = express();
-
-const corsOptions = {
-  origin: '*',
-  methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization'
-};
-
-app.use(cors());
 
 const PORT = 3080;
 
