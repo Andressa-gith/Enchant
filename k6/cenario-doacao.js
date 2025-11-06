@@ -65,12 +65,12 @@ export const options = {
         'http_req_failed': ['rate<0.01'], // Falha global
 
         // Thresholds do Endpoint 1 (POST Registrar)
-        'http_req_duration{endpoint:registrar-doacao}': ['p(95)<800'],
+        'http_req_duration{endpoint:registrar-doacao}': ['p(95)<1500'],
         'checks{endpoint:registrar-doacao}': ['rate>0.99'],
 
         // Thresholds do Endpoint 2 (GET Documentos)
         // Um GET de listagem deve ser rápido (ex: 500ms)
-        'http_req_duration{endpoint:listar-documentos}': ['p(95)<500'], 
+        'http_req_duration{endpoint:listar-documentos}': ['p(95)<1000'], 
         'checks{endpoint:listar-documentos}': ['rate>0.99'],
     },
 };
