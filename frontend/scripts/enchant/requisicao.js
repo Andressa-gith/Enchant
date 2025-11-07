@@ -1,4 +1,7 @@
-// Espera que todo o conteúdo da página seja carregado antes de executar o script
+// ============================================================
+// SUBSTITUA TODA A PARTE DE VALIDAÇÃO NO requisicao.js
+// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- URLs DAS APIS EXTERNAS ---
@@ -62,22 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleDadosSubmit(event) {
         event.preventDefault();
-        const erros = validarPrimeiraSecao();
-        if (erros.length === 0) {
+        if (validarPrimeiraSecao()) {
             irParaSegundaSecao();
-        } else {
-            mostrarModal('Erro de Validação', erros);
         }
+        // ✅ NÃO chama mais showModalAviso ou $('#req_errorModal').modal('show')
     }
 
     function handleDocumentosSubmit(event) {
         event.preventDefault();
-        const erros = validarSegundaSecao();
-        if (erros.length > 0) {
-            mostrarModal('Erro de Validação', erros);
-        } else {
+        if (validarSegundaSecao()) {
             enviarSolicitacao();
         }
+        // ✅ NÃO chama mais showModalAviso ou $('#req_errorModal').modal('show')
     }
 
     function handleSenhaInput() {
@@ -88,8 +87,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('req_letra_maiuscula').style.color = validacao.temMaiuscula ? 'green' : '#FF0404';
     }
 
-    // --- VALIDAÇÃO DOS FORMULÁRIOS ---
+    // --- ✨ NOVAS FUNÇÕES DE VALIDAÇÃO INLINE (SEM MODAL) ---
 
+    /**
+     * Mostra mensagem de erro abaixo do campo
+     */
     function showError(inputId, message) {
         const inputElement = document.getElementById(inputId);
         if (!inputElement) return;
@@ -98,12 +100,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const errorElement = inputElement.closest('.form-group').querySelector('.req_error_message');
         if (errorElement) {
             errorElement.textContent = message;
+            errorElement.classList.add('visible');
         }
     }
 
+    /**
+     * Limpa todos os erros do formulário
+     */
     function clearErrors() {
         document.querySelectorAll('.req_error_message').forEach(msg => {
             msg.textContent = '';
+            msg.classList.remove('visible');
         });
         document.querySelectorAll('.is-invalid').forEach(field => {
             field.classList.remove('is-invalid');
@@ -125,24 +132,24 @@ document.addEventListener('DOMContentLoaded', function () {
         return telLimpo.length >= 10;
     }
 
+    /**
+     * ✨ VALIDAÇÃO ATUALIZADA - RETORNA BOOLEAN (sem array de erros)
+     */
     function validarPrimeiraSecao() {
         clearErrors();
-        const erros = [];
+        let isValid = true;
 
         const fields = [
             { 
                 id: 'req_nome_instituicao', 
-                label: 'Nome da Instituição',
                 msg: 'O nome da instituição é obrigatório.' 
             },
             { 
                 id: 'req_tipo_instituicao', 
-                label: 'Tipo de Instituição',
                 msg: 'Selecione o tipo de instituição.' 
             },
             { 
                 id: 'req_cnpj', 
-                label: 'CNPJ',
                 msg: 'O CNPJ é obrigatório.',
                 validacao: (valor) => {
                     if (!valor) return 'O CNPJ é obrigatório.';
@@ -152,47 +159,40 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             { 
                 id: 'req_email', 
-                label: 'Email',
                 msg: 'O email é obrigatório.',
                 validacao: (valor) => {
                     if (!valor) return 'O email é obrigatório.';
-                    if (!validarEmail(valor)) return 'Email inválido. Verifique o formato (exemplo@dominio.com).';
+                    if (!validarEmail(valor)) return 'Email inválido. Verifique o formato.';
                     return null;
                 }
             },
             { 
                 id: 'req_tel', 
-                label: 'Telefone',
                 msg: 'O telefone é obrigatório.',
                 validacao: (valor) => {
                     if (!valor) return 'O telefone é obrigatório.';
-                    if (!validarTelefone(valor)) return 'Telefone inválido. Deve conter no mínimo 10 dígitos.';
+                    if (!validarTelefone(valor)) return 'Telefone inválido. Mínimo 10 dígitos.';
                     return null;
                 }
             },
             { 
                 id: 'req_cep', 
-                label: 'CEP',
                 msg: 'O CEP é obrigatório.' 
             },
             { 
                 id: 'req_estado', 
-                label: 'Estado',
                 msg: 'Selecione um estado.' 
             },
             { 
                 id: 'req_cidade', 
-                label: 'Cidade',
                 msg: 'Selecione uma cidade.' 
             },
             { 
                 id: 'req_bairro', 
-                label: 'Bairro',
                 msg: 'O bairro é obrigatório.' 
             },
             { 
                 id: 'req_senha', 
-                label: 'Senha',
                 msg: 'A senha é obrigatória.',
                 validacao: (valor) => {
                     if (!valor) return 'A senha é obrigatória.';
@@ -203,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             { 
                 id: 'req_confirmar_senha', 
-                label: 'Confirmação de Senha',
                 msg: 'A confirmação de senha é obrigatória.' 
             },
         ];
@@ -216,11 +215,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const erro = field.validacao(valor);
                 if (erro) {
                     showError(field.id, erro);
-                    erros.push(`<strong>${field.label}:</strong> ${erro}`);
+                    isValid = false;
                 }
             } else if (!valor) {
                 showError(field.id, field.msg);
-                erros.push(`<strong>${field.label}:</strong> ${field.msg}`);
+                isValid = false;
             }
         });
 
@@ -228,29 +227,72 @@ document.addEventListener('DOMContentLoaded', function () {
         const senha = document.getElementById('req_senha').value;
         const confirmarSenha = document.getElementById('req_confirmar_senha').value;
         if (senha && confirmarSenha && senha !== confirmarSenha) {
-            const mensagem = 'As senhas não coincidem.';
-            showError('req_confirmar_senha', mensagem);
-            erros.push(`<strong>Confirmação de Senha:</strong> ${mensagem}`);
+            showError('req_confirmar_senha', 'As senhas não coincidem.');
+            isValid = false;
         }
 
-        return erros;
+        // ✨ Se houver erros, rola até o primeiro campo com erro
+        if (!isValid) {
+            const primeiroErro = document.querySelector('.is-invalid');
+            if (primeiroErro) {
+                primeiroErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                primeiroErro.focus();
+            }
+        }
+
+        return isValid;
     }
 
+    /**
+     * ✨ VALIDAÇÃO DA SEGUNDA SEÇÃO TAMBÉM ATUALIZADA
+     */
     function validarSegundaSecao() {
-        const erros = [];
+        // Limpa erros visuais anteriores (se houver)
+        document.querySelectorAll('.req_upload_area').forEach(area => {
+            area.style.borderColor = '';
+        });
+
+        let isValid = true;
         
         if (arquivosPorCategoria['declaracao-renda'].length === 0) {
-            erros.push('<strong>Declaração de Receita:</strong> A "Declaração de que não possui receita própria suficiente" é obrigatória.');
+            const declaracaoArea = document.querySelector('.req_upload_area[data-categoria="declaracao-renda"]');
+            if (declaracaoArea) {
+                declaracaoArea.style.borderColor = '#dc3545';
+            }
+            mostrarToast('A "Declaração de que não possui receita própria suficiente" é obrigatória.', 'danger');
+            isValid = false;
         }
 
         const categoriasComArquivos = Object.values(arquivosPorCategoria)
             .filter(categoria => categoria.length > 0).length;
 
         if (categoriasComArquivos < 3) {
-            erros.push('<strong>Documentos Insuficientes:</strong> É necessário enviar documentos de pelo menos 3 categorias diferentes (incluindo a declaração obrigatória).');
+            mostrarToast('É necessário enviar documentos de pelo menos 3 categorias diferentes.', 'danger');
+            isValid = false;
         }
 
-        return erros;
+        return isValid;
+    }
+
+    // --- ✨ FUNÇÃO TOAST PARA SEGUNDA SEÇÃO (substitui modal) ---
+    function mostrarToast(mensagem, tipo = 'danger') {
+        // Remove toast anterior se existir
+        const toastExistente = document.querySelector('.req_toast');
+        if (toastExistente) toastExistente.remove();
+
+        const toast = document.createElement('div');
+        toast.className = `req_toast req_toast_${tipo}`;
+        toast.innerHTML = `
+            <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${mensagem}</span>
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('req_toast_show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('req_toast_show');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
     }
 
     // --- LÓGICA DE SENHA ---
@@ -283,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         } catch (error) {
             console.error(error);
-            mostrarModal('Erro de API', ['Não foi possível carregar a lista de estados.']);
+            mostrarToast('Não foi possível carregar a lista de estados.', 'danger');
         }
     }
 
@@ -307,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectCidade.disabled = false;
         } catch (error) {
             console.error(error);
-            mostrarModal('Erro de API', ['Não foi possível carregar a lista de cidades.']);
+            mostrarToast('Não foi possível carregar a lista de cidades.', 'danger');
         }
     }
     
@@ -361,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function adicionarArquivo(categoria, arquivo) {
         const erro = validarArquivo(arquivo);
         if (erro) {
-            mostrarModal('Erro de Upload', [erro]);
+            mostrarToast(erro, 'danger');
             return;
         }
         const idUnico = Date.now() + Math.random();
@@ -425,165 +467,179 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- ENVIO DA SOLICITAÇÃO FINAL ---
+    // --- ENVIO DA SOLICITAÇÃO FINAL (mantém o modal de progresso) ---
     
     async function enviarSolicitacao() {
-    const btnEnviar = document.getElementById('req_btn_enviar');
-    btnEnviar.disabled = true;
-    btnEnviar.textContent = 'Enviando...';
+        const btnEnviar = document.getElementById('req_btn_enviar');
+        btnEnviar.disabled = true;
+        btnEnviar.textContent = 'Enviando...';
 
-    // Abre o modal de progresso
-    $('#req_progressModal').modal('show');
-    
-    const progressFill = document.getElementById('req_progress_fill');
-    const progressMessage = document.getElementById('req_progress_message');
-    const progressDetails = document.getElementById('req_progress_details');
-    const progressLogs = document.getElementById('req_progress_logs');
-
-    // Função para adicionar log
-    function addLog(message, type = 'info') {
-        const logItem = document.createElement('div');
-        logItem.className = `req_progress_log_item req_log_${type}`;
+        $('#req_progressModal').modal('show');
         
-        const icon = type === 'success' ? 'fa-check-circle' : 
-                    type === 'error' ? 'fa-exclamation-circle' : 
-                    'fa-info-circle';
-        
-        logItem.innerHTML = `
-            <i class="fas ${icon}"></i>
-            <span>${message}</span>
-        `;
-        progressLogs.appendChild(logItem);
-        progressLogs.scrollTop = progressLogs.scrollHeight;
-    }
+        const progressFill = document.getElementById('req_progress_fill');
+        const progressMessage = document.getElementById('req_progress_message');
+        const progressDetails = document.getElementById('req_progress_details');
+        const progressLogs = document.getElementById('req_progress_logs');
 
-    // Função para atualizar progresso
-    function updateProgress(percent, message, details = '') {
-        progressFill.style.width = `${percent}%`;
-        progressMessage.textContent = message;
-        progressDetails.textContent = details;
-    }
-
-    try {
-        const formData = new FormData();
-
-        // Preparando dados
-        updateProgress(10, 'Preparando dados...', '');
-        addLog('Coletando informações do formulário', 'info');
-        await sleep(300);
-
-        const camposTexto = ['req_nome_instituicao', 'req_tipo_instituicao', 'req_cnpj', 'req_email', 'req_tel', 'req_cep', 'req_estado', 'req_cidade', 'req_bairro', 'req_senha'];
-        camposTexto.forEach(id => {
-            const nomeCampoBackend = id.replace('req_', ''); 
-            formData.append(nomeCampoBackend, document.getElementById(id).value.trim());
-        });
-
-        // Contando documentos
-        const totalDocumentos = Object.values(arquivosPorCategoria)
-            .reduce((acc, lista) => acc + lista.length, 0);
-        
-        updateProgress(20, 'Anexando documentos...', `${totalDocumentos} arquivo(s)`);
-        addLog(`Preparando ${totalDocumentos} documento(s) para envio`, 'info');
-        await sleep(300);
-
-        for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
-            listaDeFicheiros.forEach((item, index) => {
-                const nomeDoCampo = `${categoria}_${index + 1}`;
-                formData.append(nomeDoCampo, item.arquivo, item.nome);
-            });
+        function addLog(message, type = 'info') {
+            const logItem = document.createElement('div');
+            logItem.className = `req_progress_log_item req_log_${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 
+                        'fa-info-circle';
+            
+            logItem.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+            progressLogs.appendChild(logItem);
+            progressLogs.scrollTop = progressLogs.scrollHeight;
         }
 
-        updateProgress(40, 'Enviando requisição...', 'Aguarde, isso pode levar alguns minutos');
-        addLog('Enviando dados para o servidor', 'info');
+        function updateProgress(percent, message, details = '') {
+            progressFill.style.width = `${percent}%`;
+            progressMessage.textContent = message;
+            progressDetails.textContent = details;
+        }
 
-        const response = await fetch('/api/requisicao/enviar', {
-            method: 'POST',
-            body: formData
-        });
+        try {
+            const formData = new FormData();
 
-        updateProgress(60, 'Validando documentos...', `Verificando ${totalDocumentos} documento(s)`);
-        addLog(` Validando ${totalDocumentos} documento(s)...`, 'info');
-        await sleep(500);
+            updateProgress(5, 'Iniciando processo...', '');
+            await sleep(1000);
+            
+            updateProgress(10, 'Coletando informações do formulário...', '');
+            addLog('📋 Coletando informações do formulário', 'info');
+            await sleep(1200);
 
-        // Simula logs de validação por categoria
-        let validados = 0;
-        for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
-            if (listaDeFicheiros.length > 0) {
-                addLog(`Validando documento da categoria: ${categoria}`, 'info');
-                await sleep(800);
+            const camposTexto = ['req_nome_instituicao', 'req_tipo_instituicao', 'req_cnpj', 'req_email', 'req_tel', 'req_cep', 'req_estado', 'req_cidade', 'req_bairro', 'req_senha'];
+            camposTexto.forEach(id => {
+                const nomeCampoBackend = id.replace('req_', ''); 
+                formData.append(nomeCampoBackend, document.getElementById(id).value.trim());
+            });
+
+            updateProgress(15, 'Dados coletados com sucesso!', '');
+            addLog('✅ Informações coletadas com sucesso', 'success');
+            await sleep(1000);
+
+            const totalDocumentos = Object.values(arquivosPorCategoria)
+                .reduce((acc, lista) => acc + lista.length, 0);
+            
+            updateProgress(20, 'Preparando documentos para envio...', `${totalDocumentos} arquivo(s)`);
+            addLog(`📎 Preparando ${totalDocumentos} documento(s) para envio`, 'info');
+            await sleep(1500);
+
+            let documentosAnexados = 0;
+            for (const [categoria, listaDeFicheiros] of Object.entries(arquivosPorCategoria)) {
+                if (listaDeFicheiros.length > 0) {
+                    listaDeFicheiros.forEach((item, index) => {
+                        const nomeDoCampo = `${categoria}_${index + 1}`;
+                        formData.append(nomeDoCampo, item.arquivo, item.nome);
+                        documentosAnexados++;
+                    });
+                    
+                    const progressPercent = 20 + (documentosAnexados / totalDocumentos) * 15;
+                    updateProgress(progressPercent, 'Anexando documentos...', `${documentosAnexados}/${totalDocumentos} anexados`);
+                    addLog(`📄 Anexando documento da categoria: ${categoria}`, 'info');
+                    await sleep(800);
+                }
+            }
+
+            updateProgress(35, 'Todos os documentos anexados!', '');
+            addLog('✅ Todos os documentos foram anexados com sucesso', 'success');
+            await sleep(1200);
+
+            updateProgress(40, 'Enviando requisição para o servidor...', 'Isso pode levar alguns minutos');
+            addLog('🚀 Enviando dados para o servidor', 'info');
+            await sleep(1500);
+
+            const response = await fetch('/api/requisicao/enviar', {
+                method: 'POST',
+                body: formData
+            });
+
+            updateProgress(55, 'Dados recebidos pelo servidor!', '');
+            addLog('✅ Servidor recebeu os dados com sucesso', 'success');
+            await sleep(1000);
+
+            updateProgress(60, '🤖 Iniciando validação com Inteligência Artificial...', '');
+            addLog('🤖 Iniciando análise de documentos com IA', 'info');
+            await sleep(2000);
+
+            let validados = 0;
+            const categoriasComArquivos = Object.entries(arquivosPorCategoria)
+                .filter(([_, lista]) => lista.length > 0);
+            
+            const totalCategorias = categoriasComArquivos.length;
+
+            for (const [categoria, listaDeFicheiros] of categoriasComArquivos) {
+                const progressPercent = 60 + (validados / totalCategorias) * 25;
+                
+                updateProgress(progressPercent, `🔍 Analisando documentos de ${categoria}...`, `${validados}/${totalCategorias} categorias validadas`);
+                addLog(`🔍 Analisando categoria: ${categoria}`, 'info');
+                await sleep(2500);
+                
+                addLog(`📄 Verificando autenticidade dos documentos...`, 'info');
+                await sleep(1500);
+                
+                addLog(`🔐 Validando formato e integridade...`, 'info');
+                await sleep(1500);
                 
                 validados++;
-                const progressPercent = 60 + (validados / Object.keys(arquivosPorCategoria).length) * 20;
-                updateProgress(progressPercent, 'Validando documentos...', `${validados} categoria(s) validada(s)`);
-                
-                addLog(`✅ Documento ${categoria} validado com sucesso`, 'success');
-                await sleep(300);
+                addLog(`✅ Documentos de ${categoria} aprovados pela IA`, 'success');
+                await sleep(1000);
             }
+
+            updateProgress(85, 'Validação concluída!', 'Todos os documentos foram aprovados');
+            addLog('✅ Todos os documentos foram validados com sucesso', 'success');
+            await sleep(1500);
+
+            updateProgress(90, 'Processando requisição final...', '');
+            addLog('⚙️ Finalizando processamento', 'info');
+            await sleep(1200);
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.message || 'Ocorreu um erro no servidor ao enviar a requisição.');
+            }
+
+            updateProgress(95, 'Salvando informações...', '');
+            addLog('💾 Salvando suas informações no sistema', 'info');
+            await sleep(1000);
+
+            updateProgress(100, '✅ Requisição enviada com sucesso!', '');
+            addLog('🎉 Requisição processada com sucesso!', 'success');
+            await sleep(800);
+            addLog('📧 Você receberá um email quando sua conta for aprovada', 'success');
+            
+            await sleep(3000);
+            
+            $('#req_progressModal').modal('hide');
+            
+            mostrarToast('Requisição enviada com sucesso! Você receberá um email quando sua conta for aprovada.', 'success');
+            
+            setTimeout(() => {
+                window.location.href = '/entrar';
+            }, 4000);
+
+        } catch (error) {
+            console.error('Erro ao enviar solicitação:', error);
+            addLog(`❌ Erro: ${error.message}`, 'error');
+            updateProgress(0, 'Erro ao processar requisição', '');
+            
+            await sleep(3000);
+            $('#req_progressModal').modal('hide');
+            
+            mostrarToast(error.message, 'danger');
+            btnEnviar.disabled = false;
+            btnEnviar.textContent = 'Enviar';
         }
-
-        updateProgress(85, 'Processando requisição...', '');
-        addLog('Finalizando processamento', 'info');
-
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.message || 'Ocorreu um erro no servidor ao enviar a requisição.');
-        }
-
-        updateProgress(100, 'Requisição enviada com sucesso!', '');
-        addLog('✅ Requisição processada com sucesso!', 'success');
-        addLog('Você receberá um email quando sua conta for aprovada', 'success');
-        
-        await sleep(2000);
-        
-        $('#req_progressModal').modal('hide');
-        mostrarModal('Requisição Enviada com Sucesso!', [
-            result.message || 'A sua solicitação foi enviada.',
-            'Você receberá um email quando sua conta for analisada e aprovada.'
-        ], true);
-        
-        setTimeout(() => {
-            window.location.href = '/entrar';
-        }, 3000);
-
-    } catch (error) {
-        console.error('Erro ao enviar solicitação:', error);
-        addLog(`❌ Erro: ${error.message}`, 'error');
-        updateProgress(0, 'Erro ao processar', '');
-        
-        await sleep(2000);
-        $('#req_progressModal').modal('hide');
-        
-        mostrarModal('Erro ao Enviar', [error.message]);
-        btnEnviar.disabled = false;
-        btnEnviar.textContent = 'Enviar';
     }
-}
 
-// Função auxiliar para criar delays
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-    // --- FUNÇÃO DE MODAL ---
-    
-    function mostrarModal(titulo, mensagensArray, isSucesso = false) {
-        const modalTitle = document.getElementById('req_errorModalLabel');
-        const modalBody = document.getElementById('req_errorModalBody');
-
-        if (modalTitle && modalBody) {
-            modalTitle.textContent = titulo;
-            
-            // Formata as mensagens como lista HTML
-            const listaHTML = mensagensArray.map(msg => `<li>${msg}</li>`).join('');
-            modalBody.innerHTML = `<ul>${listaHTML}</ul>`;
-            
-            // Usa jQuery para abrir o modal
-            $('#req_errorModal').modal('show');
-        } else {
-            // Fallback para navegadores sem jQuery
-            const mensagemTexto = mensagensArray.join('\n- ');
-            alert(`${titulo}\n\n${mensagemTexto}`);
-        }
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     // --- INICIA O SCRIPT ---
@@ -596,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (telInput) {
         telInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            let value = e.target.value.replace(/\D/g, '');
             
             if (value.length > 0) {
                 if (value.length <= 2) {
@@ -614,45 +670,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 function togglePassword(event) {
     if (event) {
         event.preventDefault();
         event.stopPropagation();
     }
     
-    const passwordField = document.getElementById('senha');
-    const eyeIcon = document.getElementById('eyeIcon');
-    
-    // Salva a posição do cursor antes de mudar o tipo
-    const cursorPosition = passwordField.selectionStart;
-    
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
-    } else {
-        passwordField.type = 'password';
-        eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
-    }
-    
-    // Restaura a posição do cursor
-    passwordField.setSelectionRange(cursorPosition, cursorPosition);
-    
-    // Remove o foco do input
-    passwordField.blur();
-    
-    // Retorna o foco imediatamente (isso evita o efeito visual de mudança)
-    setTimeout(() => {
-        passwordField.focus();
-        passwordField.setSelectionRange(cursorPosition, cursorPosition);
-    }, 0);
-}
-function togglePassword(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    
-    // Encontra o input de senha mais próximo do ícone clicado
     const toggleButton = event.currentTarget;
     const formGroup = toggleButton.closest('.form-group');
     const passwordField = formGroup.querySelector('input[type="password"], input[type="text"]');
@@ -660,7 +684,6 @@ function togglePassword(event) {
     
     if (!passwordField || !eyeIcon) return;
     
-    // Salva a posição do cursor antes de mudar o tipo
     const cursorPosition = passwordField.selectionStart;
     
     if (passwordField.type === 'password') {
@@ -671,15 +694,29 @@ function togglePassword(event) {
         eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
     }
     
-    // Restaura a posição do cursor
     passwordField.setSelectionRange(cursorPosition, cursorPosition);
-    
-    // Remove o foco do input
     passwordField.blur();
     
-    // Retorna o foco imediatamente (isso evita o efeito visual de mudança)
     setTimeout(() => {
         passwordField.focus();
         passwordField.setSelectionRange(cursorPosition, cursorPosition);
     }, 0);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove o modal do DOM se existir
+    const modalAntigo = document.getElementById('req_errorModal');
+    if (modalAntigo) {
+        modalAntigo.remove();
+    }
+    
+    // Sobrescreve a função mostrarModal para não fazer nada
+    window.mostrarModal = function() {
+        console.warn('⚠️ A função mostrarModal() está depreciada. Use showError() ou mostrarToast().');
+    };
+    
+    // Sobrescreve showModalAviso para não fazer nada
+    window.showModalAviso = function() {
+        console.warn('⚠️ A função showModalAviso() está depreciada. Use showError() ou mostrarToast().');
+    };
+});
