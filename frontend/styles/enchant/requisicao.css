@@ -409,6 +409,188 @@ color: #3d2106;
     border-color: #dc3545;
 }
 
+/* ========== ADICIONE ESSES ESTILOS AO SEU requisicao.css ========== */
+
+/* ✨ VALIDAÇÃO INLINE - Inputs com erro */
+#pagina-requisicao .form-control.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* ✨ Mensagem de erro abaixo do campo */
+.req_error_message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 5px;
+    margin-left: 15px;
+    display: none;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease;
+}
+
+.req_error_message.visible {
+    display: block;
+    height: auto;
+}
+
+/* ✨ FOCUS MARROM - Igual ao pagamento */
+#pagina-requisicao .form-control:focus {
+    outline: none;
+    border-color: var(--corbotao2); /* Cor marrom */
+    box-shadow: 0 0 0 0.2rem rgba(202, 174, 141, 0.5); /* Glow marrom */
+}
+
+/* Remove o outline azul padrão do navegador */
+#pagina-requisicao .form-control:focus-visible {
+    outline: none;
+}
+
+/* ✨ TOAST NOTIFICATIONS (substitui modal na segunda parte) */
+.req_toast {
+    position: fixed;
+    top: 20px;
+    right: -400px;
+    z-index: 9999;
+    padding: 16px 20px;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 400px;
+    transition: right 0.3s ease;
+}
+
+.req_toast_show {
+    right: 20px;
+}
+
+.req_toast i {
+    font-size: 20px;
+}
+
+.req_toast_success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.req_toast_danger {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+.req_toast_warning {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+/* ========== RESPONSIVIDADE DO TOAST ========== */
+@media (max-width: 768px) {
+    .req_toast {
+        top: 10px;
+        right: -100%;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    .req_toast_show {
+        right: 10px;
+    }
+}
+
+/* ========== MELHORIA VISUAL - Upload areas com erro ========== */
+.req_upload_area[style*="border-color: rgb(220, 53, 69)"],
+.req_upload_area[style*="border-color:#dc3545"] {
+    background-color: #fee;
+    animation: req_shake 0.5s;
+}
+
+@keyframes req_shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* ========== ANIMAÇÃO SUAVE NOS ERROS ========== */
+.req_error_message.visible {
+    animation: req_slideDown 0.3s ease;
+}
+
+@keyframes req_slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== MELHORIA VISUAL - Campos com sucesso (opcional) ========== */
+#pagina-requisicao .form-control.is-valid {
+    border-color: #28a745;
+}
+
+/* ========== PLACEHOLDER COM MELHOR CONTRASTE ========== */
+#pagina-requisicao .form-control::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+/* ========== EFEITO HOVER NOS INPUTS ========== */
+#pagina-requisicao .form-control:hover:not(:focus):not(.is-invalid) {
+    border-color: #999;
+    transition: border-color 0.2s ease;
+}
+
+/* ========== SELECT COM MELHOR VISUAL NO FOCUS ========== */
+#pagina-requisicao .form-control:is(select):focus {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23caae8d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+/* ========== DISABLED FIELDS COM MELHOR VISUAL ========== */
+#pagina-requisicao .form-control:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ========== MELHORIA NO BOTÃO QUANDO DESABILITADO ========== */
+.req_botao_continuar:disabled,
+.req_btn_enviar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========== ANIMAÇÃO DE LOADING NO BOTÃO ========== */
+.req_botao_continuar:disabled::after,
+.req_btn_enviar:disabled::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: req_spin 0.6s linear infinite;
+}
+
+@keyframes req_spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========== RESPONSIVIDADE MOBILE ========== */
+@media (max-width: 480px) {
+    .req_error_message {
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+}
+
 
 /* ==================MODAL==================*/
 /* Use o ID da página para escopar as classes do Bootstrap */
