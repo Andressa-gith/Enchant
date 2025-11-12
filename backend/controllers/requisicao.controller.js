@@ -6,11 +6,19 @@ import bcrypt from 'bcrypt';
 import { Resend } from 'resend';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-
+// ✅ CONFIGURAR NODEMAILER (GMAIL)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 /**
  * Gera um token seguro para aprovação
@@ -85,689 +93,252 @@ async function validarDocumentoComIA(arquivo, categoria) {
     }
 }
 
+/**
+ * Envia email para o ADMIN com botões de aprovação/rejeição (RESEND)
+ */
 async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
     try {
         if (!process.env.RESEND_API_KEY) {
-            logger.warn('⚠️ RESEND_API_KEY não configurada. Email não será enviado.');
+            logger.warn('⚠️ RESEND_API_KEY não configurada.');
             return;
         }
 
         const baseUrl = process.env.BASE_URL || 'https://enchant.onrender.com';
-        
         const urlAprovar = `${baseUrl}/api/requisicao/aprovar-email/${requisicao.token_aprovacao}`;
         const urlRejeitar = `${baseUrl}/api/requisicao/rejeitar-email/${requisicao.token_aprovacao}`;
 
-        // ✅ CORREÇÃO: Usar supabaseAdmin para gerar signed URLs
         const linksDocumentos = await Promise.all(
             documentos.map(async (doc) => {
                 const { data, error } = await supabaseAdmin.storage
                     .from('requisicao-documentos')
                     .createSignedUrl(doc.caminho_arquivo, 604800);
 
-                if (error) {
-                    logger.error(`Erro ao gerar signed URL para ${doc.caminho_arquivo}:`, error);
-                    return `<li><strong>${doc.categoria_documento}</strong>: ${doc.nome_arquivo_original} (erro ao gerar link)</li>`;
-                }
-
-                if (!data || !data.signedUrl) {
-                    logger.warn(`Signed URL vazia para ${doc.caminho_arquivo}`);
+                if (error || !data?.signedUrl) {
                     return `<li><strong>${doc.categoria_documento}</strong>: ${doc.nome_arquivo_original} (link indisponível)</li>`;
                 }
 
                 return `
-                    <li>
-                        <strong>${doc.categoria_documento}</strong>: 
-                        <a href="${data.signedUrl}" 
-                           target="_blank" 
-                           download="${doc.nome_arquivo_original}"
-                           style="color: #8B5CF6; text-decoration: underline;">
+                    <li style="padding: 10px; background: #FFFFFF; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #8B5CF6;">
+                        <strong style="color: #8B5CF6; font-size: 11px; text-transform: uppercase;">${doc.categoria_documento}</strong>: 
+                        <a href="${data.signedUrl}" target="_blank" style="color: #7C3AED; text-decoration: underline;">
                             ${doc.nome_arquivo_original}
                         </a>
                     </li>
                 `;
             })
-        )
+        );
 
-        // ✅ HTML otimizado com menos conteúdo suspeito
         const htmlEmail = `
             <!DOCTYPE html>
             <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <style>
-                    body { 
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                        line-height: 1.6; 
-                        color: #1F2937;
-                        background: #f5f5f5;
-                        padding: 20px;
-                        margin: 0;
-                    }
-                    .container {
-                        max-width: 600px;
-                        margin: 0 auto;
-                        background: #FFFFFF;
-                        border-radius: 12px;
-                        overflow: hidden;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }
-                    .header {
-                        background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-                        padding: 30px 20px;
-                        text-align: center;
-                    }
-                    .header h1 {
-                        color: #FFFFFF;
-                        font-size: 24px;
-                        margin: 0;
-                    }
-                    .content {
-                        padding: 30px 20px;
-                    }
-                    .info-box {
-                        background: #F9FAFB;
-                        border: 1px solid #E5E7EB;
-                        border-radius: 8px;
-                        padding: 20px;
-                        margin: 20px 0;
-                    }
-                    .info-box h3 {
-                        color: #8B5CF6;
-                        font-size: 16px;
-                        margin: 0 0 15px 0;
-                    }
-                    .info-row {
-                        padding: 8px 0;
-                        border-bottom: 1px solid #E5E7EB;
-                    }
-                    .info-row:last-child {
-                        border-bottom: none;
-                    }
-                    .info-label {
-                        font-weight: 600;
-                        color: #6B7280;
-                        display: inline-block;
-                        width: 100px;
-                    }
-                    .documents-list {
-                        list-style: none;
-                        padding: 0;
-                        margin: 15px 0 0 0;
-                    }
-                    .documents-list li {
-                        padding: 10px;
-                        background: #FFFFFF;
-                        border-radius: 6px;
-                        margin-bottom: 8px;
-                        border-left: 3px solid #8B5CF6;
-                        font-size: 14px;
-                    }
-                    .documents-list strong {
-                        color: #8B5CF6;
-                        font-size: 11px;
-                        text-transform: uppercase;
-                    }
-                    .documents-list a {
-                        color: #7C3AED;
-                        text-decoration: none;
-                    }
-                    .button-container {
-                        text-align: center;
-                        margin: 30px 0;
-                        padding: 20px;
-                        background: #F9FAFB;
-                        border-radius: 8px;
-                    }
-                    .button {
-                        display: inline-block;
-                        padding: 12px 30px;
-                        margin: 0 5px;
-                        border-radius: 8px;
-                        text-decoration: none;
-                        font-weight: 600;
-                        font-size: 14px;
-                    }
-                    .btn-approve {
-                        background: #10B981;
-                        color: #FFFFFF;
-                    }
-                    .btn-reject {
-                        background: #EF4444;
-                        color: #FFFFFF;
-                    }
-                    .footer {
-                        background: #F9FAFB;
-                        padding: 20px;
-                        text-align: center;
-                        border-top: 1px solid #E5E7EB;
-                        font-size: 12px;
-                        color: #6B7280;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <!-- Header -->
-                    <div class="header">
-                        <h1>Nova Requisição de Cadastro</h1>
-                        <p style="color: #E9D5FF; margin: 5px 0 0 0; font-size: 14px;">
-                            Enchant - Painel Administrativo
-                        </p>
+            <head><meta charset="utf-8"></head>
+            <body style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; margin: 0;">
+                <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    
+                    <div style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); padding: 30px 20px; text-align: center;">
+                        <h1 style="color: #FFFFFF; font-size: 24px; margin: 0;">Nova Requisição de Cadastro</h1>
+                        <p style="color: #E9D5FF; margin: 5px 0 0 0; font-size: 14px;">Enchant - Painel Administrativo</p>
                     </div>
                     
-                    <!-- Content -->
-                    <div class="content">
-                        <p style="margin: 0 0 20px 0; font-size: 15px;">
-                            Uma nova instituição solicitou cadastro na plataforma. 
-                            Os documentos foram validados pela IA. ✅
+                    <div style="padding: 30px 20px;">
+                        <p style="margin: 0 0 20px 0; font-size: 15px; color: #1F2937;">
+                            Uma nova instituição solicitou cadastro. Documentos validados pela IA ✅
                         </p>
                         
-                        <!-- Dados da Instituição -->
-                        <div class="info-box">
-                            <h3>Informações da Instituição</h3>
-                            <div class="info-row">
-                                <span class="info-label">Nome:</span>
-                                <span>${requisicao.nome_instituicao}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Email:</span>
-                                <span>${requisicao.email_contato}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">CNPJ:</span>
-                                <span>${requisicao.cnpj}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Telefone:</span>
-                                <span>${requisicao.telefone}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Localização:</span>
-                                <span>${requisicao.cidade} - ${requisicao.estado}</span>
-                            </div>
+                        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                            <h3 style="color: #8B5CF6; font-size: 16px; margin: 0 0 15px 0;">Informações da Instituição</h3>
+                            <p style="margin: 5px 0;"><strong>Nome:</strong> ${requisicao.nome_instituicao}</p>
+                            <p style="margin: 5px 0;"><strong>Email:</strong> ${requisicao.email_contato}</p>
+                            <p style="margin: 5px 0;"><strong>CNPJ:</strong> ${requisicao.cnpj}</p>
+                            <p style="margin: 5px 0;"><strong>Telefone:</strong> ${requisicao.telefone}</p>
+                            <p style="margin: 5px 0;"><strong>Localização:</strong> ${requisicao.cidade} - ${requisicao.estado}</p>
                         </div>
                         
-                        <!-- Documentos -->
-                        <div class="info-box">
-                            <h3>Documentos Enviados (${documentos.length})</h3>
-                            <ul class="documents-list">
+                        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                            <h3 style="color: #8B5CF6; font-size: 16px; margin: 0 0 15px 0;">Documentos Enviados (${documentos.length})</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
                                 ${linksDocumentos.join('')}
                             </ul>
-                            <p style="color: #6B7280; font-size: 11px; margin: 10px 0 0 0;">
-                                Links válidos por 7 dias
-                            </p>
+                            <p style="color: #6B7280; font-size: 11px; margin: 10px 0 0 0;">Links válidos por 7 dias</p>
                         </div>
                         
-                        <!-- Botões de Ação -->
-                        <div class="button-container">
-                            <p style="margin: 0 0 15px 0; font-size: 15px; font-weight: 600; color: #374151;">
-                                Revisar e Decidir
-                            </p>
-                            <a href="${urlAprovar}" class="button btn-approve">
-                                ✅ Aprovar Cadastro
-                            </a>
-                            <a href="${urlRejeitar}" class="button btn-reject">
-                                ❌ Rejeitar Cadastro
-                            </a>
+                        <div style="text-align: center; margin: 30px 0; padding: 20px; background: #F9FAFB; border-radius: 8px;">
+                            <p style="margin: 0 0 15px 0; font-size: 15px; font-weight: 600; color: #374151;">Revisar e Decidir</p>
+                            <a href="${urlAprovar}" style="display: inline-block; background: #10B981; color: #FFFFFF; padding: 12px 30px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: 600;">✅ Aprovar</a>
+                            <a href="${urlRejeitar}" style="display: inline-block; background: #EF4444; color: #FFFFFF; padding: 12px 30px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: 600;">❌ Rejeitar</a>
                         </div>
                         
-                        <!-- ID da Requisição -->
-                        <p style="text-align: center; color: #9CA3AF; font-size: 12px; margin: 20px 0 0 0;">
-                            ID: ${requisicao.id}
-                        </p>
+                        <p style="text-align: center; color: #9CA3AF; font-size: 12px; margin: 20px 0 0 0;">ID: ${requisicao.id}</p>
                     </div>
                     
-                    <!-- Footer -->
-                    <div class="footer">
-                        <p style="margin: 0;">
-                            <strong>Enchant</strong> - Plataforma de Gestão para ONGs
-                        </p>
-                        <p style="margin: 5px 0 0 0;">
-                            Salvador, Bahia • Brasil
-                        </p>
+                    <div style="background: #F9FAFB; padding: 20px; text-align: center; border-top: 1px solid #E5E7EB;">
+                        <p style="margin: 0; color: #6B7280; font-size: 12px;"><strong>Enchant</strong> - Salvador, Bahia • Brasil</p>
                     </div>
                 </div>
             </body>
             </html>
         `;
 
-        // ✅ Configuração otimizada do email
-        const emailConfig = {
-            from: process.env.EMAIL_REMETENTE || 'Enchant <onboarding@resend.dev>',
+        await resend.emails.send({
+            from: 'Enchant <onboarding@resend.dev>',
             to: process.env.EMAIL_DESTINO_ADMIN,
             subject: `Nova Requisição: ${requisicao.nome_instituicao}`,
-            html: htmlEmail,
-            // ✅ Headers adicionais para melhorar deliverability
-            headers: {
-                'X-Entity-Ref-ID': requisicao.id,
-            },
-            // ✅ Tags para tracking (opcional)
-            tags: [
-                { name: 'category', value: 'requisicao-cadastro' },
-                { name: 'instituicao', value: requisicao.nome_instituicao }
-            ]
-        };
+            html: htmlEmail
+        });
 
-        await resend.emails.send(emailConfig);
-
-        logger.info('✅ Email enviado ao admin com sucesso.');
+        logger.info('✅ Email enviado ao admin (Resend).');
     } catch (error) {
-        logger.error('❌ Erro ao enviar email:', error);
+        logger.error('❌ Erro ao enviar email ao admin:', error);
     }
 }
+
 /**
- * Envia email de aprovação ao usuário
+ * Envia email de APROVAÇÃO para o USUÁRIO (NODEMAILER)
  */
 async function enviarEmailAprovacao(requisicao) {
     try {
-        if (!process.env.RESEND_API_KEY) return;
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+            logger.warn('⚠️ Credenciais de email não configuradas.');
+            return;
+        }
 
         const htmlEmail = `
             <!DOCTYPE html>
             <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <style>
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { 
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                        line-height: 1.6; 
-                        color: #1F2937;
-                        background: linear-gradient(135deg, #F3E8FF 0%, #E0E7FF 100%);
-                        padding: 20px;
-                    }
-                    .email-wrapper {
-                        max-width: 600px;
-                        margin: 0 auto;
-                        background: #FFFFFF;
-                        border-radius: 16px;
-                        overflow: hidden;
-                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-                    }
-                    .header {
-                        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                        padding: 40px 30px;
-                        text-align: center;
-                        position: relative;
-                    }
-                    .header::after {
-                        content: '';
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        right: 0;
-                        height: 4px;
-                        background: linear-gradient(90deg, #34D399, #10B981, #059669);
-                    }
-                    .header h1 {
-                        color: #FFFFFF;
-                        font-size: 32px;
-                        font-weight: 700;
-                        margin-bottom: 8px;
-                    }
-                    .header p {
-                        color: #D1FAE5;
-                        font-size: 16px;
-                        font-weight: 500;
-                    }
-                    .content {
-                        padding: 40px 30px;
-                    }
-                    .success-banner {
-                        background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
-                        border: 2px solid #10B981;
-                        border-radius: 12px;
-                        padding: 28px;
-                        margin-bottom: 30px;
-                        text-align: center;
-                    }
-                    .success-banner h2 {
-                        color: #065F46;
-                        font-size: 24px;
-                        margin-bottom: 12px;
-                        font-weight: 700;
-                    }
-                    .success-banner p {
-                        color: #047857;
-                        font-size: 15px;
-                        line-height: 1.7;
-                    }
-                    .card {
-                        background: #F9FAFB;
-                        border: 2px solid #E5E7EB;
-                        border-radius: 12px;
-                        padding: 24px;
-                        margin: 24px 0;
-                    }
-                    .card h3 {
-                        color: #8B5CF6;
-                        font-size: 18px;
-                        font-weight: 700;
-                        margin-bottom: 16px;
-                    }
-                    .credential-item {
-                        background: #FFFFFF;
-                        padding: 16px;
-                        border-radius: 8px;
-                        margin-bottom: 12px;
-                        border-left: 3px solid #8B5CF6;
-                    }
-                    .credential-item:last-child {
-                        margin-bottom: 0;
-                    }
-                    .credential-label {
-                        color: #6B7280;
-                        font-size: 13px;
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                        margin-bottom: 4px;
-                    }
-                    .credential-value {
-                        color: #111827;
-                        font-size: 16px;
-                        font-weight: 600;
-                    }
-                    .button-container {
-                        text-align: center;
-                        margin: 32px 0;
-                    }
-                    .button {
-                        display: inline-block;
-                        background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-                        color: #FFFFFF;
-                        padding: 16px 48px;
-                        border-radius: 10px;
-                        text-decoration: none;
-                        font-weight: 700;
-                        font-size: 16px;
-                        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-                        transition: all 0.3s ease;
-                    }
-                    .button:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
-                    }
-                    .steps-card {
-                        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-                        border: 2px solid #F59E0B;
-                        border-radius: 12px;
-                        padding: 24px;
-                        margin: 24px 0;
-                    }
-                    .steps-card h3 {
-                        color: #92400E;
-                        font-size: 18px;
-                        margin-bottom: 16px;
-                        font-weight: 700;
-                    }
-                    .steps-list {
-                        list-style: none;
-                        counter-reset: step-counter;
-                        padding: 0;
-                    }
-                    .steps-list li {
-                        counter-increment: step-counter;
-                        padding: 12px 0 12px 40px;
-                        position: relative;
-                        color: #78350F;
-                        font-size: 15px;
-                        border-bottom: 1px solid #FDE68A;
-                    }
-                    .steps-list li:last-child {
-                        border-bottom: none;
-                    }
-                    .steps-list li::before {
-                        content: counter(step-counter);
-                        position: absolute;
-                        left: 0;
-                        top: 10px;
-                        background: #F59E0B;
-                        color: #FFFFFF;
-                        width: 28px;
-                        height: 28px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: 700;
-                        font-size: 14px;
-                    }
-                    .divider {
-                        height: 2px;
-                        background: linear-gradient(90deg, transparent, #E5E7EB, transparent);
-                        margin: 32px 0;
-                        border: none;
-                    }
-                    .footer {
-                        background: #F9FAFB;
-                        padding: 24px 30px;
-                        text-align: center;
-                        border-top: 2px solid #E5E7EB;
-                    }
-                    .footer p {
-                        color: #6B7280;
-                        font-size: 13px;
-                        margin: 4px 0;
-                    }
-                    .footer strong {
-                        color: #8B5CF6;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="email-wrapper">
-                    <!-- Header -->
-                    <div class="header">
-                        <h1>✅ Cadastro Aprovado!</h1>
-                        <p>Bem-vindo à Plataforma Enchant</p>
+            <head><meta charset="utf-8"></head>
+            <body style="font-family: Arial, sans-serif; background: linear-gradient(135deg, #F3E8FF 0%, #E0E7FF 100%); padding: 20px; margin: 0;">
+                <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                    
+                    <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 40px 30px; text-align: center;">
+                        <h1 style="color: #FFFFFF; font-size: 32px; font-weight: 700; margin: 0 0 8px 0;">✅ Cadastro Aprovado!</h1>
+                        <p style="color: #D1FAE5; font-size: 16px; margin: 0;">Bem-vindo à Plataforma Enchant</p>
                     </div>
                     
-                    <!-- Content -->
-                    <div class="content">
-                        <!-- Success Banner -->
-                        <div class="success-banner">
-                            <h2>🎉 Parabéns, ${requisicao.nome_instituicao}!</h2>
-                            <p>
-                                Sua requisição foi <strong>aprovada com sucesso</strong>!<br>
-                                Todos os seus documentos foram validados e você já pode começar a usar a plataforma.
-                            </p>
+                    <div style="padding: 40px 30px;">
+                        <div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #10B981; border-radius: 12px; padding: 28px; margin-bottom: 30px; text-align: center;">
+                            <h2 style="color: #065F46; font-size: 24px; margin: 0 0 12px 0;">🎉 Parabéns, ${requisicao.nome_instituicao}!</h2>
+                            <p style="color: #047857; font-size: 15px; margin: 0;">Sua requisição foi aprovada com sucesso! Você já pode começar a usar a plataforma.</p>
                         </div>
                         
-                        <!-- Credenciais -->
-                        <div class="card">
-                            <h3>🔐 Dados de Acesso</h3>
-                            <div class="credential-item">
-                                <div class="credential-label">Email de Login</div>
-                                <div class="credential-value">${requisicao.email_contato}</div>
+                        <div style="background: #F9FAFB; border: 2px solid #E5E7EB; border-radius: 12px; padding: 24px; margin: 24px 0;">
+                            <h3 style="color: #8B5CF6; font-size: 18px; margin: 0 0 16px 0;">🔐 Dados de Acesso</h3>
+                            <div style="background: #FFFFFF; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #8B5CF6;">
+                                <p style="color: #6B7280; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">EMAIL DE LOGIN</p>
+                                <p style="color: #111827; font-size: 16px; font-weight: 600; margin: 0;">${requisicao.email_contato}</p>
                             </div>
-                            <div class="credential-item">
-                                <div class="credential-label">Senha</div>
-                                <div class="credential-value">A senha que você definiu no cadastro</div>
+                            <div style="background: #FFFFFF; padding: 16px; border-radius: 8px; border-left: 3px solid #8B5CF6;">
+                                <p style="color: #6B7280; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">SENHA</p>
+                                <p style="color: #111827; font-size: 16px; font-weight: 600; margin: 0;">A senha que você definiu no cadastro</p>
                             </div>
                         </div>
                         
-                        <!-- Call to Action -->
-                        <div class="button-container">
-                            <a href="${process.env.BASE_URL || 'https://enchant.onrender.com'}/entrar" class="button">
+                        <div style="text-align: center; margin: 32px 0;">
+                            <a href="${process.env.BASE_URL || 'https://enchant.onrender.com'}/entrar" 
+                               style="display: inline-block; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); color: #FFFFFF; padding: 16px 48px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 16px; box-shadow: 0 4px 12px rgba(139,92,246,0.4);">
                                 🚀 Acessar Plataforma
                             </a>
                         </div>
                         
-                        <hr class="divider">
+                        <hr style="border: none; border-top: 2px solid #E5E7EB; margin: 32px 0;">
                         
-                        <!-- Próximos Passos -->
-                        <div class="steps-card">
-                            <h3>📋 Próximos Passos</h3>
-                            <ol class="steps-list">
-                                <li>Clique no botão acima para acessar a plataforma</li>
-                                <li>Faça login com seu email e senha</li>
-                                <li>Complete as informações do seu perfil</li>
-                                <li>Configure a foto de perfil da sua instituição</li>
+                        <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-radius: 12px; padding: 24px;">
+                            <h3 style="color: #92400E; font-size: 18px; margin: 0 0 16px 0;">📋 Próximos Passos</h3>
+                            <ol style="color: #78350F; font-size: 15px; margin: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 12px;">Clique no botão acima para acessar a plataforma</li>
+                                <li style="margin-bottom: 12px;">Faça login com seu email e senha</li>
+                                <li style="margin-bottom: 12px;">Complete as informações do seu perfil</li>
+                                <li style="margin-bottom: 12px;">Configure a foto de perfil da instituição</li>
                                 <li>Explore todas as funcionalidades disponíveis</li>
                             </ol>
                         </div>
                         
-                        <p style="color: #6B7280; font-size: 14px; text-align: center; margin-top: 24px;">
-                            💬 Precisa de ajuda? Responda este email que nossa equipe irá auxiliá-lo!
-                        </p>
+                        <p style="color: #6B7280; font-size: 14px; text-align: center; margin-top: 24px;">💬 Precisa de ajuda? Responda este email!</p>
                     </div>
                     
-                    <!-- Footer -->
-                    <div class="footer">
-                        <p><strong>Enchant</strong> - Transformando a gestão de instituições sociais</p>
-                        <p>Salvador, Bahia • Brasil</p>
-                        <p style="color: #9CA3AF; font-size: 12px; margin-top: 12px;">
-                            Este é um email automático. Por favor, não responda.
-                        </p>
+                    <div style="background: #F9FAFB; padding: 24px 30px; text-align: center; border-top: 2px solid #E5E7EB;">
+                        <p style="color: #6B7280; font-size: 13px; margin: 4px 0;"><strong style="color: #8B5CF6;">Enchant</strong> - Transformando a gestão de instituições sociais</p>
+                        <p style="color: #6B7280; font-size: 13px; margin: 4px 0;">Salvador, Bahia • Brasil</p>
                     </div>
                 </div>
             </body>
             </html>
         `;
 
-        await resend.emails.send({
-            from: process.env.EMAIL_REMETENTE || 'Enchant <onboarding@resend.dev>',
+        const mailOptions = {
+            from: `"Enchant Platform" <${process.env.EMAIL_USER}>`,
             to: requisicao.email_contato,
             subject: '✅ Cadastro Aprovado - Plataforma Enchant',
             html: htmlEmail
-        });
+        };
 
-        logger.info('✅ Email de aprovação enviado.');
+        await transporter.sendMail(mailOptions);
+        logger.info(`✅ Email de aprovação enviado para ${requisicao.email_contato} (Nodemailer)`);
     } catch (error) {
-        logger.error('❌ Erro ao enviar email:', error);
+        logger.error('❌ Erro ao enviar email de aprovação:', error);
+        console.error('Detalhes:', error.message);
     }
 }
+
 /**
- * Envia email de rejeição ao usuário
+ * Envia email de REJEIÇÃO para o USUÁRIO (NODEMAILER)
  */
 async function enviarEmailRejeicao(requisicao, motivo) {
     try {
-        if (!process.env.RESEND_API_KEY) return;
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+            logger.warn('⚠️ Credenciais de email não configuradas.');
+            return;
+        }
 
         const htmlEmail = `
             <!DOCTYPE html>
             <html>
-            <head>
-                <meta charset="utf-8">
-                 <style>
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { 
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                        background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
-                        padding: 20px;
-                    }
-                    .email-wrapper {
-                        max-width: 600px;
-                        margin: 0 auto;
-                        background: #FFFFFF;
-                        border-radius: 16px;
-                        overflow: hidden;
-                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-                    }
-                    .header {
-                        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-                        padding: 40px 30px;
-                        text-align: center;
-                        position: relative;
-                    }
-                    .header::after {
-                        content: '';
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        right: 0;
-                        height: 4px;
-                        background: linear-gradient(90deg, #F87171, #EF4444, #DC2626);
-                    }
-                    .header h1 {
-                        color: #FFFFFF;
-                        font-size: 28px;
-                        font-weight: 700;
-                    }
-                    .content {
-                        padding: 40px 30px;
-                    }
-                    .alert-banner {
-                        background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-                        border: 2px solid #F59E0B;
-                        border-radius: 12px;
-                        padding: 24px;
-                        margin: 24px 0;
-                    }
-                    .alert-banner h3 {
-                        color: #92400E;
-                        margin-bottom: 12px;
-                        font-size: 18px;
-                    }
-                    .alert-banner p {
-                        color: #78350F;
-                        font-size: 15px;
-                        line-height: 1.7;
-                    }
-                    .button {
-                        display: inline-block;
-                        background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-                        color: #FFFFFF;
-                        padding: 14px 40px;
-                        border-radius: 10px;
-                        text-decoration: none;
-                        font-weight: 600;
-                        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-                        transition: all 0.3s;
-                    }
-                    .button:hover {
-                        transform: translateY(-2px);
-                    }
-                    .footer {
-                        background: #F9FAFB;
-                        padding: 24px;
-                        text-align: center;
-                        border-top: 2px solid #E5E7EB;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>❌ Requisição Não Aprovada</h1>
+            <head><meta charset="utf-8"></head>
+            <body style="font-family: Arial, sans-serif; background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); padding: 20px; margin: 0;">
+                <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                    
+                    <div style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); padding: 40px 30px; text-align: center;">
+                        <h1 style="color: #FFFFFF; font-size: 28px; font-weight: 700; margin: 0;">❌ Requisição Não Aprovada</h1>
                     </div>
-                    <div class="content">
-                        <p>Olá, <strong>${requisicao.nome_instituicao}</strong>,</p>
+                    
+                    <div style="padding: 40px 30px;">
+                        <p style="font-size: 15px; color: #1F2937; margin: 0 0 20px 0;">Olá, <strong>${requisicao.nome_instituicao}</strong>,</p>
                         
-                        <p>Infelizmente, sua requisição de cadastro na plataforma Enchant não foi aprovada.</p>
+                        <p style="font-size: 15px; color: #1F2937; margin: 0 0 20px 0;">Infelizmente, sua requisição de cadastro na plataforma Enchant não foi aprovada.</p>
                         
-                        <div class="warning-box">
-                            <h3 style="margin-top: 0; color: #856404;">📋 Motivo da rejeição:</h3>
-                            <p style="margin: 0;">${motivo}</p>
+                        <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-radius: 12px; padding: 24px; margin: 24px 0;">
+                            <h3 style="color: #92400E; font-size: 18px; margin: 0 0 12px 0;">📋 Motivo da rejeição:</h3>
+                            <p style="color: #78350F; font-size: 15px; margin: 0; line-height: 1.7;">${motivo}</p>
                         </div>
                         
-                        <p>Você pode corrigir as informações e/ou documentos e enviar uma nova requisição.</p>
+                        <p style="font-size: 15px; color: #1F2937; margin: 0 0 30px 0;">Você pode corrigir as informações e/ou documentos e enviar uma nova requisição.</p>
                         
-                        <p style="text-align: center;">
-                            <a href="${process.env.BASE_URL || 'https://enchant.onrender.com'}/requisicao" class="button">Fazer Nova Requisição</a>
-                        </p>
+                        <div style="text-align: center;">
+                            <a href="${process.env.BASE_URL || 'https://enchant.onrender.com'}/requisicao" 
+                               style="display: inline-block; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); color: #FFFFFF; padding: 14px 40px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(139,92,246,0.4);">
+                                Fazer Nova Requisição
+                            </a>
+                        </div>
                         
-                        <p style="color: #666; font-size: 14px; margin-top: 30px;">
-                            Se você tiver dúvidas sobre o motivo da rejeição, entre em contato conosco.
-                        </p>
+                        <p style="color: #6B7280; font-size: 14px; text-align: center; margin-top: 30px;">💬 Se tiver dúvidas, responda este email.</p>
+                    </div>
+                    
+                    <div style="background: #F9FAFB; padding: 24px; text-align: center; border-top: 2px solid #E5E7EB;">
+                        <p style="margin: 0; color: #6B7280; font-size: 12px;"><strong>Enchant</strong> - Salvador, Bahia • Brasil</p>
                     </div>
                 </div>
             </body>
             </html>
         `;
 
-        await resend.emails.send({
-            from: process.env.EMAIL_REMETENTE || 'Enchant Platform <onboarding@resend.dev>',
+        const mailOptions = {
+            from: `"Enchant Platform" <${process.env.EMAIL_USER}>`,
             to: requisicao.email_contato,
             subject: '❌ Sua requisição não foi aprovada - Enchant',
             html: htmlEmail
-        });
+        };
 
-        logger.info('✅ Email de rejeição enviado ao usuário.');
-
+        await transporter.sendMail(mailOptions);
+        logger.info(`✅ Email de rejeição enviado para ${requisicao.email_contato} (Nodemailer)`);
     } catch (error) {
         logger.error('❌ Erro ao enviar email de rejeição:', error);
     }
@@ -784,21 +355,19 @@ export const enviarRequisicao = async (req, res) => {
     let arquivosEnviados = [];
 
     try {
-        // ✅ CORRIGIDO: Nomes dos campos atualizados
         const { 
-            nome_instituicao,      // era: nomeInstituicao
-            tipo_instituicao,      // 🆕 NOVO
+            nome_instituicao,
+            tipo_instituicao,
             email, 
             cnpj, 
-            tel,                   // era: telefone
-            cep,                   // 🆕 NOVO
+            tel,
+            cep,
             estado, 
             cidade, 
-            bairro,                // 🆕 NOVO
+            bairro,
             senha 
         } = req.body;
 
-        // ✅ VALIDAÇÃO ATUALIZADA
         if (!nome_instituicao || !email || !cnpj || !senha) {
             return res.status(400).json({ message: 'Campos obrigatórios ausentes.' });
         }
@@ -852,15 +421,15 @@ export const enviarRequisicao = async (req, res) => {
         const { data: requisicao, error: requisicaoError } = await supabase
             .from('requisicao_cadastro')
             .insert({
-                nome_instituicao: nome_instituicao,     // ✅
-                tipo_instituicao: tipo_instituicao,     // 🆕
+                nome_instituicao: nome_instituicao,
+                tipo_instituicao: tipo_instituicao,
                 email_contato: email,
                 cnpj, 
-                telefone: tel,                          // ✅ tel -> telefone (coluna do banco)
-                cep: cep,                               // 🆕
+                telefone: tel,
+                cep: cep,
                 estado, 
                 cidade,
-                bairro: bairro,                         // 🆕
+                bairro: bairro,
                 senha_hash: senhaHash,
                 senha_original: senha,
                 requisicao_status: 'pendente',
@@ -990,11 +559,10 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         console.log('✅ [APROVAÇÃO] Token recebido:', token);
 
         if (!token) {
-            console.error('❌ [APROVAÇÃO] Token não fornecido');
+            console.error('❌ [APROVAÇÃO] Token não fornecido na URL');
             return res.status(400).send('<h1>❌ Token inválido</h1>');
         }
 
-        // ========== BUSCA A REQUISIÇÃO ==========
         const { data: requisicao, error } = await supabase
             .from('requisicao_cadastro')
             .select('*')
@@ -1008,12 +576,13 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         });
 
         if (error || !requisicao) {
-            console.error('❌ [APROVAÇÃO] Requisição não encontrada');
+            console.error('❌ [APROVAÇÃO] Requisição não encontrada. Erro:', error);
             return res.status(404).send(`
                 <html>
                 <body style="font-family: Arial; text-align: center; padding: 50px;">
                     <h1 style="color: #EF4444;">❌ Requisição não encontrada</h1>
                     <p>Este link pode ter expirado ou já foi processado.</p>
+                    <p style="color: #999; font-size: 12px;">Token: ${token}</p>
                 </body>
                 </html>
             `);
@@ -1031,7 +600,6 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
             `);
         }
 
-        // ========== PASSO 1: CRIAR USUÁRIO NO AUTH ==========
         console.log('✅ [APROVAÇÃO] Criando usuário no Auth...');
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: requisicao.email_contato,
@@ -1039,8 +607,7 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
             email_confirm: true,
             user_metadata: {
                 nome_instituicao: requisicao.nome_instituicao,
-                cnpj: requisicao.cnpj,
-                tipo_instituicao: requisicao.tipo_instituicao // ✅ Importante para o trigger
+                cnpj: requisicao.cnpj
             }
         });
 
@@ -1052,106 +619,44 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         novoUsuarioId = authData.user.id;
         console.log('✅ [APROVAÇÃO] Usuário criado. ID:', novoUsuarioId);
 
-        // ========== PASSO 2: AGUARDAR O TRIGGER CRIAR A INSTITUIÇÃO ==========
-        console.log('⏳ [APROVAÇÃO] Aguardando trigger criar instituição...');
-        let tentativas = 0;
-        let instituicaoExiste = false;
+        console.log('✅ [APROVAÇÃO] Inserindo dados nas tabelas...');
+        
+        // Instituição
+        await supabase.from('instituicao').insert({
+            id: novoUsuarioId,
+            nome: requisicao.nome_instituicao,
+            tipo_instituicao: requisicao.tipo_instituicao,
+            cnpj: requisicao.cnpj,
+            email_contato: requisicao.email_contato,
+        });
 
-        while (tentativas < 15 && !instituicaoExiste) { // 15 tentativas = 15 segundos
-            const { data: checkInstituicao, error: checkError } = await supabaseAdmin
-                .from('instituicao')
-                .select('id')
-                .eq('id', novoUsuarioId)
-                .maybeSingle();
+        // Endereço
+        await supabase.from('endereco').insert({
+            instituicao_id: novoUsuarioId,
+            cep: requisicao.cep,
+            bairro: requisicao.bairro,
+            cidade: requisicao.cidade,
+            estado: requisicao.estado
+        });
 
-            if (checkInstituicao && !checkError) {
-                instituicaoExiste = true;
-                console.log('✅ [APROVAÇÃO] Instituição criada pelo trigger!');
-            } else {
-                tentativas++;
-                console.log(`⏳ [APROVAÇÃO] Tentativa ${tentativas}/15 - Aguardando...`);
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Espera 1 segundo
-            }
-        }
+        // Telefone
+        await supabase.from('telefone').insert({
+            instituicao_id: novoUsuarioId,
+            numero: requisicao.telefone
+        });
 
-        if (!instituicaoExiste) {
-            throw new Error('❌ Timeout: O trigger não criou a instituição a tempo');
-        }
-
-        // ========== PASSO 3: ATUALIZAR DADOS COMPLETOS DA INSTITUIÇÃO ==========
-        console.log('✅ [APROVAÇÃO] Atualizando dados completos da instituição...');
-        const { error: instituicaoError } = await supabaseAdmin
-            .from('instituicao')
-            .update({
-                nome: requisicao.nome_instituicao,
-                tipo_instituicao: requisicao.tipo_instituicao, // ✅ Garante que está preenchido
-                cnpj: requisicao.cnpj,
-                email_contato: requisicao.email_contato,
-                primeiro_login: true
-            })
-            .eq('id', novoUsuarioId);
-
-        if (instituicaoError) {
-            console.error('❌ [APROVAÇÃO] Erro ao atualizar instituição:', instituicaoError);
-            throw instituicaoError;
-        }
-        console.log('✅ [APROVAÇÃO] Instituição atualizada!');
-
-        // ========== PASSO 4: INSERIR ENDEREÇO ==========
-        console.log('✅ [APROVAÇÃO] Inserindo endereço...');
-        const { error: enderecoError } = await supabaseAdmin
-            .from('endereco')
-            .insert({
-                instituicao_id: novoUsuarioId,
-                cep: requisicao.cep,
-                bairro: requisicao.bairro,
-                cidade: requisicao.cidade,
-                estado: requisicao.estado
-            });
-
-        if (enderecoError) {
-            console.error('❌ [APROVAÇÃO] Erro ao inserir endereço:', enderecoError);
-            throw enderecoError;
-        }
-        console.log('✅ [APROVAÇÃO] Endereço inserido!');
-
-        // ========== PASSO 5: INSERIR TELEFONE ==========
-        console.log('✅ [APROVAÇÃO] Inserindo telefone...');
-        const { error: telefoneError } = await supabaseAdmin
-            .from('telefone')
-            .insert({
-                instituicao_id: novoUsuarioId,
-                numero: requisicao.telefone
-            });
-
-        if (telefoneError) {
-            console.error('❌ [APROVAÇÃO] Erro ao inserir telefone:', telefoneError);
-            throw telefoneError;
-        }
-        console.log('✅ [APROVAÇÃO] Telefone inserido!');
-
-        // ========== PASSO 6: ATUALIZAR STATUS DA REQUISIÇÃO ==========
         console.log('✅ [APROVAÇÃO] Atualizando status da requisição...');
-        const { error: updateReqError } = await supabase
-            .from('requisicao_cadastro')
-            .update({
-                requisicao_status: 'aprovada',
-                data_processamento: new Date().toISOString(),
-                token_aprovacao: null,
-                senha_original: null
-            })
-            .eq('id', requisicao.id);
+        await supabase.from('requisicao_cadastro').update({
+            requisicao_status: 'aprovada',
+            data_processamento: new Date().toISOString(),
+            token_aprovacao: null,
+            senha_original: null
+        }).eq('id', requisicao.id);
 
-        if (updateReqError) {
-            console.error('❌ [APROVAÇÃO] Erro ao atualizar requisição:', updateReqError);
-            throw updateReqError;
-        }
-
-        // ========== PASSO 7: ENVIAR EMAIL ==========
         console.log('✅ [APROVAÇÃO] Enviando email de confirmação...');
         await enviarEmailAprovacao(requisicao);
 
-        console.log('✅ [APROVAÇÃO] ✨ PROCESSO CONCLUÍDO COM SUCESSO! ✨');
+        console.log('✅ [APROVAÇÃO] Processo concluído com sucesso!');
         
         res.send(`
             <html>
@@ -1167,40 +672,25 @@ export const aprovarRequisicaoPorEmail = async (req, res) => {
         `);
 
     } catch (error) {
-        console.error('❌ [APROVAÇÃO] 💥 ERRO CATASTRÓFICO:', error);
+        console.error('❌ [APROVAÇÃO] Erro catastrófico:', error);
         
-        // ========== ROLLBACK COMPLETO ==========
         if (novoUsuarioId) {
-            console.log('🔄 [ROLLBACK] Iniciando limpeza...');
-            
-            // Remove telefone
-            await supabaseAdmin.from('telefone').delete().eq('instituicao_id', novoUsuarioId);
-            
-            // Remove endereço
-            await supabaseAdmin.from('endereco').delete().eq('instituicao_id', novoUsuarioId);
-            
-            // Remove instituição
-            await supabaseAdmin.from('instituicao').delete().eq('id', novoUsuarioId);
-            
-            // Remove usuário do Auth
+            console.log('🔄 [ROLLBACK] Deletando usuário órfão:', novoUsuarioId);
             await supabaseAdmin.auth.admin.deleteUser(novoUsuarioId);
-            
-            console.log('🔄 [ROLLBACK] Limpeza concluída.');
         }
         
         res.status(500).send(`
             <html>
             <body style="font-family: Arial; text-align: center; padding: 50px;">
                 <h1 style="color: #EF4444;">❌ Erro ao processar aprovação</h1>
-                <p>Ocorreu um erro inespeado. Por favor, tente novamente.</p>
-                <p style="color: #999; font-size: 12px; margin-top: 20px;">
-                    Detalhes técnicos: ${error.message}
-                </p>
+                <p>Ocorreu um erro inesperado. Por favor, tente novamente.</p>
+                <p style="color: #999; font-size: 12px;">${error.message}</p>
             </body>
             </html>
-        `);
+            `);
     }
 };
+
 /**
  * Rejeitar via email (mostra formulário)
  */
@@ -1302,55 +792,31 @@ export const aprovarRequisicao = async (req, res) => {
             return res.status(400).json({ message: 'Esta requisição já foi processada.' });
         }
 
-        // Criar usuário no Auth
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: requisicao.email_contato,
             password: requisicao.senha_original,
             email_confirm: true,
             user_metadata: {
                 nome_instituicao: requisicao.nome_instituicao,
-                cnpj: requisicao.cnpj,
-                tipo_instituicao: requisicao.tipo_instituicao
+                cnpj: requisicao.cnpj
             }
         });
 
         if (authError) throw authError;
         novoUsuarioId = authData.user.id;
 
-        // ✅ Aguardar trigger criar instituição
-        let tentativas = 0;
-        let instituicaoExiste = false;
-
-        while (tentativas < 15 && !instituicaoExiste) {
-            const { data: checkInstituicao } = await supabaseAdmin
-                .from('instituicao')
-                .select('id')
-                .eq('id', novoUsuarioId)
-                .maybeSingle();
-
-            if (checkInstituicao) {
-                instituicaoExiste = true;
-            } else {
-                tentativas++;
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-
-        if (!instituicaoExiste) {
-            throw new Error('Timeout: Trigger não criou a instituição');
-        }
-
-        // ✅ Atualizar instituição
-        await supabaseAdmin.from('instituicao').update({
+        await supabase.from('instituicao').insert({
+            id: novoUsuarioId,
             nome: requisicao.nome_instituicao,
-            tipo_instituicao: requisicao.tipo_instituicao,
             cnpj: requisicao.cnpj,
             email_contato: requisicao.email_contato,
+            tipo_instituicao: requisicao.tipo_instituicao || 'ONG',
+            cidade: requisicao.cidade,
+            estado: requisicao.estado,
             primeiro_login: true
-        }).eq('id', novoUsuarioId);
+        });
 
-        // Inserir endereço
-        await supabaseAdmin.from('endereco').insert({
+        await supabase.from('endereco').insert({
             instituicao_id: novoUsuarioId,
             cep: requisicao.cep,
             bairro: requisicao.bairro,
@@ -1358,13 +824,11 @@ export const aprovarRequisicao = async (req, res) => {
             estado: requisicao.estado
         });
 
-        // Inserir telefone
-        await supabaseAdmin.from('telefone').insert({
+        await supabase.from('telefone').insert({
             instituicao_id: novoUsuarioId,
             numero: requisicao.telefone
         });
 
-        // Atualizar requisição
         await supabase.from('requisicao_cadastro').update({
             requisicao_status: 'aprovada',
             data_processamento: new Date().toISOString(),
@@ -1379,14 +843,9 @@ export const aprovarRequisicao = async (req, res) => {
 
     } catch (error) {
         logger.error('❌ Erro ao aprovar requisição:', error);
-        
         if (novoUsuarioId) {
-            await supabaseAdmin.from('telefone').delete().eq('instituicao_id', novoUsuarioId);
-            await supabaseAdmin.from('endereco').delete().eq('instituicao_id', novoUsuarioId);
-            await supabaseAdmin.from('instituicao').delete().eq('id', novoUsuarioId);
             await supabaseAdmin.auth.admin.deleteUser(novoUsuarioId);
         }
-        
         res.status(500).json({ message: 'Erro ao aprovar requisição.' });
     }
 };
@@ -1498,4 +957,4 @@ export const deletarRequisicao = async (req, res) => {
         logger.error('❌ Erro ao deletar requisição:', error);
         res.status(500).json({ message: 'Erro ao deletar requisição.' });
     }
-};
+}
