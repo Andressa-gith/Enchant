@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
             await sleep(1000);
             
             updateProgress(10, 'Coletando informações do formulário...', '');
-            addLog('📋 Coletando informações do formulário', 'info');
+            addLog(' Coletando informações do formulário', 'info');
             await sleep(1200);
 
             const camposTexto = ['req_nome_instituicao', 'req_tipo_instituicao', 'req_cnpj', 'req_email', 'req_tel', 'req_cep', 'req_estado', 'req_cidade', 'req_bairro', 'req_senha'];
@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .reduce((acc, lista) => acc + lista.length, 0);
             
             updateProgress(20, 'Preparando documentos para envio...', `${totalDocumentos} arquivo(s)`);
-            addLog(`📎 Preparando ${totalDocumentos} documento(s) para envio`, 'info');
+            addLog(` Preparando ${totalDocumentos} documento(s) para envio`, 'info');
             await sleep(1500);
 
             let documentosAnexados = 0;
@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     const progressPercent = 20 + (documentosAnexados / totalDocumentos) * 15;
                     updateProgress(progressPercent, 'Anexando documentos...', `${documentosAnexados}/${totalDocumentos} anexados`);
-                    addLog(`📄 Anexando documento da categoria: ${categoria}`, 'info');
+                    addLog(` Anexando documento da categoria: ${categoria}`, 'info');
                     await sleep(800);
                 }
             }
@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
             await sleep(1200);
 
             updateProgress(40, 'Enviando requisição para o servidor...', 'Isso pode levar alguns minutos');
-            addLog('🚀 Enviando dados para o servidor', 'info');
+            addLog(' Enviando dados para o servidor', 'info');
             await sleep(1500);
 
             const response = await fetch('/api/requisicao/enviar', {
@@ -563,8 +563,8 @@ document.addEventListener('DOMContentLoaded', function () {
             addLog('✅ Servidor recebeu os dados com sucesso', 'success');
             await sleep(1000);
 
-            updateProgress(60, '🤖 Iniciando validação com Inteligência Artificial...', '');
-            addLog('🤖 Iniciando análise de documentos com IA', 'info');
+            updateProgress(60, ' Iniciando validação...', '');
+            addLog(' Iniciando análise de documentos ', 'info');
             await sleep(2000);
 
             let validados = 0;
@@ -576,14 +576,14 @@ document.addEventListener('DOMContentLoaded', function () {
             for (const [categoria, listaDeFicheiros] of categoriasComArquivos) {
                 const progressPercent = 60 + (validados / totalCategorias) * 25;
                 
-                updateProgress(progressPercent, `🔍 Analisando documentos de ${categoria}...`, `${validados}/${totalCategorias} categorias validadas`);
-                addLog(`🔍 Analisando categoria: ${categoria}`, 'info');
+                updateProgress(progressPercent, ` Analisando documentos de ${categoria}...`, `${validados}/${totalCategorias} categorias validadas`);
+                addLog(` Analisando categoria: ${categoria}`, 'info');
                 await sleep(2500);
                 
-                addLog(`📄 Verificando autenticidade dos documentos...`, 'info');
+                addLog(` Verificando autenticidade dos documentos...`, 'info');
                 await sleep(1500);
                 
-                addLog(`🔐 Validando formato e integridade...`, 'info');
+                addLog(` Validando formato e integridade...`, 'info');
                 await sleep(1500);
                 
                 validados++;
@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
             await sleep(1500);
 
             updateProgress(90, 'Processando requisição final...', '');
-            addLog('⚙️ Finalizando processamento', 'info');
+            addLog(' Finalizando processamento', 'info');
             await sleep(1200);
 
             const result = await response.json();
@@ -606,13 +606,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             updateProgress(95, 'Salvando informações...', '');
-            addLog('💾 Salvando suas informações no sistema', 'info');
+            addLog(' Salvando suas informações no sistema', 'info');
             await sleep(1000);
 
             updateProgress(100, '✅ Requisição enviada com sucesso!', '');
-            addLog('🎉 Requisição processada com sucesso!', 'success');
+            addLog(' Requisição processada com sucesso!', 'success');
             await sleep(800);
-            addLog('📧 Você receberá um email quando sua conta for aprovada', 'success');
+            addLog(' Você receberá um email quando sua conta for aprovada', 'success');
             
             await sleep(3000);
             
@@ -712,11 +712,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sobrescreve a função mostrarModal para não fazer nada
     window.mostrarModal = function() {
-        console.warn('⚠️ A função mostrarModal() está depreciada. Use showError() ou mostrarToast().');
+        console.warn(' A função mostrarModal() está depreciada. Use showError() ou mostrarToast().');
     };
     
     // Sobrescreve showModalAviso para não fazer nada
     window.showModalAviso = function() {
-        console.warn('⚠️ A função showModalAviso() está depreciada. Use showError() ou mostrarToast().');
+        console.warn(' A função showModalAviso() está depreciada. Use showError() ou mostrarToast().');
     };
 });
