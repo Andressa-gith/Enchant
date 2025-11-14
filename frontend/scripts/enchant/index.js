@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="/transparencia?id=${ong.id}" class="card-ong-transparencia">
                             Ver Detalhes
                         </a>
-                        <button class="card-ong-link" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}" data-ong-logo="${ong.caminho_logo}">
+                        <button class="card-ong-link" style="outline: none !important;" data-ong-id="${ong.id}" data-ong-nome="${ong.nome}" data-ong-logo="${ong.caminho_logo}">
                             Doar Agora
                         </button>
                     </div>
