@@ -248,8 +248,8 @@ body {
 }
 
 .post-action-btn.delete:hover {
-    background-color: rgba(244, 33, 46, 0.1);
-    color: var(--danger);
+    background-color: rgba(105, 59, 17, 0.1);
+    color: var(--primary-brown);
 }
 
 .post-body {
@@ -768,7 +768,6 @@ form {
     gap: 12px;
     margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color);
 }
 
 .btn-publicar,
@@ -789,11 +788,6 @@ form {
 .btn-publicar {
     background-color: #d8bf9c;
     color: var(--primary-brown);
-}
-
-.btn-publicar:hover:not(:disabled) {
-    background-color: var(--primary-brown);
-    color: white;
 }
 
 .btn-publicar:disabled {

@@ -14,7 +14,7 @@ function inicializar() {
     const modal = document.getElementById('modal-postagem');
     const btnFecharModal = document.getElementById('btn-fechar-modal');
     const btnCancelar = document.getElementById('btn-cancelar');
-    const formPostagem = document.getElementById('form-postagem');
+    const formPostagem = document.getElementById('form-postagem'); 
     const modalTitulo = document.getElementById('modal-titulo');
     const postIdInput = document.getElementById('post-id');
     const postTituloInput = document.getElementById('post-titulo');

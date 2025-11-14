@@ -188,7 +188,7 @@ class EnchantAIAssistant {
             }
 
             .enchant-chat-header {
-                background: linear-gradient(135deg,rgb(232, 212, 184) 0%,rgb(255, 236, 222) 100%);
+                background: linear-gradient(135deg,rgba(238, 238, 238, 1) 0%,rgb(255, 236, 222) 100%);
                 color: white;
                 padding: 20px;
                 display: flex;
@@ -437,7 +437,6 @@ class EnchantAIAssistant {
             }
 
             .enchant-send-button:hover {
-                background: #8B4513;
                 transform: scale(1.05);
             }
 
