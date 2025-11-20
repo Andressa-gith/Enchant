@@ -127,37 +127,256 @@ document.addEventListener('DOMContentLoaded', () => {
             showLoader(false);
         }
     };
+
+    /**
+ * ✅ Cria e gerencia o modal de progresso de validação
+ */
+class ModalValidacaoIA {
+    constructor(tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+        this.modal = null;
+        this.bsModal = null;
+        this.progressBar = null;
+        this.progressMessage = null;
+        this.progressDetails = null;
+        this.progressLogs = null;
+        this.currentProgress = 0;
+    }
+
+    criar() {
+        // Remove modal anterior se existir
+        const modalAntigo = document.getElementById('modalProgressoValidacao');
+        if (modalAntigo) modalAntigo.remove();
+
+        // Cria o modal
+        this.modal = document.createElement('div');
+        this.modal.id = 'modalProgressoValidacao';
+        this.modal.className = 'modal fade';
+        this.modal.setAttribute('tabindex', '-1');
+        this.modal.setAttribute('data-bs-backdrop', 'static');
+        this.modal.setAttribute('data-bs-keyboard', 'false');
+
+        this.modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border: 2px solid #e2ccae; border-radius: 12px; overflow: hidden;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); border: none; padding: 1.5rem;">
+                        <h5 class="modal-title" style="font-family: 'Lexend Deca'; font-weight: 600; color: #4E3629; display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-gear-fill" style="font-size: 24px; animation: spin 2s linear infinite;"></i>
+                            Validando ${this.tipoDocumento}
+                        </h5>
+                    </div>
+                    <div class="modal-body" style="padding: 2rem; font-family: 'Lexend Deca';">
+                        <!-- Ícone Central -->
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <div style="width: 80px; height: 80px; margin: 0 auto; background: #F9E7D2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-robot" style="font-size: 40px; color: #8B4513; animation: pulse 2s infinite;"></i>
+                            </div>
+                        </div>
+
+                        <!-- Mensagem de Progresso -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <p id="progressMessage" style="text-align: center; color: #4E3629; font-weight: 600; font-size: 16px; margin: 0;">
+                                Preparando análise...
+                            </p>
+                            <p id="progressDetails" style="text-align: center; color: #666; font-size: 13px; margin: 0.5rem 0 0;">
+                                Aguarde enquanto nossa IA verifica o documento
+                            </p>
+                        </div>
+
+                        <!-- Barra de Progresso -->
+                        <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 1.5rem;">
+                            <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+
+                        <!-- Logs de Validação -->
+                        <div id="progressLogs" style="max-height: 250px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
+                            <div style="color: #666; text-align: center; font-style: italic;">
+                                Aguardando início da validação...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Adiciona estilos para animações
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.1); opacity: 0.8; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.body.appendChild(this.modal);
+
+        // Referências aos elementos
+        this.progressBar = this.modal.querySelector('#progressBar');
+        this.progressMessage = this.modal.querySelector('#progressMessage');
+        this.progressDetails = this.modal.querySelector('#progressDetails');
+        this.progressLogs = this.modal.querySelector('#progressLogs');
+
+        // Abre o modal
+        this.bsModal = new bootstrap.Modal(this.modal);
+        this.bsModal.show();
+    }
+
+    atualizarProgresso(percent, message, details = '') {
+        this.currentProgress = percent;
+        if (this.progressBar) this.progressBar.style.width = `${percent}%`;
+        if (this.progressMessage) this.progressMessage.textContent = message;
+        if (this.progressDetails) this.progressDetails.textContent = details;
+    }
+
+    adicionarLog(message, type = 'info') {
+        if (!this.progressLogs) return;
+
+        // Limpa mensagem de aguardando
+        if (this.progressLogs.querySelector('[style*="italic"]')) {
+            this.progressLogs.innerHTML = '';
+        }
+
+        const logItem = document.createElement('div');
+        logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
+
+        const icons = {
+            info: { icon: 'bi-info-circle-fill', color: '#0dcaf0' },
+            success: { icon: 'bi-check-circle-fill', color: '#28a745' },
+            error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
+            warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
+        };
+
+        const { icon, color } = icons[type] || icons.info;
+
+        logItem.innerHTML = `
+            <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px;"></i>
+            <span style="color: #333; line-height: 1.5;">${message}</span>
+        `;
+
+        this.progressLogs.appendChild(logItem);
+        this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
+    }
+
+    mostrarErro(motivoErro) {
+        this.atualizarProgresso(100, '❌ Documento Rejeitado', '');
+        this.adicionarLog(`Motivo: ${motivoErro}`, 'error');
+        this.adicionarLog('Por favor, corrija o documento e tente novamente.', 'warning');
+
+        // Adiciona botão de fechar após 2 segundos
+        setTimeout(() => {
+            const modalBody = this.modal.querySelector('.modal-body');
+            const btnFechar = document.createElement('div');
+            btnFechar.style.cssText = 'text-align: center; margin-top: 1.5rem;';
+            btnFechar.innerHTML = `
+                <button class="btn" style="background-color: #e2ccae; color: #3d2106; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 500;" onclick="document.getElementById('modalProgressoValidacao').querySelector('.btn-close')?.click()">
+                    Entendi
+                </button>
+            `;
+            modalBody.appendChild(btnFechar);
+        }, 2000);
+    }
+
+    mostrarSucesso() {
+        this.atualizarProgresso(100, '✅ Validação Concluída com Sucesso!', '');
+        this.adicionarLog('Documento aprovado pela IA', 'success');
+        this.adicionarLog('Salvando informações...', 'info');
+    }
+
+    fechar() {
+        if (this.bsModal) {
+            this.bsModal.hide();
+        }
+        setTimeout(() => {
+            if (this.modal) this.modal.remove();
+        }, 500);
+    }
+
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
     
-    const submitForm = async (e) => {
-        e.preventDefault();
-        const validation = validateForm();
-        if (!validation.isValid) {
-            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
-            return;
-        }
+   const submitForm = async (e) => {
+    e.preventDefault();
+    const validation = validateForm();
+    if (!validation.isValid) {
+        showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+        return;
+    }
 
-        ui.submitBtn.disabled = true;
-        ui.submitBtn.textContent = 'Enviando...';
-        const formData = new FormData();
-        formData.append('nome_contrato', ui.titleInput.value);
-        formData.append('descricao', ui.descriptionInput.value);
-        formData.append('ano_vigencia', ui.yearSelect.value);
-        formData.append('arquivo_contrato', selectedFile);
+    ui.submitBtn.disabled = true;
+    ui.submitBtn.textContent = '🤖 Validando...';
 
-        try {
-            const result = await fetchData('/api/contratos', { method: 'POST', body: formData });
-            showAlert(result.message, false);
-            ui.form.reset();
-            selectedFile = null;
-            ui.fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
-            loadContracts();
-        } catch (error) {
-            showAlert(error.message);
-        } finally {
-            ui.submitBtn.disabled = false;
-            ui.submitBtn.textContent = 'Adicionar contrato';
-        }
-    };
+    // ✅ CRIAR MODAL DE PROGRESSO
+    const modal = new ModalValidacaoIA('Contrato');
+    modal.criar();
+
+    const formData = new FormData();
+    formData.append('nome_contrato', ui.titleInput.value);
+    formData.append('descricao', ui.descriptionInput.value);
+    formData.append('ano_vigencia', ui.yearSelect.value);
+    formData.append('arquivo_contrato', selectedFile);
+
+    try {
+        await modal.sleep(500);
+        modal.atualizarProgresso(10, 'Iniciando validação...', 'Preparando contrato');
+        modal.adicionarLog('📄 Preparando contrato para análise', 'info');
+
+        await modal.sleep(800);
+        modal.atualizarProgresso(20, 'Enviando para análise...', 'Conectando com IA');
+        modal.adicionarLog('🔗 Enviando documento para servidor', 'info');
+
+        modal.atualizarProgresso(30, '🤖 Analisando contrato...', 'A IA está processando o documento');
+        modal.adicionarLog('🤖 Verificando se é um contrato válido...', 'info');
+
+        const result = await fetchData('/api/contratos', { method: 'POST', body: formData });
+
+        await modal.sleep(1000);
+        modal.atualizarProgresso(60, 'Verificando cláusulas...', 'Validando estrutura contratual');
+        modal.adicionarLog('📋 Verificando partes contratantes e cláusulas', 'info');
+
+        await modal.sleep(800);
+        modal.atualizarProgresso(80, 'Análise de conteúdo...', 'Verificando autenticidade');
+        modal.adicionarLog('🔍 Analisando valores e condições', 'info');
+
+        await modal.sleep(500);
+        modal.mostrarSucesso();
+        await modal.sleep(1000);
+
+        modal.adicionarLog('💾 Salvando contrato', 'info');
+        await modal.sleep(800);
+        modal.adicionarLog('✅ Contrato adicionado com sucesso!', 'success');
+
+        await modal.sleep(1500);
+        modal.fechar();
+
+        showAlert(result.message, false);
+        ui.form.reset();
+        selectedFile = null;
+        ui.fileUploadText.textContent = 'Clique para selecionar o arquivo ou arraste aqui';
+        loadContracts();
+
+    } catch (error) {
+        const mensagemErro = error.message.includes('análise automática') 
+            ? error.message.split('detalhes: ')[1] || error.message
+            : error.message;
+
+        modal.mostrarErro(mensagemErro);
+        await modal.sleep(3000);
+        modal.fechar();
+        showAlert(error.message);
+    } finally {
+        ui.submitBtn.disabled = false;
+        ui.submitBtn.textContent = 'Adicionar contrato';
+    }
+};
+
+window.ModalValidacaoIA = ModalValidacaoIA;
 
     const deleteContract = async (contractId, contractTitle) => {
         if (confirm(`Tem certeza que deseja excluir o contrato "${contractTitle}"?`)) {

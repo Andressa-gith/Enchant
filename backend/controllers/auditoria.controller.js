@@ -6,34 +6,36 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 /**
- * Valida documento de auditoria usando IA
+ * Valida auditoria usando IA
  */
 async function validarAuditoriaComIA(arquivo) {
     try {
-        logger.info('Validando documento de auditoria com IA...');
+        logger.info('🤖 Validando auditoria com IA...');
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-        const prompt = `Analise este documento e verifique se é um RELATÓRIO DE AUDITORIA válido.
+        const prompt = `Analise este documento e verifique se é uma AUDITORIA válida.
                        
                        Procure por:
-                       - Data da auditoria
-                       - Identificação da entidade auditada
+                       - Título ou identificação do tipo de auditoria
+                       - Data de realização da auditoria
+                       - Auditor(es) responsável(is)
                        - Escopo e objetivos da auditoria
-                       - Metodologia aplicada
-                       - Constatações ou achados
-                       - Recomendações
-                       - Assinatura ou identificação do auditor
-                       - Conclusão ou parecer
+                       - Metodologia utilizada
+                       - Constatações e observações
+                       - Recomendações e plano de ação
+                       - Conclusões ou parecer
+                       - Assinatura ou validação
                        
                        Documentos válidos incluem:
                        - Relatórios de auditoria interna
                        - Relatórios de auditoria externa
                        - Pareceres de auditoria
                        - Notas técnicas de auditoria
-                       - Relatórios de compliance
+                       - Relatórios de conformidade
+                       - Relatórios de revisão de processos
                        
                        Responda APENAS "VÁLIDO" ou "INVÁLIDO: [motivo breve e específico]".`;
 
@@ -46,16 +48,16 @@ async function validarAuditoriaComIA(arquivo) {
         const texto = response.text().trim().toUpperCase();
 
         if (texto.startsWith('VÁLIDO')) {
-            logger.info('✅ Documento de auditoria aprovado pela IA.');
+            logger.info('✅ Auditoria aprovada pela IA.');
             return { valido: true, motivo: null };
         } else {
-            const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a um relatório de auditoria válido';
-            logger.warn(`❌ Documento de auditoria rejeitado: ${motivo}`);
+            const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a uma auditoria válida';
+            logger.warn(`❌ Auditoria rejeitada: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
     } catch (error) {
-        logger.error('Erro ao validar documento de auditoria:', error);
+        logger.error('Erro ao validar auditoria:', error);
         return { valido: true, motivo: 'Validação manual necessária (erro na IA)' };
     }
 }
@@ -85,40 +87,39 @@ export const getAuditorias = async (req, res) => {
     }
 };
 
-/**
- * Adiciona nova auditoria COM VALIDAÇÃO POR IA
- */
 export const addAuditoria = async (req, res) => {
     logger.info('Iniciando processo de adição de nova auditoria...');
+    let filePath;
     try {
         const instituicaoId = req.user.id;
         const { titulo, data_auditoria, tipo, status } = req.body;
-        
+
         logger.debug('Dados recebidos para nova auditoria:', { titulo, tipo, status });
 
         if (!req.file) {
             logger.warn('Tentativa de adicionar auditoria sem arquivo.');
-            return res.status(400).json({ message: 'Nenhum arquivo de auditoria foi enviado.' });
+            return res.status(400).json({ message: 'Nenhum arquivo foi enviado.' });
         }
 
         // ✅ VALIDAÇÃO COM IA
         const file = req.file;
-        logger.info('🤖 Validando documento de auditoria com IA...');
+        logger.info('🤖 Validando auditoria com IA...');
         const validacao = await validarAuditoriaComIA(file);
 
         if (!validacao.valido) {
-            logger.warn(`❌ Documento rejeitado pela IA: ${validacao.motivo}`);
+            logger.warn(`❌ Auditoria rejeitada pela IA: ${validacao.motivo}`);
             return res.status(400).json({ 
                 message: 'Documento inválido detectado pela análise automática.',
-                detalhes: validacao.motivo
+                detalhes: validacao.motivo,
+                tipo_erro: 'validacao_ia'
             });
         }
 
-        logger.info('✅ Documento aprovado pela IA. Prosseguindo com upload...');
+        logger.info('✅ Auditoria aprovada pela IA. Prosseguindo com upload...');
 
         // 1. Upload do arquivo
-        const filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;
-        logger.info(`Fazendo upload do arquivo para o Storage em: ${filePath}`);
+        filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;
+        logger.info(`Fazendo upload do arquivo de auditoria para: ${filePath}`);
 
         const { error: uploadError } = await supabase.storage
             .from('audit')
@@ -128,12 +129,12 @@ export const addAuditoria = async (req, res) => {
             });
 
         if (uploadError) throw uploadError;
-        logger.info('Upload do arquivo realizado com sucesso.');
+        logger.info('Upload do arquivo de auditoria realizado com sucesso.');
 
         // 2. Inserção no banco de dados
         logger.info('Inserindo metadados da auditoria no banco de dados...');
         const { data: auditoriaData, error: insertError } = await supabase
-            .from('nota_auditoria')
+            .from('auditoria')
             .insert({
                 instituicao_id: instituicaoId,
                 titulo,
@@ -145,12 +146,7 @@ export const addAuditoria = async (req, res) => {
             .select()
             .single();
 
-        if (insertError) {
-            logger.warn('Erro ao inserir no banco. Iniciando rollback do arquivo no Storage...');
-            await supabase.storage.from('audit').remove([filePath]);
-            logger.info('Arquivo de rollback removido do Storage.');
-            throw insertError;
-        }
+        if (insertError) throw insertError;
 
         logger.info('Auditoria adicionada com sucesso!', { id: auditoriaData.id });
         res.status(201).json({ 
@@ -160,6 +156,13 @@ export const addAuditoria = async (req, res) => {
 
     } catch (error) {
         logger.error('Erro no processo de adicionar auditoria.', error);
+        
+        if (filePath) {
+            logger.warn(`Erro detectado. Tentando fazer rollback do arquivo: ${filePath}`);
+            await supabase.storage.from('audit').remove([filePath]);
+            logger.info('Rollback do arquivo no Storage concluído.');
+        }
+        
         res.status(500).json({ message: 'Erro interno ao adicionar auditoria.' });
     }
 };
