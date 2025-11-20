@@ -1,11 +1,68 @@
 import supabase from '../db/supabaseClient.js';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../utils/logger.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+/**
+ * Valida contrato usando IA
+ */
+async function validarContratoComIA(arquivo) {
+    try {
+        logger.info('Validando contrato com IA...');
+
+        const base64Data = arquivo.buffer.toString('base64');
+        const mimeType = arquivo.mimetype;
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+        const prompt = `Analise este documento e verifique se é um CONTRATO válido.
+                       
+                       Procure por:
+                       - Identificação das partes contratantes (contratante e contratado)
+                       - Objeto do contrato (descrição dos serviços/produtos)
+                       - Cláusulas contratuais
+                       - Valores e condições de pagamento
+                       - Prazo de vigência
+                       - Assinaturas ou identificação das partes
+                       - Data de celebração
+                       - Testemunhas (quando aplicável)
+                       
+                       Documentos válidos incluem:
+                       - Contratos de prestação de serviços
+                       - Contratos de fornecimento
+                       - Termos de parceria
+                       - Convênios
+                       - Acordos de cooperação
+                       - Contratos de trabalho
+                       
+                       Responda APENAS "VÁLIDO" ou "INVÁLIDO: [motivo breve e específico]".`;
+
+        const result = await model.generateContent([
+            { inlineData: { mimeType: mimeType, data: base64Data } },
+            prompt
+        ]);
+
+        const response = await result.response;
+        const texto = response.text().trim().toUpperCase();
+
+        if (texto.startsWith('VÁLIDO')) {
+            logger.info('✅ Contrato aprovado pela IA.');
+            return { valido: true, motivo: null };
+        } else {
+            const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a um contrato válido';
+            logger.warn(`❌ Contrato rejeitado: ${motivo}`);
+            return { valido: false, motivo: motivo };
+        }
+
+    } catch (error) {
+        logger.error('Erro ao validar contrato:', error);
+        return { valido: true, motivo: 'Validação manual necessária (erro na IA)' };
+    }
+}
 
 /**
  * Busca todos os contratos da instituição logada.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const getContratos = async (req, res) => {
     logger.info('Iniciando busca de contratos...');
@@ -30,13 +87,11 @@ export const getContratos = async (req, res) => {
 };
 
 /**
- * Adiciona um novo contrato, incluindo o upload do arquivo.
- * @param {object} req - Objeto de requisição do Express (com req.body e req.file).
- * @param {object} res - Objeto de resposta do Express.
+ * Adiciona novo contrato COM VALIDAÇÃO POR IA
  */
 export const addContrato = async (req, res) => {
     logger.info('Iniciando processo de adição de novo contrato...');
-    let filePath; // Variável para guardar o caminho do arquivo para possível rollback
+    let filePath;
     try {
         const instituicaoId = req.user.id;
         const { nome_contrato, descricao, ano_vigencia } = req.body;
@@ -48,8 +103,22 @@ export const addContrato = async (req, res) => {
             return res.status(400).json({ message: 'Nenhum arquivo de contrato foi enviado.' });
         }
 
-        // 1. Upload do arquivo
+        // ✅ VALIDAÇÃO COM IA
         const file = req.file;
+        logger.info('🤖 Validando contrato com IA...');
+        const validacao = await validarContratoComIA(file);
+
+        if (!validacao.valido) {
+            logger.warn(`❌ Contrato rejeitado pela IA: ${validacao.motivo}`);
+            return res.status(400).json({ 
+                message: 'Documento inválido detectado pela análise automática.',
+                detalhes: validacao.motivo
+            });
+        }
+
+        logger.info('✅ Contrato aprovado pela IA. Prosseguindo com upload...');
+
+        // 1. Upload do arquivo
         filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;
         logger.info(`Fazendo upload do arquivo de contrato para: ${filePath}`);
 
@@ -77,16 +146,17 @@ export const addContrato = async (req, res) => {
             .select()
             .single();
 
-        if (insertError) throw insertError; // O erro será pego pelo catch principal
+        if (insertError) throw insertError;
 
         logger.info('Contrato adicionado com sucesso!', { id: contratoData.id });
-        res.status(201).json({ message: 'Contrato adicionado com sucesso!', data: contratoData });
+        res.status(201).json({ 
+            message: 'Contrato validado e adicionado com sucesso!', 
+            data: contratoData 
+        });
 
     } catch (error) {
         logger.error('Erro no processo de adicionar contrato.', error);
         
-        // Se o erro aconteceu DEPOIS do upload (ex: erro no insert), o filePath vai existir
-        // e tentaremos remover o arquivo órfão do Storage.
         if (filePath) {
             logger.warn(`Erro detectado. Tentando fazer rollback do arquivo: ${filePath}`);
             await supabase.storage.from('contracts').remove([filePath]);
@@ -99,8 +169,6 @@ export const addContrato = async (req, res) => {
 
 /**
  * Deleta um contrato e seu arquivo associado no Storage.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const deleteContrato = async (req, res) => {
     logger.info('Iniciando processo de exclusão de contrato...');
@@ -109,7 +177,6 @@ export const deleteContrato = async (req, res) => {
         const { id } = req.params;
         logger.debug(`Tentando deletar contrato ID: ${id}`);
 
-        // 1. Busca o caminho do arquivo para garantir que o item existe
         const { data: contrato, error: fetchError } = await supabase
             .from('contrato')
             .select('caminho_arquivo')
@@ -117,13 +184,11 @@ export const deleteContrato = async (req, res) => {
             .eq('instituicao_id', instituicaoId)
             .single();
 
-        // SE NÃO ACHOU, RETORNA 404 AQUI!
         if (fetchError || !contrato) {
             logger.warn(`Contrato ID: ${id} não encontrado para exclusão ou usuário sem permissão.`);
             return res.status(404).json({ message: 'Contrato não encontrado ou você não tem permissão para excluí-lo.' });
         }
 
-        // 2. Deleta o registro do banco
         const { error: deleteDbError } = await supabase
             .from('contrato')
             .delete()
@@ -131,7 +196,6 @@ export const deleteContrato = async (req, res) => {
         if (deleteDbError) throw deleteDbError;
         logger.info(`Registro do contrato ID: ${id} deletado do banco de dados.`);
         
-        // 3. Deleta o arquivo do Storage
         const { error: deleteStorageError } = await supabase.storage
             .from('contracts')
             .remove([contrato.caminho_arquivo]);

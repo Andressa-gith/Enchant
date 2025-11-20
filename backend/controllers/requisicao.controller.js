@@ -1000,11 +1000,6 @@ export const rejeitarRequisicao = async (req, res) => {
     }
 };
 
-agendarLimpezaAutomatica();
-
-// Exporta a função de limpeza para uso manual (opcional)
-export { limparRequisicoeAntigas };
-
 /**
  * Deletar requisição
  */

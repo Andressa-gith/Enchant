@@ -1,11 +1,68 @@
 import supabase from '../db/supabaseClient.js';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../utils/logger.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+/**
+ * Valida relatório de transparência usando IA
+ */
+async function validarRelatorioComIA(arquivo) {
+    try {
+        logger.info('Validando relatório de transparência com IA...');
+
+        const base64Data = arquivo.buffer.toString('base64');
+        const mimeType = arquivo.mimetype;
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+        const prompt = `Analise este documento e verifique se é um RELATÓRIO DE TRANSPARÊNCIA válido.
+                       
+                       Procure por:
+                       - Identificação da organização/instituição
+                       - Período de referência do relatório
+                       - Dados financeiros (receitas, despesas, balanço)
+                       - Informações sobre atividades realizadas
+                       - Origem e aplicação de recursos
+                       - Demonstrações contábeis
+                       - Prestação de contas
+                       - Transparência na gestão de recursos
+                       
+                       Documentos válidos incluem:
+                       - Relatórios de prestação de contas
+                       - Relatórios financeiros anuais
+                       - Demonstrativos de receitas e despesas
+                       - Balanços patrimoniais
+                       - Relatórios de atividades com dados financeiros
+                       - Relatórios de transparência fiscal
+                       
+                       Responda APENAS "VÁLIDO" ou "INVÁLIDO: [motivo breve e específico]".`;
+
+        const result = await model.generateContent([
+            { inlineData: { mimeType: mimeType, data: base64Data } },
+            prompt
+        ]);
+
+        const response = await result.response;
+        const texto = response.text().trim().toUpperCase();
+
+        if (texto.startsWith('VÁLIDO')) {
+            logger.info('✅ Relatório de transparência aprovado pela IA.');
+            return { valido: true, motivo: null };
+        } else {
+            const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a um relatório de transparência válido';
+            logger.warn(`❌ Relatório rejeitado: ${motivo}`);
+            return { valido: false, motivo: motivo };
+        }
+
+    } catch (error) {
+        logger.error('Erro ao validar relatório:', error);
+        return { valido: true, motivo: 'Validação manual necessária (erro na IA)' };
+    }
+}
 
 /**
  * Busca todos os relatórios de transparência da instituição logada.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const getRelatorios = async (req, res) => {
     logger.info('Iniciando busca de relatórios de transparência...');
@@ -30,13 +87,11 @@ export const getRelatorios = async (req, res) => {
 };
 
 /**
- * Adiciona um novo relatório de transparência, incluindo o upload do arquivo.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
+ * Adiciona novo relatório COM VALIDAÇÃO POR IA
  */
 export const addRelatorio = async (req, res) => {
     logger.info('Iniciando processo de adição de novo relatório...');
-    let filePath; // Variável para guardar o caminho do arquivo para possível rollback
+    let filePath;
     try {
         const instituicaoId = req.user.id;
         const { titulo, descricao } = req.body;
@@ -47,8 +102,22 @@ export const addRelatorio = async (req, res) => {
             return res.status(400).json({ message: 'Nenhum arquivo foi enviado.' });
         }
 
-        // 1. Upload do arquivo
+        // ✅ VALIDAÇÃO COM IA
         const file = req.file;
+        logger.info('🤖 Validando relatório de transparência com IA...');
+        const validacao = await validarRelatorioComIA(file);
+
+        if (!validacao.valido) {
+            logger.warn(`❌ Relatório rejeitado pela IA: ${validacao.motivo}`);
+            return res.status(400).json({ 
+                message: 'Documento inválido detectado pela análise automática.',
+                detalhes: validacao.motivo
+            });
+        }
+
+        logger.info('✅ Relatório aprovado pela IA. Prosseguindo com upload...');
+
+        // 1. Upload do arquivo
         filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;
         logger.info(`Fazendo upload do arquivo de relatório para: ${filePath}`);
 
@@ -78,7 +147,10 @@ export const addRelatorio = async (req, res) => {
         if (insertError) throw insertError;
 
         logger.info(`Relatório ID: ${relatorioData.id} adicionado com sucesso.`);
-        res.status(201).json({ message: 'Relatório adicionado com sucesso!', data: relatorioData });
+        res.status(201).json({ 
+            message: 'Relatório validado e adicionado com sucesso!', 
+            data: relatorioData 
+        });
 
     } catch (error) {
         logger.error('Erro no processo de adicionar relatório.', error);
@@ -95,8 +167,6 @@ export const addRelatorio = async (req, res) => {
 
 /**
  * Deleta um relatório de transparência e seu arquivo associado no Storage.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const deleteRelatorio = async (req, res) => {
     logger.info('Iniciando processo de exclusão de relatório...');
@@ -105,7 +175,6 @@ export const deleteRelatorio = async (req, res) => {
         const { id } = req.params;
         logger.debug(`Tentando deletar relatório ID: ${id}`);
 
-        // 1. Busca o caminho do arquivo
         logger.info(`Buscando informações do relatório ID: ${id} para exclusão.`);
         const { data: relatorio, error: fetchError } = await supabase
             .from('relatorio')
@@ -119,7 +188,6 @@ export const deleteRelatorio = async (req, res) => {
             return res.status(404).json({ message: 'Relatório não encontrado ou você não tem permissão.' });
         }
 
-        // 2. Deleta o registro do banco
         logger.info(`Registro do relatório ID: ${id} deletado do banco de dados.`);
 
         const { error: deleteDbError } = await supabase
@@ -129,7 +197,6 @@ export const deleteRelatorio = async (req, res) => {
 
         if (deleteDbError) throw deleteDbError;
         
-        // 3. Deleta o arquivo do Storage
         logger.info(`Deletando arquivo do Storage: ${relatorio.caminho_arquivo}`);
         const { error: deleteStorageError } = await supabase.storage
             .from('reports')
