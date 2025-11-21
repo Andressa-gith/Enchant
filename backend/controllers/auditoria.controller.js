@@ -58,7 +58,11 @@ async function validarAuditoriaComIA(arquivo) {
 
     } catch (error) {
         logger.error('Erro ao validar auditoria:', error);
-        return { valido: true, motivo: 'Validação manual necessária (erro na IA)' };
+        // ✅ CORRETO: retorna inválido e força revisão manual
+        return { 
+            valido: false, 
+            motivo: 'Erro ao processar documento. Por favor, tente novamente ou contate o suporte.' 
+        };
     }
 }
 
@@ -134,7 +138,7 @@ export const addAuditoria = async (req, res) => {
         // 2. Inserção no banco de dados
         logger.info('Inserindo metadados da auditoria no banco de dados...');
         const { data: auditoriaData, error: insertError } = await supabase
-            .from('auditoria')
+            .from('nota_auditoria')
             .insert({
                 instituicao_id: instituicaoId,
                 titulo,

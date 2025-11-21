@@ -137,256 +137,335 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
- * ✅ Cria e gerencia o modal de progresso de validação
- */
-class ModalValidacaoIA {
-    constructor(tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
-        this.modal = null;
-        this.bsModal = null;
-        this.progressBar = null;
-        this.progressMessage = null;
-        this.progressDetails = null;
-        this.progressLogs = null;
-        this.currentProgress = 0;
-    }
+    // ✅ CLASSE DO MODAL (versão sem Bootstrap - padronizada)
+    class ModalValidacaoIA {
+        constructor(tipoDocumento) {
+            this.tipoDocumento = tipoDocumento;
+            this.modal = null;
+            this.progressBar = null;
+            this.progressMessage = null;
+            this.progressDetails = null;
+            this.progressLogs = null;
+            this.currentProgress = 0;
+        }
 
-    criar() {
-        // Remove modal anterior se existir
-        const modalAntigo = document.getElementById('modalProgressoValidacao');
-        if (modalAntigo) modalAntigo.remove();
+        criar() {
+            const modalAntigo = document.getElementById('modalProgressoValidacao');
+            if (modalAntigo) modalAntigo.remove();
 
-        // Cria o modal
-        this.modal = document.createElement('div');
-        this.modal.id = 'modalProgressoValidacao';
-        this.modal.className = 'modal fade';
-        this.modal.setAttribute('tabindex', '-1');
-        this.modal.setAttribute('data-bs-backdrop', 'static');
-        this.modal.setAttribute('data-bs-keyboard', 'false');
+            const backdropAntigo = document.querySelector('.modal-backdrop-custom');
+            if (backdropAntigo) backdropAntigo.remove();
 
-        this.modal.innerHTML = `
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="border: 2px solid #e2ccae; border-radius: 12px; overflow: hidden;">
-                    <div class="modal-header" style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); border: none; padding: 1.5rem;">
-                        <h5 class="modal-title" style="font-family: 'Lexend Deca'; font-weight: 600; color: #4E3629; display: flex; align-items: center; gap: 10px;">
-                            <i class="bi bi-gear-fill" style="font-size: 24px; animation: spin 2s linear infinite;"></i>
-                            Validando ${this.tipoDocumento}
-                        </h5>
+            // Cria backdrop
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop-custom';
+            backdrop.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 9998;
+                animation: fadeIn 0.3s ease;
+            `;
+            document.body.appendChild(backdrop);
+
+            this.modal = document.createElement('div');
+            this.modal.id = 'modalProgressoValidacao';
+            this.modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.3s ease;
+            `;
+
+            this.modal.innerHTML = `
+        <div style="background: white; border: 2px solid #e2ccae; border-radius: 12px; overflow: hidden; max-height: 90vh; width: 90%; max-width: 600px; display: flex; flex-direction: column; animation: slideDown 0.3s ease;">
+            <div style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); border: none; padding: 1.5rem; flex-shrink: 0;">
+                <h5 style="font-family: 'Lexend Deca'; font-weight: 600; color: #4E3629; display: flex; align-items: center; gap: 10px; margin: 0;">
+                    <i class="bi bi-gear-fill" style="font-size: 24px; animation: spin 2s linear infinite;"></i>
+                    Validando ${this.tipoDocumento}
+                </h5>
+            </div>
+            <div style="padding: 2rem; font-family: 'Lexend Deca'; overflow-y: auto; max-height: calc(90vh - 100px);">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto; background: #F9E7D2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-robot" style="font-size: 40px; color: #8B4513; animation: pulse 2s infinite;"></i>
                     </div>
-                    <div class="modal-body" style="padding: 2rem; font-family: 'Lexend Deca';">
-                        <!-- Ícone Central -->
-                        <div style="text-align: center; margin-bottom: 1.5rem;">
-                            <div style="width: 80px; height: 80px; margin: 0 auto; background: #F9E7D2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-robot" style="font-size: 40px; color: #8B4513; animation: pulse 2s infinite;"></i>
-                            </div>
-                        </div>
+                </div>
 
-                        <!-- Mensagem de Progresso -->
-                        <div style="margin-bottom: 1.5rem;">
-                            <p id="progressMessage" style="text-align: center; color: #4E3629; font-weight: 600; font-size: 16px; margin: 0;">
-                                Preparando análise...
-                            </p>
-                            <p id="progressDetails" style="text-align: center; color: #666; font-size: 13px; margin: 0.5rem 0 0;">
-                                Aguarde enquanto nossa IA verifica o documento
-                            </p>
-                        </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <p id="progressMessage" style="text-align: center; color: #4E3629; font-weight: 600; font-size: 16px; margin: 0;">
+                        Preparando análise...
+                    </p>
+                    <p id="progressDetails" style="text-align: center; color: #666; font-size: 13px; margin: 0.5rem 0 0;">
+                        Aguarde enquanto nossa IA verifica o documento
+                    </p>
+                </div>
 
-                        <!-- Barra de Progresso -->
-                        <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 1.5rem;">
-                            <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
-                        </div>
+                <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 1.5rem;">
+                    <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
+                </div>
 
-                        <!-- Logs de Validação -->
-                        <div id="progressLogs" style="max-height: 250px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
-                            <div style="color: #666; text-align: center; font-style: italic;">
-                                Aguardando início da validação...
-                            </div>
-                        </div>
+                <div id="progressLogs" style="min-height: 150px; max-height: 200px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
+                    <div style="color: #666; text-align: center; font-style: italic;">
+                        Aguardando início da validação...
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
 
-        // Adiciona estilos para animações
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.1); opacity: 0.8; }
-            }
-        `;
-        document.head.appendChild(style);
+            const style = document.createElement('style');
+            style.textContent = `
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        #progressLogs > div:empty {
+            display: none !important;
+        }
+        
+        #progressLogs > div:last-child {
+            border-bottom: none !important;
+        }
+        
+        #errorButtonContainer {
+            margin-top: 0 !important;
+        }
+    `;
+            document.head.appendChild(style);
+            document.body.appendChild(this.modal);
 
-        document.body.appendChild(this.modal);
-
-        // Referências aos elementos
-        this.progressBar = this.modal.querySelector('#progressBar');
-        this.progressMessage = this.modal.querySelector('#progressMessage');
-        this.progressDetails = this.modal.querySelector('#progressDetails');
-        this.progressLogs = this.modal.querySelector('#progressLogs');
-
-        // Abre o modal
-        this.bsModal = new bootstrap.Modal(this.modal);
-        this.bsModal.show();
-    }
-
-    atualizarProgresso(percent, message, details = '') {
-        this.currentProgress = percent;
-        if (this.progressBar) this.progressBar.style.width = `${percent}%`;
-        if (this.progressMessage) this.progressMessage.textContent = message;
-        if (this.progressDetails) this.progressDetails.textContent = details;
-    }
-
-    adicionarLog(message, type = 'info') {
-        if (!this.progressLogs) return;
-
-        // Limpa mensagem de aguardando
-        if (this.progressLogs.querySelector('[style*="italic"]')) {
-            this.progressLogs.innerHTML = '';
+            this.progressBar = this.modal.querySelector('#progressBar');
+            this.progressMessage = this.modal.querySelector('#progressMessage');
+            this.progressDetails = this.modal.querySelector('#progressDetails');
+            this.progressLogs = this.modal.querySelector('#progressLogs');
         }
 
-        const logItem = document.createElement('div');
-        logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
+        atualizarProgresso(percent, message, details = '') {
+            this.currentProgress = percent;
+            if (this.progressBar) this.progressBar.style.width = `${percent}%`;
+            if (this.progressMessage) this.progressMessage.textContent = message;
+            if (this.progressDetails) this.progressDetails.textContent = details;
+        }
 
-        const icons = {
-            info: { icon: 'bi-info-circle-fill', color: '#0dcaf0' },
-            success: { icon: 'bi-check-circle-fill', color: '#28a745' },
-            error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
-            warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
-        };
+        adicionarLog(message, type = 'info') {
+            if (!this.progressLogs) return;
+            
+            if (!message || message.trim() === '') return;
 
-        const { icon, color } = icons[type] || icons.info;
+            if (this.progressLogs.querySelector('[style*="italic"]')) {
+                this.progressLogs.innerHTML = '';
+            }
 
-        logItem.innerHTML = `
-            <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px;"></i>
-            <span style="color: #333; line-height: 1.5;">${message}</span>
-        `;
+            const logItem = document.createElement('div');
+            logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
 
-        this.progressLogs.appendChild(logItem);
-        this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
-    }
+            const icons = {
+                info: { icon: 'bi-info-circle-fill', color: '#3d2106' },
+                success: { icon: 'bi-check-circle-fill', color: '#28a745' },
+                error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
+                warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
+            };
 
-    mostrarErro(motivoErro) {
-        this.atualizarProgresso(100, '❌ Documento Rejeitado', '');
-        this.adicionarLog(`Motivo: ${motivoErro}`, 'error');
-        this.adicionarLog('Por favor, corrija o documento e tente novamente.', 'warning');
+            const { icon, color } = icons[type] || icons.info;
 
-        // Adiciona botão de fechar após 2 segundos
-        setTimeout(() => {
-            const modalBody = this.modal.querySelector('.modal-body');
-            const btnFechar = document.createElement('div');
-            btnFechar.style.cssText = 'text-align: center; margin-top: 1.5rem;';
-            btnFechar.innerHTML = `
-                <button class="btn" style="background-color: #e2ccae; color: #3d2106; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 500;" onclick="document.getElementById('modalProgressoValidacao').querySelector('.btn-close')?.click()">
-                    Entendi
-                </button>
+            logItem.innerHTML = `
+                <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px; flex-shrink: 0;"></i>
+                <span style="color: #333; line-height: 1.5; word-break: break-word;">${message}</span>
             `;
-            modalBody.appendChild(btnFechar);
-        }, 2000);
-    }
 
-    mostrarSucesso() {
-        this.atualizarProgresso(100, '✅ Validação Concluída com Sucesso!', '');
-        this.adicionarLog('Documento aprovado pela IA', 'success');
-        this.adicionarLog('Salvando informações...', 'info');
-    }
-
-    fechar() {
-        if (this.bsModal) {
-            this.bsModal.hide();
+            this.progressLogs.appendChild(logItem);
+            this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
         }
-        setTimeout(() => {
-            if (this.modal) this.modal.remove();
-        }, 500);
-    }
 
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        mostrarErro(motivoErro) {
+            this.atualizarProgresso(100, ' Documento Rejeitado', '');
+            this.adicionarLog(` Documento não aprovado pela validação automática`, 'error');
+            
+            const motivoFormatado = motivoErro.length > 100 
+                ? motivoErro.match(/.{1,100}(\s|$)/g).join('\n') 
+                : motivoErro;
+            
+            this.adicionarLog(` Motivo da rejeição:`, 'warning');
+            this.adicionarLog(motivoFormatado, 'error');
+            this.adicionarLog(' Sugestão: Verifique se o documento possui todos os elementos obrigatórios e tente novamente.', 'info');
+
+            setTimeout(() => {
+                const modalBody = this.modal.querySelector('[style*="padding: 2rem"]');
+                if (!modalBody) return;
+                
+                if (modalBody.querySelector('#errorButtonContainer')) return;
+                
+                const container = document.createElement('div');
+                container.id = 'errorButtonContainer';
+                container.style.cssText = 'text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;';
+                container.innerHTML = `
+                    <button class="btn" style="background-color: #e2ccae; color: #3d2106; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 500; font-size: 15px; cursor: pointer; transition: all 0.3s;" 
+                        onmouseover="this.style.backgroundColor='#d4b895'" 
+                        onmouseout="this.style.backgroundColor='#e2ccae'"
+                        onclick="document.getElementById('modalProgressoValidacao').remove(); document.querySelector('.modal-backdrop-custom')?.remove();">
+                        <i class="bi bi-check-circle" style="margin-right: 8px;"></i>Entendi
+                    </button>
+                `;
+                
+                modalBody.appendChild(container);
+                
+                setTimeout(() => {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }, 3000);
+        }
+
+        mostrarSucesso() {
+            this.atualizarProgresso(100, ' Validação Concluída com Sucesso!', '');
+            this.adicionarLog(' Documento aprovado pela IA', 'success');
+            this.adicionarLog(' Salvando informações...', 'info');
+        }
+
+        fechar() {
+            const modal = document.getElementById('modalProgressoValidacao');
+            const backdrop = document.querySelector('.modal-backdrop-custom');
+            
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => modal.remove(), 300);
+            }
+            
+            if (backdrop) {
+                backdrop.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => backdrop.remove(), 300);
+            }
+        }
+
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
     }
-}
     
+    // ✅ FUNÇÃO SUBMITFORM COMPLETA
     const submitForm = async (e) => {
-    e.preventDefault();
-    const validation = validateForm();
-    if (!validation.isValid) {
-        showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
-        return;
-    }
+        e.preventDefault();
+        const validation = validateForm();
+        if (!validation.isValid) {
+            showAlert(`Por favor, corrija os seguintes campos: ${validation.errors.join(', ')}`);
+            return;
+        }
 
-    ui.submitBtn.disabled = true;
-    ui.submitBtn.textContent = '🤖 Validando...';
+        ui.submitBtn.disabled = true;
+        ui.submitBtn.textContent = ' Validando...';
 
-    // ✅ CRIAR MODAL DE PROGRESSO
-    const modal = new ModalValidacaoIA('Auditoria');
-    modal.criar();
+        const modal = new ModalValidacaoIA('Auditoria');
+        modal.criar();
 
-    const formData = new FormData();
-    formData.append('titulo', ui.titleInput.value);
-    formData.append('data_auditoria', ui.dateInput.value);
-    formData.append('tipo', ui.typeSelect.value);
-    formData.append('status', ui.statusSelect.value);
-    formData.append('arquivo_auditoria', selectedFile);
+        try {
+            await modal.sleep(800);
+            modal.atualizarProgresso(10, 'Iniciando validação...', 'Preparando documento');
+            modal.adicionarLog(' Preparando auditoria para análise', 'info');
 
-    try {
-        await modal.sleep(500);
-        modal.atualizarProgresso(10, 'Iniciando validação...', 'Preparando auditoria');
-        modal.adicionarLog('📄 Preparando relatório de auditoria para análise', 'info');
+            await modal.sleep(1200);
+            modal.atualizarProgresso(20, 'Enviando para análise...', 'Conectando com IA');
+            modal.adicionarLog(' Enviando documento para servidor', 'info');
 
-        await modal.sleep(800);
-        modal.atualizarProgresso(20, 'Enviando para análise...', 'Conectando com IA');
-        modal.adicionarLog('🔗 Enviando documento para servidor', 'info');
+            const formData = new FormData();
+            formData.append('titulo', ui.titleInput.value);
+            formData.append('data_auditoria', ui.dateInput.value);
+            formData.append('tipo', ui.typeSelect.value);
+            formData.append('status', ui.statusSelect.value);
+            formData.append('arquivo_auditoria', selectedFile);
 
-        modal.atualizarProgresso(30, '🤖 Analisando auditoria...', 'A IA está processando o relatório');
-        modal.adicionarLog('🤖 Verificando se é uma auditoria válida...', 'info');
+            await modal.sleep(1000);
+            modal.atualizarProgresso(30, ' Analisando documento...', 'A IA está processando a auditoria');
+            modal.adicionarLog(' Inteligência Artificial analisando conteúdo...', 'info');
 
-        const result = await fetchData('/api/auditorias', { method: 'POST', body: formData });
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('Sessão expirada. Faça o login novamente.');
 
-        await modal.sleep(1000);
-        modal.atualizarProgresso(60, 'Verificando constatações...', 'Validando estrutura da auditoria');
-        modal.adicionarLog('📋 Verificando auditor, escopo e metodologia', 'info');
+            const response = await fetch('/api/auditorias', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${session.access_token}` },
+                body: formData,
+            });
 
-        await modal.sleep(800);
-        modal.atualizarProgresso(80, 'Análise de conteúdo...', 'Verificando recomendações');
-        modal.adicionarLog('🔍 Analisando conclusões e pareceres', 'info');
+            const result = await response.json();
 
-        await modal.sleep(500);
-        modal.mostrarSucesso();
-        await modal.sleep(1000);
+            await modal.sleep(1500);
+            modal.atualizarProgresso(60, 'Verificando estrutura...', 'Validando formato do documento');
+            modal.adicionarLog(' Verificando elementos obrigatórios', 'info');
 
-        modal.adicionarLog('💾 Salvando auditoria', 'info');
-        await modal.sleep(800);
-        modal.adicionarLog('✅ Auditoria adicionada com sucesso!', 'success');
+            await modal.sleep(1200);
+            modal.atualizarProgresso(80, 'Análise de conteúdo...', 'Verificando autenticidade');
+            modal.adicionarLog(' Analisando constatações e recomendações', 'info');
 
-        await modal.sleep(1500);
-        modal.fechar();
+            if (!response.ok) {
+                if (result.tipo_erro === 'validacao_ia') {
+                    modal.mostrarErro(result.detalhes);
+                    await modal.sleep(10000);
+                    modal.fechar();
+                    showAlert(`Documento rejeitado: ${result.detalhes}`, true);
+                } else {
+                    throw new Error(result.message || 'Erro ao enviar auditoria.');
+                }
+                return;
+            }
 
-        showAlert(result.message, false);
-        ui.form.reset();
-        selectedFile = null;
-        ui.fileUploadArea.querySelector('p').textContent = 'Clique para selecionar o arquivo ou arraste aqui';
-        loadAudits();
+            await modal.sleep(800);
+            modal.mostrarSucesso();
+            
+            await modal.sleep(1500);
+            modal.adicionarLog(' Salvando no banco de dados', 'info');
+            
+            await modal.sleep(1000);
+            modal.adicionarLog(' Auditoria adicionada com sucesso!', 'success');
 
-    } catch (error) {
-        const mensagemErro = error.message.includes('análise automática')
-            ? error.message.split('detalhes: ')[1] || error.message
-            : error.message;
+            await modal.sleep(2000);
+            modal.fechar();
 
-        modal.mostrarErro(mensagemErro);
-        await modal.sleep(3000);
-        modal.fechar();
-        showAlert(error.message);
-    } finally {
-        ui.submitBtn.disabled = false;
-        ui.submitBtn.textContent = 'Adicionar auditoria';
-    }
-};
+            showAlert(result.message || 'Auditoria adicionada com sucesso!', false);
+            ui.form.reset();
+            selectedFile = null;
+            ui.fileUploadArea.querySelector('p').textContent = 'Clique para selecionar o arquivo ou arraste aqui';
+            loadAudits();
 
-window.ModalValidacaoIA = ModalValidacaoIA;
+        } catch (error) {
+            const mensagemErro = error.message.includes('análise automática')
+                ? error.message.split('detalhes: ')[1] || error.message
+                : error.message;
+
+            modal.mostrarErro(mensagemErro);
+            await modal.sleep(8000);
+            modal.fechar();
+            showAlert(error.message);
+        } finally {
+            ui.submitBtn.disabled = false;
+            ui.submitBtn.textContent = 'Adicionar auditoria';
+        }
+    };
 
     const deleteAudit = async (auditId, auditTitle) => {
         if (confirm(`Tem certeza que deseja excluir a auditoria "${auditTitle}"?`)) {
