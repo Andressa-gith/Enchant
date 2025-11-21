@@ -10,33 +10,52 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 async function validarRelatorioComIA(arquivo) {
     try {
-        logger.info('Validando relatório de transparência com IA...');
+        logger.info('🤖 Validando relatório de transparência com IA...');
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-        const prompt = `Analise este documento e verifique se é um RELATÓRIO DE TRANSPARÊNCIA válido.
-                       
-                       Procure por:
-                       - Identificação da organização/instituição
-                       - Período de referência do relatório
-                       - Dados financeiros (receitas, despesas, balanço)
-                       - Informações sobre atividades realizadas
-                       - Origem e aplicação de recursos
-                       - Demonstrações contábeis
-                       - Prestação de contas
-                       - Transparência na gestão de recursos
-                       
-                       Documentos válidos incluem:
-                       - Relatórios de prestação de contas
-                       - Relatórios financeiros anuais
-                       - Demonstrativos de receitas e despesas
-                       - Balanços patrimoniais
-                       - Relatórios de atividades com dados financeiros
-                       - Relatórios de transparência fiscal
-                       
-                       Responda APENAS "VÁLIDO" ou "INVÁLIDO: [motivo breve e específico]".`;
+        const prompt = `Você é um auditor especializado em validar documentos de transparência e prestação de contas.
+
+TAREFA: Analise este documento e verifique se é um RELATÓRIO DE TRANSPARÊNCIA válido.
+
+ELEMENTOS OBRIGATÓRIOS que o documento DEVE conter:
+1. Identificação clara da organização/instituição (nome, CNPJ ou dados de identificação)
+2. Período de referência do relatório (mês/ano ou exercício fiscal)
+3. Dados financeiros OBRIGATÓRIOS:
+   - Receitas (origem e valores)
+   - Despesas (categorias e valores)
+   OU
+   - Balanço patrimonial
+   OU
+   - Demonstrativo contábil
+4. Prestação de contas ou transparência na gestão de recursos
+
+DOCUMENTOS VÁLIDOS incluem:
+- Relatórios de prestação de contas com dados financeiros
+- Relatórios financeiros anuais ou periódicos
+- Demonstrativos de receitas e despesas
+- Balanços patrimoniais
+- Relatórios de atividades COM dados financeiros
+- Relatórios de transparência fiscal
+
+IMPORTANTE: 
+- Se o documento NÃO contiver dados financeiros (receitas, despesas ou valores monetários), ele NÃO é um relatório de transparência válido.
+- Se o documento for apenas texto descritivo sem números/valores, rejeite-o.
+- Se faltar a identificação da instituição ou período, rejeite-o.
+
+RESPOSTA OBRIGATÓRIA:
+- Se VÁLIDO, responda APENAS: "VÁLIDO"
+- Se INVÁLIDO, responda: "INVÁLIDO: [explique especificamente QUAL elemento obrigatório está faltando]"
+
+Exemplos de respostas INVÁLIDAS corretas:
+- "INVÁLIDO: Documento não contém dados financeiros (receitas ou despesas)"
+- "INVÁLIDO: Falta identificação da instituição responsável"
+- "INVÁLIDO: Não há período de referência especificado"
+- "INVÁLIDO: Documento parece ser um texto genérico sem demonstrativos contábeis"
+
+Analise agora:`;
 
         const result = await model.generateContent([
             { inlineData: { mimeType: mimeType, data: base64Data } },
@@ -46,18 +65,30 @@ async function validarRelatorioComIA(arquivo) {
         const response = await result.response;
         const texto = response.text().trim().toUpperCase();
 
+        logger.info(`📄 Resposta da IA: ${texto}`);
+
         if (texto.startsWith('VÁLIDO')) {
             logger.info('✅ Relatório de transparência aprovado pela IA.');
             return { valido: true, motivo: null };
         } else {
-            const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a um relatório de transparência válido';
+            // Extrai o motivo de forma mais robusta
+            let motivo = texto.replace(/^INVÁLIDO:?\s*/i, '').trim();
+            
+            if (!motivo || motivo.length < 10) {
+                motivo = 'O documento não atende aos requisitos de um relatório de transparência (faltam dados financeiros, identificação da instituição ou período de referência)';
+            }
+            
             logger.warn(`❌ Relatório rejeitado: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
     } catch (error) {
-        logger.error('Erro ao validar relatório:', error);
-        return { valido: true, motivo: 'Validação manual necessária (erro na IA)' };
+        logger.error('❌ Erro ao validar relatório:', error);
+        // ✅ CORRIGIDO: Retorna inválido em caso de erro
+        return { 
+            valido: false, 
+            motivo: 'Erro ao processar o documento. Verifique se o arquivo está corrompido ou tente novamente mais tarde.' 
+        };
     }
 }
 
@@ -111,7 +142,8 @@ export const addRelatorio = async (req, res) => {
             logger.warn(`❌ Relatório rejeitado pela IA: ${validacao.motivo}`);
             return res.status(400).json({ 
                 message: 'Documento inválido detectado pela análise automática.',
-                detalhes: validacao.motivo
+                detalhes: validacao.motivo,
+                tipo_erro: 'validacao_ia'
             });
         }
 
