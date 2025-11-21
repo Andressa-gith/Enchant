@@ -7,12 +7,11 @@ const reportValidationRules = {
     file: { required: true, maxSize: 10, allowedTypes: ['.pdf', '.doc', '.docx', '.xls', '.xlsx'] }
 };
 
-// ✅ 1️⃣ CLASSE PRIMEIRO - ANTES DE TUDO
+// ✅ CLASSE DO MODAL (versão sem Bootstrap - padronizada)
 class ModalValidacaoIA {
     constructor(tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
         this.modal = null;
-        this.bsModal = null;
         this.progressBar = null;
         this.progressMessage = null;
         this.progressDetails = null;
@@ -24,58 +23,78 @@ class ModalValidacaoIA {
         const modalAntigo = document.getElementById('modalProgressoValidacao');
         if (modalAntigo) modalAntigo.remove();
 
+        const backdropAntigo = document.querySelector('.modal-backdrop-custom');
+        if (backdropAntigo) backdropAntigo.remove();
+
+        // Cria backdrop
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop-custom';
+        backdrop.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            animation: fadeIn 0.3s ease;
+        `;
+        document.body.appendChild(backdrop);
+
         this.modal = document.createElement('div');
         this.modal.id = 'modalProgressoValidacao';
-        this.modal.className = 'modal fade';
-        this.modal.setAttribute('tabindex', '-1');
-        this.modal.setAttribute('data-bs-backdrop', 'static');
-        this.modal.setAttribute('data-bs-keyboard', 'false');
+        this.modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        `;
 
         this.modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" style="border: 2px solid #e2ccae; border-radius: 12px; overflow: hidden; max-height: 90vh;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); border: none; padding: 1.5rem; flex-shrink: 0;">
-                <h5 class="modal-title" style="font-family: 'Lexend Deca'; font-weight: 600; color: #4E3629; display: flex; align-items: center; gap: 10px;">
-                    <i class="bi bi-gear-fill" style="font-size: 24px; animation: spin 2s linear infinite;"></i>
-                    Validando ${this.tipoDocumento}
-                </h5>
+    <div style="background: white; border: 2px solid #e2ccae; border-radius: 12px; overflow: hidden; max-height: 90vh; width: 90%; max-width: 600px; display: flex; flex-direction: column; animation: slideDown 0.3s ease;">
+        <div style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); border: none; padding: 1.5rem; flex-shrink: 0;">
+            <h5 style="font-family: 'Lexend Deca'; font-weight: 600; color: #4E3629; display: flex; align-items: center; gap: 10px; margin: 0;">
+                <i class="bi bi-gear-fill" style="font-size: 24px; animation: spin 2s linear infinite;"></i>
+                Validando ${this.tipoDocumento}
+            </h5>
+        </div>
+        <div style="padding: 2rem; font-family: 'Lexend Deca'; overflow-y: auto; max-height: calc(90vh - 100px);">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="width: 80px; height: 80px; margin: 0 auto; background: #F9E7D2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-robot" style="font-size: 40px; color: #8B4513; animation: pulse 2s infinite;"></i>
+                </div>
             </div>
-            <div class="modal-body" style="padding: 2rem; font-family: 'Lexend Deca'; overflow-y: auto; max-height: calc(90vh - 100px);">
-                <!-- Ícone Central -->
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <div style="width: 80px; height: 80px; margin: 0 auto; background: #F9E7D2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-robot" style="font-size: 40px; color: #8B4513; animation: pulse 2s infinite;"></i>
-                    </div>
-                </div>
 
-                <!-- Mensagem de Progresso -->
-                <div style="margin-bottom: 1.5rem;">
-                    <p id="progressMessage" style="text-align: center; color: #4E3629; font-weight: 600; font-size: 16px; margin: 0;">
-                        Preparando análise...
-                    </p>
-                    <p id="progressDetails" style="text-align: center; color: #666; font-size: 13px; margin: 0.5rem 0 0;">
-                        Aguarde enquanto nossa IA verifica o documento
-                    </p>
-                </div>
+            <div style="margin-bottom: 1.5rem;">
+                <p id="progressMessage" style="text-align: center; color: #4E3629; font-weight: 600; font-size: 16px; margin: 0;">
+                    Preparando análise...
+                </p>
+                <p id="progressDetails" style="text-align: center; color: #666; font-size: 13px; margin: 0.5rem 0 0;">
+                    Aguarde enquanto nossa IA verifica o documento
+                </p>
+            </div>
 
-                <!-- Barra de Progresso -->
-                <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 1.5rem;">
-                    <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
-                </div>
+            <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 1.5rem;">
+                <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
+            </div>
 
-               <!-- Logs de Validação -->
-<div id="progressLogs" style="min-height: 150px; max-height: 200px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
-    <div style="color: #666; text-align: center; font-style: italic;">
-        Aguardando início da validação...
-    </div>
-</div>
+            <div id="progressLogs" style="min-height: 150px; max-height: 200px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
+                <div style="color: #666; text-align: center; font-style: italic;">
+                    Aguardando início da validação...
+                </div>
             </div>
         </div>
     </div>
 `;
 
-         const style = document.createElement('style');
-style.textContent = `
+        const style = document.createElement('style');
+        style.textContent = `
     @keyframes spin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
@@ -84,8 +103,19 @@ style.textContent = `
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.1); opacity: 0.8; }
     }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    @keyframes slideDown {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
     
-    /* ✅ Remove espaços em branco extras */
     #progressLogs > div:empty {
         display: none !important;
     }
@@ -98,16 +128,13 @@ style.textContent = `
         margin-top: 0 !important;
     }
 `;
-document.head.appendChild(style);
+        document.head.appendChild(style);
         document.body.appendChild(this.modal);
 
         this.progressBar = this.modal.querySelector('#progressBar');
         this.progressMessage = this.modal.querySelector('#progressMessage');
         this.progressDetails = this.modal.querySelector('#progressDetails');
         this.progressLogs = this.modal.querySelector('#progressLogs');
-
-        this.bsModal = new bootstrap.Modal(this.modal);
-        this.bsModal.show();
     }
 
     atualizarProgresso(percent, message, details = '') {
@@ -118,94 +145,92 @@ document.head.appendChild(style);
     }
 
     adicionarLog(message, type = 'info') {
-    if (!this.progressLogs) return;
-    
-    // ✅ Ignora mensagens vazias
-    if (!message || message.trim() === '') return;
+        if (!this.progressLogs) return;
+        
+        if (!message || message.trim() === '') return;
 
-    // Limpa mensagem de aguardando
-    if (this.progressLogs.querySelector('[style*="italic"]')) {
-        this.progressLogs.innerHTML = '';
+        if (this.progressLogs.querySelector('[style*="italic"]')) {
+            this.progressLogs.innerHTML = '';
+        }
+
+        const logItem = document.createElement('div');
+        logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
+
+        const icons = {
+            info: { icon: 'bi-info-circle-fill', color: '#3d2106' },
+            success: { icon: 'bi-check-circle-fill', color: '#28a745' },
+            error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
+            warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
+        };
+
+        const { icon, color } = icons[type] || icons.info;
+
+        logItem.innerHTML = `
+            <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px; flex-shrink: 0;"></i>
+            <span style="color: #333; line-height: 1.5; word-break: break-word;">${message}</span>
+        `;
+
+        this.progressLogs.appendChild(logItem);
+        this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
     }
 
-    const logItem = document.createElement('div');
-    logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
-
-    const icons = {
-        info: { icon: 'bi-info-circle-fill', color: '#3d2106' },
-        success: { icon: 'bi-check-circle-fill', color: '#28a745' },
-        error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
-        warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
-    };
-
-    const { icon, color } = icons[type] || icons.info;
-
-    logItem.innerHTML = `
-        <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px; flex-shrink: 0;"></i>
-        <span style="color: #333; line-height: 1.5; word-break: break-word;">${message}</span>
-    `;
-
-    this.progressLogs.appendChild(logItem);
-    this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
-}
-
-   mostrarErro(motivoErro) {
-    this.atualizarProgresso(100, ' Documento Rejeitado', '');
-    this.adicionarLog(` Documento não aprovado pela validação automática`, 'error');
-    
-    // Quebra o motivo em linhas se for muito longo
-    const motivoFormatado = motivoErro.length > 100 
-        ? motivoErro.match(/.{1,100}(\s|$)/g).join('\n') 
-        : motivoErro;
-    
-    this.adicionarLog(` Motivo da rejeição:`, 'warning');
-    this.adicionarLog(motivoFormatado, 'error');
-    // ❌ REMOVA ESTA LINHA: this.adicionarLog('', 'info'); // Linha em branco
-    this.adicionarLog(' Sugestão: Verifique se o documento possui todos os elementos obrigatórios e tente novamente.', 'info');
-
-    // Adiciona botão de fechar após 3 segundos
-    setTimeout(() => {
-        const modalBody = this.modal.querySelector('.modal-body');
-        if (!modalBody) return;
+    mostrarErro(motivoErro) {
+        this.atualizarProgresso(100, ' Documento Rejeitado', '');
+        this.adicionarLog(` Documento não aprovado pela validação automática`, 'error');
         
-        // ✅ Verifica se o botão já foi adicionado
-        if (modalBody.querySelector('#errorButtonContainer')) return;
+        const motivoFormatado = motivoErro.length > 100 
+            ? motivoErro.match(/.{1,100}(\s|$)/g).join('\n') 
+            : motivoErro;
         
-        const container = document.createElement('div');
-        container.id = 'errorButtonContainer';
-        container.style.cssText = 'text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;';
-        container.innerHTML = `
-            <button class="btn" style="background-color: #e2ccae; color: #3d2106; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 500; font-size: 15px; cursor: pointer; transition: all 0.3s;" 
-                onmouseover="this.style.backgroundColor='#d4b895'" 
-                onmouseout="this.style.backgroundColor='#e2ccae'"
-                onclick="document.getElementById('modalProgressoValidacao').remove(); document.querySelector('.modal-backdrop')?.remove();">
-                <i class="bi bi-check-circle" style="margin-right: 8px;"></i>Entendi
-            </button>
-        `;
-        
-        modalBody.appendChild(container);
-        
-        // ✅ Scroll automático para o botão ficar visível
+        this.adicionarLog(` Motivo da rejeição:`, 'warning');
+        this.adicionarLog(motivoFormatado, 'error');
+        this.adicionarLog(' Sugestão: Verifique se o documento possui todos os elementos obrigatórios e tente novamente.', 'info');
+
         setTimeout(() => {
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
-    }, 3000);
-}
+            const modalBody = this.modal.querySelector('[style*="padding: 2rem"]');
+            if (!modalBody) return;
+            
+            if (modalBody.querySelector('#errorButtonContainer')) return;
+            
+            const container = document.createElement('div');
+            container.id = 'errorButtonContainer';
+            container.style.cssText = 'text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;';
+            container.innerHTML = `
+                <button class="btn" style="background-color: #e2ccae; color: #3d2106; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 500; font-size: 15px; cursor: pointer; transition: all 0.3s;" 
+                    onmouseover="this.style.backgroundColor='#d4b895'" 
+                    onmouseout="this.style.backgroundColor='#e2ccae'"
+                    onclick="document.getElementById('modalProgressoValidacao').remove(); document.querySelector('.modal-backdrop-custom')?.remove();">
+                    <i class="bi bi-check-circle" style="margin-right: 8px;"></i>Entendi
+                </button>
+            `;
+            
+            modalBody.appendChild(container);
+            
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }, 3000);
+    }
 
     mostrarSucesso() {
         this.atualizarProgresso(100, ' Validação Concluída com Sucesso!', '');
-        this.adicionarLog('Documento aprovado pela IA', 'success');
-        this.adicionarLog('Salvando informações...', 'info');
+        this.adicionarLog(' Documento aprovado pela IA', 'success');
+        this.adicionarLog(' Salvando informações...', 'info');
     }
 
     fechar() {
-        if (this.bsModal) {
-            this.bsModal.hide();
+        const modal = document.getElementById('modalProgressoValidacao');
+        const backdrop = document.querySelector('.modal-backdrop-custom');
+        
+        if (modal) {
+            modal.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => modal.remove(), 300);
         }
-        setTimeout(() => {
-            if (this.modal) this.modal.remove();
-            document.querySelector('.modal-backdrop')?.remove();
-        }, 500);
+        
+        if (backdrop) {
+            backdrop.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => backdrop.remove(), 300);
+        }
     }
 
     sleep(ms) {
@@ -213,7 +238,7 @@ document.head.appendChild(style);
     }
 }
 
-// ✅ 2️⃣ FUNÇÕES DE API
+// ✅ FUNÇÕES DE API
 async function loadReports() {
     try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -302,15 +327,15 @@ async function addReport(formData) {
         loadReports();
 
    } catch (error) {
-    const mensagemErro = error.message.includes('análise automática')
-        ? error.message.split('detalhes: ')[1] || error.message
-        : error.message;
+        const mensagemErro = error.message.includes('análise automática')
+            ? error.message.split('detalhes: ')[1] || error.message
+            : error.message;
 
-    modal.mostrarErro(mensagemErro);
-    await modal.sleep(55000);  // ⬆️ 8 segundos para ler o erro
-    modal.fechar();
-    showAlert(error.message);
-} finally {
+        modal.mostrarErro(mensagemErro);
+        await modal.sleep(8000);
+        modal.fechar();
+        showAlert(error.message);
+    } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Adicionar relatório';
     }
@@ -371,7 +396,7 @@ async function downloadFile(filePath) {
     }
 }
 
-// ✅ 3️⃣ FUNÇÕES DE SETUP E UI
+// ✅ FUNÇÕES DE SETUP E UI
 function setupReportsForm() {
     const form = document.getElementById('reports-form');
     form.addEventListener('submit', function (e) {
@@ -639,7 +664,7 @@ function updateAllCharacterCounters() {
     updateCharacterCounter(document.getElementById('report-description'));
 }
 
-// ✅ 4️⃣ INICIALIZAÇÃO - POR ÚLTIMO
+// ✅ INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', function () {
     setupReportsForm();
     setupRealTimeValidation();
