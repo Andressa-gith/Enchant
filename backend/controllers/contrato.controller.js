@@ -10,33 +10,51 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 async function validarContratoComIA(arquivo) {
     try {
-        logger.info('Validando contrato com IA...');
+        logger.info('🤖 Validando contrato com IA...');
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-        const prompt = `Analise este documento e verifique se é um CONTRATO válido.
-                       
-                       Procure por:
-                       - Identificação das partes contratantes (contratante e contratado)
-                       - Objeto do contrato (descrição dos serviços/produtos)
-                       - Cláusulas contratuais
-                       - Valores e condições de pagamento
-                       - Prazo de vigência
-                       - Assinaturas ou identificação das partes
-                       - Data de celebração
-                       - Testemunhas (quando aplicável)
-                       
-                       Documentos válidos incluem:
-                       - Contratos de prestação de serviços
-                       - Contratos de fornecimento
-                       - Termos de parceria
-                       - Convênios
-                       - Acordos de cooperação
-                       - Contratos de trabalho
-                       
-                       Responda APENAS "VÁLIDO" ou "INVÁLIDO: [motivo breve e específico]".`;
+        const prompt = `Você é um especialista em análise de contratos e documentos jurídicos.
+
+TAREFA: Analise este documento e verifique se é um CONTRATO válido.
+
+ELEMENTOS OBRIGATÓRIOS que o documento DEVE conter:
+1. Identificação das partes (contratante e contratado) - nomes completos ou razão social
+2. Objeto do contrato - descrição clara dos serviços/produtos
+3. Cláusulas contratuais - pelo menos uma cláusula definindo obrigações
+4. Valores e condições de pagamento OU contrapartidas
+5. Prazo de vigência ou data de celebração
+6. Evidência de acordo entre as partes (assinaturas, aceite digital, ou termos de concordância)
+
+DOCUMENTOS VÁLIDOS incluem:
+- Contratos de prestação de serviços
+- Contratos de fornecimento
+- Termos de parceria
+- Convênios
+- Acordos de cooperação
+- Contratos de trabalho
+- Propostas comerciais aceitas
+
+IMPORTANTE:
+- Se o documento NÃO identificar claramente as partes envolvidas, rejeite-o.
+- Se NÃO houver objeto/descrição do que está sendo contratado, rejeite-o.
+- Se for apenas uma proposta não aceita ou orçamento, rejeite-o.
+- Se não houver valores OU contrapartidas definidas, rejeite-o.
+
+RESPOSTA OBRIGATÓRIA:
+- Se VÁLIDO, responda APENAS: "VÁLIDO"
+- Se INVÁLIDO, responda: "INVÁLIDO: [explique especificamente QUAL elemento obrigatório está faltando]"
+
+Exemplos de respostas INVÁLIDAS corretas:
+- "INVÁLIDO: Documento não identifica claramente as partes contratantes"
+- "INVÁLIDO: Falta descrição do objeto do contrato (o que está sendo contratado)"
+- "INVÁLIDO: Não há valores ou condições de pagamento especificados"
+- "INVÁLIDO: Documento parece ser apenas um orçamento, não um contrato firmado"
+- "INVÁLIDO: Falta prazo de vigência ou data de celebração"
+
+Analise agora:`;
 
         const result = await model.generateContent([
             { inlineData: { mimeType: mimeType, data: base64Data } },
@@ -46,18 +64,28 @@ async function validarContratoComIA(arquivo) {
         const response = await result.response;
         const texto = response.text().trim().toUpperCase();
 
+        logger.info(`📄 Resposta da IA: ${texto}`);
+
         if (texto.startsWith('VÁLIDO')) {
             logger.info('✅ Contrato aprovado pela IA.');
             return { valido: true, motivo: null };
         } else {
-            const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a um contrato válido';
+            let motivo = texto.replace(/^INVÁLIDO:?\s*/i, '').trim();
+            
+            if (!motivo || motivo.length < 10) {
+                motivo = 'O documento não atende aos requisitos de um contrato válido (faltam partes identificadas, objeto do contrato, valores ou prazo de vigência)';
+            }
+            
             logger.warn(`❌ Contrato rejeitado: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
     } catch (error) {
-        logger.error('Erro ao validar contrato:', error);
-        return { valido: true, motivo: 'Validação manual necessária (erro na IA)' };
+        logger.error('❌ Erro ao validar contrato:', error);
+        return { 
+            valido: false, 
+            motivo: 'Erro ao processar o documento. Verifique se o arquivo está corrompido ou tente novamente mais tarde.' 
+        };
     }
 }
 
@@ -112,7 +140,8 @@ export const addContrato = async (req, res) => {
             logger.warn(`❌ Contrato rejeitado pela IA: ${validacao.motivo}`);
             return res.status(400).json({ 
                 message: 'Documento inválido detectado pela análise automática.',
-                detalhes: validacao.motivo
+                detalhes: validacao.motivo,
+                tipo_erro: 'validacao_ia'
             });
         }
 
