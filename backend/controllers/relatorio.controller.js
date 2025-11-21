@@ -10,7 +10,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 async function validarRelatorioComIA(arquivo) {
     try {
-        logger.info('🤖 Validando relatório de transparência com IA...');
+        logger.info(' Validando relatório de transparência com IA...');
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
@@ -65,10 +65,10 @@ Analise agora:`;
         const response = await result.response;
         const texto = response.text().trim().toUpperCase();
 
-        logger.info(`📄 Resposta da IA: ${texto}`);
+        logger.info(` Resposta da IA: ${texto}`);
 
         if (texto.startsWith('VÁLIDO')) {
-            logger.info('✅ Relatório de transparência aprovado pela IA.');
+            logger.info(' Relatório de transparência aprovado pela IA.');
             return { valido: true, motivo: null };
         } else {
             // Extrai o motivo de forma mais robusta
@@ -78,12 +78,12 @@ Analise agora:`;
                 motivo = 'O documento não atende aos requisitos de um relatório de transparência (faltam dados financeiros, identificação da instituição ou período de referência)';
             }
             
-            logger.warn(`❌ Relatório rejeitado: ${motivo}`);
+            logger.warn(` Relatório rejeitado: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
     } catch (error) {
-        logger.error('❌ Erro ao validar relatório:', error);
+        logger.error(' Erro ao validar relatório:', error);
         // ✅ CORRIGIDO: Retorna inválido em caso de erro
         return { 
             valido: false, 
@@ -135,11 +135,11 @@ export const addRelatorio = async (req, res) => {
 
         // ✅ VALIDAÇÃO COM IA
         const file = req.file;
-        logger.info('🤖 Validando relatório de transparência com IA...');
+        logger.info(' Validando relatório de transparência com IA...');
         const validacao = await validarRelatorioComIA(file);
 
         if (!validacao.valido) {
-            logger.warn(`❌ Relatório rejeitado pela IA: ${validacao.motivo}`);
+            logger.warn(` Relatório rejeitado pela IA: ${validacao.motivo}`);
             return res.status(400).json({ 
                 message: 'Documento inválido detectado pela análise automática.',
                 detalhes: validacao.motivo,
@@ -147,7 +147,7 @@ export const addRelatorio = async (req, res) => {
             });
         }
 
-        logger.info('✅ Relatório aprovado pela IA. Prosseguindo com upload...');
+        logger.info(' Relatório aprovado pela IA. Prosseguindo com upload...');
 
         // 1. Upload do arquivo
         filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;

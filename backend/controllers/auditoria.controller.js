@@ -10,7 +10,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 async function validarAuditoriaComIA(arquivo) {
     try {
-        logger.info('🤖 Validando auditoria com IA...');
+        logger.info(' Validando auditoria com IA...');
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
@@ -48,11 +48,11 @@ async function validarAuditoriaComIA(arquivo) {
         const texto = response.text().trim().toUpperCase();
 
         if (texto.startsWith('VÁLIDO')) {
-            logger.info('✅ Auditoria aprovada pela IA.');
+            logger.info(' Auditoria aprovada pela IA.');
             return { valido: true, motivo: null };
         } else {
             const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não corresponde a uma auditoria válida';
-            logger.warn(`❌ Auditoria rejeitada: ${motivo}`);
+            logger.warn(` Auditoria rejeitada: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
@@ -107,11 +107,11 @@ export const addAuditoria = async (req, res) => {
 
         // ✅ VALIDAÇÃO COM IA
         const file = req.file;
-        logger.info('🤖 Validando auditoria com IA...');
+        logger.info(' Validando auditoria com IA...');
         const validacao = await validarAuditoriaComIA(file);
 
         if (!validacao.valido) {
-            logger.warn(`❌ Auditoria rejeitada pela IA: ${validacao.motivo}`);
+            logger.warn(` Auditoria rejeitada pela IA: ${validacao.motivo}`);
             return res.status(400).json({ 
                 message: 'Documento inválido detectado pela análise automática.',
                 detalhes: validacao.motivo,
@@ -119,7 +119,7 @@ export const addAuditoria = async (req, res) => {
             });
         }
 
-        logger.info('✅ Auditoria aprovada pela IA. Prosseguindo com upload...');
+        logger.info(' Auditoria aprovada pela IA. Prosseguindo com upload...');
 
         // 1. Upload do arquivo
         filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;

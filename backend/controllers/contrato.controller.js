@@ -10,7 +10,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  */
 async function validarContratoComIA(arquivo) {
     try {
-        logger.info('🤖 Validando contrato com IA...');
+        logger.info(' Validando contrato com IA...');
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
@@ -64,10 +64,10 @@ Analise agora:`;
         const response = await result.response;
         const texto = response.text().trim().toUpperCase();
 
-        logger.info(`📄 Resposta da IA: ${texto}`);
+        logger.info(` Resposta da IA: ${texto}`);
 
         if (texto.startsWith('VÁLIDO')) {
-            logger.info('✅ Contrato aprovado pela IA.');
+            logger.info(' Contrato aprovado pela IA.');
             return { valido: true, motivo: null };
         } else {
             let motivo = texto.replace(/^INVÁLIDO:?\s*/i, '').trim();
@@ -76,12 +76,12 @@ Analise agora:`;
                 motivo = 'O documento não atende aos requisitos de um contrato válido (faltam partes identificadas, objeto do contrato, valores ou prazo de vigência)';
             }
             
-            logger.warn(`❌ Contrato rejeitado: ${motivo}`);
+            logger.warn(` Contrato rejeitado: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
     } catch (error) {
-        logger.error('❌ Erro ao validar contrato:', error);
+        logger.error(' Erro ao validar contrato:', error);
         return { 
             valido: false, 
             motivo: 'Erro ao processar o documento. Verifique se o arquivo está corrompido ou tente novamente mais tarde.' 
@@ -133,11 +133,11 @@ export const addContrato = async (req, res) => {
 
         // ✅ VALIDAÇÃO COM IA
         const file = req.file;
-        logger.info('🤖 Validando contrato com IA...');
+        logger.info(' Validando contrato com IA...');
         const validacao = await validarContratoComIA(file);
 
         if (!validacao.valido) {
-            logger.warn(`❌ Contrato rejeitado pela IA: ${validacao.motivo}`);
+            logger.warn(` Contrato rejeitado pela IA: ${validacao.motivo}`);
             return res.status(400).json({ 
                 message: 'Documento inválido detectado pela análise automática.',
                 detalhes: validacao.motivo,
@@ -145,7 +145,7 @@ export const addContrato = async (req, res) => {
             });
         }
 
-        logger.info('✅ Contrato aprovado pela IA. Prosseguindo com upload...');
+        logger.info(' Contrato aprovado pela IA. Prosseguindo com upload...');
 
         // 1. Upload do arquivo
         filePath = `${instituicaoId}/${uuidv4()}-${file.originalname}`;
