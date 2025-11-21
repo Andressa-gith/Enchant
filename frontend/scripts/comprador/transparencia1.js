@@ -63,30 +63,42 @@ class ModalValidacaoIA {
                     <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
                 </div>
 
-                <!-- Logs de Validação -->
-                <div id="progressLogs" style="max-height: 200px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
-                    <div style="color: #666; text-align: center; font-style: italic;">
-                        Aguardando início da validação...
-                    </div>
-                </div>
+               <!-- Logs de Validação -->
+<div id="progressLogs" style="min-height: 150px; max-height: 200px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
+    <div style="color: #666; text-align: center; font-style: italic;">
+        Aguardando início da validação...
+    </div>
+</div>
             </div>
         </div>
     </div>
 `;
 
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.1); opacity: 0.8; }
-            }
-        `;
-        document.head.appendChild(style);
-
+         const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    /* ✅ Remove espaços em branco extras */
+    #progressLogs > div:empty {
+        display: none !important;
+    }
+    
+    #progressLogs > div:last-child {
+        border-bottom: none !important;
+    }
+    
+    #errorButtonContainer {
+        margin-top: 0 !important;
+    }
+`;
+document.head.appendChild(style);
         document.body.appendChild(this.modal);
 
         this.progressBar = this.modal.querySelector('#progressBar');
@@ -106,34 +118,38 @@ class ModalValidacaoIA {
     }
 
     adicionarLog(message, type = 'info') {
-        if (!this.progressLogs) return;
+    if (!this.progressLogs) return;
+    
+    // ✅ Ignora mensagens vazias
+    if (!message || message.trim() === '') return;
 
-        if (this.progressLogs.querySelector('[style*="italic"]')) {
-            this.progressLogs.innerHTML = '';
-        }
-
-        const logItem = document.createElement('div');
-        logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
-
-        const icons = {
-            info: { icon: 'bi-info-circle-fill', color: '#3d2106' },
-            success: { icon: 'bi-check-circle-fill', color: '#28a745' },
-            error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
-            warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
-        };
-
-        const { icon, color } = icons[type] || icons.info;
-
-        logItem.innerHTML = `
-            <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px;"></i>
-            <span style="color: #333; line-height: 1.5;">${message}</span>
-        `;
-
-        this.progressLogs.appendChild(logItem);
-        this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
+    // Limpa mensagem de aguardando
+    if (this.progressLogs.querySelector('[style*="italic"]')) {
+        this.progressLogs.innerHTML = '';
     }
 
-    mostrarErro(motivoErro) {
+    const logItem = document.createElement('div');
+    logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
+
+    const icons = {
+        info: { icon: 'bi-info-circle-fill', color: '#3d2106' },
+        success: { icon: 'bi-check-circle-fill', color: '#28a745' },
+        error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
+        warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
+    };
+
+    const { icon, color } = icons[type] || icons.info;
+
+    logItem.innerHTML = `
+        <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px; flex-shrink: 0;"></i>
+        <span style="color: #333; line-height: 1.5; word-break: break-word;">${message}</span>
+    `;
+
+    this.progressLogs.appendChild(logItem);
+    this.progressLogs.scrollTop = this.progressLogs.scrollHeight;
+}
+
+   mostrarErro(motivoErro) {
     this.atualizarProgresso(100, ' Documento Rejeitado', '');
     this.adicionarLog(` Documento não aprovado pela validação automática`, 'error');
     
@@ -144,25 +160,20 @@ class ModalValidacaoIA {
     
     this.adicionarLog(` Motivo da rejeição:`, 'warning');
     this.adicionarLog(motivoFormatado, 'error');
-    this.adicionarLog('', 'info'); // Linha em branco
+    // ❌ REMOVA ESTA LINHA: this.adicionarLog('', 'info'); // Linha em branco
     this.adicionarLog(' Sugestão: Verifique se o documento possui todos os elementos obrigatórios e tente novamente.', 'info');
 
-    // ✅ CORREÇÃO: Adiciona botão de fechar após 3 segundos
+    // Adiciona botão de fechar após 3 segundos
     setTimeout(() => {
-        // ✅ Remove o container vazio do HTML se existir
-        let container = this.modal.querySelector('#errorButtonContainer');
+        const modalBody = this.modal.querySelector('.modal-body');
+        if (!modalBody) return;
         
-        // ✅ Se não existir, cria um novo após os logs
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'errorButtonContainer';
-            const modalBody = this.modal.querySelector('.modal-body');
-            if (modalBody) {
-                modalBody.appendChild(container);
-            }
-        }
+        // ✅ Verifica se o botão já foi adicionado
+        if (modalBody.querySelector('#errorButtonContainer')) return;
         
-        container.style.cssText = 'text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6;';
+        const container = document.createElement('div');
+        container.id = 'errorButtonContainer';
+        container.style.cssText = 'text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;';
         container.innerHTML = `
             <button class="btn" style="background-color: #e2ccae; color: #3d2106; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 500; font-size: 15px; cursor: pointer; transition: all 0.3s;" 
                 onmouseover="this.style.backgroundColor='#d4b895'" 
@@ -171,6 +182,13 @@ class ModalValidacaoIA {
                 <i class="bi bi-check-circle" style="margin-right: 8px;"></i>Entendi
             </button>
         `;
+        
+        modalBody.appendChild(container);
+        
+        // ✅ Scroll automático para o botão ficar visível
+        setTimeout(() => {
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }, 3000);
 }
 
