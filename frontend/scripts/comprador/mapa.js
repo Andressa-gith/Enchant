@@ -241,7 +241,6 @@ function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca
     );
 
     if (municipiosEncontrados.length === 0) {
-      resultadoContainer.innerHTML = `<div class="card-resultado"><p>Município não encontrado.</p></div>`;
       document.getElementById('noticias-municipio').innerHTML = `
         <div class="card-noticia">
           <h4><i class="ph ph-newspaper"></i> Notícias sobre Enchentes</h4>
