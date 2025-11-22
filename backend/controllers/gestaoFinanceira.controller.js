@@ -3,27 +3,17 @@ import logger from '../utils/logger.js';
 
 /**
  * Calcula o status de um lançamento financeiro com base no orçamento e no valor executado.
- * @param {number|string} orcamento - O valor orçado.
- * @param {number|string} executado - O valor já executado.
- * @returns {'Planejado' | 'Executado' | 'Pendente'} O status calculado.
  */
 const calcularStatus = (orcamento, executado) => {
     const orcamentoNum = parseFloat(orcamento);
     const executadoNum = parseFloat(executado);
-
-    if (executadoNum === 0) {
-        return 'Planejado';
-    }
-    if (executadoNum >= orcamentoNum) {
-        return 'Executado';
-    }
+    if (executadoNum === 0) return 'Planejado';
+    if (executadoNum >= orcamentoNum) return 'Executado';
     return 'Pendente';
 };
 
 /**
  * Busca todos os lançamentos financeiros da instituição logada.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const getFinanceiro = async (req, res) => {
     logger.info('Iniciando busca de dados financeiros...');
@@ -49,8 +39,6 @@ export const getFinanceiro = async (req, res) => {
 
 /**
  * Adiciona um novo lançamento financeiro e calcula seu status automaticamente.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const addFinanceiro = async (req, res) => {
     logger.info('Iniciando adição de novo lançamento financeiro...');
@@ -89,8 +77,6 @@ export const addFinanceiro = async (req, res) => {
 
 /**
  * Atualiza um lançamento financeiro e recalcula seu status automaticamente.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const updateFinanceiro = async (req, res) => {
     logger.info('Iniciando atualização de lançamento financeiro...');
@@ -112,7 +98,7 @@ export const updateFinanceiro = async (req, res) => {
             .update({ nome_categoria, orcamento_previsto, valor_executado, status })
             .eq('id', id)
             .eq('instituicao_id', instituicaoId)
-            .select()
+            .select();
 
         if (error) throw error;
 
@@ -134,8 +120,6 @@ export const updateFinanceiro = async (req, res) => {
 
 /**
  * Deleta um lançamento financeiro.
- * @param {object} req - Objeto de requisição do Express.
- * @param {object} res - Objeto de resposta do Express.
  */
 export const deleteFinanceiro = async (req, res) => {
     logger.info('Iniciando exclusão de lançamento financeiro...');
@@ -146,13 +130,12 @@ export const deleteFinanceiro = async (req, res) => {
 
         const { error, count } = await supabase
             .from('gestao_financeira')
-            .delete({ count: 'exact' }) // Pede ao Supabase para retornar a contagem de linhas deletadas
+            .delete({ count: 'exact' })
             .eq('id', id)
             .eq('instituicao_id', instituicaoId);
 
         if (error) throw error;
         
-        // Se nenhuma linha foi deletada, o registro não foi encontrado
         if (count === 0) {
             logger.warn(`Lançamento ID: ${id} não encontrado para exclusão ou usuário sem permissão.`);
             return res.status(404).json({ message: 'Lançamento não encontrado ou sem permissão para excluí-lo.' });
