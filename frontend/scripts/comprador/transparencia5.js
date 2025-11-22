@@ -1,6 +1,7 @@
 import supabase from '/scripts/supabaseClient.js';
 
 // ✅ CLASSE MODAL DE VALIDAÇÃO IA (PADRONIZADA)
+// ✅ CLASSE MODAL DE VALIDAÇÃO IA (PADRONIZADA E CENTRALIZADA)
 class ModalValidacaoIA {
     constructor(tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
@@ -66,12 +67,12 @@ class ModalValidacaoIA {
         `;
         document.head.appendChild(forceStyle);
 
-        // Cria backdrop como filho direto do html (não do body)
+        // Cria backdrop como filho direto do html
         const backdrop = document.createElement('div');
         backdrop.id = 'modalBackdropValidacao';
         document.documentElement.appendChild(backdrop);
 
-        // Cria modal como filho direto do html (não do body)
+        // Cria modal como filho direto do html
         this.modal = document.createElement('div');
         this.modal.id = 'modalProgressoValidacao';
 
@@ -89,10 +90,12 @@ class ModalValidacaoIA {
                     <i class="bi bi-robot" style="font-size:40px;color:#8B4513;animation:pulse 2s infinite;"></i>
                 </div>
             </div>
-            <div style="margin-bottom:1.5rem;">
-                <p id="progressMessage" style="text-align:center;color:#4E3629;font-weight:600;font-size:16px;margin:0;">Preparando análise...</p>
-                <p id="progressDetails" style="text-align:center;color:#666;font-size:13px;margin:0.5rem 0 0;">Aguarde enquanto nossa IA verifica o documento</p>
+            
+            <div style="margin-bottom:1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center;">
+                <p id="progressMessage" style="text-align:center;color:#4E3629;font-weight:600;font-size:16px;margin:0; width: 100%;">Preparando análise...</p>
+                <p id="progressDetails" style="text-align:center;color:#666;font-size:13px;margin:0.5rem 0 0; width: 100%;">Aguarde enquanto nossa IA verifica o documento</p>
             </div>
+
             <div style="background:#e0e0e0;border-radius:10px;height:8px;overflow:hidden;margin-bottom:1.5rem;">
                 <div id="progressBar" style="height:100%;background:linear-gradient(90deg,#e2ccae,#caae8d);width:0%;transition:width 0.3s ease;"></div>
             </div>
@@ -110,6 +113,7 @@ class ModalValidacaoIA {
         this.progressLogs = this.modal.querySelector('#progressLogs');
     }
 
+    // ... (restante dos métodos: atualizarProgresso, adicionarLog, mostrarErro, etc. permanecem iguais)
     atualizarProgresso(percent, message, details = '') {
         if (this.progressBar) this.progressBar.style.width = `${percent}%`;
         if (this.progressMessage) this.progressMessage.textContent = message;
@@ -176,7 +180,6 @@ class ModalValidacaoIA {
             backdrop.style.animation = 'fadeOut 0.3s ease'; 
             setTimeout(() => backdrop.remove(), 300); 
         }
-        // Remove estilos após um delay
         setTimeout(() => styles?.remove(), 350);
     }
 
