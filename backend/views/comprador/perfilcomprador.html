@@ -111,21 +111,29 @@
                         </div>
                     </div>
 
-                    <div class="info-item1">
-                        <h2>Conexão de Pagamentos</h2>
-                        <p id="mp-status-text">Conecte sua conta do Mercado Pago para receber doações diretamente.</p>
+                    <div class="info-item1" id="merp">
+                        <div class="metade1">
+                            <h2>MERCADO PAGO - Conexão de Pagamentos</h2>
+                            <p id="mp-status-text">Conecte sua conta do Mercado Pago para receber doações diretamente.
+                            </p>
 
-                        <div id="mp-button-container">
-                            <button class="btn btn-primary" id="btn-conectar-mp">
-                                Mercado Pago
-                            </button>
+                            <div id="mp-button-container">
+                                <button class="btn btn-primary" style="font-weight: bold !important;"
+                                    id="btn-conectar-mp">
+                                    Conectar!
+                                </button>
+                            </div>
+
+                            <div id="mp-connected-info" style="display: none;">
+                                <p id="i">Sua instituiçao está pronta para receber doações!<br>Você pode se desconectar a qualquer momento.</p>
+                                <button class="btn btn-danger btn-sm" style="font-weight: bold !important;"
+                                    id="btn-desconectar-mp">
+                                    Desconectar
+                                </button>
+                            </div>
                         </div>
-
-                        <div id="mp-connected-info" style="display: none;">
-                            <p style="color: #28a745;">✓ Conectado ao Mercado Pago</p>
-                            <button class="btn btn-danger btn-sm" id="btn-desconectar-mp">
-                                Desconectar
-                            </button>
+                        <div class="metade1">
+                            <img src="/assets/imgs/comprador/mp.png" id="mp_logo" alt="Logo do Mercado Pago">
                         </div>
                     </div>
 

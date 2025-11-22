@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (userData.mp_connected) {
             document.getElementById('mp-button-container').style.display = 'none';
             document.getElementById('mp-connected-info').style.display = 'block';
-            document.getElementById('mp-status-text').textContent = 'Sua conta está conectada e pronta para receber doações!';
+            document.getElementById('mp-status-text').textContent = 'Sua conta está conectada.';
         } else {
             document.getElementById('mp-button-container').style.display = 'block';
             document.getElementById('mp-connected-info').style.display = 'none';

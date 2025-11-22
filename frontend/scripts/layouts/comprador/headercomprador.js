@@ -29,8 +29,6 @@ function initializeHeader(session) {
         }
 
         injectHeaderStyles() {
-            // SEU CÓDIGO CSS VEM AQUI, SEM MUDANÇAS
-            // (Eu resumi, mas cole o seu aqui)
             const css = `
                 :root {
                         --primary-color: #693B11;
@@ -102,6 +100,7 @@ function initializeHeader(session) {
                         justify-content: center;
                         margin-right: auto;
                         color: #D3D3D3;
+                        overflow: hidden;
                     }
 
                     #container-logo {
@@ -296,6 +295,33 @@ function initializeHeader(session) {
                         transition: .2s ease;
                     }
 
+                    /* ===== ANIMAÇÃO DE SHIMMER PARA A LOGO ===== */
+                    @keyframes shimmer {
+                        0% {
+                            background-position: -1000px 0;
+                        }
+                        100% {
+                            background-position: 1000px 0;
+                        }
+                    }
+
+                    .logo-da-ong.loading {
+                        background: linear-gradient(
+                            90deg,
+                            #e0e0e0 0%,
+                            #f0f0f0 25%,
+                            #e0e0e0 50%,
+                            #f0f0f0 75%,
+                            #e0e0e0 100%
+                        );
+                        background-size: 1000px 100%;
+                        animation: shimmer 2s infinite;
+                    }
+
+                    .logo-da-ong.loading img {
+                        opacity: 0;
+                    }
+
                     @media (max-width: 1024px) {
                         .desktop-nav, .right-section { display: none; }
                         .sidebar-toggle { display: block; }
@@ -344,7 +370,7 @@ function initializeHeader(session) {
                     <div class="header-content">
                         <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
                         <div id="container-logo">
-                            <a href="/dashboard" class="logo-da-ong" id="headerLogoLink"></a>
+                            <a href="/dashboard" class="logo-da-ong loading" id="headerLogoLink"></a>
                         </div>
                         <div class="right-section">
                             <a href="/perfil" class="profile-button" id="profileButton">
@@ -364,26 +390,17 @@ function initializeHeader(session) {
             container.innerHTML = headerHTML;
         }
 
-        // ===================================================================
-        // ===== CORREÇÃO PRINCIPAL APLICADA AQUI =====
-        // ===================================================================
         initializeHeaderScripts(session) {
-            // Selecionamos apenas os elementos que ainda existem
             const userNameSpan = document.getElementById('headerUserName');
             const sidebarToggle = document.getElementById('sidebarToggle');
-            // O ID do botão de logout foi atualizado para evitar conflitos
             const logoutButton = document.getElementById('headerLogoutButton'); 
             const logoLink = document.getElementById('headerLogoLink');
             const profilePhotoImg = document.getElementById('headerProfilePhoto');
             
-            // TODA a lógica de abrir/fechar o dropdown foi removida.
-
-            // Lógica do botão da sidebar (continua igual)
             if(sidebarToggle && typeof toggleSidebar === 'function') {
                 sidebarToggle.addEventListener('click', () => toggleSidebar());
             }
 
-            // Lógica do Logout (agora no novo botão)
             if (logoutButton) {
                 logoutButton.addEventListener('click', async (e) => {
                     e.preventDefault();
@@ -399,7 +416,6 @@ function initializeHeader(session) {
                 });
             }
             
-            // Lógica para buscar e mostrar o nome (continua igual)
             async function fetchUserProfile() {
                 const token = session.access_token;
                 try {
@@ -416,18 +432,24 @@ function initializeHeader(session) {
                         logoLink.innerHTML = ''; 
                         logoLink.style.backgroundColor = 'transparent';
                         const logoImg = document.createElement('img');
-                        // Define o src com a URL segura vinda do backend
                         logoImg.src = userData.url_logo;
                         logoImg.alt = `Logo de ${userData.nome}`;
-                        // Adiciona a imagem dentro do link
+                        
+                        logoImg.onload = () => {
+                            logoLink.classList.remove('loading');
+                        };
+
+                        logoImg.onerror = () => {
+                            logoLink.classList.remove('loading');
+                            console.warn('Erro ao carregar a imagem da logo');
+                        };
+
                         logoLink.appendChild(logoImg);
                     }
 
                     if (profilePhotoImg && userData.url_foto_perfil) {
                         profilePhotoImg.src = userData.url_foto_perfil;
                     } else if (profilePhotoImg) {
-                        // Se não houver foto, esconde a imagem para não mostrar um ícone quebrado
-                        // Você pode definir um src para uma imagem de placeholder aqui se quiser
                         profilePhotoImg.src = '/assets/imgs/comprador/avatar-padrao.jpg'; 
                     }
                     

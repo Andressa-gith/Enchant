@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const systemPrompt = `Você é um assistente virtual da plataforma Enchant, especializado em ajudar ONGs a gerenciar suas operações e usar a plataforma. Seja sempre prestativo, educado e objetivo.
 
@@ -87,5 +90,92 @@ export const handleChatRequest = async (req, res) => {
     } catch (error) {
         console.error('Erro ao chamar a API da Gemini:', error.response?.data || error.message);
         res.status(500).json({ message: 'Erro ao se comunicar com o assistente de IA.' });
+    }
+};
+
+export const buscarNoticiaMunicipio = async (req, res) => {
+    try {
+        const { nomeMunicipio, estado } = req.query;
+
+        if (!nomeMunicipio || !estado) {
+            return res.status(400).json({ message: 'Nome do município e estado são obrigatórios.' });
+        }
+
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.5-pro",
+            tools: [{ googleSearch: {} }] 
+        });
+
+        const prompt = `Você é um assistente especializado em buscar informações sobre desastres naturais no Brasil.
+
+TAREFA: Busque informações recentes sobre enchentes, inundações, alagamentos ou enxurradas no município de ${nomeMunicipio} - ${estado}.
+
+INSTRUÇÕES:
+1. Se houver notícias recentes (últimos 2 anos), forneça:
+   - Título da notícia
+   - Breve resumo (máximo 150 palavras)
+   - Data aproximada do evento
+   - Nível de severidade (Baixo/Médio/Alto/Crítico)
+   - URL da fonte (se disponível)
+   
+2. Se NÃO houver notícias recentes, forneça:
+   - Informações gerais sobre o histórico de riscos do município
+   - Recomendações de prevenção
+   - Indicar que não há registros recentes
+
+3. SEMPRE responda em JSON válido com esta estrutura:
+{
+  "encontrou": true ou false,
+  "titulo": "Título da notícia ou informação",
+  "resumo": "Texto do resumo",
+  "data": "Data aproximada ou 'Informação histórica'",
+  "severidade": "Baixo/Médio/Alto/Crítico/Sem dados",
+  "fonte": "Fonte da informação ou 'Histórico geral'",
+  "url_fonte": "URL completa da fonte (ou null se não houver)"
+}
+
+IMPORTANTE: 
+- Responda APENAS com o JSON, sem nenhum texto adicional antes ou depois
+- NÃO use markdown ou crases
+- Seja factual e baseado em informações reais
+- Se não tiver certeza, indique "encontrou": false
+- Se tiver uma URL válida, inclua em "url_fonte", senão use null`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let texto = response.text().trim();
+
+        texto = texto.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+        try {
+            const noticiaData = JSON.parse(texto);
+            res.status(200).json(noticiaData);
+        } catch (parseError) {
+            console.error('Erro ao parsear JSON da IA:', parseError);
+            console.log('Resposta da IA:', texto);
+            
+            res.status(200).json({
+                encontrou: false,
+                titulo: "Informações não disponíveis no momento",
+                resumo: "Não foi possível buscar informações atualizadas sobre este município. Consulte fontes oficiais como a Defesa Civil para dados precisos.",
+                data: "N/A",
+                severidade: "Sem dados",
+                fonte: "Sistema",
+                url_fonte: null
+            });
+        }
+
+    } catch (error) {
+        console.error('Erro ao buscar notícia:', error);
+        res.status(500).json({ 
+            message: 'Erro ao buscar informações.',
+            encontrou: false,
+            titulo: "Erro ao buscar informações",
+            resumo: "Ocorreu um erro ao tentar buscar informações sobre este município.",
+            data: "N/A",
+            severidade: "Sem dados",
+            fonte: "Sistema",
+            url_fonte: null
+        });
     }
 };

@@ -14,6 +14,7 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: #ffffff;
+    overflow-x: hidden;
 }
 
 /* Container principal */
@@ -128,11 +129,25 @@ body {
     color: #3d2106;
 }
 
+#mp_logo {
+    width: 150px;
+}
+
+p#i {
+    line-height: 1.3;
+}
+
 /* Grade de informações */
 .info-grid1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+}
+
+.info-item1#merp {
+    display: flex;
+    flex-direction: row !important;
+    gap: 90px;
 }
 
 .info-item1 {

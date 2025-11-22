@@ -89,14 +89,15 @@ Promise.all([
 }).catch(error => {
   console.error("Erro ao carregar os arquivos de dados do mapa:", error);
   setTimeout(() => {
-        window.SiteLoader?.hide();
+    window.SiteLoader?.hide();
   }, 500);
 });
 
 // FUNÇÃO PARA EXIBIR RESULTADO PADRÃO VAZIO
 function exibirResultadoPadrao() {
   const resultadoContainer = document.getElementById('resultado-consulta');
-  
+  const noticiasContainer = document.getElementById('noticias-municipio');
+
   resultadoContainer.innerHTML = `
     <div class="card-resultado">
       <h4>Nenhum município selecionado</h4>
@@ -143,6 +144,84 @@ function exibirResultadoPadrao() {
       </div>
     </div>
   `;
+
+  noticiasContainer.innerHTML = `
+    <div class="card-noticia">
+      <h4><i class="ph ph-newspaper"></i> Notícias sobre Enchentes</h4>
+      <div class="noticia-empty">
+        <i class="ph ph-magnifying-glass"></i>
+        <p>Pesquise por um município para ver notícias e informações sobre enchentes e alagamentos na região.</p>
+      </div>
+    </div>
+  `;
+}
+
+async function buscarNoticiasMunicipio(nomeMunicipio, estado) {
+  const noticiasContainer = document.getElementById('noticias-municipio');
+
+  noticiasContainer.innerHTML = `
+    <div class="card-noticia">
+      <h4><i class="ph ph-newspaper"></i> Notícias sobre Enchentes</h4>
+      <div class="noticia-loading">
+        <div class="spinner"></div>
+        <p>Buscando informações sobre ${nomeMunicipio}...</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    const response = await fetch(`/api/ai/noticias-municipio?nomeMunicipio=${encodeURIComponent(nomeMunicipio)}&estado=${encodeURIComponent(estado)}`);
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar notícias');
+    }
+
+    const noticia = await response.json();
+
+    const severidadeClass = `severidade-${noticia.severidade.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, '-')}`;
+
+    noticiasContainer.innerHTML = `
+      <div class="card-noticia">
+        <h4><i class="ph ph-newspaper"></i> Notícias sobre Enchentes</h4>
+        <div class="noticia-content">
+          <div class="noticia-header">
+            <h5 class="noticia-titulo">${noticia.titulo}</h5>
+            <div class="noticia-meta">
+              <div class="noticia-meta-item">
+                <i class="ph ph-calendar"></i>
+                <span>${noticia.data}</span>
+              </div>
+              <div class="noticia-meta-item">
+                <span class="severidade-badge ${severidadeClass}">
+                  ${noticia.severidade}
+                </span>
+              </div>
+            </div>
+          </div>
+          <p class="noticia-resumo">${noticia.resumo}</p>
+          <p class="noticia-fonte">
+            Fonte: ${noticia.url_fonte ? 
+              `<a href="${noticia.url_fonte}" target="_blank" rel="noopener noreferrer">${noticia.fonte}</a>` : 
+              noticia.fonte
+            }
+          </p>
+        </div>
+      </div>
+    `;
+
+  } catch (error) {
+    console.error('Erro ao buscar notícias:', error);
+
+    noticiasContainer.innerHTML = `
+      <div class="card-noticia">
+        <h4><i class="ph ph-newspaper"></i> Notícias sobre Enchentes</h4>
+        <div class="noticia-empty">
+          <i class="ph ph-warning"></i>
+          <p>Não foi possível carregar as informações no momento. Tente novamente mais tarde.</p>
+        </div>
+      </div>
+    `;
+  }
 }
 
 function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca, dadosExposicao, dados2030, dados2050) {
@@ -153,17 +232,25 @@ function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca
   function buscarMunicipio() {
     const nomeCidade = inputConsulta.value.trim().toLowerCase();
     if (nomeCidade === '') {
-      exibirResultadoPadrao(); // Volta ao estado padrão se busca vazia
+      exibirResultadoPadrao();
       return;
     }
 
-    // Usa a mesma lógica de busca do mapa
     const municipiosEncontrados = geojson.features.filter(feature =>
       feature.properties.name.split('/')[0].trim().toLowerCase() === nomeCidade
     );
 
     if (municipiosEncontrados.length === 0) {
       resultadoContainer.innerHTML = `<div class="card-resultado"><p>Município não encontrado.</p></div>`;
+      document.getElementById('noticias-municipio').innerHTML = `
+        <div class="card-noticia">
+          <h4><i class="ph ph-newspaper"></i> Notícias sobre Enchentes</h4>
+          <div class="noticia-empty">
+            <i class="ph ph-magnifying-glass"></i>
+            <p>Nenhum município selecionado.</p>
+          </div>
+        </div>
+      `;
       return;
     }
     else if (municipiosEncontrados.length === 1) {
@@ -191,9 +278,12 @@ function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca
 
     zoomParaMunicipio(municipiosEncontrados[0]);
 
+    const nomeCompleto = municipio.properties.name;
+    const [nomeMunicipio, siglaEstado] = nomeCompleto.split('/').map(s => s.trim());
+
     resultadoContainer.innerHTML = `
             <div class="card-resultado">
-                <h4>${municipio.properties.name}</h4>
+                <h4>${nomeCompleto}</h4>
                 <div class="resultado-grid">
                     <div class="resultado-item">
                         <span class="label">Risco (Presente)</span>
@@ -234,6 +324,8 @@ function configurarConsultaDetalhada(geojson, dadosRisco, dadosVuln, dadosAmeaca
                 </div>
             </div>
         `;
+
+    buscarNoticiasMunicipio(nomeMunicipio, siglaEstado);
   }
 
   botaoConsulta.addEventListener('click', buscarMunicipio);
@@ -471,7 +563,7 @@ function criarGraficoDeRisco(dadosCsv) {
           borderWidth: 1,
           displayColors: true,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return ' ' + context.parsed.y + ' municípios';
             }
           }
@@ -571,7 +663,7 @@ function criarGraficoDeRiscoEmpilhado(dadosPresente, dados2030, dados2050) {
             font: {
               family: "'Lexend Deca', sans-serif",
               size: 13,
-              weight: 'normal' 
+              weight: 'normal'
             },
             color: '#333'
           }
@@ -592,7 +684,7 @@ function criarGraficoDeRiscoEmpilhado(dadosPresente, dados2030, dados2050) {
           borderWidth: 1,
           displayColors: true,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return ' ' + context.parsed.y + ' municípios';
             }
           }
