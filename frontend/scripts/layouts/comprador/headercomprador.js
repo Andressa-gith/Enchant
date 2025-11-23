@@ -92,36 +92,33 @@ function initializeHeader(session) {
                         background-color: #D3D3D3;
                         border: none;
                         border-radius: 5px;
-                        width: 220px;
-                        height: 38px;
+                        width: 220px !important;
+                        height: 38px !important;
                         cursor: pointer;
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         margin-right: auto;
                         color: #D3D3D3;
-                        overflow: hidden;
+                        overflow: hidden !important
                     }
 
                     #container-logo {
-                        width: 220px;
-                        height: 40px;
+                        width: 220px !important;
+                        height: 40px !important;
 
-                        /* Empurra os outros itens (seção do perfil) para a direita */
                         margin-right: auto;
 
-                        /* Garante que o link dentro dele fique centralizado, se necessário */
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        overflow: hidden !important
                     }
 
                     .logo-da-ong img {
-                        /* Garante que a imagem se ajuste perfeitamente dentro do link */
-                        max-width: 100%;
-                        max-height: 100%;
+                        max-width: 100% !important;
+                        max-height: 100% !important;
 
-                        /* A propriedade mais importante: mantém a proporção do logo sem distorcer */
                         object-fit: contain;
                     }
 
