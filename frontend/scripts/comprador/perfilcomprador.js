@@ -1,6 +1,24 @@
 // Importa o cliente Supabase para fazer a autenticação
 import supabase from '/scripts/supabaseClient.js';
 
+// ✅ FUNÇÃO AUXILIAR: Obtém token válido antes de cada requisição
+async function getValidToken() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error || !session) {
+            console.error(' Sessão inválida:', error);
+            return null;
+        }
+        
+        console.log(' Token obtido com sucesso');
+        return session.access_token;
+    } catch (error) {
+        console.error(' Erro ao obter token:', error);
+        return null;
+    }
+}
+
 // Roda o script principal apenas quando o HTML estiver totalmente carregado
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. VERIFICA AUTENTICAÇÃO
@@ -104,10 +122,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchUserProfile() {
         try {
+            const token = await getValidToken();
+            if (!token) {
+                window.location.href = '/entrar';
+                return;
+            }
+
             const response = await fetch('/api/user/profile', {
-                headers: { 'Authorization': `Bearer ${session.access_token}` }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-            if (!response.ok) throw new Error(`Status: ${response.status}`);
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/entrar';
+                    return;
+                }
+                throw new Error(`Status: ${response.status}`);
+            }
+            
             const data = await response.json();
             userData = data;
             updateUI();
@@ -138,14 +170,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
+            const token = await getValidToken();
+            if (!token) {
+                window.location.href = '/entrar';
+                return;
+            }
+
             const response = await fetch('/api/user/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.access_token}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(dadosParaEnviar)
             });
+            
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.message || 'Falha ao salvar no servidor');
@@ -235,6 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // ✅ VERSÃO CORRIGIDA: saveProfilePhoto
     async function saveProfilePhoto() {
         if (!photoPreviewFile) {
             closeModal(ui.photoModal);
@@ -244,6 +284,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const modalValidacao = criarModalValidacao('Foto de Perfil');
         
         try {
+            // ✅ CORREÇÃO: Obtém token atualizado ANTES de fazer a requisição
+            const token = await getValidToken();
+            if (!token) {
+                fecharModalValidacao(modalValidacao);
+                showNotification('Sessão expirada. Redirecionando...', 'danger');
+                setTimeout(() => window.location.href = '/entrar', 2000);
+                return;
+            }
+
             await sleep(500);
             atualizarModalValidacao(modalValidacao, 20, 'Validando imagem...', 'Analisando conteúdo');
             adicionarLogValidacao(modalValidacao, ' Verificando se a imagem é apropriada', 'info');
@@ -251,23 +300,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             const formData = new FormData();
             formData.append('foto', photoPreviewFile);
 
+            console.log(' Enviando foto:', {
+                fileName: photoPreviewFile.name,
+                fileSize: photoPreviewFile.size,
+                fileType: photoPreviewFile.type
+            });
+
             await sleep(800);
             atualizarModalValidacao(modalValidacao, 40, 'Enviando para análise...', 'Conectando com IA');
             adicionarLogValidacao(modalValidacao, ' Enviando imagem para validação', 'info');
 
+            // ✅ USA O TOKEN ATUALIZADO
             const response = await fetch('/api/user/profile/foto', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${session.access_token}` },
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                },
                 body: formData
             });
 
+            console.log(' Status da resposta:', response.status);
             const result = await response.json();
+            console.log(' Resposta do servidor:', result);
 
             await sleep(1000);
             atualizarModalValidacao(modalValidacao, 70, 'Analisando conteúdo...', 'Verificando se é apropriada');
             adicionarLogValidacao(modalValidacao, ' IA analisando a imagem', 'info');
 
             if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Sessão expirada. Por favor, faça login novamente.');
+                }
+                
                 if (result.tipo_erro === 'validacao_ia') {
                     mostrarErroValidacao(modalValidacao, result.detalhes);
                     await sleep(8000);
@@ -289,17 +353,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeModal(ui.photoModal);
             showNotification('Foto de perfil atualizada com sucesso!', 'success');
             photoPreviewFile = null;
-            window.location.reload();
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
 
         } catch (error) {
+            console.error(' Erro ao salvar foto:', error);
             mostrarErroValidacao(modalValidacao, error.message);
             await sleep(5000);
             fecharModalValidacao(modalValidacao);
             closeModal(ui.photoModal);
-            showNotification(error.message, 'danger');
+            
+            if (error.message.includes('Sessão expirada') || error.message.includes('login')) {
+                setTimeout(() => {
+                    window.location.href = '/entrar';
+                }, 2000);
+            } else {
+                showNotification(error.message, 'danger');
+            }
         }
     }
 
+    // ✅ VERSÃO CORRIGIDA: saveOrganizationLogo
     async function saveOrganizationLogo() {
         if (!logoPreviewFile) {
             closeModal(ui.logoModal);
@@ -309,6 +385,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const modalValidacao = criarModalValidacao('Logo');
         
         try {
+            // ✅ CORREÇÃO: Obtém token atualizado ANTES de fazer a requisição
+            const token = await getValidToken();
+            if (!token) {
+                fecharModalValidacao(modalValidacao);
+                showNotification('Sessão expirada. Redirecionando...', 'danger');
+                setTimeout(() => window.location.href = '/entrar', 2000);
+                return;
+            }
+
             await sleep(500);
             atualizarModalValidacao(modalValidacao, 20, 'Validando logo...', 'Analisando conteúdo');
             adicionarLogValidacao(modalValidacao, ' Verificando se o logo é apropriado', 'info');
@@ -316,23 +401,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             const formData = new FormData();
             formData.append('logo', logoPreviewFile);
 
+            console.log(' Enviando logo:', {
+                fileName: logoPreviewFile.name,
+                fileSize: logoPreviewFile.size,
+                fileType: logoPreviewFile.type
+            });
+
             await sleep(800);
             atualizarModalValidacao(modalValidacao, 40, 'Enviando para análise...', 'Conectando com IA');
             adicionarLogValidacao(modalValidacao, ' Enviando logo para validação', 'info');
 
+            // ✅ USA O TOKEN ATUALIZADO
             const response = await fetch('/api/user/profile/logo', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${session.access_token}` },
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                },
                 body: formData
             });
 
+            console.log(' Status da resposta:', response.status);
             const result = await response.json();
+            console.log(' Resposta do servidor:', result);
 
             await sleep(1000);
             atualizarModalValidacao(modalValidacao, 70, 'Analisando conteúdo...', 'Verificando se é apropriado');
             adicionarLogValidacao(modalValidacao, ' IA analisando o logo', 'info');
 
             if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Sessão expirada. Por favor, faça login novamente.');
+                }
+                
                 if (result.tipo_erro === 'validacao_ia') {
                     mostrarErroValidacao(modalValidacao, result.detalhes);
                     await sleep(8000);
@@ -354,17 +454,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeModal(ui.logoModal);
             showNotification('Logo atualizado com sucesso!', 'success');
             logoPreviewFile = null;
-            window.location.reload();
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
 
         } catch (error) {
+            console.error(' Erro ao salvar logo:', error);
             mostrarErroValidacao(modalValidacao, error.message);
             await sleep(5000);
             fecharModalValidacao(modalValidacao);
             closeModal(ui.logoModal);
-            showNotification(error.message, 'danger');
+            
+            if (error.message.includes('Sessão expirada') || error.message.includes('login')) {
+                setTimeout(() => {
+                    window.location.href = '/entrar';
+                }, 2000);
+            } else {
+                showNotification(error.message, 'danger');
+            }
         }
     }
 
+    // [... resto do código permanece igual ...]
     // ✅ FUNÇÕES AUXILIARES DO MODAL DE VALIDAÇÃO
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -665,12 +777,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeModal(ui.logoModal);
             return showNotification('Formato não permitido. Use JPG, PNG ou SVG.', 'danger');
         }
-        if (file.size > 2 * 1024 * 1024) { // 2MB
+        if (file.size > 2 * 1024 * 1024) {
             closeModal(ui.logoModal);
             return showNotification('Arquivo muito grande (máx. 2MB).', 'danger');
         }
 
-        logoPreviewFile = file; // Armazena o arquivo para envio
+        logoPreviewFile = file;
         const reader = new FileReader();
         reader.onload = e => showLogoPreview(e.target.result);
         reader.readAsDataURL(file);
@@ -682,9 +794,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button type="button" class="logo-preview-remove" id="btn-clear-logo-preview">×</button>
         </div><p class="logo-preview-text">Clique em "Salvar"</p>`;
 
-        // Adiciona o listener para o botão de remover que acabou de ser criado
         document.getElementById('btn-clear-logo-preview').addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que o clique propague para a área de upload
+            e.stopPropagation();
             clearLogoPreview();
         });
     }
@@ -697,14 +808,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>`;
     }
 
-    // --- Validação de Formulário ---
-
     const validadores = {
         nome: (val) => val.trim().length >= 3 ? { v: true } : { v: false, m: "O nome deve ter pelo menos 3 caracteres." },
         email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? { v: true } : { v: false, m: "Formato de email inválido." },
         senha: (val) => !val || (val.length >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val) && /[!@#$%^&*()]/.test(val)) ? { v: true } : { v: false, m: "A senha não atende aos requisitos." },
-        cnpj: (val) => val.length === 18 ? { v: true } : { v: false, m: "CNPJ inválido." }, // Validação simples
-        telefone: (val) => val.length >= 14 ? { v: true } : { v: false, m: "Telefone inválido." }, // Validação simples
+        cnpj: (val) => val.length === 18 ? { v: true } : { v: false, m: "CNPJ inválido." },
+        telefone: (val) => val.length >= 14 ? { v: true } : { v: false, m: "Telefone inválido." },
     };
 
     function validarFormulario() {
@@ -730,9 +839,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function configurarMascaraCNPJ() {
         if (!ui.editCnpj) return;
-        ui.editCnpj.setAttribute('maxlength', '18'); // Limita o tamanho do campo
+        ui.editCnpj.setAttribute('maxlength', '18');
         ui.editCnpj.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            let value = e.target.value.replace(/\D/g, '');
             value = value.replace(/^(\d{2})(\d)/, '$1.$2');
             value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
             value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
@@ -743,7 +852,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function configurarMascaraTelefone() {
         if (!ui.editPhone) return;
-        ui.editPhone.setAttribute('maxlength', '15'); // Limita para (XX) XXXXX-XXXX
+        ui.editPhone.setAttribute('maxlength', '15');
         ui.editPhone.addEventListener('input', (e) => {
             let value = e.target.value.replace(/\D/g, '');
             value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
@@ -756,53 +865,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- Conexão dos Eventos ---
-
     function conectarEventos() {
-        // Abrir Modais
         ui.btnOpenEditModal.addEventListener('click', () => openModal(ui.editModal));
         ui.btnOpenPhotoModal.addEventListener('click', () => openModal(ui.photoModal));
         ui.btnOpenLogoModal.addEventListener('click', () => openModal(ui.logoModal));
 
-        // Fechar Modais (Botões 'X' e 'Cancelar')
         [
             ui.btnCloseEditModalX, ui.btnCancelEditModal,
             ui.btnClosePhotoModalX, ui.btnCancelPhotoModal,
             ui.btnCloseLogoModalX, ui.btnCancelLogoModal
         ].forEach(btn => btn.addEventListener('click', closeAllModals));
 
-        // Ações dos Modais (Salvar)
         ui.btnSaveChanges.addEventListener('click', saveProfileChanges);
-
         ui.btnSavePhoto.addEventListener('click', saveProfilePhoto);
         ui.btnSaveLogo.addEventListener('click', saveOrganizationLogo);
 
-        // Outros eventos
         ui.editPassword.addEventListener('input', checkPasswordStrength);
 
         const btnConectar = document.getElementById('btn-conectar-mp');
         if (btnConectar) {
-            btnConectar.addEventListener('click', () => {
-                const instituicaoId = userData.id; // Pega o ID do usuário logado
+            btnConectar.addEventListener('click', async () => {
+                const token = await getValidToken();
+                if (!token) {
+                    showNotification('Sessão expirada. Faça login novamente.', 'danger');
+                    setTimeout(() => window.location.href = '/entrar', 2000);
+                    return;
+                }
 
-                // Abre popup
+                const instituicaoId = userData.id;
                 const width = 600;
                 const height = 700;
                 const left = (screen.width - width) / 2;
                 const top = (screen.height - height) / 2;
 
-                console.log("🟢 userData:", userData)
                 const popup = window.open(
                     `/api/mercado-pago/authorize?id=${instituicaoId}`,
                     'Mercado Pago',
                     `width=${width},height=${height},left=${left},top=${top}`
                 );
 
-                // Escuta mensagens da popup
                 window.addEventListener('message', function handler(event) {
                     if (event.data.type === 'mp-success') {
                         showNotification('✓ Mercado Pago conectado com sucesso!', 'success');
-                        fetchUserProfile(); // Recarrega dados
+                        fetchUserProfile();
                         window.removeEventListener('message', handler);
                     } else if (event.data.type === 'mp-error') {
                         showNotification(`Erro: ${event.data.message || 'Não foi possível conectar'}`, 'danger');
@@ -812,16 +917,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Botão de desconectar MP
         const btnDesconectar = document.getElementById('btn-desconectar-mp');
         if (btnDesconectar) {
             btnDesconectar.addEventListener('click', async () => {
                 if (!confirm('Deseja desconectar o Mercado Pago?')) return;
 
                 try {
+                    const token = await getValidToken();
+                    if (!token) {
+                        showNotification('Sessão expirada', 'danger');
+                        setTimeout(() => window.location.href = '/entrar', 2000);
+                        return;
+                    }
+
                     const response = await fetch('/api/mercado-pago/disconnect', {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${session.access_token}` }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
 
                     if (!response.ok) throw new Error('Erro');
@@ -835,16 +946,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-
     // 5. INICIALIZAÇÃO
-    // Ponto de partida da aplicação na página
-
-    await fetchUserProfile(); // Busca os dados do usuário e atualiza a UI
-    setupPasswordToggles();   // Configura os botões de mostrar/esconder senha
-    setupLogoUpload();        // Configura a área de arrastar e soltar logo
-    setupPhotoUpload();  
-    setupCharCounter(); //contador la
-    conectarEventos();        // Conecta todos os botões às suas funções
+    await fetchUserProfile();
+    setupPasswordToggles();
+    setupLogoUpload();
+    setupPhotoUpload();
+    setupCharCounter();
+    conectarEventos();
+    
     setTimeout(() => {
         window.SiteLoader?.hide();
     }, 500);
@@ -877,10 +986,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (mensagem) {
             showNotification(mensagem, tipo);
-            // Limpa a URL
             window.history.replaceState({}, document.title, window.location.pathname);
 
-            // Recarrega os dados se conectou com sucesso
             if (status === 'mp-conectado') {
                 await fetchUserProfile();
             }
