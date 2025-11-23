@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             updateProgress(15, 'Dados coletados com sucesso!', '');
-            addLog('✅ Informações coletadas com sucesso', 'success');
+            addLog(' Informações coletadas com sucesso', 'success');
             await sleep(1000);
 
             const totalDocumentos = Object.values(arquivosPorCategoria)
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             updateProgress(35, 'Todos os documentos anexados!', '');
-            addLog('✅ Todos os documentos foram anexados com sucesso', 'success');
+            addLog(' Todos os documentos foram anexados com sucesso', 'success');
             await sleep(1200);
 
             updateProgress(40, 'Enviando requisição para o servidor...', 'Isso pode levar alguns minutos');
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             updateProgress(55, 'Dados recebidos pelo servidor!', '');
-            addLog('✅ Servidor recebeu os dados com sucesso', 'success');
+            addLog(' Servidor recebeu os dados com sucesso', 'success');
             await sleep(1000);
 
             updateProgress(60, ' Iniciando validação...', '');
@@ -587,12 +587,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 await sleep(1500);
                 
                 validados++;
-                addLog(`✅ Documentos de ${categoria} aprovados pela IA`, 'success');
+                addLog(` Documentos de ${categoria} aprovados pela IA`, 'success');
                 await sleep(1000);
             }
 
             updateProgress(85, 'Validação concluída!', 'Todos os documentos foram aprovados');
-            addLog('✅ Todos os documentos foram validados com sucesso', 'success');
+            addLog(' Todos os documentos foram validados com sucesso', 'success');
             await sleep(1500);
 
             updateProgress(90, 'Processando requisição final...', '');
@@ -609,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
             addLog(' Salvando suas informações no sistema', 'info');
             await sleep(1000);
 
-            updateProgress(100, '✅ Requisição enviada com sucesso!', '');
+            updateProgress(100, ' Requisição enviada com sucesso!', '');
             addLog(' Requisição processada com sucesso!', 'success');
             await sleep(800);
             addLog(' Você receberá um email quando sua conta for aprovada', 'success');
@@ -626,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } catch (error) {
             console.error('Erro ao enviar solicitação:', error);
-            addLog(`❌ Erro: ${error.message}`, 'error');
+            addLog(` Erro: ${error.message}`, 'error');
             updateProgress(0, 'Erro ao processar requisição', '');
             
             await sleep(3000);

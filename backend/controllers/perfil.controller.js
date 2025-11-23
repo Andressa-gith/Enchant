@@ -1,13 +1,8 @@
 import supabase from '../db/supabaseAdmin.js';
 import logger from '../utils/logger.js';
+import { validarImagemComIA } from '../utils/imageValidator.js';
 
 class UserProfileController {
-    /**
-     * Busca os dados de perfil completos da instituição logada, incluindo informações de tabelas relacionadas.
-     * Gera URLs assinadas para a foto de perfil e logo, se existirem.
-     * @param {object} req - Objeto de requisição do Express.
-     * @param {object} res - Objeto de resposta do Express.
-     */
     async getProfile(req, res) {
         logger.info('Iniciando busca de dados de perfil...');
         try {
@@ -50,7 +45,7 @@ class UserProfileController {
                 logger.info(`Gerando URL assinada para foto do perfil: ${data.caminho_foto_perfil}`);
                 const { data: urlData, error: urlError } = await supabase.storage
                     .from('profile-photos')
-                    .createSignedUrl(data.caminho_foto_perfil, 3600); // URL válida por 1 hora
+                    .createSignedUrl(data.caminho_foto_perfil, 3600);
 
                 if (urlError) {
                     logger.warn('Falha ao gerar URL assinada para foto. Usando URL pública como fallback.', urlError);
@@ -65,7 +60,7 @@ class UserProfileController {
                 logger.info(`Gerando URL assinada para logo: ${data.caminho_logo}`);
                 const { data: urlData, error: urlError } = await supabase.storage
                     .from('logos')
-                    .createSignedUrl(data.caminho_logo, 3600); // URL válida por 1 hora
+                    .createSignedUrl(data.caminho_logo, 3600);
 
                 if (urlError) {
                     logger.warn('Falha ao gerar URL assinada para logo. Usando URL pública como fallback.', urlError);
@@ -85,23 +80,16 @@ class UserProfileController {
         }
     }
 
-    /**
-     * Atualiza os dados de perfil da instituição logada em múltiplas tabelas (auth, instituicao, telefone, endereco).
-     * @param {object} req - Objeto de requisição do Express.
-     * @param {object} res - Objeto de resposta do Express.
-     */
     async updateProfile(req, res) {
         logger.info('Iniciando processo de atualização de perfil...');
         try {
             const usuarioId = req.user.id;
             const { nome, email_contato, email, senha, cnpj, telefone, cidade, estado, caminho_foto_perfil, caminho_logo, sobre } = req.body;
 
-            // Log de debug sem dados sensíveis (senha)
             const debugData = { ...req.body };
             delete debugData.senha;
             logger.debug(`Dados recebidos para atualização do usuário ID: ${usuarioId}`, debugData);
 
-            // 1. Atualiza dados de autenticação (email/senha), se fornecidos
             const authUpdateData = {};
             if (email && email !== req.user.email) authUpdateData.email = email;
             if (senha) authUpdateData.password = senha;
@@ -118,7 +106,6 @@ class UserProfileController {
                 }
             }
             
-            // 2. Atualiza a tabela 'instituicao'
             const instituicaoData = { nome, email_contato, cnpj, caminho_foto_perfil, caminho_logo, sobre };
             Object.keys(instituicaoData).forEach(key => instituicaoData[key] === undefined && delete instituicaoData[key]);
             if (Object.keys(instituicaoData).length > 0) {
@@ -127,14 +114,12 @@ class UserProfileController {
                 if (instituicaoError) throw instituicaoError;
             }
 
-            // 3. Usa 'upsert' para a tabela 'telefone'
             if (telefone !== undefined) {
                 logger.info(`Fazendo upsert do telefone para o usuário ID: ${usuarioId}`);
                 const { error: telefoneError } = await supabase.from('telefone').upsert({ numero: telefone, instituicao_id: usuarioId }, { onConflict: 'instituicao_id' });
                 if (telefoneError) throw telefoneError;
             }
 
-            // 4. Usa 'upsert' para a tabela 'endereco'
             if (cidade !== undefined || estado !== undefined) {
                 logger.info(`Fazendo upsert do endereço para o usuário ID: ${usuarioId}`);
                 const { error: enderecoError } = await supabase.from('endereco').upsert({ cidade: cidade, estado: estado, instituicao_id: usuarioId }, { onConflict: 'instituicao_id' });
@@ -150,11 +135,149 @@ class UserProfileController {
         }
     }
 
-    /**
-     * Marca o primeiro login do usuário como falso, indicando que o tutorial foi visto.
-     * @param {object} req - Objeto de requisição do Express.
-     * @param {object} res - Objeto de resposta do Express.
-     */
+    // ✅ NOVO: Upload de foto de perfil COM VALIDAÇÃO IA
+    async uploadFotoPerfil(req, res) {
+        logger.info(' Iniciando upload de foto de perfil com validação IA...');
+        let filePath;
+        
+        try {
+            const usuarioId = req.user.id;
+            
+            if (!req.file) {
+                return res.status(400).json({ message: 'Nenhuma foto foi enviada.' });
+            }
+
+            const file = req.file;
+            logger.info(` Validando foto de perfil com IA para usuário ID: ${usuarioId}`);
+            
+            // ✅ VALIDAÇÃO COM IA
+            const validacao = await validarImagemComIA(file.buffer, file.mimetype, 'perfil');
+
+            if (!validacao.valido) {
+                logger.warn(` Foto de perfil rejeitada pela IA: ${validacao.motivo}`);
+                return res.status(400).json({ 
+                    message: 'Imagem rejeitada pela análise automática.',
+                    detalhes: validacao.motivo,
+                    tipo_erro: 'validacao_ia'
+                });
+            }
+
+            logger.info(' Foto de perfil aprovada pela IA. Prosseguindo com upload...');
+
+            // Limpa o nome do arquivo
+            const cleanFileName = file.originalname
+                .replace(/\s+/g, '_')
+                .replace(/[^a-zA-Z0-9._-]/g, '')
+                .toLowerCase();
+
+            filePath = `${usuarioId}/${cleanFileName}`;
+
+            // Upload para o Supabase Storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('profile-photos')
+                .upload(filePath, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            // Atualiza o caminho no banco
+            const { error: updateError } = await supabase
+                .from('instituicao')
+                .update({ caminho_foto_perfil: uploadData.path })
+                .eq('id', usuarioId);
+
+            if (updateError) throw updateError;
+
+            logger.info(` Foto de perfil atualizada com sucesso para usuário ID: ${usuarioId}`);
+            res.status(200).json({ 
+                message: 'Foto de perfil validada e atualizada com sucesso!',
+                caminho: uploadData.path
+            });
+
+        } catch (error) {
+            logger.error('Erro ao fazer upload da foto de perfil:', error);
+            
+            if (filePath) {
+                logger.warn(`Erro detectado. Fazendo rollback do arquivo: ${filePath}`);
+                await supabase.storage.from('profile-photos').remove([filePath]);
+            }
+            
+            res.status(500).json({ message: 'Erro interno ao fazer upload da foto.' });
+        }
+    }
+
+    // ✅ NOVO: Upload de logo COM VALIDAÇÃO IA
+    async uploadLogo(req, res) {
+        logger.info(' Iniciando upload de logo com validação IA...');
+        let filePath;
+        
+        try {
+            const usuarioId = req.user.id;
+            
+            if (!req.file) {
+                return res.status(400).json({ message: 'Nenhum logo foi enviado.' });
+            }
+
+            const file = req.file;
+            logger.info(` Validando logo com IA para usuário ID: ${usuarioId}`);
+            
+            // ✅ VALIDAÇÃO COM IA
+            const validacao = await validarImagemComIA(file.buffer, file.mimetype, 'logo');
+
+            if (!validacao.valido) {
+                logger.warn(` Logo rejeitado pela IA: ${validacao.motivo}`);
+                return res.status(400).json({ 
+                    message: 'Imagem rejeitada pela análise automática.',
+                    detalhes: validacao.motivo,
+                    tipo_erro: 'validacao_ia'
+                });
+            }
+
+            logger.info(' Logo aprovado pela IA. Prosseguindo com upload...');
+
+            const cleanFileName = file.originalname
+                .replace(/\s+/g, '_')
+                .replace(/[^a-zA-Z0-9._-]/g, '')
+                .toLowerCase();
+
+            filePath = `${usuarioId}/${cleanFileName}`;
+
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('logos')
+                .upload(filePath, file.buffer, {
+                    contentType: file.mimetype,
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            const { error: updateError } = await supabase
+                .from('instituicao')
+                .update({ caminho_logo: uploadData.path })
+                .eq('id', usuarioId);
+
+            if (updateError) throw updateError;
+
+            logger.info(` Logo atualizado com sucesso para usuário ID: ${usuarioId}`);
+            res.status(200).json({ 
+                message: 'Logo validado e atualizado com sucesso!',
+                caminho: uploadData.path
+            });
+
+        } catch (error) {
+            logger.error('Erro ao fazer upload do logo:', error);
+            
+            if (filePath) {
+                logger.warn(`Erro detectado. Fazendo rollback do arquivo: ${filePath}`);
+                await supabase.storage.from('logos').remove([filePath]);
+            }
+            
+            res.status(500).json({ message: 'Erro interno ao fazer upload do logo.' });
+        }
+    }
+
     async marcarTutorialVisto(req, res) {
         logger.info('Marcando o tutorial como visto...');
         try {
@@ -177,18 +300,9 @@ class UserProfileController {
         }
     }
     
-    /**
-     * Processa a requisição de logout. (OBS: A invalidação do token ocorre no frontend).
-     * @param {object} req - Objeto de requisição do Express.
-     * @param {object} res - Objeto de resposta do Express.
-     */
     logout(req, res) {
         logger.info('Requisição de logout recebida no servidor.');
         try {
-            // A principal lógica de logout (limpar o token) é feita no cliente.
-            // O servidor pode limpar cookies httpOnly se estiverem sendo usados.
-            // res.clearCookie('auth_token'); // Exemplo se estivesse usando cookies.
-            
             res.status(200).json({ message: 'Logout sinalizado pelo servidor.' });
         } catch (error) {
             logger.error('Erro no endpoint de logout.', error);

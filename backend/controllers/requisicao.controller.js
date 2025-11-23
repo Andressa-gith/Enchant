@@ -79,11 +79,11 @@ async function validarDocumentoComIA(arquivo, categoria) {
         const texto = response.text().trim().toUpperCase();
 
         if (texto.startsWith('VÁLIDO')) {
-            logger.info(`✅ Documento ${categoria} aprovado pela IA.`);
+            logger.info(` Documento ${categoria} aprovado pela IA.`);
             return { valido: true, motivo: null };
         } else {
             const motivo = texto.replace('INVÁLIDO:', '').trim() || 'Documento não atende aos critérios';
-            logger.warn(`❌ Documento ${categoria} rejeitado: ${motivo}`);
+            logger.warn(` Documento ${categoria} rejeitado: ${motivo}`);
             return { valido: false, motivo: motivo };
         }
 
@@ -95,6 +95,9 @@ async function validarDocumentoComIA(arquivo, categoria) {
 
 
 
+/**
+ * Envia email para o ADMIN com botões de aprovação/rejeição (RESEND)
+ */
 /**
  * Envia email para o ADMIN com botões de aprovação/rejeição (RESEND)
  */
@@ -120,9 +123,9 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
                 }
 
                 return `
-                    <li style="padding: 10px; background: #FFFFFF; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #C79E76;">
+                    <li style="padding: 10px; background: #FFFFFF; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #8B4513;">
                         <strong style="color: #693B11; font-size: 11px; text-transform: uppercase; font-family: 'Lexend Deca', sans-serif;">${doc.categoria_documento}</strong>: 
-                        <a href="${data.signedUrl}" target="_blank" style="color: #4E3629; text-decoration: underline; font-family: 'Lexend Deca', sans-serif;">
+                        <a href="${data.signedUrl}" target="_blank" style="color: #8B4513; text-decoration: underline; font-family: 'Lexend Deca', sans-serif;">
                             ${doc.nome_arquivo_original}
                         </a>
                     </li>
@@ -138,52 +141,55 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
                 <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700&family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet">
             </head>
             <body style="font-family: 'Lexend Deca', sans-serif; background-color: #F5F5F5; padding: 20px; margin: 0;">
-                <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1.5px solid #4E3629;">
+                <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #8B4513;">
                     
                     <!-- Header -->
-                    <div style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); padding: 30px 20px; text-align: center; border-bottom: 2px solid #C79E76;">
-                        <h1 style="font-family: 'Passion One', cursive; color: #4E3629; font-size: 32px; margin: 0; font-weight: 400;">Nova Requisição de Cadastro</h1>
-                        <p style="font-family: 'Lexend Deca', sans-serif; color: #693B11; margin: 8px 0 0 0; font-size: 14px;">Enchant - Painel Administrativo</p>
+                    <div style="background: linear-gradient(135deg, #8B4513 0%, #693B11 100%); padding: 35px 20px; text-align: center;">
+                        <h1 style="font-family: 'Passion One', cursive; color: #FFFFFF; font-size: 36px; margin: 0; font-weight: 400; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">Nova Requisição de Cadastro</h1>
+                        <p style="font-family: 'Lexend Deca', sans-serif; color: #F5E6D3; margin: 10px 0 0 0; font-size: 15px; font-weight: 300;">Enchant - Painel Administrativo</p>
                     </div>
                     
                     <!-- Body -->
-                    <div style="padding: 30px 20px;">
-                        <p style="margin: 0 0 20px 0; font-size: 15px; color: #535151; font-family: 'Lexend Deca', sans-serif;">
-                            Uma nova instituição solicitou cadastro. Documentos validados pela IA ✅
+                    <div style="padding: 35px 25px;">
+                        <p style="margin: 0 0 25px 0; font-size: 15px; color: #333; font-family: 'Lexend Deca', sans-serif; line-height: 1.6;">
+                            Uma nova instituição solicitou cadastro na plataforma Enchant. Todos os documentos foram validados automaticamente pela IA 
                         </p>
                         
                         <!-- Info Card -->
-                        <div style="background: #F9E7D2; border: 1px solid #C79E76; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                            <h3 style="color: #693B11; font-size: 18px; margin: 0 0 15px 0; font-family: 'Lexend Deca', sans-serif; font-weight: 600;">Informações da Instituição</h3>
-                            <p style="margin: 5px 0; font-family: 'Lexend Deca', sans-serif; color: #4E3629; font-size: 14px;"><strong>Nome:</strong> ${requisicao.nome_instituicao}</p>
-                            <p style="margin: 5px 0; font-family: 'Lexend Deca', sans-serif; color: #4E3629; font-size: 14px;"><strong>Email:</strong> ${requisicao.email_contato}</p>
-                            <p style="margin: 5px 0; font-family: 'Lexend Deca', sans-serif; color: #4E3629; font-size: 14px;"><strong>CNPJ:</strong> ${requisicao.cnpj}</p>
-                            <p style="margin: 5px 0; font-family: 'Lexend Deca', sans-serif; color: #4E3629; font-size: 14px;"><strong>Telefone:</strong> ${requisicao.telefone}</p>
-                            <p style="margin: 5px 0; font-family: 'Lexend Deca', sans-serif; color: #4E3629; font-size: 14px;"><strong>Localização:</strong> ${requisicao.cidade} - ${requisicao.estado}</p>
+                        <div style="background: linear-gradient(135deg, #F5E6D3 0%, #E8D4BA 100%); border: 2px solid #8B4513; border-radius: 10px; padding: 25px; margin: 25px 0; box-shadow: 0 2px 8px rgba(139,69,19,0.1);">
+                            <h3 style="color: #693B11; font-size: 20px; margin: 0 0 18px 0; font-family: 'Lexend Deca', sans-serif; font-weight: 600; border-bottom: 2px solid #8B4513; padding-bottom: 10px;"> Informações da Instituição</h3>
+                            <p style="margin: 8px 0; font-family: 'Lexend Deca', sans-serif; color: #333; font-size: 14px; line-height: 1.8;"><strong style="color: #693B11;">Nome:</strong> ${requisicao.nome_instituicao}</p>
+                            <p style="margin: 8px 0; font-family: 'Lexend Deca', sans-serif; color: #333; font-size: 14px; line-height: 1.8;"><strong style="color: #693B11;">Email:</strong> ${requisicao.email_contato}</p>
+                            <p style="margin: 8px 0; font-family: 'Lexend Deca', sans-serif; color: #333; font-size: 14px; line-height: 1.8;"><strong style="color: #693B11;">CNPJ:</strong> ${requisicao.cnpj}</p>
+                            <p style="margin: 8px 0; font-family: 'Lexend Deca', sans-serif; color: #333; font-size: 14px; line-height: 1.8;"><strong style="color: #693B11;">Telefone:</strong> ${requisicao.telefone}</p>
+                            <p style="margin: 8px 0; font-family: 'Lexend Deca', sans-serif; color: #333; font-size: 14px; line-height: 1.8;"><strong style="color: #693B11;">Localização:</strong> ${requisicao.cidade} - ${requisicao.estado}</p>
                         </div>
                         
                         <!-- Documents Card -->
-                        <div style="background: #F9E7D2; border: 1px solid #C79E76; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                            <h3 style="color: #693B11; font-size: 18px; margin: 0 0 15px 0; font-family: 'Lexend Deca', sans-serif; font-weight: 600;">Documentos Enviados (${documentos.length})</h3>
+                        <div style="background: linear-gradient(135deg, #F5E6D3 0%, #E8D4BA 100%); border: 2px solid #8B4513; border-radius: 10px; padding: 25px; margin: 25px 0; box-shadow: 0 2px 8px rgba(139,69,19,0.1);">
+                            <h3 style="color: #693B11; font-size: 20px; margin: 0 0 18px 0; font-family: 'Lexend Deca', sans-serif; font-weight: 600; border-bottom: 2px solid #8B4513; padding-bottom: 10px;"> Documentos Enviados (${documentos.length})</h3>
                             <ul style="list-style: none; padding: 0; margin: 0;">
                                 ${linksDocumentos.join('')}
                             </ul>
-                            <p style="color: #757575; font-size: 11px; margin: 10px 0 0 0; font-family: 'Lexend Deca', sans-serif;">Links válidos por 7 dias</p>
+                            <p style="color: #666; font-size: 11px; margin: 12px 0 0 0; font-family: 'Lexend Deca', sans-serif; font-style: italic;"> Links válidos por 7 dias</p>
                         </div>
                         
                         <!-- Action Buttons -->
-                        <div style="text-align: center; margin: 30px 0; padding: 20px; background: #F9E7D2; border-radius: 8px; border: 1px solid #C79E76;">
-                            <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: #4E3629; font-family: 'Lexend Deca', sans-serif;">Revisar e Decidir</p>
-                            <a href="${urlAprovar}" style="display: inline-block; background: #e2ccae; color: #3d2106; padding: 12px 30px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: 600; font-family: 'Lexend Deca', sans-serif; font-size: 14px;">✅ Aprovar</a>
-                            <a href="${urlRejeitar}" style="display: inline-block; background: transparent; color: #000000; border: 1px solid #000000; padding: 12px 30px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: 600; font-family: 'Lexend Deca', sans-serif; font-size: 14px;">❌ Rejeitar</a>
+                        <div style="text-align: center; margin: 35px 0; padding: 25px; background: linear-gradient(135deg, #F5E6D3 0%, #E8D4BA 100%); border-radius: 10px; border: 2px solid #8B4513; box-shadow: 0 2px 8px rgba(139,69,19,0.1);">
+                            <p style="margin: 0 0 20px 0; font-size: 17px; font-weight: 600; color: #693B11; font-family: 'Lexend Deca', sans-serif;"> Revisar e Decidir</p>
+                            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                                <a href="${urlAprovar}" style="display: inline-block; background: linear-gradient(135deg, #8B4513 0%, #693B11 100%); color: #FFFFFF; padding: 14px 35px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: 600; font-family: 'Lexend Deca', sans-serif; font-size: 15px; box-shadow: 0 4px 12px rgba(139,69,19,0.3); transition: transform 0.2s;"> Aprovar Requisição</a>
+                                <a href="${urlRejeitar}" style="display: inline-block; background: transparent; color: #8B4513; border: 2px solid #8B4513; padding: 14px 35px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: 600; font-family: 'Lexend Deca', sans-serif; font-size: 15px; transition: all 0.2s;"> Rejeitar Requisição</a>
+                            </div>
                         </div>
                         
-                        <p style="text-align: center; color: #757575; font-size: 12px; margin: 20px 0 0 0; font-family: 'Lexend Deca', sans-serif;">ID: ${requisicao.id}</p>
+                        <p style="text-align: center; color: #999; font-size: 12px; margin: 25px 0 0 0; font-family: 'Lexend Deca', sans-serif; font-style: italic;">ID da Requisição: ${requisicao.id}</p>
                     </div>
                     
                     <!-- Footer -->
-                    <div style="background: #F9E7D2; padding: 20px; text-align: center; border-top: 2px solid #C79E76;">
-                        <p style="margin: 0; color: #4E3629; font-size: 12px; font-family: 'Lexend Deca', sans-serif;"><strong>Enchant</strong> - Salvador, Bahia • Brasil</p>
+                    <div style="background: linear-gradient(135deg, #8B4513 0%, #693B11 100%); padding: 25px; text-align: center;">
+                        <p style="margin: 0; color: #F5E6D3; font-size: 13px; font-family: 'Lexend Deca', sans-serif;"><strong style="color: #FFFFFF; font-size: 16px;">Enchant</strong></p>
+                        <p style="margin: 5px 0 0 0; color: #F5E6D3; font-size: 12px; font-family: 'Lexend Deca', sans-serif;">Salvador, Bahia • Brasil</p>
                     </div>
                 </div>
             </body>
@@ -193,7 +199,7 @@ async function enviarEmailNotificacaoComBotoes(requisicao, documentos) {
         await resend.emails.send({
             from: 'Enchant <onboarding@resend.dev>',
             to: process.env.EMAIL_DESTINO_ADMIN,
-            subject: `Nova Requisição: ${requisicao.nome_instituicao}`,
+            subject: ` Nova Requisição: ${requisicao.nome_instituicao}`,
             html: htmlEmail
         });
 

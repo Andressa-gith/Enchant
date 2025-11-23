@@ -6,13 +6,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. VERIFICA AUTENTICAÇÃO
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !session) {
-        // Se não houver sessão ativa, redireciona para a página de login
         window.location.href = '/entrar';
         return;
     }
 
     // 2. MAPEAMENTO DOS ELEMENTOS DA UI
-    // Organiza todos os elementos do HTML em um objeto para fácil acesso
     const ui = {
         // Displays de Informação
         orgName: document.getElementById('org-name'),
@@ -28,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         profileImage: document.getElementById('profile-image'),
         logoPlaceholder: document.getElementById('logo-placeholder'),
         currentLogo: document.getElementById('current-logo'),
-        // ... (seu objeto 'ui' completo e sem alterações) ...
         editCnpj: document.getElementById('edit-cnpj'),
         editPhone: document.getElementById('edit-phone'),
         editSobre: document.getElementById('edit-sobre'),
@@ -37,8 +34,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         editModal: document.getElementById('edit-modal'),
         photoModal: document.getElementById('photo-modal'),
         logoModal: document.getElementById('logo-modal'),
-        privacyModal: document.getElementById('privacy-modal'),
-        termsModal: document.getElementById('terms-modal'),
         notificationModal: document.getElementById('erroSenhaModal'),
         notificationModalBody: document.getElementById('erroSenhaModalBody'),
 
@@ -46,8 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnOpenPhotoModal: document.getElementById('btn-open-photo-modal'),
         btnOpenLogoModal: document.getElementById('btn-open-logo-modal'),
         btnOpenEditModal: document.getElementById('btn-open-edit-modal'),
-        btnOpenPrivacyModal: document.getElementById('btn-open-privacy-modal'),
-        btnOpenTermsModal: document.getElementById('btn-open-terms-modal'),
 
         // Botões Dentro dos Modais
         btnCloseEditModalX: document.getElementById('btn-close-edit-modal-x'),
@@ -62,24 +55,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnCancelLogoModal: document.getElementById('btn-cancel-logo-modal'),
         btnSaveLogo: document.getElementById('btn-save-logo'),
         photoUploadInput: document.getElementById('photo-upload'),
-
-        btnClosePrivacyModalX: document.getElementById('btn-close-privacy-modal-x'),
-        btnClosePrivacyModalFooter: document.getElementById('btn-close-privacy-modal-footer'),
         photoUploadArea: document.getElementById('photo-upload-area'),
-
-        btnCloseTermsModalX: document.getElementById('btn-close-terms-modal-x'),
 
         // Campos do Formulário de Edição
         editInstitutionName: document.getElementById('edit-institution-name'),
         editEmail: document.getElementById('edit-email'),
         editPassword: document.getElementById('edit-password'),
-        editCnpj: document.getElementById('edit-cnpj'),
-        editPhone: document.getElementById('edit-phone'),
         editEstado: document.getElementById('edit-estado'),
         editCidade: document.getElementById('edit-cidade'),
 
         // Outros
-        togglePassword: document.getElementById('toggle-password'),
         toggleEditPassword: document.getElementById('toggle-edit-password'),
         logoUploadArea: document.getElementById('logo-upload-area'),
         logoUploadInput: document.getElementById('logo-upload'),
@@ -92,42 +77,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // 3. ESTADO DA APLICAÇÃO
-    // Variáveis para guardar dados e controlar o estado da UI
     let userData = {};
     let logoPreviewFile = null;
     let photoPreviewFile = null;
-    let isPasswordVisible = false;
     let modalOverlay = null;
     const notificationModalInstance = new bootstrap.Modal(ui.notificationModal);
 
     // 4. FUNÇÕES
 
     function setupCharCounter() {
-        // Garante que os elementos (textarea e contador) existem na página
         if (ui.editSobre && ui.charCounter) {
             const maxLength = ui.editSobre.getAttribute('maxlength');
-
-            // Função interna que faz a atualização do texto do contador
             const updateCounter = () => {
                 const currentLength = ui.editSobre.value.length;
                 const remaining = maxLength - currentLength;
-
                 ui.charCounter.textContent = `${remaining} caracteres restantes`;
-
-                // Muda a cor para vermelho quando estiver perto do limite
                 if (remaining < 20) {
-                    ui.charCounter.style.color = '#dc3545'; // Vermelho
+                    ui.charCounter.style.color = '#dc3545';
                 } else {
-                    ui.charCounter.style.color = '#6c757d'; // Cinza padrão
+                    ui.charCounter.style.color = '#6c757d';
                 }
             };
-
-            // Adiciona um "ouvinte" que chama a atualização toda vez que o usuário digita
             ui.editSobre.addEventListener('input', updateCounter);
         }
     }
-
-    // --- Funções de API (Comunicação com o Backend) ---
 
     async function fetchUserProfile() {
         try {
@@ -136,8 +109,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             if (!response.ok) throw new Error(`Status: ${response.status}`);
             const data = await response.json();
-            userData = data; // Armazena os dados do usuário globalmente
-            updateUI(); // Atualiza a página com os dados recebidos
+            userData = data;
+            updateUI();
         } catch (error) {
             console.error('Erro ao buscar perfil:', error);
             showNotification('Falha ao carregar seus dados. Tente recarregar a página.', 'danger');
@@ -160,7 +133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const aSenhaFoiAlterada = !!dadosParaEnviar.senha;
 
-        // Não envia a senha se o campo estiver vazio
         if (!dadosParaEnviar.senha) {
             delete dadosParaEnviar.senha;
         }
@@ -200,12 +172,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function handlePhotoFile(file) {
-        const tiposPermitidos = ['image/jpeg', 'image/png', 'image/svg+xml'];
+        const tiposPermitidos = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
         if (!tiposPermitidos.includes(file.type)) {
             closeModal(ui.photoModal);
             return showNotification('Formato não permitido. Use JPG, PNG ou SVG.', 'danger');
         }
-        if (file.size > 2 * 1024 * 1024) { // 2MB
+        if (file.size > 2 * 1024 * 1024) {
             closeModal(ui.photoModal);
             return showNotification('Arquivo muito grande (máx. 2MB).', 'danger');
         }
@@ -218,9 +190,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function showPhotoPreview(imageSrc) {
         ui.photoUploadArea.innerHTML = `<div class="logo-preview-container">
-        <img src="${imageSrc}" class="logo-preview-image" alt="Preview">
-        <button type="button" class="logo-preview-remove" id="btn-clear-photo-preview">×</button>
-    </div><p class="logo-preview-text">Clique em "Salvar"</p>`;
+            <img src="${imageSrc}" class="logo-preview-image" alt="Preview">
+            <button type="button" class="logo-preview-remove" id="btn-clear-photo-preview">×</button>
+        </div><p class="logo-preview-text">Clique em "Salvar"</p>`;
 
         document.getElementById('btn-clear-photo-preview').addEventListener('click', (e) => {
             e.stopPropagation();
@@ -232,8 +204,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         photoPreviewFile = null;
         ui.photoUploadInput.value = '';
         ui.photoUploadArea.innerHTML = `<i class="bi bi-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
-        <p>Clique ou arraste uma imagem aqui</p>
-        <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>`;
+            <p>Clique ou arraste uma imagem aqui</p>
+            <p style="font-size: 12px; color: #999;">JPG, PNG, SVG (máx. 2MB)</p>`;
     }
 
     function setupPhotoUpload() {
@@ -269,43 +241,62 @@ document.addEventListener('DOMContentLoaded', async () => {
             return showNotification('Nenhuma nova foto selecionada.', 'info');
         }
 
-        const cleanFileName = photoPreviewFile.name
-            .replace(/\s+/g, '_') // Substitui espaços por underscore
-            .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
-            .toLowerCase();
-
-        const filePath = `${session.user.id}/${cleanFileName}`;
-        showNotification('A enviar foto...', 'info');
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('profile-photos')
-            .upload(filePath, photoPreviewFile, { upsert: true });
-
-        if (uploadError) {
-            console.error('Erro no upload da foto:', uploadError);
-            closeModal(ui.photoModal);
-            return showNotification('Erro ao enviar a sua foto.', 'danger');
-        }
-
+        const modalValidacao = criarModalValidacao('Foto de Perfil');
+        
         try {
-            await fetch('/api/user/profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.access_token}`
-                },
-                body: JSON.stringify({ caminho_foto_perfil: uploadData.path })
+            await sleep(500);
+            atualizarModalValidacao(modalValidacao, 20, 'Validando imagem...', 'Analisando conteúdo');
+            adicionarLogValidacao(modalValidacao, ' Verificando se a imagem é apropriada', 'info');
+
+            const formData = new FormData();
+            formData.append('foto', photoPreviewFile);
+
+            await sleep(800);
+            atualizarModalValidacao(modalValidacao, 40, 'Enviando para análise...', 'Conectando com IA');
+            adicionarLogValidacao(modalValidacao, ' Enviando imagem para validação', 'info');
+
+            const response = await fetch('/api/user/profile/foto', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${session.access_token}` },
+                body: formData
             });
 
-            closeModal(ui.photoModal);
-            showNotification('Foto de perfil atualizada!', 'success');
-            window.location.reload();
-            photoPreviewFile = null; // Limpa a seleção
+            const result = await response.json();
 
-        } catch (dbError) {
-            console.error('Erro ao salvar caminho no DB:', dbError);
+            await sleep(1000);
+            atualizarModalValidacao(modalValidacao, 70, 'Analisando conteúdo...', 'Verificando se é apropriada');
+            adicionarLogValidacao(modalValidacao, ' IA analisando a imagem', 'info');
+
+            if (!response.ok) {
+                if (result.tipo_erro === 'validacao_ia') {
+                    mostrarErroValidacao(modalValidacao, result.detalhes);
+                    await sleep(8000);
+                    fecharModalValidacao(modalValidacao);
+                    closeModal(ui.photoModal);
+                    return showNotification(`Foto rejeitada: ${result.detalhes}`, 'danger');
+                } else {
+                    throw new Error(result.message || 'Erro ao enviar foto.');
+                }
+            }
+
+            await sleep(500);
+            mostrarSucessoValidacao(modalValidacao);
+            adicionarLogValidacao(modalValidacao, ' Imagem aprovada pela IA', 'success');
+            
+            await sleep(1500);
+            fecharModalValidacao(modalValidacao);
+
             closeModal(ui.photoModal);
-            showNotification('A foto foi enviada, mas houve um erro ao salvar a referência.', 'danger');
+            showNotification('Foto de perfil atualizada com sucesso!', 'success');
+            photoPreviewFile = null;
+            window.location.reload();
+
+        } catch (error) {
+            mostrarErroValidacao(modalValidacao, error.message);
+            await sleep(5000);
+            fecharModalValidacao(modalValidacao);
+            closeModal(ui.photoModal);
+            showNotification(error.message, 'danger');
         }
     }
 
@@ -315,49 +306,224 @@ document.addEventListener('DOMContentLoaded', async () => {
             return showNotification('Nenhum novo logo selecionado.', 'info');
         }
 
-        const cleanFileName2 = logoPreviewFile.name
-            .replace(/\s+/g, '_') // Substitui espaços por underscore
-            .replace(/[^a-zA-Z0-9._-]/g, '') // Remove caracteres especiais
-            .toLowerCase();
-
-        const filePath = `${session.user.id}/${cleanFileName2}`;
-        showNotification('A enviar logo...', 'info');
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('logos')
-            .upload(filePath, logoPreviewFile, {
-                upsert: true // Substitui o logo se já existir
-            });
-
-        if (uploadError) {
-            console.error('Erro no upload do logo:', uploadError);
-            return showNotification('Erro ao enviar o seu logo.', 'danger');
-        }
-
+        const modalValidacao = criarModalValidacao('Logo');
+        
         try {
-            await fetch('/api/user/profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.access_token}`
-                },
-                body: JSON.stringify({ caminho_logo: uploadData.path })
+            await sleep(500);
+            atualizarModalValidacao(modalValidacao, 20, 'Validando logo...', 'Analisando conteúdo');
+            adicionarLogValidacao(modalValidacao, ' Verificando se o logo é apropriado', 'info');
+
+            const formData = new FormData();
+            formData.append('logo', logoPreviewFile);
+
+            await sleep(800);
+            atualizarModalValidacao(modalValidacao, 40, 'Enviando para análise...', 'Conectando com IA');
+            adicionarLogValidacao(modalValidacao, ' Enviando logo para validação', 'info');
+
+            const response = await fetch('/api/user/profile/logo', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${session.access_token}` },
+                body: formData
             });
+
+            const result = await response.json();
+
+            await sleep(1000);
+            atualizarModalValidacao(modalValidacao, 70, 'Analisando conteúdo...', 'Verificando se é apropriado');
+            adicionarLogValidacao(modalValidacao, ' IA analisando o logo', 'info');
+
+            if (!response.ok) {
+                if (result.tipo_erro === 'validacao_ia') {
+                    mostrarErroValidacao(modalValidacao, result.detalhes);
+                    await sleep(8000);
+                    fecharModalValidacao(modalValidacao);
+                    closeModal(ui.logoModal);
+                    return showNotification(`Logo rejeitado: ${result.detalhes}`, 'danger');
+                } else {
+                    throw new Error(result.message || 'Erro ao enviar logo.');
+                }
+            }
+
+            await sleep(500);
+            mostrarSucessoValidacao(modalValidacao);
+            adicionarLogValidacao(modalValidacao, ' Logo aprovado pela IA', 'success');
+            
+            await sleep(1500);
+            fecharModalValidacao(modalValidacao);
 
             closeModal(ui.logoModal);
             showNotification('Logo atualizado com sucesso!', 'success');
+            logoPreviewFile = null;
             window.location.reload();
-            logoPreviewFile = null; // Limpa a seleção
 
-        } catch (dbError) {
-            console.error('Erro ao salvar caminho no DB:', dbError);
-            showNotification('O logo foi enviado, mas houve um erro ao salvar a referência.', 'danger');
+        } catch (error) {
+            mostrarErroValidacao(modalValidacao, error.message);
+            await sleep(5000);
+            fecharModalValidacao(modalValidacao);
+            closeModal(ui.logoModal);
+            showNotification(error.message, 'danger');
         }
     }
-    // --- Funções de UI e Modais ---
+
+    // ✅ FUNÇÕES AUXILIARES DO MODAL DE VALIDAÇÃO
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function criarModalValidacao(tipo) {
+        const backdrop = document.createElement('div');
+        backdrop.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e2ccae;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        `;
+
+        modal.innerHTML = `
+            <div style="background: linear-gradient(135deg, #F9E7D2 0%, #e2ccae 100%); padding: 1.5rem;">
+                <h5 style="font-family: 'Lexend Deca'; font-weight: 600; color: #4E3629; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-shield-check" style="font-size: 24px;"></i>
+                    Validando ${tipo}
+                </h5>
+            </div>
+            <div style="padding: 2rem; overflow-y: auto; flex: 1;">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto; background: #F9E7D2; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-robot" style="font-size: 40px; color: #8B4513;"></i>
+                    </div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <p class="progress-message" style="text-align: center; color: #4E3629; font-weight: 600; font-size: 16px; margin: 0;">
+                        Preparando análise...
+                    </p>
+                    <p class="progress-details" style="text-align: center; color: #666; font-size: 13px; margin: 0.5rem 0 0;">
+                        Aguarde enquanto nossa IA verifica a imagem
+                    </p>
+                </div>
+                <div style="background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 1.5rem;">
+                    <div class="progress-bar" style="height: 100%; background: linear-gradient(90deg, #e2ccae, #caae8d); width: 0%; transition: width 0.3s ease;"></div>
+                </div>
+                <div class="progress-logs" style="min-height: 150px; max-height: 200px; overflow-y: auto; background: #f8f9fa; border-radius: 8px; padding: 1rem; font-size: 13px; border: 1px solid #dee2e6;">
+                    <div style="color: #666; text-align: center; font-style: italic;">
+                        Aguardando início da validação...
+                    </div>
+                </div>
+            </div>
+        `;
+
+        backdrop.appendChild(modal);
+        document.body.appendChild(backdrop);
+        document.body.style.overflow = 'hidden';
+
+        return { backdrop, modal };
+    }
+
+    function atualizarModalValidacao(modalObj, percent, message, details) {
+        const progressBar = modalObj.modal.querySelector('.progress-bar');
+        const progressMessage = modalObj.modal.querySelector('.progress-message');
+        const progressDetails = modalObj.modal.querySelector('.progress-details');
+
+        if (progressBar) progressBar.style.width = `${percent}%`;
+        if (progressMessage) progressMessage.textContent = message;
+        if (progressDetails) progressDetails.textContent = details;
+    }
+
+    function adicionarLogValidacao(modalObj, message, type = 'info') {
+        const logsContainer = modalObj.modal.querySelector('.progress-logs');
+        if (!logsContainer) return;
+
+        const italic = logsContainer.querySelector('[style*="italic"]');
+        if (italic) logsContainer.innerHTML = '';
+
+        const logItem = document.createElement('div');
+        logItem.style.cssText = 'display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e0e0e0;';
+
+        const icons = {
+            info: { icon: 'bi-info-circle-fill', color: '#3d2106' },
+            success: { icon: 'bi-check-circle-fill', color: '#28a745' },
+            error: { icon: 'bi-x-circle-fill', color: '#dc3545' },
+            warning: { icon: 'bi-exclamation-triangle-fill', color: '#ffc107' }
+        };
+
+        const { icon, color } = icons[type] || icons.info;
+
+        logItem.innerHTML = `
+            <i class="bi ${icon}" style="color: ${color}; margin-top: 2px; font-size: 14px; flex-shrink: 0;"></i>
+            <span style="color: #333; line-height: 1.5; word-break: break-word;">${message}</span>
+        `;
+
+        logsContainer.appendChild(logItem);
+        logsContainer.scrollTop = logsContainer.scrollHeight;
+    }
+
+    function mostrarErroValidacao(modalObj, motivoErro) {
+        atualizarModalValidacao(modalObj, 100, ' Imagem Rejeitada', '');
+        adicionarLogValidacao(modalObj, ' Imagem não aprovada pela validação', 'error');
+        
+        const motivoFormatado = motivoErro.length > 100 
+            ? motivoErro.match(/.{1,100}(\s|$)/g).join('\n') 
+            : motivoErro;
+        
+        adicionarLogValidacao(modalObj, ` Motivo da rejeição:`, 'warning');
+        adicionarLogValidacao(modalObj, motivoFormatado, 'error');
+        adicionarLogValidacao(modalObj, ' Sugestão: Use uma imagem apropriada e tente novamente.', 'info');
+
+        setTimeout(() => {
+            const modalBody = modalObj.modal.querySelector('[style*="padding: 2rem"]');
+            if (!modalBody || modalBody.querySelector('#errorButtonContainer')) return;
+            
+            const container = document.createElement('div');
+            container.id = 'errorButtonContainer';
+            container.style.cssText = 'text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;';
+            
+            const btn = document.createElement('button');
+            btn.style.cssText = 'background-color: #e2ccae; color: #3d2106; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 500; font-size: 15px; cursor: pointer; transition: all 0.3s;';
+            btn.innerHTML = '<i class="bi bi-check-circle" style="margin-right: 8px;"></i>Entendi';
+            btn.onmouseover = () => btn.style.backgroundColor = '#d4b895';
+            btn.onmouseout = () => btn.style.backgroundColor = '#e2ccae';
+            btn.onclick = () => fecharModalValidacao(modalObj);
+            
+            container.appendChild(btn);
+            modalBody.appendChild(container);
+            
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }, 3000);
+    }
+
+    function mostrarSucessoValidacao(modalObj) {
+        atualizarModalValidacao(modalObj, 100, ' Validação Concluída com Sucesso!', '');
+        adicionarLogValidacao(modalObj, ' Imagem aprovada pela IA', 'success');
+        adicionarLogValidacao(modalObj, ' Salvando imagem...', 'info');
+    }
+
+    function fecharModalValidacao(modalObj) {
+        if (modalObj.backdrop) modalObj.backdrop.remove();
+        document.body.style.overflow = '';
+    }
 
     function updateUI() {
-        // Atualiza os textos na página principal
         ui.orgName.textContent = userData.nome || 'Nome não encontrado';
         ui.institutionName.textContent = userData.nome || 'Não informado';
         ui.email.textContent = userData.email || 'Não informado';
@@ -370,12 +536,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.profileImage.src = userData.url_foto_perfil || '/assets/imgs/comprador/avatar-padrao.jpg';
 
         if (userData.url_logo) {
-            // Se tem um logo, esconde o placeholder e mostra a imagem
             ui.logoPlaceholder.style.display = 'none';
             ui.currentLogo.src = userData.url_logo;
             ui.currentLogo.style.display = 'block';
         } else {
-            // Se não tem, mostra o placeholder e esconde a imagem
             ui.logoPlaceholder.style.display = 'flex';
             ui.currentLogo.style.display = 'none';
         }
@@ -389,7 +553,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('mp-connected-info').style.display = 'none';
         }
 
-        // Preenche o formulário de edição com os dados atuais
         ui.editInstitutionName.value = userData.nome || '';
         ui.editEmail.value = userData.email || '';
         ui.editCnpj.value = userData.cnpj || '';
@@ -397,14 +560,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.editPhone.value = userData.telefone || '';
         ui.editEstado.value = userData.estado || '';
         ui.editCidade.value = userData.cidade || '';
-        ui.editPassword.value = ''; // Senha sempre vazia por segurança
-
+        ui.editPassword.value = '';
     }
 
     function createModalOverlayIfNeeded() {
         if (!modalOverlay) {
             modalOverlay = document.createElement("div");
-            modalOverlay.className = "modal-overlay"; // Use uma classe do seu CSS
+            modalOverlay.className = "modal-overlay";
             document.body.appendChild(modalOverlay);
             modalOverlay.addEventListener('click', closeAllModals);
         }
@@ -441,10 +603,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         notificationModalInstance.show();
     }
 
-    // --- Lógica de Senha ---
-
     function setupPasswordToggles() {
-
         ui.toggleEditPassword.addEventListener('click', () => {
             const isPassword = ui.editPassword.type === 'password';
             ui.editPassword.type = isPassword ? 'text' : 'password';
@@ -473,11 +632,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Lógica de Upload de Logo ---
     function setupLogoUpload() {
-
         ui.logoUploadArea.addEventListener('click', () => {
-            ui.logoUploadInput.click(); // Dispara o input de arquivo escondido
+            ui.logoUploadInput.click();
         });
 
         ['dragover', 'dragleave', 'drop'].forEach(eventName => {

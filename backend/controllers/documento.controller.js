@@ -14,7 +14,7 @@ async function validarDocumentoComIA(arquivo) {
 
         const base64Data = arquivo.buffer.toString('base64');
         const mimeType = arquivo.mimetype;
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
         const prompt = `Você é um especialista em análise de documentos financeiros e comprobatórios.
 

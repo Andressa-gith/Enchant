@@ -9,14 +9,13 @@ import {
 import UserProfileController from '../controllers/perfil.controller.js';
 import { protegerRota } from '../middleware/auth.middleware.js';
 import multer from 'multer';
-import supabase from '../db/supabaseClient.js'
 
 const userRouter = express.Router();
 
 const upload = multer({ 
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: 5 * 1024 * 1024,
+        fileSize: 2 * 1024 * 1024, // ✅ Limite de 2MB
     },
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'image/png' || 
@@ -34,6 +33,11 @@ const upload = multer({
 userRouter.post('/cadastro', cadastrarInstituicao);
 userRouter.get('/profile', protegerRota, UserProfileController.getProfile);
 userRouter.put('/profile', protegerRota, UserProfileController.updateProfile);
+
+// ✅ NOVAS ROTAS COM VALIDAÇÃO DE IA
+userRouter.post('/profile/foto', protegerRota, upload.single('foto'), UserProfileController.uploadFotoPerfil);
+userRouter.post('/profile/logo', protegerRota, upload.single('logo'), UserProfileController.uploadLogo);
+
 userRouter.post('/logout', protegerRota, UserProfileController.logout);
 userRouter.post('/tutorial-concluido', protegerRota, UserProfileController.marcarTutorialVisto);
 
@@ -48,14 +52,12 @@ userRouter.get('/comunidade/postagens/:id',
     buscarPostagemComunidade
 );
 
-// Atualizar postagem
 userRouter.put('/comunidade/postagens/:id', 
     protegerRota, 
     upload.single('imagem'), 
     atualizarPostagemComunidade
 );
 
-// Excluir postagem
 userRouter.delete('/comunidade/postagens/:id', 
     protegerRota, 
     excluirPostagemComunidade
