@@ -85,7 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (error) {
-            showFeedbackModal(`Erro ao atualizar a senha: ${error.message}`);
+            mensagemErro = error.message == 'New password should be different from the old password.' ? 'A nova senha deve ser diferente da senha antiga.' : error.message
+            showFeedbackModal(`${mensagemErro}`);
             reabilitarBotao();
         } else {
             // Sucesso! Mostra o modal e agenda o redirecionamento.
