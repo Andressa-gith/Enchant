@@ -14,11 +14,10 @@ import logger from '../utils/logger.js';
 
 const userRouter = express.Router();
 
-// ✅ CONFIGURAÇÃO DO MULTER COM MELHOR TRATAMENTO DE ERROS
 const upload = multer({ 
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: 2 * 1024 * 1024, // 2MB
+        fileSize: 2 * 1024 * 1024,
         files: 1
     },
     fileFilter: (req, file, cb) => {
@@ -42,7 +41,6 @@ const upload = multer({
     }
 });
 
-// ✅ MIDDLEWARE DE ERRO PARA MULTER
 const handleMulterError = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         logger.error(` Erro do Multer: ${err.code} - ${err.message}`);
@@ -78,7 +76,6 @@ const handleMulterError = (err, req, res, next) => {
     next();
 };
 
-// ✅ MIDDLEWARE DE LOG PARA DEBUG
 const logRequest = (req, res, next) => {
     logger.info(` ${req.method} ${req.path}`);
     if (req.file) {
@@ -87,37 +84,31 @@ const logRequest = (req, res, next) => {
     next();
 };
 
-// ========== ROTAS PÚBLICAS ==========
 userRouter.post('/cadastro', cadastrarInstituicao);
 
-// ========== ROTAS PROTEGIDAS (SEM UPLOAD) ==========
 userRouter.get('/profile', logRequest, protegerRota, UserProfileController.getProfile);
 userRouter.put('/profile', logRequest, protegerRota, UserProfileController.updateProfile);
 userRouter.post('/logout', logRequest, protegerRota, UserProfileController.logout);
 userRouter.post('/tutorial-concluido', logRequest, protegerRota, UserProfileController.marcarTutorialVisto);
 
-// ========== ROTAS COM UPLOAD E VALIDAÇÃO DE IA ==========
-// ✅ ORDEM CRÍTICA: protegerRota → upload → handleMulterError → controller
-
 userRouter.post(
     '/profile/foto',
     logRequest,
-    protegerRota,              // 1º: Valida autenticação
-    upload.single('foto'),     // 2º: Processa upload
-    handleMulterError,         // 3º: Trata erros de upload
-    UserProfileController.uploadFotoPerfil  // 4º: Controller
+    protegerRota,
+    upload.single('foto'),
+    handleMulterError,
+    UserProfileController.uploadFotoPerfil
 );
 
 userRouter.post(
     '/profile/logo',
     logRequest,
-    protegerRota,              // 1º: Valida autenticação
-    upload.single('logo'),     // 2º: Processa upload
-    handleMulterError,         // 3º: Trata erros de upload
-    UserProfileController.uploadLogo  // 4º: Controller
+    protegerRota,
+    upload.single('logo'),
+    handleMulterError,
+    UserProfileController.uploadLogo
 );
 
-// ========== ROTAS DE COMUNIDADE ==========
 userRouter.post(
     '/comunidade/postagens',
     logRequest,

@@ -59,7 +59,7 @@ export const enviarEmailResetSenha = async (req, res) => {
         }
 
         // URL para a qual o usuário será redirecionado após clicar no link do email.
-        const redirectTo = `http://localhost:3080/redefinir-senha`;
+        const redirectTo = `https://enchant.onrender.com/redefinir-senha`;
         logger.info(`Solicitando reset para o email fornecido com redirecionamento para: ${redirectTo}`);
 
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
